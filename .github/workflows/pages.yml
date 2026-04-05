@@ -2,7 +2,7 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   schedule:
     - cron: '0 * * * *'
   workflow_dispatch:
@@ -26,6 +26,7 @@ jobs:
           submodules: recursive
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
 
       - name: Setup pnpm
@@ -51,8 +52,15 @@ jobs:
       - name: Generate site source
         run: pnpm generate
 
+      - name: Write Pages config override
+        run: |
+          cat > "$RUNNER_TEMP/pages-config.yml" <<EOF
+          url: ${{ steps.pages.outputs.origin }}
+          baseurl: ${{ steps.pages.outputs.base_path }}
+          EOF
+
       - name: Build Jekyll site
-        run: bundle exec jekyll build --source site --destination _site --baseurl "${{ steps.pages.outputs.base_path }}"
+        run: bundle exec jekyll build --source site --destination _site --config site/_config.yml,"$RUNNER_TEMP/pages-config.yml"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
