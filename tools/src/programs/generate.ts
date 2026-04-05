@@ -34,7 +34,7 @@ const program = Effect.gen(function* () {
   const projectCards = [] as Array<Record<string, string>>
 
   for (const manifest of manifests) {
-    const adapter = adapters.find((candidate) => candidate.kind === manifest.kind)
+    const adapter = adapters[manifest.kind]
     if (!adapter) {
       return yield* Effect.fail(new Error(`No project adapter registered for kind '${manifest.kind}'`))
     }

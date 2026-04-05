@@ -111,13 +111,6 @@ const buildEureka = (manifest: ProjectManifest) =>
         }
       }
 
-      implementations.sort((left, right) => {
-        const leftIndex = languageOrder.indexOf(left.language as (typeof languageOrder)[number])
-        const rightIndex = languageOrder.indexOf(right.language as (typeof languageOrder)[number])
-        return (leftIndex === -1 ? 999 : leftIndex) - (rightIndex === -1 ? 999 : rightIndex)
-          || String(left.approach_label).localeCompare(String(right.approach_label))
-      })
-
       const implementationsByLanguage = new Map<string, Array<Record<string, unknown>>>()
       implementations.forEach((implementation) => {
         const language = String(implementation.language)
@@ -172,7 +165,7 @@ const buildEureka = (manifest: ProjectManifest) =>
     yield* writeText(path.join(generatedSiteDirectory, `_data/generated/${manifest.slug}/problems_view.yml`), yaml.stringify(problemsView))
     yield* writeText(path.join(generatedSiteDirectory, `_data/generated/${manifest.slug}/problem_filters.yml`), yaml.stringify({
       difficulties: ["Easy", "Medium", "Hard"],
-      categories: Array.from(categories).sort(),
+      categories: Array.from(categories),
       languages: languageOrder.filter((language) => languagesSeen.has(language)).map((language) => ({
         slug: language,
         label: languageMeta[language].label
