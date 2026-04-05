@@ -20,26 +20,15 @@
       {%- assign language_impls = problem.implementations | where: "language", language.slug -%}
       <section class="language-panel" data-language-panel data-language="{{ language.slug }}" data-default-implementation="{{ language_impls.first.id }}"{% unless forloop.first %} hidden{% endunless %}>
         <section class="code-shell">
-          <div class="code-shell__header">
-            <div class="code-shell__header-copy">
-              <h3>{{ problem.name }}</h3>
-              <p>{{ language.label }} implementations</p>
-            </div>
+          <div class="code-shell__toolbar">
             <div class="approach-switcher" data-implementation-switcher>
               {%- for implementation in language_impls -%}
                 <button class="approach-tab{% if forloop.first %} is-active{% endif %}" type="button" data-implementation-target="{{ implementation.id }}">{{ implementation.approach }} solution</button>
               {%- endfor -%}
             </div>
-          </div>
-
-          {%- for implementation in language_impls -%}
-            <section class="code-shell__panel" data-implementation-panel id="{{ implementation.id }}"{% unless forloop.first %} hidden{% endunless %}>
-              <div class="code-shell__bar">
-                <div class="code-shell__title">
-                  <strong>{{ language.label }}</strong>
-                  <span>{{ implementation.approach }} solution</span>
-                </div>
-                <div class="code-shell__actions">
+            <div class="code-shell__action-groups">
+              {%- for implementation in language_impls -%}
+                <div class="code-shell__actions" data-implementation-actions="{{ implementation.id }}"{% unless forloop.first %} hidden{% endunless %}>
                   {%- if embed -%}
                     <a class="link-button" href="{{ problem.detail_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}">Open page</a>
                   {%- else -%}
@@ -48,7 +37,12 @@
                   <a class="link-button" href="{{ implementation.source_url }}" target="_blank" rel="noreferrer">Source code</a>
                   <a class="link-button" href="{{ problem.url }}" target="_blank" rel="noreferrer">LeetCode</a>
                 </div>
-              </div>
+              {%- endfor -%}
+            </div>
+          </div>
+
+          {%- for implementation in language_impls -%}
+            <section class="code-shell__panel" data-implementation-panel id="{{ implementation.id }}"{% unless forloop.first %} hidden{% endunless %}>
               {%- capture code_block -%}
 ```{{ implementation.code_language }}
 {{ implementation.code }}

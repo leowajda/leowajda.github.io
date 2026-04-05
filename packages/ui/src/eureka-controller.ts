@@ -185,6 +185,7 @@ const initializeProblemShells = () => {
     const activateImplementation = (panel: HTMLElement, implementationId: string) => {
       const implementationButtons = Array.from(panel.querySelectorAll<HTMLButtonElement>("[data-implementation-target]"))
       const implementationPanels = Array.from(panel.querySelectorAll<HTMLElement>("[data-implementation-panel]"))
+      const implementationActions = Array.from(panel.querySelectorAll<HTMLElement>("[data-implementation-actions]"))
       const nextImplementationId = implementationButtons.some((button) => button.dataset.implementationTarget === implementationId)
         ? implementationId
         : getDefaultImplementation(languagePanels, panel.dataset.language || "")
@@ -197,6 +198,10 @@ const initializeProblemShells = () => {
 
       implementationPanels.forEach((implementationPanel) => {
         implementationPanel.hidden = implementationPanel.id !== nextImplementationId
+      })
+
+      implementationActions.forEach((actions) => {
+        actions.hidden = actions.dataset.implementationActions !== nextImplementationId
       })
     }
 

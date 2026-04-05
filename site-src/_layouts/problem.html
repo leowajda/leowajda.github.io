@@ -18,7 +18,6 @@ layout: default
     <div class="control-group">
       <div class="control-group__head">
         <h2>Overview</h2>
-        <p>Difficulty and total implementation count.</p>
       </div>
       <div class="problem-meta problem-meta--single-line">
         <span class="badge badge--{{ problem.difficulty_slug }}">{{ problem.difficulty }}</span>
@@ -29,7 +28,6 @@ layout: default
     <div class="control-group">
       <div class="control-group__head">
         <h2>Categories</h2>
-        <p>Problem topics.</p>
       </div>
       <div class="badge-list badge-list--single-line">
         {%- for category in problem.categories -%}
