@@ -32,18 +32,18 @@
               {%- for implementation in language_impls -%}
                 <div class="code-shell__actions" data-implementation-actions="{{ implementation.id }}"{% unless forloop.first %} hidden{% endunless %}>
                   {%- if embed -%}
-                    <a class="link-button icon-button" href="{{ problem.detail_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}" aria-label="Open page" title="Open page">
+                    <a class="link-button" href="{{ problem.detail_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}" aria-label="Open page" title="Open page">
                       {%- include icon.html name="open-page" -%}
                     </a>
                   {%- else -%}
-                    <a class="link-button icon-button" href="{{ problem.embed_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}" aria-label="Open embed" title="Open embed">
+                    <a class="link-button" href="{{ problem.embed_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}" aria-label="Open embed" title="Open embed">
                       {%- include icon.html name="code" -%}
                     </a>
                   {%- endif -%}
-                  <a class="link-button icon-button" href="{{ implementation.source_url }}" target="_blank" rel="noreferrer" aria-label="Open source on GitHub" title="Open source on GitHub">
+                  <a class="link-button" href="{{ implementation.source_url }}" target="_blank" rel="noreferrer" aria-label="Open source on GitHub" title="Open source on GitHub">
                     {%- include icon.html name="github" -%}
                   </a>
-                  <a class="link-button icon-button" href="{{ problem.url }}" target="_blank" rel="noreferrer" aria-label="Open LeetCode problem" title="Open LeetCode problem">
+                  <a class="link-button" href="{{ problem.url }}" target="_blank" rel="noreferrer" aria-label="Open LeetCode problem" title="Open LeetCode problem">
                     {%- include icon.html name="leetcode" -%}
                   </a>
                 </div>

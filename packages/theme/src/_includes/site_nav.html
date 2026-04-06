@@ -10,9 +10,15 @@
       </a>
     {%- endfor -%}
     {%- if page.project_key -%}
+      {%- assign current_project = site.data.generated.projects | where: "slug", page.project_key | first -%}
       <a class="site-nav__link icon-button" href="{{ '/' | relative_url }}" aria-label="Back home" title="Back home">
         {%- include icon.html name="back" class="site-nav__link-icon" -%}
       </a>
+      {%- if current_project and current_project.source_url -%}
+        <a class="site-nav__link icon-button" href="{{ current_project.source_url }}" target="_blank" rel="noreferrer" aria-label="Project source on GitHub" title="Project source on GitHub">
+          {%- include icon.html name="github" class="site-nav__link-icon" -%}
+        </a>
+      {%- endif -%}
     {%- endif -%}
   </div>
   <button class="theme-toggle icon-button" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
