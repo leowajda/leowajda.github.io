@@ -2,7 +2,7 @@ import { Effect, Layer, Schema } from "effect"
 import path from "node:path"
 import yaml from "yaml"
 import { buildBrowserAssets } from "../core/assets.js"
-import { copyDirectoryContents, readDirectory, readText, removeDirectory, runGit, writeText } from "../core/io.js"
+import { Workspace, WorkspaceLive } from "../core/workspace.js"
 import { generatedSiteDirectory, projectsDirectory, rootDirectory, siteSourceDirectory, themeSourceDirectory } from "../core/paths.js"
 import { ProjectAdapterRegistry, ProjectAdapterRegistryLive } from "../projects/registry.js"
 import { ProjectManifestSchema } from "../projects/schema.js"
@@ -14,23 +14,26 @@ const parseYaml = <T>(raw: string, decoder: (input: unknown) => Effect.Effect<T,
   }).pipe(Effect.flatMap((value) => decoder(value).pipe(Effect.mapError((error) => new Error(String(error))))))
 
 const loadProjectManifests = Effect.gen(function* () {
-  const entries = yield* readDirectory(projectsDirectory)
+  const workspace = yield* Workspace
+  const entries = yield* workspace.readDirectory(projectsDirectory)
   const manifestFiles = entries.filter((entry) => entry.isFile() && entry.name.endsWith(".yml"))
   return yield* Effect.forEach(manifestFiles, (entry) =>
-    readText(path.join(projectsDirectory, entry.name)).pipe(
+    workspace.readText(path.join(projectsDirectory, entry.name)).pipe(
       Effect.flatMap((content) => parseYaml(content, Schema.decodeUnknown(ProjectManifestSchema)))
     )
   )
 })
 
 const program = Effect.gen(function* () {
-  yield* runGit(rootDirectory, "submodule", "update", "--init", "--recursive")
+  const workspace = yield* Workspace
+
+  yield* workspace.runGit(rootDirectory, "submodule", "update", "--init", "--recursive")
   const manifests = yield* loadProjectManifests
   const { adapters } = yield* ProjectAdapterRegistry
 
-  yield* removeDirectory(generatedSiteDirectory)
-  yield* copyDirectoryContents(themeSourceDirectory, generatedSiteDirectory)
-  yield* copyDirectoryContents(siteSourceDirectory, generatedSiteDirectory)
+  yield* workspace.removeDirectory(generatedSiteDirectory)
+  yield* workspace.copyDirectoryContents(themeSourceDirectory, generatedSiteDirectory)
+  yield* workspace.copyDirectoryContents(siteSourceDirectory, generatedSiteDirectory)
 
   const projectCards = yield* Effect.forEach(manifests, (manifest) => {
     const adapter = adapters[manifest.kind]
@@ -39,8 +42,8 @@ const program = Effect.gen(function* () {
       : Effect.fail(new Error(`No project adapter registered for kind '${manifest.kind}'`))
   })
 
-  yield* writeText(path.join(generatedSiteDirectory, "_data/generated/projects.yml"), yaml.stringify(projectCards))
+  yield* workspace.writeText(path.join(generatedSiteDirectory, "_data/generated/projects.yml"), yaml.stringify(projectCards))
   yield* buildBrowserAssets
 })
 
-export const generateSite = program.pipe(Effect.provide(ProjectAdapterRegistryLive))
+export const generateSite = program.pipe(Effect.provide(Layer.mergeAll(ProjectAdapterRegistryLive, WorkspaceLive)))

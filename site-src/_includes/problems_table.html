@@ -1,0 +1,89 @@
+{%- assign language_columns = include.project.problem_filters.languages -%}
+{%- assign visible_language_columns = language_columns.size -%}
+{%- if include.page.language_filter -%}
+  {%- assign visible_language_columns = 1 -%}
+{%- endif -%}
+
+<div class="table-wrap">
+  <table class="problem-table" id="problem-table" data-language-filter="{{ include.page.language_filter | default: '' }}" style="--language-columns: {{ visible_language_columns }};">
+    <thead>
+      <tr>
+        <th>Problem</th>
+        <th>Categories</th>
+        {%- for language in language_columns -%}
+          {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
+            {%- continue -%}
+          {%- endif -%}
+          <th>{{ language.label }}</th>
+        {%- endfor -%}
+      </tr>
+    </thead>
+    <tbody>
+      {%- for problem in include.project.problems_view -%}
+        {%- assign matches_language = true -%}
+        {%- if include.page.language_filter -%}
+          {%- assign matches_language = false -%}
+          {%- for language in problem.languages -%}
+            {%- if language.slug == include.page.language_filter -%}
+              {%- assign matches_language = true -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+
+        {%- unless matches_language -%}
+          {%- continue -%}
+        {%- endunless -%}
+
+        {%- assign problem_page = include.project.problem_pages[problem.slug] -%}
+        <tr
+          class="problem-row problem-row--{{ problem.difficulty_slug }}"
+          data-problem-row
+          data-problem-slug="{{ problem.slug }}"
+          data-search-title="{{ problem.search_title | escape }}"
+          data-difficulty="{{ problem.difficulty }}"
+          data-categories="{{ problem.categories | join: '|' }}"
+          data-languages="{{ problem.languages | map: 'slug' | join: '|' }}"
+        >
+          <td class="problem-title-cell">
+            <div class="problem-title">
+              <a class="problem-title__link" href="{{ problem.detail_url | relative_url }}">{{ problem.name }}</a>
+              <div class="problem-title__slug">{{ problem.slug }}</div>
+            </div>
+          </td>
+          <td>
+            <div class="badge-list">
+              {%- for category in problem.categories -%}
+                <span class="badge">{{ category }}</span>
+              {%- endfor -%}
+            </div>
+          </td>
+          {%- for language in language_columns -%}
+            {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
+              {%- continue -%}
+            {%- endif -%}
+            <td>
+              <div class="solution-pills">
+                {%- assign language_implementations = problem_page.implementations | where: "language", language.slug -%}
+                {%- if language_implementations.size > 0 -%}
+                  {%- for implementation in language_implementations -%}
+                    <a class="solution-pill{% if implementation.approach == 'iterative' or implementation.approach == 'recursive' %} solution-pill--icon{% endif %}" href="{{ implementation.detail_url | relative_url }}"{% if implementation.approach == 'iterative' or implementation.approach == 'recursive' %} aria-label="{{ implementation.approach_label }}" title="{{ implementation.approach_label }}"{% endif %}>
+                      {%- if implementation.approach == 'iterative' -%}
+                        {%- include icon.html name="iterative" -%}
+                      {%- elsif implementation.approach == 'recursive' -%}
+                        {%- include icon.html name="recursive" -%}
+                      {%- else -%}
+                        {{ implementation.approach }}
+                      {%- endif -%}
+                    </a>
+                  {%- endfor -%}
+                {%- else -%}
+                  <span class="solution-empty">—</span>
+                {%- endif -%}
+              </div>
+            </td>
+          {%- endfor -%}
+        </tr>
+      {%- endfor -%}
+    </tbody>
+  </table>
+</div>

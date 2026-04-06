@@ -1,0 +1,53 @@
+<section class="filters" aria-label="Problem filters" data-problem-filters data-language-filter="{{ include.page.language_filter | default: '' }}">
+  <div class="filter-group filter-group--search">
+    <div class="filter-group__head">
+      <h2>Search</h2>
+    </div>
+    <div class="filter-row filter-row--search">
+      <input id="problem-search" type="search" placeholder="Search problems" autocomplete="off" data-search-input>
+      <button class="filter-button" type="button" data-filter-kind="clear">Reset</button>
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <div class="filter-group__head">
+      <h2>Difficulty</h2>
+    </div>
+    <div class="filter-chips" aria-label="Difficulty options">
+      <button class="filter-chip filter-chip--all is-active" type="button" data-filter-kind="difficulty" data-filter-value="">All difficulties</button>
+      {%- for difficulty in include.project.problem_filters.difficulties -%}
+        <button class="filter-chip" type="button" data-filter-kind="difficulty" data-filter-value="{{ difficulty }}">{{ difficulty }}</button>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  {%- unless include.page.language_filter -%}
+    <div class="filter-group">
+      <div class="filter-group__head">
+        <h2>Language</h2>
+      </div>
+      <div class="filter-chips" aria-label="Language options">
+        <button class="filter-chip filter-chip--all is-active" type="button" data-filter-kind="language" data-filter-value="">All languages</button>
+        {%- for language in include.project.problem_filters.languages -%}
+          <button class="filter-chip" type="button" data-filter-kind="language" data-filter-value="{{ language.slug }}">{{ language.label }}</button>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endunless -%}
+
+  <div class="filter-group">
+    <div class="filter-group__head">
+      <h2>Categories</h2>
+    </div>
+    <div class="filter-chips" aria-label="Category options">
+      <button class="filter-chip filter-chip--all is-active" type="button" data-filter-kind="category" data-filter-value="">All categories</button>
+      {%- for category in include.project.problem_filters.categories -%}
+        <button class="filter-chip" type="button" data-filter-kind="category" data-filter-value="{{ category }}">{{ category }}</button>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <p class="filters__summary">
+    <span data-visible-count>0</span> of <span data-total-count>0</span> problems visible
+  </p>
+</section>
