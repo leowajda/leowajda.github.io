@@ -1,9 +1,13 @@
 import { Effect } from "effect"
 import { build } from "esbuild"
+import { execFile } from "node:child_process"
 import fs from "node:fs/promises"
 import path from "node:path"
+import { promisify } from "node:util"
 import { AssetBuildError } from "./errors.js"
 import { generatedSiteDirectory, nodeModulesDirectory, rootDirectory } from "./paths.js"
+
+const execFileAsync = promisify(execFile)
 
 export const buildBrowserAssets = Effect.tryPromise({
   try: async () => {
@@ -18,6 +22,16 @@ export const buildBrowserAssets = Effect.tryPromise({
       minify: false,
       sourcemap: false,
       logLevel: "silent"
+    })
+
+    await fs.mkdir(path.join(generatedSiteDirectory, "assets/css"), { recursive: true })
+    await execFileAsync(path.join(nodeModulesDirectory, ".bin", "tailwindcss"), [
+      "-i",
+      path.join(rootDirectory, "styles/main.css"),
+      "-o",
+      path.join(generatedSiteDirectory, "assets/css/main.css")
+    ], {
+      cwd: rootDirectory
     })
 
     const katexDirectory = path.join(nodeModulesDirectory, "katex/dist")
