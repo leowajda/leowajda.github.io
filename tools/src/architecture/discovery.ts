@@ -157,12 +157,14 @@ const extractRelativeImports = (
 export class ProjectManifestRepository extends Effect.Service<ProjectManifestRepository>()("ProjectManifestRepository", {
   effect: Effect.gen(function* () {
     const fileStore = yield* FileStore
+    const cachedLoadAll = yield* Effect.cached(
+      loadProjectManifests(fileStore).pipe(
+        Effect.withLogSpan("architecture.project-manifests.load"),
+        Effect.annotateLogs({ component: "project-manifests" })
+      )
+    )
     return {
-      loadAll: () =>
-        loadProjectManifests(fileStore).pipe(
-          Effect.withLogSpan("architecture.project-manifests.load"),
-          Effect.annotateLogs({ component: "project-manifests" })
-        )
+      loadAll: () => cachedLoadAll
     }
   }),
   dependencies: [WorkspaceLive],

@@ -2,6 +2,17 @@ id: repository-overview
 title: Repository Overview
 direction: LR
 selectors: []
+mermaid:
+  nodeSpacing: 92
+  rankSpacing: 116
+  diagramPadding: 28
+  wrappingWidth: 220
+  curve: basis
+  fontSize: 21
+render:
+  noteWidth: 276
+  noteGap: 76
+  legendColumns: 3
 annotations:
   - id: overview-source
     target:

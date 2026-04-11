@@ -2,7 +2,6 @@ import { Effect, Schema } from "effect"
 import path from "node:path"
 import { ArchitectureConfigError } from "../core/errors.js"
 import { architectureDirectory } from "../core/paths.js"
-import { decodeYaml } from "../core/yaml.js"
 import type { FileStoreService } from "../core/workspace.js"
 import { FileStore, WorkspaceLive } from "../core/workspace.js"
 import {
@@ -12,6 +11,7 @@ import {
   TopologyConfigSchema,
   type ArchitectureConfig
 } from "./schema.js"
+import { decodeArchitectureYaml } from "./utils.js"
 
 const GroupsFileSchema = Schema.Struct({
   groups: Schema.Array(ArchitectureGroupDefinitionSchema)
@@ -42,9 +42,7 @@ const loadConfigFile = <A>(fileStore: FileStoreService, fileName: string, schema
       Effect.mapError((error) => new ArchitectureConfigError({ file: fileName, reason: String(error) }))
     )
 
-    return yield* decodeYaml(fileName, raw, schema).pipe(
-      Effect.mapError((error) => new ArchitectureConfigError({ file: fileName, reason: String(error) }))
-    )
+    return yield* decodeArchitectureYaml(fileName, raw, schema)
   })
 
 const loadDiagramDefinitions = (fileStore: FileStoreService) => Effect.gen(function* () {
@@ -59,8 +57,7 @@ const loadDiagramDefinitions = (fileStore: FileStoreService) => Effect.gen(funct
   const diagrams = yield* Effect.forEach(diagramFiles, (fileName) =>
     fileStore.readText(path.join(diagramsDirectory, fileName)).pipe(
       Effect.mapError((error) => new ArchitectureConfigError({ file: `diagrams/${fileName}`, reason: String(error) })),
-      Effect.flatMap((raw) => decodeYaml(`diagrams/${fileName}`, raw, ArchitectureDiagramDefinitionSchema)),
-      Effect.mapError((error) => new ArchitectureConfigError({ file: `diagrams/${fileName}`, reason: String(error) }))
+      Effect.flatMap((raw) => decodeArchitectureYaml(`diagrams/${fileName}`, raw, ArchitectureDiagramDefinitionSchema))
     )
   )
 
@@ -68,7 +65,7 @@ const loadDiagramDefinitions = (fileStore: FileStoreService) => Effect.gen(funct
 })
 
 const validateReferences = (config: ArchitectureConfig) => {
-  const groupIds = new Set(config.groups.map((group) => group.id))
+  const groupIds = new Set(config.groups.map((group) => String(group.id)))
 
   for (const module of config.modules) {
     if (!groupIds.has(module.group)) {
@@ -99,27 +96,29 @@ const validateReferences = (config: ArchitectureConfig) => {
 export class ArchitectureConfigRepository extends Effect.Service<ArchitectureConfigRepository>()("ArchitectureConfigRepository", {
   effect: Effect.gen(function* () {
     const fileStore = yield* FileStore
+    const cachedLoad = yield* Effect.cached(
+      Effect.gen(function* () {
+        const groupsFile = yield* loadConfigFile(fileStore, "groups.yml", GroupsFileSchema)
+        const modulesFile = yield* loadConfigFile(fileStore, "modules.yml", ModulesFileSchema)
+        const topology = yield* loadConfigFile(fileStore, "topology.yml", TopologyConfigSchema)
+        const diagrams = yield* loadDiagramDefinitions(fileStore)
+        const groups = yield* dedupeById(groupsFile.groups, "groups.yml")
+        const modules = yield* dedupeById(modulesFile.modules, "modules.yml")
+
+        return yield* validateReferences({
+          groups,
+          modules,
+          topology,
+          diagrams
+        }).pipe(
+          Effect.withLogSpan("architecture.config.load"),
+          Effect.annotateLogs({ component: "architecture-config" })
+        )
+      })
+    )
 
     return {
-      load: () =>
-        Effect.gen(function* () {
-          const groupsFile = yield* loadConfigFile(fileStore, "groups.yml", GroupsFileSchema)
-          const modulesFile = yield* loadConfigFile(fileStore, "modules.yml", ModulesFileSchema)
-          const topology = yield* loadConfigFile(fileStore, "topology.yml", TopologyConfigSchema)
-          const diagrams = yield* loadDiagramDefinitions(fileStore)
-          const groups = yield* dedupeById(groupsFile.groups, "groups.yml")
-          const modules = yield* dedupeById(modulesFile.modules, "modules.yml")
-
-          return yield* validateReferences({
-            groups,
-            modules,
-            topology,
-            diagrams
-          }).pipe(
-            Effect.withLogSpan("architecture.config.load"),
-            Effect.annotateLogs({ component: "architecture-config" })
-          )
-        })
+      load: () => cachedLoad
     }
   }),
   dependencies: [WorkspaceLive],

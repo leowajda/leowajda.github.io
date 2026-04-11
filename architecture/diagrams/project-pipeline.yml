@@ -1,6 +1,17 @@
 id: project-pipeline
 title: Eureka Pipeline
 direction: LR
+mermaid:
+  nodeSpacing: 96
+  rankSpacing: 132
+  diagramPadding: 28
+  wrappingWidth: 220
+  curve: basis
+  fontSize: 21
+render:
+  noteWidth: 272
+  noteGap: 80
+  legendColumns: 3
 selectors:
   - projects: [eureka]
   - roles: [programs, site-input, site-bundle, generated-site, rendered-site]

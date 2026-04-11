@@ -1,10 +1,24 @@
 import { Schema } from "effect"
 
+const GroupIdSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.pattern(/^[a-z][a-z0-9_]*$/),
+  Schema.brand("GroupId")
+)
+
+const DiagramIdSchema = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.pattern(/^[a-z][a-z0-9-]*$/),
+  Schema.brand("DiagramId")
+)
+
 export const ArchitectureOriginSchema = Schema.Literal("discovered", "declared", "project")
 export const ArchitectureEdgeKindSchema = Schema.Literal("flow", "dependency", "annotation")
 export const DiagramDirectionSchema = Schema.Literal("LR", "TB")
 export const DiagramPlacementSchema = Schema.Literal("top", "right", "bottom", "left")
 export const NodeShapeSchema = Schema.Literal("rectangle", "rounded", "diamond", "stadium")
+export const MermaidCurveSchema = Schema.String
+export const MermaidRendererSchema = Schema.Literal("dagre", "elk")
 
 export const PaletteSchema = Schema.Struct({
   stroke: Schema.String,
@@ -13,7 +27,7 @@ export const PaletteSchema = Schema.Struct({
 })
 
 export const ArchitectureGroupDefinitionSchema = Schema.Struct({
-  id: Schema.String,
+  id: GroupIdSchema,
   title: Schema.String,
   palette: PaletteSchema,
   defaultShape: NodeShapeSchema
@@ -70,12 +84,24 @@ export const TopologyConfigSchema = Schema.Struct({
 
 export const DiagramSelectorSchema = Schema.Struct({
   ids: Schema.optional(Schema.Array(Schema.String)),
-  groups: Schema.optional(Schema.Array(Schema.String)),
+  groups: Schema.optional(Schema.Array(GroupIdSchema)),
   roles: Schema.optional(Schema.Array(Schema.String)),
   tags: Schema.optional(Schema.Array(Schema.String)),
   projects: Schema.optional(Schema.Array(Schema.String)),
   origins: Schema.optional(Schema.Array(ArchitectureOriginSchema))
-})
+}).pipe(
+  Schema.filter((selector) =>
+    Boolean(
+      selector.ids?.length ||
+      selector.groups?.length ||
+      selector.roles?.length ||
+      selector.tags?.length ||
+      selector.projects?.length ||
+      selector.origins?.length
+    ) ||
+    "Diagram selector must specify at least one criterion"
+  )
+)
 
 export const DiagramAnnotationDefinitionSchema = Schema.Struct({
   id: Schema.String,
@@ -85,12 +111,30 @@ export const DiagramAnnotationDefinitionSchema = Schema.Struct({
   tone: Schema.String
 })
 
+export const DiagramMermaidLayoutSchema = Schema.Struct({
+  nodeSpacing: Schema.optional(Schema.Number),
+  rankSpacing: Schema.optional(Schema.Number),
+  diagramPadding: Schema.optional(Schema.Number),
+  wrappingWidth: Schema.optional(Schema.Number),
+  curve: Schema.optional(MermaidCurveSchema),
+  defaultRenderer: Schema.optional(MermaidRendererSchema),
+  fontSize: Schema.optional(Schema.Number)
+})
+
+export const DiagramRenderLayoutSchema = Schema.Struct({
+  noteWidth: Schema.Number,
+  noteGap: Schema.Number,
+  legendColumns: Schema.Number
+})
+
 export const ArchitectureDiagramDefinitionSchema = Schema.Struct({
-  id: Schema.String,
+  id: DiagramIdSchema,
   title: Schema.String,
   direction: DiagramDirectionSchema,
   selectors: Schema.Array(DiagramSelectorSchema),
-  annotations: Schema.Array(DiagramAnnotationDefinitionSchema)
+  annotations: Schema.Array(DiagramAnnotationDefinitionSchema),
+  mermaid: DiagramMermaidLayoutSchema,
+  render: DiagramRenderLayoutSchema
 })
 
 export const ArchitectureNodeStatsSchema = Schema.Struct({
@@ -133,11 +177,13 @@ export const CompiledDiagramAnnotationSchema = Schema.Struct({
 })
 
 export const ArchitectureDiagramSchema = Schema.Struct({
-  id: Schema.String,
+  id: DiagramIdSchema,
   title: Schema.String,
   direction: DiagramDirectionSchema,
   nodeIds: Schema.Array(Schema.String),
-  annotations: Schema.Array(CompiledDiagramAnnotationSchema)
+  annotations: Schema.Array(CompiledDiagramAnnotationSchema),
+  mermaid: DiagramMermaidLayoutSchema,
+  render: DiagramRenderLayoutSchema
 })
 
 export const RenderGroupThemeSchema = Schema.Struct({
@@ -156,9 +202,11 @@ export const DiagramRenderSpecSchema = Schema.Struct({
   id: Schema.String,
   title: Schema.String,
   mermaid: Schema.String,
+  renderMermaid: DiagramMermaidLayoutSchema,
   groups: Schema.Array(RenderGroupThemeSchema),
   nodes: Schema.Array(RenderNodeSchema),
-  annotations: Schema.Array(CompiledDiagramAnnotationSchema)
+  annotations: Schema.Array(CompiledDiagramAnnotationSchema),
+  render: DiagramRenderLayoutSchema
 })
 
 export const DiagramRenderResultSchema = Schema.Struct({
@@ -179,6 +227,8 @@ export type DiagramDirection = Schema.Schema.Type<typeof DiagramDirectionSchema>
 export type DiagramPlacement = Schema.Schema.Type<typeof DiagramPlacementSchema>
 export type NodeShape = Schema.Schema.Type<typeof NodeShapeSchema>
 export type Palette = Schema.Schema.Type<typeof PaletteSchema>
+export type MermaidCurve = Schema.Schema.Type<typeof MermaidCurveSchema>
+export type MermaidRenderer = Schema.Schema.Type<typeof MermaidRendererSchema>
 export type ArchitectureGroupDefinition = Schema.Schema.Type<typeof ArchitectureGroupDefinitionSchema>
 export type ModulePathMatchRule = Schema.Schema.Type<typeof ModulePathMatchRuleSchema>
 export type ArchitectureModuleDefinition = Schema.Schema.Type<typeof ArchitectureModuleDefinitionSchema>
@@ -187,6 +237,8 @@ export type TopologyEdgeDefinition = Schema.Schema.Type<typeof TopologyEdgeDefin
 export type TopologyConfig = Schema.Schema.Type<typeof TopologyConfigSchema>
 export type DiagramSelector = Schema.Schema.Type<typeof DiagramSelectorSchema>
 export type DiagramAnnotationDefinition = Schema.Schema.Type<typeof DiagramAnnotationDefinitionSchema>
+export type DiagramMermaidLayout = Schema.Schema.Type<typeof DiagramMermaidLayoutSchema>
+export type DiagramRenderLayout = Schema.Schema.Type<typeof DiagramRenderLayoutSchema>
 export type ArchitectureDiagramDefinition = Schema.Schema.Type<typeof ArchitectureDiagramDefinitionSchema>
 export type ArchitectureNodeStats = Schema.Schema.Type<typeof ArchitectureNodeStatsSchema>
 export type ArchitectureNode = Schema.Schema.Type<typeof ArchitectureNodeSchema>

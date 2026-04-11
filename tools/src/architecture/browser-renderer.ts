@@ -5,7 +5,7 @@ import {
 } from "@excalidraw/excalidraw"
 import { parseMermaidToExcalidraw } from "@excalidraw/mermaid-to-excalidraw"
 import { diagramElementId } from "./mermaid.js"
-import type { DiagramPlacement, DiagramRenderResult, DiagramRenderSpec, RenderGroupTheme } from "./schema.js"
+import type { DiagramPlacement, DiagramRenderLayout, DiagramRenderResult, DiagramRenderSpec, RenderGroupTheme } from "./schema.js"
 
 type BinaryFiles = Record<string, unknown>
 
@@ -31,13 +31,6 @@ declare global {
   interface Window {
     __renderArchitectureDiagram?: (payload: DiagramRenderSpec) => Promise<DiagramRenderResult>
   }
-}
-
-const noteOffsetByPlacement: Readonly<Record<DiagramPlacement, { readonly x: number; readonly y: number }>> = {
-  top: { x: 0, y: -150 },
-  right: { x: 180, y: 0 },
-  bottom: { x: 0, y: 150 },
-  left: { x: -180, y: 0 }
 }
 
 const isRenderableShape = (element: SceneElement) =>
@@ -78,6 +71,94 @@ const edgePointTowards = (
   }
 }
 
+const countTextLines = (text: string) => text.split("\n").length
+const longestLineLength = (text: string) => Math.max(...text.split("\n").map((line) => line.length))
+
+const buildNoteRect = (
+  target: Pick<SceneElement, "x" | "y" | "width" | "height">,
+  placement: DiagramPlacement,
+  noteWidth: number,
+  noteHeight: number,
+  gap: number
+) => {
+  const targetWidth = target.width ?? 0
+  const targetHeight = target.height ?? 0
+  const targetCenter = centerOf(target)
+
+  switch (placement) {
+    case "top":
+      return {
+        x: targetCenter.x - noteWidth / 2,
+        y: target.y - gap - noteHeight
+      }
+    case "right":
+      return {
+        x: target.x + targetWidth + gap,
+        y: targetCenter.y - noteHeight / 2
+      }
+    case "bottom":
+      return {
+        x: targetCenter.x - noteWidth / 2,
+        y: target.y + targetHeight + gap
+      }
+    case "left":
+      return {
+        x: target.x - gap - noteWidth,
+        y: targetCenter.y - noteHeight / 2
+      }
+  }
+}
+
+const rectsOverlap = (
+  left: Pick<SceneElement, "x" | "y" | "width" | "height">,
+  right: Pick<SceneElement, "x" | "y" | "width" | "height">
+) =>
+  left.x < right.x + (right.width ?? 0) &&
+  left.x + (left.width ?? 0) > right.x &&
+  left.y < right.y + (right.height ?? 0) &&
+  left.y + (left.height ?? 0) > right.y
+
+const moveRect = (
+  rect: { readonly x: number; readonly y: number; readonly width: number; readonly height: number },
+  placement: DiagramPlacement,
+  step: number
+) => {
+  switch (placement) {
+    case "top":
+      return { ...rect, y: rect.y - step }
+    case "right":
+      return { ...rect, x: rect.x + step }
+    case "bottom":
+      return { ...rect, y: rect.y + step }
+    case "left":
+      return { ...rect, x: rect.x - step }
+  }
+}
+
+const resolveAnnotationRect = (
+  target: Pick<SceneElement, "x" | "y" | "width" | "height">,
+  placement: DiagramPlacement,
+  noteWidth: number,
+  noteHeight: number,
+  gap: number,
+  occupiedRects: ReadonlyArray<Pick<SceneElement, "x" | "y" | "width" | "height">>
+) => {
+  let rect = {
+    ...buildNoteRect(target, placement, noteWidth, noteHeight, gap),
+    width: noteWidth,
+    height: noteHeight
+  }
+
+  for (let attempt = 0; attempt < 12; attempt += 1) {
+    if (!occupiedRects.some((entry) => rectsOverlap(rect, entry))) {
+      return rect
+    }
+    rect = moveRect(rect, placement, gap)
+  }
+
+  return rect
+}
+
 const resolveNodeShape = (elements: ReadonlyArray<SceneElement>, nodeId: string, label: string): SceneElement | undefined => {
   const targetId = diagramElementId(nodeId)
   const directMatch = elements.find((element) => element.id === targetId && isRenderableShape(element))
@@ -91,16 +172,24 @@ const resolveNodeShape = (elements: ReadonlyArray<SceneElement>, nodeId: string,
     : undefined
 }
 
-const buildLegendSkeletons = (originX: number, originY: number, groups: ReadonlyArray<RenderGroupTheme>) =>
+const buildLegendSkeletons = (
+  originX: number,
+  originY: number,
+  groups: ReadonlyArray<RenderGroupTheme>,
+  legendColumns: number
+) =>
   groups.flatMap((group, index) => {
-    const x = originX + index * 200
+    const column = index % legendColumns
+    const row = Math.floor(index / legendColumns)
+    const x = originX + column * 200
+    const y = originY + row * 68
     const id = `legend-${group.id}`
     return [
       {
         id,
         type: "rectangle",
         x,
-        y: originY,
+        y,
         width: 180,
         height: 52,
         strokeColor: group.palette.stroke,
@@ -118,33 +207,40 @@ const buildLegendSkeletons = (originX: number, originY: number, groups: Readonly
   })
 
 const buildAnnotationSkeletons = (payload: DiagramRenderSpec, elements: ReadonlyArray<SceneElement>) =>
-  payload.annotations.flatMap((annotation) => {
+  payload.annotations.reduce<Array<any>>((acc, annotation) => {
+    const renderLayout = payload.render
     const node = payload.nodes.find((entry) => entry.id === annotation.target)
     const target = node ? resolveNodeShape(elements, node.id, node.label) : undefined
     const group = payload.groups.find((entry) => entry.id === annotation.tone)
     if (!target || !group || target.width === undefined || target.height === undefined) {
-      return []
+      return acc
     }
 
-    const offset = noteOffsetByPlacement[annotation.placement]
-    const targetCenterX = target.x + target.width / 2
-    const targetCenterY = target.y + target.height / 2
-    const noteWidth = 220
-    const noteHeight = 96
-    const noteX = targetCenterX - noteWidth / 2 + offset.x
-    const noteY = targetCenterY - noteHeight / 2 + offset.y
+    const noteWidth = Math.max(renderLayout.noteWidth, longestLineLength(annotation.text) * 9.2 + 44)
+    const noteHeight = Math.max(100, countTextLines(annotation.text) * 22 + 34)
+    const occupiedRects = [
+      ...elements.filter(isRenderableShape).map((element) => ({
+        x: element.x,
+        y: element.y,
+        width: element.width ?? 0,
+        height: element.height ?? 0
+      })),
+      ...acc
+        .filter((entry) => entry.type === "rectangle")
+        .map((entry) => ({ x: entry.x, y: entry.y, width: entry.width ?? 0, height: entry.height ?? 0 }))
+    ]
+    const noteRect = resolveAnnotationRect(target, annotation.placement, noteWidth, noteHeight, renderLayout.noteGap, occupiedRects)
     const noteId = annotation.id
-    const noteRect = { x: noteX, y: noteY, width: noteWidth, height: noteHeight }
     const targetRect = { x: target.x, y: target.y, width: target.width, height: target.height }
     const arrowStart = edgePointTowards(noteRect, centerOf(targetRect))
     const arrowEnd = edgePointTowards(targetRect, centerOf(noteRect))
 
-    return [
+    acc.push(
       {
         id: noteId,
         type: "rectangle",
-        x: noteX,
-        y: noteY,
+        x: noteRect.x,
+        y: noteRect.y,
         width: noteWidth,
         height: noteHeight,
         strokeColor: group.palette.stroke,
@@ -174,8 +270,10 @@ const buildAnnotationSkeletons = (payload: DiagramRenderSpec, elements: Readonly
         ],
         endArrowhead: "triangle"
       }
-    ]
-  })
+    )
+
+    return acc
+  }, [])
 
 const decorateElements = (
   elements: ReadonlyArray<SceneElement>,
@@ -236,22 +334,32 @@ const decorateElements = (
 }
 
 window.__renderArchitectureDiagram = async (payload) => {
-  const { elements, files } = await parseMermaidToExcalidraw(payload.mermaid)
+  const { elements, files } = await parseMermaidToExcalidraw(payload.mermaid, {
+    flowchart: {
+      curve: payload.renderMermaid?.curve === "basis" ? "basis" : "linear"
+    },
+    themeVariables: payload.renderMermaid?.fontSize
+      ? { fontSize: `${payload.renderMermaid.fontSize}px` }
+      : undefined
+  })
   const phaseOneElements = convertToExcalidrawElements(elements, { regenerateIds: false }) as ReadonlyArray<SceneElement>
   const minX = minBy(phaseOneElements.map((element) => element.x))
   const minY = minBy(phaseOneElements.map((element) => element.y))
+  const renderLayout = payload.render
+  const legendRows = Math.max(1, Math.ceil(payload.groups.length / renderLayout.legendColumns))
+  const legendOriginY = minY - 96 - legendRows * 68
 
   const decorations = [
     {
       id: `${payload.id}-title`,
       type: "text",
       x: minX,
-      y: minY - 140,
+      y: legendOriginY - 64,
       text: payload.title,
       fontSize: 34,
       strokeColor: "#111827"
     },
-    ...buildLegendSkeletons(minX, minY - 80, payload.groups),
+    ...buildLegendSkeletons(minX, legendOriginY, payload.groups, renderLayout.legendColumns),
     ...buildAnnotationSkeletons(payload, phaseOneElements)
   ]
 

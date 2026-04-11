@@ -5,7 +5,7 @@ groups:
       stroke: "#c2410c"
       fill: "#ffedd5"
       text: "#9a3412"
-    defaultShape: diamond
+    defaultShape: rounded
   - id: project_manifests
     title: Project Manifests
     palette:

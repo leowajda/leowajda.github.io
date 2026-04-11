@@ -1,10 +1,10 @@
 import { Effect, Schema } from "effect"
 import { ArchitectureGraphError } from "../core/errors.js"
 import type { ProjectManifest } from "../projects/schema.js"
-import { ArchitectureConfigRepository } from "./config.js"
-import { ArchitectureDiscovery, ProjectManifestRepository, type DiscoveredFile } from "./discovery.js"
+import type { DiscoveredFile, DiscoveredFacts } from "./discovery.js"
 import {
   ArchitectureGraphSchema,
+  type ArchitectureConfig,
   type ArchitectureEdge,
   type ArchitectureGraph,
   type ArchitectureModuleDefinition,
@@ -13,9 +13,7 @@ import {
   type TopologyEdgeDefinition,
   type TopologyNodeDefinition
 } from "./schema.js"
-
-const dedupeBy = <A>(values: ReadonlyArray<A>, keyOf: (value: A) => string): ReadonlyArray<A> =>
-  Array.from(new Map(values.map((value) => [keyOf(value), value])).values())
+import { dedupeBy, interpolate } from "./utils.js"
 
 type ProjectVariables = {
   readonly slug: string
@@ -34,9 +32,6 @@ const projectVariables = (manifest: ProjectManifest): ProjectVariables => ({
   route_base: manifest.route_base,
   source_repo_path: manifest.source_repo_path
 })
-
-const interpolate = (template: string, variables: Record<string, string>) =>
-  template.replace(/\$\{([^}]+)\}/g, (_, key: string) => variables[key] ?? "")
 
 const matchesRule = (rule: ModulePathMatchRule, relativePath: string) => {
   switch (rule.kind) {
@@ -178,47 +173,31 @@ const buildDiscoveredEdges = (
     (edge) => `${edge.from}:${edge.to}:${edge.label}:${edge.kind}`
   )
 
-export class ArchitectureGraphBuilder extends Effect.Service<ArchitectureGraphBuilder>()("ArchitectureGraphBuilder", {
-  effect: Effect.gen(function* () {
-    const configRepository = yield* ArchitectureConfigRepository
-    const manifestRepository = yield* ProjectManifestRepository
-    const discovery = yield* ArchitectureDiscovery
+export const buildArchitectureGraph = (
+  config: ArchitectureConfig,
+  manifests: ReadonlyArray<ProjectManifest>,
+  facts: DiscoveredFacts
+): Effect.Effect<ArchitectureGraph, ArchitectureGraphError> =>
+  Effect.gen(function* () {
+    const projectManifestVariables = manifests.map(projectVariables)
+    const nodes = dedupeBy([
+      ...buildDiscoveredNodes(facts.files, projectManifestVariables, config.modules),
+      ...config.topology.nodes.map(toDeclaredNode),
+      ...projectManifestVariables.flatMap((manifest) => config.topology.projectNodes.map((definition) => toProjectNode(definition, manifest)))
+    ], (node) => node.id)
+    const edges = dedupeBy([
+      ...config.topology.edges.map(toDeclaredEdge),
+      ...projectManifestVariables.flatMap((manifest) => config.topology.projectEdges.map((definition) => toProjectEdge(definition, manifest))),
+      ...buildDiscoveredEdges(facts.imports, projectManifestVariables, config.modules)
+    ], (edge) => `${edge.from}:${edge.to}:${edge.label}:${edge.kind}:${edge.origin}:${edge.project ?? ""}`)
 
-    return {
-      build: () =>
-        Effect.gen(function* () {
-          const config = yield* configRepository.load().pipe(
-            Effect.mapError((error) => new ArchitectureGraphError({ reason: String(error) }))
-          )
-          const manifests = (yield* manifestRepository.loadAll().pipe(
-            Effect.mapError((error) => new ArchitectureGraphError({ reason: String(error) }))
-          )).map(projectVariables)
-          const facts = yield* discovery.discover().pipe(
-            Effect.mapError((error) => new ArchitectureGraphError({ reason: String(error) }))
-          )
-          const nodes = dedupeBy([
-            ...buildDiscoveredNodes(facts.files, manifests, config.modules),
-            ...config.topology.nodes.map(toDeclaredNode),
-            ...manifests.flatMap((manifest) => config.topology.projectNodes.map((definition) => toProjectNode(definition, manifest)))
-          ], (node) => node.id)
-          const edges = dedupeBy([
-            ...config.topology.edges.map(toDeclaredEdge),
-            ...manifests.flatMap((manifest) => config.topology.projectEdges.map((definition) => toProjectEdge(definition, manifest))),
-            ...buildDiscoveredEdges(facts.imports, manifests, config.modules)
-          ], (edge) => `${edge.from}:${edge.to}:${edge.label}:${edge.kind}:${edge.origin}:${edge.project ?? ""}`)
-
-          if (!nodes.length) {
-            return yield* Effect.fail(new ArchitectureGraphError({ reason: "No architecture nodes were built" }))
-          }
-
-          return yield* Schema.decodeUnknown(ArchitectureGraphSchema)({ nodes, edges }).pipe(
-            Effect.mapError((error) => new ArchitectureGraphError({ reason: String(error) })),
-            Effect.withLogSpan("architecture.graph.build"),
-            Effect.annotateLogs({ component: "architecture-graph" })
-          )
-        })
+    if (!nodes.length) {
+      return yield* Effect.fail(new ArchitectureGraphError({ reason: "No architecture nodes were built" }))
     }
-  }),
-  dependencies: [ArchitectureConfigRepository.Default, ProjectManifestRepository.Default, ArchitectureDiscovery.Default],
-  accessors: true
-}) {}
+
+    return yield* Schema.decodeUnknown(ArchitectureGraphSchema)({ nodes, edges }).pipe(
+      Effect.mapError((error) => new ArchitectureGraphError({ reason: String(error) })),
+      Effect.withLogSpan("architecture.graph.build"),
+      Effect.annotateLogs({ component: "architecture-graph" })
+    )
+  })

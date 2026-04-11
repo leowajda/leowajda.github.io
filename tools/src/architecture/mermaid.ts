@@ -35,7 +35,25 @@ export const renderArchitectureMermaid = (
   const nodes = graph.nodes.filter((node) => includedNodeIds.has(node.id))
   const edges = graph.edges.filter((edge) => includedNodeIds.has(edge.from) && includedNodeIds.has(edge.to) && edge.kind === "flow")
   const groupMap = new Map(groups.map((group) => [group.id, group]))
-  const lines = [`flowchart ${diagram.direction}`]
+  const layoutConfig = {
+    flowchart: {
+      nodeSpacing: diagram.mermaid?.nodeSpacing,
+      rankSpacing: diagram.mermaid?.rankSpacing,
+      diagramPadding: diagram.mermaid?.diagramPadding,
+      wrappingWidth: diagram.mermaid?.wrappingWidth,
+      curve: diagram.mermaid?.curve,
+      defaultRenderer: diagram.mermaid?.defaultRenderer
+    }
+  }
+  const normalizedFlowchartConfig = Object.fromEntries(
+    Object.entries(layoutConfig.flowchart).filter(([, value]) => value !== undefined)
+  )
+  const lines = [
+    ...(Object.keys(normalizedFlowchartConfig).length
+      ? [`%%{init: ${JSON.stringify({ flowchart: normalizedFlowchartConfig })}}%%`]
+      : []),
+    `flowchart ${diagram.direction}`
+  ]
 
   for (const node of nodes) {
     lines.push(`  ${diagramElementId(node.id)}${shapeForNode(node, groupMap)}`)

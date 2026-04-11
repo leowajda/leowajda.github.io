@@ -12,7 +12,8 @@ import {
   DiagramRenderSpecSchema,
   type ArchitectureDiagram,
   type ArchitectureGraph,
-  type DiagramRenderResult
+  type DiagramRenderResult,
+  type DiagramRenderSpec
 } from "./schema.js"
 
 const bundleRenderer = Effect.tryPromise({
@@ -79,10 +80,12 @@ export class DiagramRenderer extends Effect.Service<DiagramRenderer>()("DiagramR
             id: diagram.id,
             title: diagram.title,
             mermaid,
+            renderMermaid: diagram.mermaid,
             groups,
             nodes: nodes.map((node) => ({ id: node.id, label: node.label, group: node.group })),
-            annotations: diagram.annotations
-          }).pipe(
+            annotations: diagram.annotations,
+            render: diagram.render
+          } satisfies DiagramRenderSpec).pipe(
             Effect.mapError((error) => new DiagramRenderError({ diagram: diagram.id, reason: String(error) }))
           )
 

@@ -1,8 +1,8 @@
 import { Effect, Schema } from "effect"
 import { ArchitectureCompileError } from "../core/errors.js"
-import { ArchitectureConfigRepository } from "./config.js"
 import {
   ArchitectureDiagramSchema,
+  type ArchitectureConfig,
   type ArchitectureDiagram,
   type ArchitectureGraph,
   type DiagramSelector
@@ -13,7 +13,7 @@ const matchesSelector = (
   node: ArchitectureGraph["nodes"][number]
 ) => {
   const matchesIds = !selector.ids?.length || selector.ids.includes(node.id)
-  const matchesGroups = !selector.groups?.length || selector.groups.includes(node.group)
+  const matchesGroups = !selector.groups?.length || selector.groups.map(String).includes(node.group)
   const matchesRoles = !selector.roles?.length || (node.role ? selector.roles.includes(node.role) : false)
   const matchesTags = !selector.tags?.length || selector.tags.some((tag) => node.tags.includes(tag))
   const matchesProjects = !selector.projects?.length || (node.project ? selector.projects.includes(node.project) : false)
@@ -43,54 +43,44 @@ const resolveAnnotationTarget = (diagramId: string, graph: ArchitectureGraph, se
   return Effect.succeed(matches[0].id)
 }
 
-export class ArchitectureDiagramCompiler extends Effect.Service<ArchitectureDiagramCompiler>()("ArchitectureDiagramCompiler", {
-  effect: Effect.gen(function* () {
-    const configRepository = yield* ArchitectureConfigRepository
-    return {
-      compile: (graph: ArchitectureGraph) =>
+export const compileArchitectureDiagrams = (
+  config: ArchitectureConfig,
+  graph: ArchitectureGraph
+): Effect.Effect<ReadonlyArray<ArchitectureDiagram>, ArchitectureCompileError> =>
+  Effect.forEach(config.diagrams, (diagramDefinition) =>
+    Effect.gen(function* () {
+      const nodeIds = selectNodeIds(graph, diagramDefinition.selectors)
+      const annotations = yield* Effect.forEach(diagramDefinition.annotations, (annotation) =>
         Effect.gen(function* () {
-          const config = yield* configRepository.load().pipe(
-            Effect.mapError((error) => new ArchitectureCompileError({ diagram: "config", reason: String(error) }))
-          )
-
-          return yield* Effect.forEach(config.diagrams, (diagramDefinition) =>
-            Effect.gen(function* () {
-              const nodeIds = selectNodeIds(graph, diagramDefinition.selectors)
-              const annotations = yield* Effect.forEach(diagramDefinition.annotations, (annotation) =>
-                Effect.gen(function* () {
-                  const target = yield* resolveAnnotationTarget(diagramDefinition.id, graph, annotation.target)
-                  return {
-                    id: annotation.id,
-                    target,
-                    text: annotation.text,
-                    placement: annotation.placement,
-                    tone: annotation.tone
-                  }
-                })
-              ).pipe(
-                Effect.mapError((error) =>
-                  error instanceof ArchitectureCompileError
-                    ? error
-                    : new ArchitectureCompileError({ diagram: diagramDefinition.id, reason: String(error) })
-                )
-              )
-
-              return yield* Schema.decodeUnknown(ArchitectureDiagramSchema)({
-                id: diagramDefinition.id,
-                title: diagramDefinition.title,
-                direction: diagramDefinition.direction,
-                nodeIds,
-                annotations
-              }).pipe(
-                Effect.mapError((error) => new ArchitectureCompileError({ diagram: diagramDefinition.id, reason: String(error) })),
-                Effect.withLogSpan("architecture.diagram.compile"),
-                Effect.annotateLogs({ component: "architecture-compile", diagram: diagramDefinition.id })
-              )
-            })
-          )
+          const target = yield* resolveAnnotationTarget(diagramDefinition.id, graph, annotation.target)
+          return {
+            id: annotation.id,
+            target,
+            text: annotation.text,
+            placement: annotation.placement,
+            tone: annotation.tone
+          }
         })
-    }
-  }),
-  dependencies: [ArchitectureConfigRepository.Default],
-  accessors: true
-}) {}
+      ).pipe(
+        Effect.mapError((error) =>
+          error instanceof ArchitectureCompileError
+            ? error
+            : new ArchitectureCompileError({ diagram: diagramDefinition.id, reason: String(error) })
+        )
+      )
+
+      return yield* Schema.decodeUnknown(ArchitectureDiagramSchema)({
+        id: diagramDefinition.id,
+        title: diagramDefinition.title,
+        direction: diagramDefinition.direction,
+        nodeIds,
+        annotations,
+        mermaid: diagramDefinition.mermaid,
+        render: diagramDefinition.render
+      }).pipe(
+        Effect.mapError((error) => new ArchitectureCompileError({ diagram: diagramDefinition.id, reason: String(error) })),
+        Effect.withLogSpan("architecture.diagram.compile"),
+        Effect.annotateLogs({ component: "architecture-compile", diagram: diagramDefinition.id })
+      )
+    })
+  )
