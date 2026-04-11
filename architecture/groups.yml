@@ -1,0 +1,43 @@
+groups:
+  - id: source_repos
+    title: Source Repos
+    palette:
+      stroke: "#c2410c"
+      fill: "#ffedd5"
+      text: "#9a3412"
+    defaultShape: diamond
+  - id: project_manifests
+    title: Project Manifests
+    palette:
+      stroke: "#a16207"
+      fill: "#fef3c7"
+      text: "#854d0e"
+    defaultShape: stadium
+  - id: tools
+    title: Tools
+    palette:
+      stroke: "#2563eb"
+      fill: "#dbeafe"
+      text: "#1d4ed8"
+    defaultShape: rectangle
+  - id: packages
+    title: Packages
+    palette:
+      stroke: "#7c3aed"
+      fill: "#ede9fe"
+      text: "#6d28d9"
+    defaultShape: rectangle
+  - id: site
+    title: Site
+    palette:
+      stroke: "#059669"
+      fill: "#d1fae5"
+      text: "#047857"
+    defaultShape: rounded
+  - id: other
+    title: Other
+    palette:
+      stroke: "#64748b"
+      fill: "#e2e8f0"
+      text: "#334155"
+    defaultShape: rectangle

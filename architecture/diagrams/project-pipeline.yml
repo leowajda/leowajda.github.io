@@ -1,0 +1,23 @@
+id: project-pipeline
+title: Eureka Pipeline
+direction: LR
+selectors:
+  - projects: [eureka]
+  - roles: [programs, site-input, site-bundle, generated-site, rendered-site]
+annotations:
+  - id: pipeline-source
+    target:
+      projects: [eureka]
+      roles: [source-repo]
+    text: Source repo merged by upstream automation
+    placement: top
+    tone: source_repos
+  - id: pipeline-adapter
+    target:
+      projects: [eureka]
+      roles: [project-adapter]
+    text: |-
+      Effect schemas decode YAML
+      and project build emits site artifacts
+    placement: bottom
+    tone: tools

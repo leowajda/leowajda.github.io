@@ -1,0 +1,97 @@
+modules:
+  - id: cli
+    label: CLI
+    group: tools
+    detail: command entrypoint
+    role: cli
+    tags: [entrypoint]
+    match:
+      - kind: exact
+        value: tools/src/main.ts
+  - id: tools-core
+    label: tools/core
+    group: tools
+    detail: effects, io, paths, preview server
+    role: core
+    tags: [tooling]
+    match:
+      - kind: prefix
+        value: tools/src/core/
+  - id: tools-architecture
+    label: tools/architecture
+    group: tools
+    detail: config, discovery, graph, diagrams, rendering
+    role: architecture
+    tags: [tooling, architecture]
+    match:
+      - kind: prefix
+        value: tools/src/architecture/
+  - id: tools-programs
+    label: tools/programs
+    group: tools
+    detail: generate, preview, docs, sync
+    role: programs
+    tags: [tooling, orchestration]
+    match:
+      - kind: prefix
+        value: tools/src/programs/
+  - id: tools-projects
+    label: tools/projects
+    group: tools
+    detail: shared project contracts + registry
+    role: project-registry
+    tags: [tooling, project]
+    match:
+      - kind: prefix
+        value: tools/src/projects/catalog.ts
+      - kind: prefix
+        value: tools/src/projects/project.ts
+      - kind: prefix
+        value: tools/src/projects/registry.ts
+      - kind: prefix
+        value: tools/src/projects/schema.ts
+      - kind: prefix
+        value: tools/src/projects/types.ts
+  - id: project-${slug}
+    label: project:${slug}
+    group: tools
+    detail: ${kind} adapter + model
+    role: project-adapter
+    tags: [tooling, project, adapter]
+    match:
+      - kind: project_prefix
+        value: tools/src/projects/
+  - id: package-ui
+    label: packages/ui
+    group: packages
+    detail: browser controllers + icons
+    role: site-bundle
+    tags: [site, bundle]
+    match:
+      - kind: prefix
+        value: packages/ui/
+  - id: package-theme
+    label: packages/theme
+    group: packages
+    detail: shared layouts, includes, sass
+    role: site-input
+    tags: [site, theme]
+    match:
+      - kind: prefix
+        value: packages/theme/
+  - id: site-src
+    label: site-src
+    group: site
+    detail: repo-authored site content
+    role: site-input
+    tags: [site, content]
+    match:
+      - kind: prefix
+        value: site-src/
+  - id: other
+    label: other
+    group: other
+    detail: unclassified tracked files
+    role: other
+    tags: [unclassified]
+    match: []

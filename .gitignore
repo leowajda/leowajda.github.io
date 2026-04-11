@@ -8,5 +8,8 @@ vendor/bundle/
 
 site/
 _site/
+docs/generated/*.excalidraw.json
+docs/generated/*.mmd
+docs/generated/architecture.json
 
 .DS_Store

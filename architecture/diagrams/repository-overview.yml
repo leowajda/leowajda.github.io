@@ -1,0 +1,22 @@
+id: repository-overview
+title: Repository Overview
+direction: LR
+selectors: []
+annotations:
+  - id: overview-source
+    target:
+      projects: [eureka]
+      roles: [source-repo]
+    text: |-
+      Upstream source of truth:
+      languages + problems live here
+    placement: left
+    tone: source_repos
+  - id: overview-generated
+    target:
+      roles: [generated-site]
+    text: |-
+      Generated pages, data files,
+      and browser bundle land here
+    placement: bottom
+    tone: site

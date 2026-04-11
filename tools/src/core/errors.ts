@@ -36,6 +36,26 @@ export class AssetBuildError extends Data.TaggedError("AssetBuildError")<{
 }> {}
 
 export class ArchitectureDiscoveryError extends Data.TaggedError("ArchitectureDiscoveryError")<{
+  readonly phase: string
+  readonly reason: string
+}> {}
+
+export class ArchitectureConfigError extends Data.TaggedError("ArchitectureConfigError")<{
+  readonly file: string
+  readonly reason: string
+}> {}
+
+export class ProjectManifestError extends Data.TaggedError("ProjectManifestError")<{
+  readonly file: string
+  readonly reason: string
+}> {}
+
+export class ArchitectureGraphError extends Data.TaggedError("ArchitectureGraphError")<{
+  readonly reason: string
+}> {}
+
+export class ArchitectureCompileError extends Data.TaggedError("ArchitectureCompileError")<{
+  readonly diagram: string
   readonly reason: string
 }> {}
 
@@ -44,6 +64,7 @@ export class DiagramRenderError extends Data.TaggedError("DiagramRenderError")<{
   readonly reason: string
 }> {}
 
-export class ReadmeUpdateError extends Data.TaggedError("ReadmeUpdateError")<{
+export class ArchitectureArtifactWriteError extends Data.TaggedError("ArchitectureArtifactWriteError")<{
+  readonly target: string
   readonly reason: string
 }> {}

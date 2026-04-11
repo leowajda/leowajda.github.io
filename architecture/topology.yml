@@ -1,0 +1,88 @@
+nodes:
+  - id: generated-site
+    label: generated site
+    group: site
+    detail: site/
+    role: generated-site
+    tags: [site, generated]
+  - id: rendered-site
+    label: rendered site
+    group: site
+    detail: _site/
+    role: rendered-site
+    tags: [site, rendered]
+edges:
+  - from: cli
+    to: tools-programs
+    label: dispatches
+    kind: flow
+    tags: [cli]
+  - from: tools-programs
+    to: tools-core
+    label: uses
+    kind: flow
+    tags: [tooling]
+  - from: tools-programs
+    to: tools-architecture
+    label: refreshes docs with
+    kind: flow
+    tags: [docs]
+  - from: tools-programs
+    to: tools-projects
+    label: loads
+    kind: flow
+    tags: [project]
+  - from: package-theme
+    to: generated-site
+    label: copies into
+    kind: flow
+    tags: [site]
+  - from: site-src
+    to: generated-site
+    label: copies into
+    kind: flow
+    tags: [site]
+  - from: package-ui
+    to: generated-site
+    label: bundles into
+    kind: flow
+    tags: [site]
+  - from: generated-site
+    to: rendered-site
+    label: builds
+    kind: flow
+    tags: [site]
+projectNodes:
+  - id: manifest-${slug}
+    label: manifest:${slug}
+    group: project_manifests
+    detail: projects/${slug}.yml
+    role: manifest
+    tags: [project, manifest]
+  - id: source-${slug}
+    label: source:${slug}
+    group: source_repos
+    detail: ${source_repo_path}
+    role: source-repo
+    tags: [project, source]
+projectEdges:
+  - from: manifest-${slug}
+    to: source-${slug}
+    label: points to
+    kind: flow
+    tags: [project]
+  - from: manifest-${slug}
+    to: project-${slug}
+    label: configures
+    kind: flow
+    tags: [project]
+  - from: source-${slug}
+    to: project-${slug}
+    label: feeds
+    kind: flow
+    tags: [project]
+  - from: project-${slug}
+    to: generated-site
+    label: emits pages/data
+    kind: flow
+    tags: [project]

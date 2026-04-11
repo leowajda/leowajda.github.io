@@ -1,5 +1,5 @@
 # leowajda.github.io
 
-![Repository Overview](docs/generated/repository-overview.svg)
+![Eureka Pipeline](docs/generated/project-pipeline.svg)
 
-![Eureka Pipeline](docs/generated/eureka-pipeline.svg)
+![Repository Overview](docs/generated/repository-overview.svg)
