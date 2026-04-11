@@ -1,0 +1,26 @@
+flowchart LR
+  tools_architecture[tools/architecture]
+  tools_core[tools/core]
+  cli(CLI)
+  tools_programs[tools/programs]
+  tools_projects[tools/projects]
+  project_eureka[project:eureka]
+  package_ui[packages/ui]
+  package_theme[packages/theme]
+  site_src[site-src]
+  manifest_eureka[manifest:eureka]
+  source_eureka[source:eureka]
+  generated_site[generated site]
+  rendered_site[rendered site]
+  cli --> tools_programs
+  tools_programs --> tools_core
+  tools_programs --> tools_architecture
+  tools_programs --> tools_projects
+  package_theme --> generated_site
+  site_src --> generated_site
+  package_ui --> generated_site
+  generated_site --> rendered_site
+  manifest_eureka --> source_eureka
+  manifest_eureka --> project_eureka
+  source_eureka --> project_eureka
+  project_eureka --> generated_site

@@ -1,0 +1,144 @@
+{
+  "nodes": [
+    {
+      "id": "tools-architecture",
+      "label": "tools/architecture",
+      "group": "Tools",
+      "detail": "6 tracked files"
+    },
+    {
+      "id": "tools-core",
+      "label": "tools/core",
+      "group": "Tools",
+      "detail": "8 tracked files"
+    },
+    {
+      "id": "cli",
+      "label": "CLI",
+      "group": "Tools",
+      "detail": "1 tracked file"
+    },
+    {
+      "id": "tools-programs",
+      "label": "tools/programs",
+      "group": "Tools",
+      "detail": "4 tracked files"
+    },
+    {
+      "id": "tools-projects",
+      "label": "tools/projects",
+      "group": "Tools",
+      "detail": "5 tracked files"
+    },
+    {
+      "id": "project-eureka",
+      "label": "project:eureka",
+      "group": "Tools",
+      "detail": "4 tracked files"
+    },
+    {
+      "id": "package-ui",
+      "label": "packages/ui",
+      "group": "Packages",
+      "detail": "4 tracked files"
+    },
+    {
+      "id": "package-theme",
+      "label": "packages/theme",
+      "group": "Packages",
+      "detail": "13 tracked files"
+    },
+    {
+      "id": "site-src",
+      "label": "site-src",
+      "group": "Site",
+      "detail": "14 tracked files"
+    },
+    {
+      "id": "manifest-eureka",
+      "label": "manifest:eureka",
+      "group": "Project Manifests",
+      "detail": "projects/eureka.yml"
+    },
+    {
+      "id": "source-eureka",
+      "label": "source:eureka",
+      "group": "Source Repos",
+      "detail": "sources/eureka"
+    },
+    {
+      "id": "generated-site",
+      "label": "generated site",
+      "group": "Site",
+      "detail": "site/"
+    },
+    {
+      "id": "rendered-site",
+      "label": "rendered site",
+      "group": "Site",
+      "detail": "_site/"
+    }
+  ],
+  "edges": [
+    {
+      "from": "cli",
+      "to": "tools-programs",
+      "label": "dispatches"
+    },
+    {
+      "from": "tools-programs",
+      "to": "tools-core",
+      "label": "uses"
+    },
+    {
+      "from": "tools-programs",
+      "to": "tools-architecture",
+      "label": "refreshes docs with"
+    },
+    {
+      "from": "tools-programs",
+      "to": "tools-projects",
+      "label": "loads"
+    },
+    {
+      "from": "package-theme",
+      "to": "generated-site",
+      "label": "copies into"
+    },
+    {
+      "from": "site-src",
+      "to": "generated-site",
+      "label": "copies into"
+    },
+    {
+      "from": "package-ui",
+      "to": "generated-site",
+      "label": "bundles into"
+    },
+    {
+      "from": "generated-site",
+      "to": "rendered-site",
+      "label": "builds"
+    },
+    {
+      "from": "manifest-eureka",
+      "to": "source-eureka",
+      "label": "points to"
+    },
+    {
+      "from": "manifest-eureka",
+      "to": "project-eureka",
+      "label": "configures"
+    },
+    {
+      "from": "source-eureka",
+      "to": "project-eureka",
+      "label": "feeds"
+    },
+    {
+      "from": "project-eureka",
+      "to": "generated-site",
+      "label": "emits pages/data"
+    }
+  ]
+}

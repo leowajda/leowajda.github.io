@@ -5,6 +5,7 @@
 - Sync submodules only when needed: `pnpm sync:sources`
 
 ## Core Commands
+- Refresh docs + diagrams: `pnpm docs:refresh`
 - Typecheck: `pnpm typecheck`
 - Tool tests: `pnpm test:tools`
 - Generate site source: `pnpm generate`

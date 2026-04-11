@@ -34,3 +34,16 @@ export class EurekaSourceError extends Data.TaggedError("EurekaSourceError")<{
 export class AssetBuildError extends Data.TaggedError("AssetBuildError")<{
   readonly reason: string
 }> {}
+
+export class ArchitectureDiscoveryError extends Data.TaggedError("ArchitectureDiscoveryError")<{
+  readonly reason: string
+}> {}
+
+export class DiagramRenderError extends Data.TaggedError("DiagramRenderError")<{
+  readonly diagram: string
+  readonly reason: string
+}> {}
+
+export class ReadmeUpdateError extends Data.TaggedError("ReadmeUpdateError")<{
+  readonly reason: string
+}> {}
