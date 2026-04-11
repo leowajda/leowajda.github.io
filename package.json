@@ -7,6 +7,7 @@
   "scripts": {
     "sync:sources": "tsx tools/src/main.ts sync-sources",
     "generate": "tsx tools/src/main.ts generate",
+    "preview": "tsx tools/src/main.ts preview",
     "build:site": "pnpm generate && bundle exec jekyll build --source site --destination _site",
     "serve": "pnpm generate && bundle exec jekyll serve --source site --destination _site --livereload",
     "typecheck": "tsc --noEmit",
