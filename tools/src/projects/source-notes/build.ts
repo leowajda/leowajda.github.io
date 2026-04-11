@@ -7,7 +7,15 @@ import { encodeYaml } from "../../core/yaml.js"
 import { FileStore, GitClient } from "../../core/workspace.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedAssetFile, GeneratedTextFile, ProjectAdapter, ProjectBuild, ProjectCard } from "../types.js"
-import { SourceNotesProjectDataSchema, type SourceNotesDocument, type SourceNotesModule, type SourceNotesProjectData, type SourceTreeNode } from "./schema.js"
+import { buildProjectGraph } from "./graph.js"
+import {
+  SourceNotesProjectDataSchema,
+  SourceProjectGraphSchema,
+  type SourceNotesDocument,
+  type SourceNotesModule,
+  type SourceNotesProjectData,
+  type SourceTreeNode
+} from "./schema.js"
 
 type ModuleCandidate = {
   readonly slug: string
@@ -26,6 +34,15 @@ type PageAsset = {
 type BuiltDocument = {
   readonly metadata: SourceNotesDocument
   readonly file: GeneratedTextFile
+}
+
+type BuiltModule = {
+  readonly modulePath: string
+  readonly moduleSlug: string
+  readonly moduleRelativePath: string
+  readonly assets: ReadonlyArray<GeneratedAssetFile>
+  readonly files: ReadonlyArray<GeneratedTextFile>
+  readonly module: SourceNotesModule
 }
 
 const supportedSourceRoots = [
@@ -365,6 +382,7 @@ const buildModuleData = (
                 return {
                   metadata: {
                     id: `${moduleCandidate.slug}:${treePath}`,
+                    graph_node_id: `${manifest.slug}:${moduleCandidate.slug}:${treePath}`,
                     title: baseName,
                     url,
                     tree_path: treePath,
@@ -385,6 +403,7 @@ const buildModuleData = (
                       project_key: manifest.slug,
                       module_slug: moduleCandidate.slug,
                       document_id: `${moduleCandidate.slug}:${treePath}`,
+                      graph_node_id: `${manifest.slug}:${moduleCandidate.slug}:${treePath}`,
                       page_source_url: sourceUrl,
                       tree_path: treePath,
                       source_path: sourcePath,
@@ -443,10 +462,13 @@ const buildModuleData = (
     } satisfies GeneratedTextFile
 
     return {
+      modulePath: moduleCandidate.absolutePath,
+      moduleSlug: moduleCandidate.slug,
+      moduleRelativePath: moduleCandidate.relativePath,
       assets: readme.assets,
       files: [modulePage, ...builtDocuments.map((document) => document.file)],
       module: moduleData
-    }
+    } satisfies BuiltModule
   })
 
 const buildSourceNotes = (manifest: ProjectManifest) =>
@@ -481,6 +503,17 @@ const buildSourceNotes = (manifest: ProjectManifest) =>
       modules: builtModules.map((module) => module.module)
     }
 
+    const graphData = yield* buildProjectGraph(
+      manifest.slug,
+      repoRoot,
+      builtModules.map((module) => ({
+        slug: module.moduleSlug,
+        absolutePath: module.modulePath,
+        relativePath: module.moduleRelativePath,
+        documents: module.module.documents
+      }))
+    )
+
     const dataFile = yield* encodeYaml(
       `Unable to encode generated source notes for '${manifest.slug}'`,
       SourceNotesProjectDataSchema,
@@ -492,9 +525,20 @@ const buildSourceNotes = (manifest: ProjectManifest) =>
       } satisfies GeneratedTextFile))
     )
 
+    const graphFile = yield* encodeYaml(
+      `Unable to encode generated source graph for '${manifest.slug}'`,
+      SourceProjectGraphSchema,
+      graphData
+    ).pipe(
+      Effect.map((content) => ({
+        path: path.join(generatedSiteDirectory, `_data/generated/${manifest.slug}/source_graph.yml`),
+        content
+      } satisfies GeneratedTextFile))
+    )
+
     return {
       card: buildCard(manifest, gitMetadata.sourceUrl),
-      files: [dataFile, ...builtModules.flatMap((module) => module.files)],
+      files: [dataFile, graphFile, ...builtModules.flatMap((module) => module.files)],
       assets: [...repoReadme.assets, ...builtModules.flatMap((module) => module.assets)]
     } satisfies ProjectBuild
   })

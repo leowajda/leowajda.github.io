@@ -1,7 +1,7 @@
 {%- for node in include.nodes -%}
   <li class="source-tree__item source-tree__item--{{ node.kind }}">
     {%- if node.kind == "directory" -%}
-      <details class="source-tree__group" open>
+      <details class="source-tree__group">
         <summary class="source-tree__summary">{{ node.title }}</summary>
         <ul class="source-tree__list">
           {%- include source_tree_node.html nodes=node.children module_slug=include.module_slug -%}

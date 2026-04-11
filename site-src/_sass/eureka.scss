@@ -358,6 +358,38 @@
   display: block;
 }
 
+.code-shell__panel-header {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(0, 0, 0, 0.012);
+}
+
+.code-shell__panel-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.code-shell__panel-actions .link-button.icon-button {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  padding: 0.45rem;
+  line-height: 0;
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.code-shell__panel-actions .link-button.icon-button .icon {
+  width: 1.35rem;
+  height: 1.35rem;
+}
+
 .code-shell {
   display: grid;
   background: transparent;
@@ -432,6 +464,10 @@
 
 .code-copy-button {
   gap: 0.4rem;
+  position: static;
+  top: auto;
+  right: auto;
+  z-index: auto;
 }
 
 .code-markdown .highlight .c,

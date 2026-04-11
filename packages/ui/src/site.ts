@@ -1,6 +1,7 @@
 import renderMathInElement from "katex/contrib/auto-render"
+import { Effect } from "effect"
 import { initializeEurekaUi } from "./eureka-controller"
-import { createIcon } from "./icons"
+import { initializeSourceGraphs } from "./source-graph"
 
 const themeStorageKey = "leowajda.github.io-theme"
 
@@ -101,29 +102,43 @@ const initializeBackButton = () => {
 }
 
 const initializeCopyButtons = () => {
-  const highlights = document.querySelectorAll<HTMLElement>(".highlight")
-  highlights.forEach((highlight) => {
-    if (highlight.dataset.codeEnhanced === "true") {
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-code-copy-button]")
+  buttons.forEach((button) => {
+    if (button.dataset.copyReady === "true") {
       return
     }
+    button.dataset.copyReady = "true"
 
-    const pre = highlight.querySelector<HTMLElement>("pre")
-    const code = highlight.querySelector<HTMLElement>("code")
-    if (!pre || !code) {
-      return
+    const findCodeText = () => {
+      const shell = button.closest<HTMLElement>(".code-shell")
+      if (!shell) {
+        return ""
+      }
+
+      const visiblePanelCode = shell.querySelector<HTMLElement>(
+        ".code-shell__panel:not([hidden]) .code-markdown .highlight code"
+      )
+      if (visiblePanelCode) {
+        return visiblePanelCode.innerText
+      }
+
+      const fallback = shell.querySelector<HTMLElement>(".code-markdown .highlight code")
+      return fallback ? fallback.innerText : ""
     }
 
-    highlight.dataset.codeEnhanced = "true"
-    highlight.classList.add("code-enhanced")
-
-    const button = document.createElement("button")
-    button.type = "button"
-    button.className = "link-button icon-button code-copy-button"
-    button.append(createIcon("copy"))
-    button.setAttribute("aria-label", "Copy code")
-    button.setAttribute("title", "Copy code")
     button.addEventListener("click", () => {
-      void navigator.clipboard.writeText(code.innerText)
+      const codeText = findCodeText()
+      if (!codeText) {
+        button.setAttribute("title", "Copy failed")
+        button.setAttribute("aria-label", "Copy failed")
+        window.setTimeout(() => {
+          button.setAttribute("title", "Copy code")
+          button.setAttribute("aria-label", "Copy code")
+        }, 1200)
+        return
+      }
+
+      void navigator.clipboard.writeText(codeText)
         .then(() => {
           button.setAttribute("title", "Copied")
           button.setAttribute("aria-label", "Copied")
@@ -141,8 +156,36 @@ const initializeCopyButtons = () => {
           }, 1200)
         })
     })
+  })
+}
 
-    highlight.prepend(button)
+const initializeSourceSidebar = () => {
+  const sidebar = document.querySelector<HTMLElement>(".source-sidebar")
+  if (!sidebar) {
+    return
+  }
+
+  const activeLink = sidebar.querySelector<HTMLElement>(".source-tree__link.is-active")
+  if (!activeLink) {
+    return
+  }
+
+  const groups = Array.from(sidebar.querySelectorAll<HTMLDetailsElement>(".source-tree__group"))
+  groups.forEach((group) => {
+    group.open = false
+  })
+
+  let cursor: HTMLElement | null = activeLink
+  while (cursor) {
+    if (cursor instanceof HTMLDetailsElement && cursor.classList.contains("source-tree__group")) {
+      cursor.open = true
+    }
+    cursor = cursor.parentElement
+  }
+
+  activeLink.scrollIntoView({
+    block: "center",
+    inline: "nearest"
   })
 }
 
@@ -167,6 +210,16 @@ const runSafely = (label: string, effect: () => void) => {
   }
 }
 
+const runEffectSafely = (label: string, effect: Effect.Effect<void, never>) => {
+  Effect.runSync(
+    Effect.catchAllCause(effect, (cause) =>
+      Effect.sync(() => {
+        console.error(`Failed to initialize ${label}`, cause)
+      })
+    )
+  )
+}
+
 const start = () => {
   const storedTheme = getStoredTheme()
   if (storedTheme) {
@@ -176,7 +229,9 @@ const start = () => {
   runSafely("theme toggle", initializeThemeToggle)
   runSafely("back button", initializeBackButton)
   runSafely("copy buttons", initializeCopyButtons)
+  runSafely("source sidebar", initializeSourceSidebar)
   runSafely("math rendering", initializeMath)
+  runEffectSafely("source graphs", initializeSourceGraphs)
 
   try {
     initializeEurekaUi()

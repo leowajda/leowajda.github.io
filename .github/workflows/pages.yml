@@ -40,8 +40,27 @@ jobs:
           node-version: '22'
           cache: 'pnpm'
 
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
+
+      - name: Setup Coursier
+        uses: coursier/setup-action@v1
+
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Verify graph extractor toolchain
+        run: |
+          java -version
+          jdeps --version
+          sbt --version
+          cs --help >/dev/null
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -50,7 +69,7 @@ jobs:
           bundler-cache: true
 
       - name: Generate site source
-        run: pnpm generate
+        run: pnpm generate:refresh-graphs
 
       - name: Write Pages config override
         run: |

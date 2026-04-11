@@ -43,13 +43,27 @@ export const copyDirectoryContents = (fromDirectory: string, toDirectory: string
   )
 
 export const runGit = (workingDirectory: string, ...args: ReadonlyArray<string>) =>
+  runCommand(workingDirectory, "git", args).pipe(
+    Effect.map((result) => result.trim()),
+    Effect.mapError((error) =>
+      error instanceof CommandExecutionError
+        ? new CommandExecutionError({
+            command: `git ${args.join(" ")}`,
+            workingDirectory,
+            reason: error.reason
+          })
+        : error
+    )
+  )
+
+export const runCommand = (workingDirectory: string, command: string, args: ReadonlyArray<string>) =>
   Effect.tryPromise({
     try: async () => {
-      const { stdout } = await execFileAsync("git", [...args], { cwd: workingDirectory })
-      return stdout.trim()
+      const { stdout } = await execFileAsync(command, [...args], { cwd: workingDirectory })
+      return stdout
     },
     catch: (error) => new CommandExecutionError({
-      command: `git ${args.join(" ")}`,
+      command: `${command} ${args.join(" ")}`.trim(),
       workingDirectory,
       reason: String(error)
     })

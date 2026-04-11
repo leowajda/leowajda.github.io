@@ -6,6 +6,7 @@ import {
   readDirectory,
   readText,
   removeDirectory,
+  runCommand,
   runGit,
   writeText
 } from "./io.js"
@@ -25,8 +26,13 @@ export interface GitService {
   readonly updateSubmodules: (workingDirectory: string) => Effect.Effect<string, Error>
 }
 
+export interface CommandService {
+  readonly runCommand: typeof runCommand
+}
+
 export class FileStore extends Context.Tag("FileStore")<FileStore, FileStoreService>() {}
 export class GitClient extends Context.Tag("GitClient")<GitClient, GitService>() {}
+export class CommandRunner extends Context.Tag("CommandRunner")<CommandRunner, CommandService>() {}
 
 export const FileStoreLive = Layer.succeed(FileStore, {
   readDirectory,
@@ -46,4 +52,8 @@ export const GitClientLive = Layer.succeed(GitClient, {
     )
 })
 
-export const WorkspaceLive = Layer.mergeAll(FileStoreLive, GitClientLive)
+export const CommandRunnerLive = Layer.succeed(CommandRunner, {
+  runCommand
+})
+
+export const WorkspaceLive = Layer.mergeAll(FileStoreLive, GitClientLive, CommandRunnerLive)

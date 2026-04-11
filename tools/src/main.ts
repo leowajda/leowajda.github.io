@@ -6,6 +6,14 @@ import { generateSite } from "./programs/generate.js"
 import { previewSite } from "./programs/preview.js"
 import { syncSources } from "./programs/sync.js"
 
+const refreshGraphsFlag = "--refresh-graphs"
+const refreshGraphs = process.argv.includes(refreshGraphsFlag)
+if (refreshGraphs) {
+  process.env.SOURCE_GRAPH_REFRESH = "1"
+}
+
+const argv = process.argv.filter((argument) => argument !== refreshGraphsFlag)
+
 const docs = Command.make("docs", {}, () => refreshDocs)
 const generate = Command.make("generate", {}, () => generateSite)
 const preview = Command.make("preview", {}, () => Effect.scoped(previewSite))
@@ -20,4 +28,4 @@ const cli = Command.run(root, {
   version: "v0.1.0"
 })
 
-cli(process.argv).pipe(Effect.provide(NodeContext.layer), NodeRuntime.runMain)
+cli(argv).pipe(Effect.provide(NodeContext.layer), NodeRuntime.runMain)

@@ -23,6 +23,7 @@ export const SourceModuleRootSchema = Schema.Struct({
 
 export const SourceNotesDocumentSchema = Schema.Struct({
   id: Schema.String,
+  graph_node_id: Schema.String,
   title: Schema.String,
   url: Schema.String,
   tree_path: Schema.String,
@@ -57,6 +58,27 @@ export const SourceNotesProjectDataSchema = Schema.Struct({
   modules: Schema.Array(SourceNotesModuleSchema)
 })
 
+export const SourceGraphNodeSchema = Schema.Struct({
+  id: Schema.String,
+  label: Schema.String,
+  url: Schema.String,
+  tree_path: Schema.String,
+  language: Schema.String
+})
+
+export const SourceGraphEdgeSchema = Schema.Struct({
+  source: Schema.String,
+  target: Schema.String,
+  kind: Schema.Literal("reference")
+})
+
+export const SourceProjectGraphSchema = Schema.Struct({
+  version: Schema.Literal(1),
+  project_slug: Schema.String,
+  nodes: Schema.Array(SourceGraphNodeSchema),
+  edges: Schema.Array(SourceGraphEdgeSchema)
+})
+
 export type SourceTreeNode = {
   readonly kind: "directory" | "file"
   readonly title: string
@@ -68,3 +90,4 @@ export type SourceTreeNode = {
 export type SourceNotesProjectData = Schema.Schema.Type<typeof SourceNotesProjectDataSchema>
 export type SourceNotesModule = Schema.Schema.Type<typeof SourceNotesModuleSchema>
 export type SourceNotesDocument = Schema.Schema.Type<typeof SourceNotesDocumentSchema>
+export type SourceProjectGraph = Schema.Schema.Type<typeof SourceProjectGraphSchema>

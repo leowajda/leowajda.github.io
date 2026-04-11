@@ -9,5 +9,6 @@ __pycache__/
 
 site/
 _site/
+.cache/
 
 .DS_Store
