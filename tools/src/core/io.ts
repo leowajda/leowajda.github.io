@@ -31,6 +31,9 @@ export const readText = (filePath: string) =>
 export const readBytes = (filePath: string) =>
   attemptFileSystem("readBytes", filePath, () => fs.readFile(filePath))
 
+export const readSymbolicLink = (filePath: string) =>
+  attemptFileSystem("readSymbolicLink", filePath, () => fs.readlink(filePath))
+
 export const makeDirectory = (directory: string) =>
   attemptFileSystem("makeDirectory", directory, () => fs.mkdir(directory, { recursive: true }))
 
@@ -42,6 +45,14 @@ export const copyFile = (fromPath: string, toPath: string) =>
 
 export const removeDirectory = (directory: string) =>
   attemptFileSystem("removeDirectory", directory, () => fs.rm(directory, { recursive: true, force: true }))
+
+export const removePath = (target: string) =>
+  attemptFileSystem("removePath", target, () => fs.rm(target, { recursive: true, force: true }))
+
+export const createSymbolicLink = (target: string, linkPath: string) =>
+  attemptFileSystem("createSymbolicLink", `${target} -> ${linkPath}`, () =>
+    fs.symlink(target, linkPath)
+  )
 
 export const readDirectory = (directory: string) =>
   attemptFileSystem("readDirectory", directory, () => fs.readdir(directory, { withFileTypes: true }))

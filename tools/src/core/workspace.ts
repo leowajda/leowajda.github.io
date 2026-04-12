@@ -2,11 +2,14 @@ import { Context, Effect, Layer } from "effect"
 import {
   copyFile,
   copyDirectoryContents,
+  createSymbolicLink,
   fileExists,
   makeDirectory,
   readBytes,
   readDirectory,
+  readSymbolicLink,
   readText,
+  removePath,
   removeDirectory,
   runCommand,
   runGit,
@@ -23,6 +26,9 @@ export interface FileStoreService {
   readonly makeDirectory: typeof makeDirectory
   readonly copyFile: typeof copyFile
   readonly removeDirectory: typeof removeDirectory
+  readonly removePath: typeof removePath
+  readonly readSymbolicLink: typeof readSymbolicLink
+  readonly createSymbolicLink: typeof createSymbolicLink
   readonly copyDirectoryContents: typeof copyDirectoryContents
   readonly fileExists: typeof fileExists
 }
@@ -49,6 +55,9 @@ export const FileStoreLive = Layer.succeed(FileStore, {
   makeDirectory,
   copyFile,
   removeDirectory,
+  removePath,
+  readSymbolicLink,
+  createSymbolicLink,
   copyDirectoryContents,
   fileExists
 })
