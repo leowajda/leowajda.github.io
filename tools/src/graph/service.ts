@@ -1,4 +1,4 @@
-import { Context, Effect, Layer, ParseResult, Schema } from "effect"
+import { Context, Effect, Layer } from "effect"
 import { createHash } from "node:crypto"
 import path from "node:path"
 import type { CodeReferencesPanel } from "../../../packages/graph/src/index.js"
@@ -6,9 +6,20 @@ import { CodeGraphError } from "../core/errors.js"
 import { rootDirectory } from "../core/paths.js"
 import { CommandRunner, FileStore } from "../core/workspace.js"
 import { GraphBuildSettings } from "./mode.js"
-import { GraphArtifactSchema, GraphArtifactVersion, type GraphArtifact, type GraphWorkspaceInput } from "./model.js"
+import type { GraphArtifact, GraphWorkspaceInput } from "./model.js"
 import { buildCodeReferencesPanel } from "./projector.js"
 import { buildGraphArtifactFromScip } from "./scip.js"
+import {
+  cacheIndexPath,
+  ensureWorkspaceCacheDirectory,
+  graphBinaryDirectory,
+  graphWorkspaceDirectory,
+  readArtifactCache,
+  readLatestArtifactCache,
+  safeCacheSegment,
+  writeArtifactCacheFiles
+} from "./cache.js"
+import { codeGraphError, formatCommandError, mapWorkspaceError } from "./errors.js"
 
 interface CodeGraphToolchainService {
   readonly buildArtifact: (
@@ -21,15 +32,6 @@ class CodeGraphToolchain extends Context.Tag("CodeGraphToolchain")<
   CodeGraphToolchainService
 >() {}
 
-const GraphArtifactCacheSchema = Schema.Struct({
-  version: Schema.Literal(GraphArtifactVersion),
-  fingerprint: Schema.String,
-  artifact: GraphArtifactSchema
-})
-
-const graphCacheDirectory = path.join(rootDirectory, ".cache", "code-graphs")
-const graphBinaryDirectory = path.join(graphCacheDirectory, "bin")
-const graphWorkspaceDirectory = path.join(graphCacheDirectory, "workspaces")
 const scipJavaArtifact = "com.sourcegraph:scip-java_2.13:0.12.3"
 const scipPythonCommand = ["pnpm", "exec", "scip-python"] as const
 const scipClangVersion = "v0.4.0"
@@ -70,68 +72,6 @@ const fingerprintFileNames = new Set([
 ])
 
 const fingerprintFileExtensions = new Set([".cmake", ".gradle", ".kts", ".sbt"])
-
-const formatSchemaError = (error: ParseResult.ParseError) =>
-  ParseResult.TreeFormatter.formatErrorSync(error)
-
-const codeGraphError = (
-  workspace: GraphWorkspaceInput,
-  phase: string,
-  reason: string
-) =>
-  new CodeGraphError({
-    project: workspace.project_slug,
-    workspace: workspace.workspace_slug,
-    phase,
-    reason
-  })
-
-const mapWorkspaceError = <E = unknown>(
-  workspace: GraphWorkspaceInput,
-  phase: string,
-  format: (error: E) => string = String as (error: E) => string
-) =>
-  (error: E) => codeGraphError(workspace, phase, format(error))
-
-const safeSegment = (value: string) =>
-  value.replace(/[^a-zA-Z0-9._-]/g, "_")
-
-const formatCommandError = (error: unknown) => {
-  if (error && typeof error === "object") {
-    const command = "command" in error && typeof error.command === "string" ? error.command : ""
-    const workingDirectory = "workingDirectory" in error && typeof error.workingDirectory === "string"
-      ? error.workingDirectory
-      : ""
-    const reason = "reason" in error && typeof error.reason === "string" ? error.reason : String(error)
-
-    if (command || workingDirectory) {
-      return `${command} @ ${workingDirectory}: ${reason}`
-    }
-
-    return reason
-  }
-
-  return String(error)
-}
-
-const workspaceCacheRootDirectory = (workspace: GraphWorkspaceInput) =>
-  path.join(
-    graphWorkspaceDirectory,
-    safeSegment(workspace.project_slug),
-    safeSegment(workspace.workspace_slug)
-  )
-
-const workspaceCacheDirectory = (workspace: GraphWorkspaceInput, fingerprint: string) =>
-  path.join(workspaceCacheRootDirectory(workspace), fingerprint)
-
-const cacheFilePath = (workspace: GraphWorkspaceInput, fingerprint: string) =>
-  path.join(workspaceCacheDirectory(workspace, fingerprint), "artifact.json")
-
-const cacheIndexPath = (workspace: GraphWorkspaceInput, fingerprint: string) =>
-  path.join(workspaceCacheDirectory(workspace, fingerprint), "index.scip")
-
-const latestCacheFilePath = (workspace: GraphWorkspaceInput) =>
-  path.join(workspaceCacheRootDirectory(workspace), "latest.json")
 
 const scipClangBinaryPath = path.join(graphBinaryDirectory, `scip-clang-${scipClangVersion}`)
 
@@ -195,80 +135,6 @@ const createWorkspaceFingerprint = (workspace: GraphWorkspaceInput) =>
     }
 
     return digest.digest("hex")
-  })
-
-const readCachePayload = (
-  workspace: GraphWorkspaceInput,
-  filePath: string,
-  phasePrefix: string
-) =>
-  Effect.gen(function* () {
-    const fileStore = yield* FileStore
-    const exists = yield* fileStore.fileExists(filePath)
-    if (!exists) {
-      return null
-    }
-
-    const raw = yield* fileStore.readText(filePath).pipe(
-      Effect.mapError(mapWorkspaceError(workspace, `${phasePrefix}-read`))
-    )
-
-    const decoded = yield* Effect.try({
-      try: () => JSON.parse(raw) as unknown,
-      catch: mapWorkspaceError(workspace, `${phasePrefix}-json`)
-    })
-
-    const payload = yield* Schema.decodeUnknown(GraphArtifactCacheSchema)(decoded).pipe(
-      Effect.mapError(mapWorkspaceError(workspace, `${phasePrefix}-decode`, formatSchemaError))
-    )
-
-    return payload
-  }).pipe(
-    Effect.catchAll(() => Effect.succeed(null))
-  )
-
-const readArtifactCache = (workspace: GraphWorkspaceInput, fingerprint: string) =>
-  readCachePayload(workspace, cacheFilePath(workspace, fingerprint), "cache").pipe(
-    Effect.map((payload) => payload?.fingerprint === fingerprint ? payload.artifact : null)
-  )
-
-const readLatestArtifactCache = (workspace: GraphWorkspaceInput) =>
-  readCachePayload(workspace, latestCacheFilePath(workspace), "cache-latest").pipe(
-    Effect.map((payload) => payload?.artifact ?? null)
-  )
-
-const encodeGraphArtifactCache = (workspace: GraphWorkspaceInput, fingerprint: string, artifact: GraphArtifact) =>
-  Schema.encode(GraphArtifactCacheSchema)({
-    version: GraphArtifactVersion,
-    fingerprint,
-    artifact
-  }).pipe(
-    Effect.mapError(mapWorkspaceError(workspace, "cache-encode", formatSchemaError))
-  )
-
-const writeArtifactCacheFiles = (
-  workspace: GraphWorkspaceInput,
-  fingerprint: string,
-  artifact: GraphArtifact
-) =>
-  Effect.gen(function* () {
-    const fileStore = yield* FileStore
-    const encoded = yield* encodeGraphArtifactCache(workspace, fingerprint, artifact)
-    const serialized = `${JSON.stringify(encoded, null, 2)}\n`
-
-    yield* fileStore.writeText(
-      cacheFilePath(workspace, fingerprint),
-      serialized
-    ).pipe(
-      Effect.mapError(mapWorkspaceError(workspace, "cache-write"))
-    )
-
-    yield* fileStore.writeText(
-      latestCacheFilePath(workspace),
-      serialized
-    ).pipe(
-      Effect.mapError(mapWorkspaceError(workspace, "cache-latest-write"))
-    )
   })
 
 const runCommandOrFail = (
@@ -433,8 +299,8 @@ const configureCppWorkspace = (workspace: GraphWorkspaceInput) =>
     const fileStore = yield* FileStore
     const buildDirectory = path.join(
       graphWorkspaceDirectory,
-      safeSegment(workspace.project_slug),
-      safeSegment(workspace.workspace_slug),
+      safeCacheSegment(workspace.project_slug),
+      safeCacheSegment(workspace.workspace_slug),
       "cmake-build"
     )
 
@@ -541,9 +407,7 @@ const CodeGraphToolchainLive = Layer.succeed(CodeGraphToolchain, {
       }
 
       const outputPath = cacheIndexPath(workspace, fingerprint)
-      yield* fileStore.makeDirectory(workspaceCacheDirectory(workspace, fingerprint)).pipe(
-        Effect.mapError(mapWorkspaceError(workspace, "cache-directory"))
-      )
+      yield* ensureWorkspaceCacheDirectory(workspace, fingerprint)
       yield* runWorkspaceIndexer(workspace, outputPath)
 
       const rawIndex = yield* fileStore.readBytes(outputPath).pipe(
