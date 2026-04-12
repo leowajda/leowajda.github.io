@@ -3,11 +3,8 @@ import { Effect } from "effect"
 import { Browser, BrowserLive, addEventListener, type BrowserService, type Cleanup, combineCleanups } from "./browser"
 import { initializeCodeReferences } from "./code-references"
 import { initializeEurekaUi } from "./eureka-controller"
-
-const themeStorageKey = "leowajda.github.io-theme"
+import { initializeThemeToggle, restoreStoredTheme } from "./site-theme"
 const noopCleanup: Cleanup = () => {}
-
-type Theme = "light" | "dark"
 
 const runBrowserAction = (
   browser: BrowserService,
@@ -25,66 +22,6 @@ const runBrowserAction = (
     )
   )
 }
-
-const getStoredTheme = Effect.gen(function* () {
-  const browser = yield* Browser
-  const stored = browser.localStorage?.getItem(themeStorageKey)
-  return stored === "light" || stored === "dark" ? stored : null
-})
-
-const resolveTheme = Effect.gen(function* () {
-  const browser = yield* Browser
-  const attribute = browser.document.body.getAttribute("a") || "auto"
-  if (attribute === "light" || attribute === "dark") {
-    return attribute
-  }
-
-  return typeof browser.window.matchMedia === "function" && browser.window.matchMedia("(prefers-color-scheme: dark)").matches
-    ? "dark"
-    : "light"
-})
-
-const applyTheme = (theme: Theme) =>
-  Effect.gen(function* () {
-    const browser = yield* Browser
-    browser.document.body.setAttribute("a", theme)
-  })
-
-const updateThemeButton = (button: HTMLButtonElement) =>
-  Effect.gen(function* () {
-    const currentTheme = yield* resolveTheme
-    const nextTheme: Theme = currentTheme === "dark" ? "light" : "dark"
-    const icon = button.querySelector<SVGUseElement>(".theme-toggle__icon use")
-
-    if (icon) {
-      icon.setAttribute("href", `#icon-theme-${nextTheme}`)
-    }
-
-    button.setAttribute("aria-label", `Switch to ${nextTheme} mode`)
-    button.setAttribute("title", `Switch to ${nextTheme} mode`)
-  })
-
-const initializeThemeToggle = Effect.gen(function* () {
-  const browser = yield* Browser
-  const button = browser.document.querySelector<HTMLButtonElement>("[data-theme-toggle]")
-  if (!button) {
-    return noopCleanup
-  }
-
-  yield* updateThemeButton(button)
-  return yield* addEventListener(button, "click", () => {
-    runBrowserAction(
-      browser,
-      "update theme",
-      Effect.gen(function* () {
-        const nextTheme = (yield* resolveTheme) === "dark" ? "light" : "dark"
-        yield* applyTheme(nextTheme)
-        browser.localStorage?.setItem(themeStorageKey, nextTheme)
-        yield* updateThemeButton(button)
-      })
-    )
-  })
-})
 
 const initializeBackButton = Effect.gen(function* () {
   const browser = yield* Browser
@@ -239,13 +176,13 @@ const initializeSafely = (label: string, effect: Effect.Effect<Cleanup, unknown,
 
 const start = Effect.gen(function* () {
   const browser = yield* Browser
-  const storedTheme = yield* getStoredTheme
-  if (storedTheme) {
-    yield* applyTheme(storedTheme)
-  }
+  yield* restoreStoredTheme
 
   const cleanups = yield* Effect.all([
-    initializeSafely("theme toggle", initializeThemeToggle),
+    initializeSafely(
+      "theme toggle",
+      initializeThemeToggle(runBrowserAction, noopCleanup)
+    ),
     initializeSafely("back button", initializeBackButton),
     initializeSafely("copy buttons", initializeCopyButtons),
     initializeSafely("code references", initializeCodeReferences),
