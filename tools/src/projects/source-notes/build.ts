@@ -13,6 +13,7 @@ import {
   buildSourceDocument
 } from "./documents.js"
 import { buildSourceNotesReferencePanels } from "./graph.js"
+import { maybeReadText, rewriteMarkdownAssets } from "./assets.js"
 import {
   SourceNotesProjectDataSchema,
   type SourceNotesModule,
@@ -25,12 +26,6 @@ type ModuleCandidate = {
   readonly absolutePath: string
   readonly relativePath: string
   readonly roots: ReadonlyArray<SourceRoot>
-}
-
-type PageAsset = {
-  readonly markdown: string
-  readonly assets: ReadonlyArray<GeneratedAssetFile>
-  readonly firstImageUrl: string
 }
 
 type BuiltModule = {
@@ -70,7 +65,6 @@ const textFileMetadata: Readonly<Record<string, { readonly format: "code" | "mar
 }
 
 const ignoredDirectoryNames = new Set([".git", ".idea", ".bsp", "build", "dist", "node_modules", "out", "target"])
-const markdownImagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g
 
 const slugify = (value: string) =>
   value
@@ -97,17 +91,6 @@ const buildCard = (manifest: ProjectManifest, sourceUrl: string): ProjectCard =>
   url: `${manifest.route_base}/`,
   source_url: sourceUrl
 })
-
-const maybeReadText = (filePath: string) =>
-  Effect.gen(function* () {
-    const fileStore = yield* FileStore
-    const exists = yield* fileStore.fileExists(filePath)
-    if (!exists) {
-      return ""
-    }
-
-    return yield* fileStore.readText(filePath)
-  })
 
 const detectModuleRoots = (absolutePath: string) =>
   Effect.gen(function* () {
@@ -182,69 +165,6 @@ const walkTextFiles = (directory: string): Effect.Effect<ReadonlyArray<string>, 
     }, { concurrency: 8 })
 
     return nested.flat()
-  })
-
-const sanitizeAssetPath = (rawPath: string) =>
-  rawPath
-    .replace(/^<|>$/g, "")
-    .split(/\s+/)[0]
-
-const sanitizeAssetTargetPath = (assetPath: string) => {
-  const normalized = assetPath
-    .split("/")
-    .filter((segment) => segment !== "" && segment !== "." && segment !== "..")
-    .join("/")
-
-  return normalized || path.basename(assetPath)
-}
-
-const rewriteMarkdownAssets = (
-  markdown: string,
-  baseDirectory: string,
-  assetScope: string
-) =>
-  Effect.gen(function* () {
-    const fileStore = yield* FileStore
-    const seen = new Map<string, string>()
-    const assets: Array<GeneratedAssetFile> = []
-    let firstImageUrl = ""
-
-    const matches = Array.from(markdown.matchAll(markdownImagePattern))
-    for (const match of matches) {
-      const rawReference = match[2] ?? ""
-      const cleanReference = sanitizeAssetPath(rawReference)
-      if (!cleanReference || cleanReference.startsWith("http://") || cleanReference.startsWith("https://") || cleanReference.startsWith("/")) {
-        continue
-      }
-
-      if (!seen.has(cleanReference)) {
-        const sourcePath = path.resolve(baseDirectory, cleanReference)
-        const exists = yield* fileStore.fileExists(sourcePath)
-        if (!exists) {
-          continue
-        }
-
-        const targetPath = path.join(generatedSiteDirectory, "assets/generated", assetScope, sanitizeAssetTargetPath(cleanReference))
-        const publicUrl = `/${path.relative(generatedSiteDirectory, targetPath).split(path.sep).join("/")}`
-        seen.set(cleanReference, publicUrl)
-        assets.push({ source_path: sourcePath, target_path: targetPath })
-        if (!firstImageUrl) {
-          firstImageUrl = publicUrl
-        }
-      }
-    }
-
-    let rewritten = markdown
-    for (const [reference, publicUrl] of seen.entries()) {
-      rewritten = rewritten.replaceAll(`](${reference})`, `](${publicUrl})`)
-      rewritten = rewritten.replaceAll(`](<${reference}>)`, `](${publicUrl})`)
-    }
-
-    return {
-      markdown: rewritten.trim(),
-      assets,
-      firstImageUrl
-    } satisfies PageAsset
   })
 
 const buildModuleData = (
