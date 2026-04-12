@@ -15,18 +15,18 @@ import {
 import { buildSourceNotesReferencePanels } from "./graph.js"
 import { maybeReadText, rewriteMarkdownAssets } from "./assets.js"
 import {
+  discoverModuleCandidates,
+  titleizeModuleName,
+  walkTextFiles,
+  slugifyModuleName,
+  type ModuleCandidate,
+  type SourceRoot
+} from "./discovery.js"
+import {
   SourceNotesProjectDataSchema,
   type SourceNotesModule,
   type SourceNotesProjectData
 } from "./schema.js"
-
-type ModuleCandidate = {
-  readonly slug: string
-  readonly title: string
-  readonly absolutePath: string
-  readonly relativePath: string
-  readonly roots: ReadonlyArray<SourceRoot>
-}
 
 type BuiltModule = {
   readonly modulePath: string
@@ -35,15 +35,6 @@ type BuiltModule = {
   readonly assets: ReadonlyArray<GeneratedAssetFile>
   readonly files: ReadonlyArray<GeneratedTextFile>
   readonly module: SourceNotesModule
-}
-
-const supportedSourceRoots = [
-  { language: "java", label: "src/main/java" },
-  { language: "scala", label: "src/main/scala" }
-] as const
-
-type SourceRoot = (typeof supportedSourceRoots)[number] & {
-  readonly absolutePath: string
 }
 
 const textFileMetadata: Readonly<Record<string, { readonly format: "code" | "markdown"; readonly syntax: string; readonly language: string }>> = {
@@ -64,25 +55,7 @@ const textFileMetadata: Readonly<Record<string, { readonly format: "code" | "mar
   ".yml": { format: "code", syntax: "yaml", language: "yaml" }
 }
 
-const ignoredDirectoryNames = new Set([".git", ".idea", ".bsp", "build", "dist", "node_modules", "out", "target"])
-
-const slugify = (value: string) =>
-  value
-    .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
-    .replace(/[_\s]+/g, "-")
-    .replace(/[^a-zA-Z0-9-]/g, "-")
-    .toLowerCase()
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-
-const titleize = (value: string) =>
-  value
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/[_-]+/g, " ")
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join(" ")
+const supportedTextExtensions = new Set(Object.keys(textFileMetadata))
 
 const buildCard = (manifest: ProjectManifest, sourceUrl: string): ProjectCard => ({
   slug: manifest.slug,
@@ -91,81 +64,6 @@ const buildCard = (manifest: ProjectManifest, sourceUrl: string): ProjectCard =>
   url: `${manifest.route_base}/`,
   source_url: sourceUrl
 })
-
-const detectModuleRoots = (absolutePath: string) =>
-  Effect.gen(function* () {
-    const fileStore = yield* FileStore
-    const roots = yield* Effect.forEach(supportedSourceRoots, (root) =>
-      fileStore.fileExists(path.join(absolutePath, root.label)).pipe(
-        Effect.map((exists) =>
-          exists
-            ? ({
-                language: root.language,
-                label: root.label,
-                absolutePath: path.join(absolutePath, root.label)
-              } as SourceRoot)
-            : null
-        )
-      )
-    )
-
-    return roots.filter((root): root is SourceRoot => root !== null)
-  })
-
-const discoverModuleCandidates = (manifest: ProjectManifest, repoRoot: string) =>
-  Effect.gen(function* () {
-    const fileStore = yield* FileStore
-    const rootCandidate = {
-      slug: "root",
-      title: `${manifest.title} Source`,
-      absolutePath: repoRoot,
-      relativePath: "",
-      roots: yield* detectModuleRoots(repoRoot)
-    } satisfies ModuleCandidate
-
-    const entries = yield* fileStore.readDirectory(repoRoot)
-    const childCandidates = yield* Effect.forEach(
-      entries.filter((entry) => entry.isDirectory() && !entry.name.startsWith(".") && !ignoredDirectoryNames.has(entry.name)),
-      (entry) =>
-        detectModuleRoots(path.join(repoRoot, entry.name)).pipe(
-          Effect.map((roots) => ({
-            slug: slugify(entry.name),
-            title: titleize(entry.name),
-            absolutePath: path.join(repoRoot, entry.name),
-            relativePath: entry.name,
-            roots
-          } satisfies ModuleCandidate))
-        )
-    )
-
-    const displayableChildren = childCandidates.filter((candidate) => candidate.roots.length > 0)
-    if (displayableChildren.length > 0) {
-      return displayableChildren
-    }
-
-    return rootCandidate.roots.length > 0 ? [rootCandidate] : []
-  })
-
-const walkTextFiles = (directory: string): Effect.Effect<ReadonlyArray<string>, Error, FileStore> =>
-  Effect.gen(function* () {
-    const fileStore = yield* FileStore
-    const entries = yield* fileStore.readDirectory(directory)
-    const nested = yield* Effect.forEach(entries, (entry) => {
-      const fullPath = path.join(directory, entry.name)
-      if (entry.isDirectory()) {
-        if (entry.name.startsWith(".") || ignoredDirectoryNames.has(entry.name)) {
-          return Effect.succeed([] as ReadonlyArray<string>)
-        }
-
-        return walkTextFiles(fullPath)
-      }
-
-      const extension = path.extname(entry.name).toLowerCase()
-      return Effect.succeed(extension in textFileMetadata ? [fullPath] : [])
-    }, { concurrency: 8 })
-
-    return nested.flat()
-  })
 
 const buildModuleData = (
   manifest: ProjectManifest,
@@ -185,7 +83,7 @@ const buildModuleData = (
       : ""
 
     const builtDocuments = yield* Effect.forEach(moduleCandidate.roots, (root) =>
-      walkTextFiles(root.absolutePath).pipe(
+      walkTextFiles(root.absolutePath, supportedTextExtensions).pipe(
         Effect.flatMap((files) =>
           Effect.forEach(files, (filePath) =>
             fileStore.readText(filePath).pipe(
@@ -204,7 +102,7 @@ const buildModuleData = (
                     gitBranch: gitMetadata.branch,
                     gitSourceUrl: gitMetadata.sourceUrl,
                     metadata: textFileMetadata[extension],
-                    slugify
+                    slugify: slugifyModuleName
                   },
                   content
                 )
@@ -237,7 +135,7 @@ const buildModuleData = (
       url: `${manifest.route_base}/${moduleCandidate.slug}/`,
       source_url: moduleSourceUrl,
       hero_image_url: readme.firstImageUrl,
-      language_labels: Array.from(new Set(moduleCandidate.roots.map((root) => titleize(root.language)))),
+      language_labels: Array.from(new Set(moduleCandidate.roots.map((root) => titleizeModuleName(root.language)))),
       document_count: builtDocuments.length,
       roots,
       documents: builtDocuments.map((document) => document.metadata)
