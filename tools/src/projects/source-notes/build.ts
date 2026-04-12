@@ -1,5 +1,7 @@
 import { Effect } from "effect"
 import path from "node:path"
+import type { GraphWorkspaceInput } from "../../graph/model.js"
+import { buildCodeReferencePanels } from "../../graph/service.js"
 import { SourceNotesError } from "../../core/errors.js"
 import { generatedSiteDirectory, rootDirectory } from "../../core/paths.js"
 import { encodeFrontMatter } from "../../core/frontmatter.js"
@@ -7,10 +9,8 @@ import { encodeYaml } from "../../core/yaml.js"
 import { FileStore, GitClient } from "../../core/workspace.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedAssetFile, GeneratedTextFile, ProjectAdapter, ProjectBuild, ProjectCard } from "../types.js"
-import { buildProjectGraph } from "./graph.js"
 import {
   SourceNotesProjectDataSchema,
-  SourceProjectGraphSchema,
   type SourceNotesDocument,
   type SourceNotesModule,
   type SourceNotesProjectData,
@@ -74,6 +74,11 @@ const textFileMetadata: Readonly<Record<string, { readonly format: "code" | "mar
 
 const ignoredDirectoryNames = new Set([".git", ".idea", ".bsp", "build", "dist", "node_modules", "out", "target"])
 const markdownImagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g
+const gradleWorkspaceRootMarkers = ["gradlew", "settings.gradle", "settings.gradle.kts"] as const
+const gradleWorkspaceMarkers = ["build.gradle", "build.gradle.kts"] as const
+const scalaWorkspaceMarkers = ["build.sbt"] as const
+
+const toPosixPath = (value: string) => value.split(path.sep).join("/")
 
 const slugify = (value: string) =>
   value
@@ -133,6 +138,77 @@ const maybeReadText = (filePath: string) =>
 
     return yield* fileStore.readText(filePath)
   })
+
+const hasWorkspaceMarker = (directory: string, markers: ReadonlyArray<string>) =>
+  Effect.gen(function* () {
+    const fileStore = yield* FileStore
+
+    for (const marker of markers) {
+      if (yield* fileStore.fileExists(path.join(directory, marker))) {
+        return true
+      }
+    }
+
+    return false
+  })
+
+const resolveModuleWorkspaceRoot = (repoRoot: string, modulePath: string) =>
+  Effect.gen(function* () {
+    const ancestors: Array<string> = []
+    let cursor = modulePath
+
+    while (true) {
+      ancestors.push(cursor)
+      if (cursor === repoRoot) {
+        break
+      }
+
+      const parent = path.dirname(cursor)
+      if (parent === cursor) {
+        break
+      }
+
+      cursor = parent
+    }
+
+    for (const ancestor of [...ancestors].reverse()) {
+      if (yield* hasWorkspaceMarker(ancestor, gradleWorkspaceRootMarkers)) {
+        return ancestor
+      }
+    }
+
+    for (const ancestor of ancestors) {
+      if (yield* hasWorkspaceMarker(ancestor, gradleWorkspaceMarkers)) {
+        return ancestor
+      }
+    }
+
+    for (const ancestor of ancestors) {
+      if (yield* hasWorkspaceMarker(ancestor, scalaWorkspaceMarkers)) {
+        return ancestor
+      }
+    }
+
+    return modulePath
+  })
+
+const languageSourceExtensions = (languages: ReadonlySet<string>) => {
+  const extensions = new Set<string>()
+
+  languages.forEach((language) => {
+    switch (language) {
+      case "java":
+        extensions.add(".java")
+        break
+      case "scala":
+        extensions.add(".scala")
+        extensions.add(".sc")
+        break
+    }
+  })
+
+  return Array.from(extensions)
+}
 
 const detectModuleRoots = (absolutePath: string) =>
   Effect.gen(function* () {
@@ -406,7 +482,8 @@ const buildModuleData = (
                       source_url: sourceUrl,
                       language: textFileMetadata[extension]?.language ?? root.language,
                       format: textFileMetadata[extension]?.format ?? "code",
-                      breadcrumbs
+                      breadcrumbs,
+                      code_references: null
                     } satisfies SourceNotesDocument,
                     file: {
                       path: path.join(generatedSiteDirectory, manifest.slug, moduleCandidate.slug, routePath, "index.md"),
@@ -479,6 +556,82 @@ const buildModuleData = (
     } satisfies BuiltModule
   })
 
+const buildSourceNotesReferencePanels = (
+  manifest: ProjectManifest,
+  repoRoot: string,
+  builtModules: ReadonlyArray<BuiltModule>
+) =>
+  Effect.gen(function* () {
+    const groupedDocuments = new Map<string, Array<{ readonly document: SourceNotesDocument; readonly sourcePath: string }>>()
+
+    const workspaceRoots = yield* Effect.forEach(builtModules, (module) =>
+      resolveModuleWorkspaceRoot(repoRoot, module.modulePath).pipe(
+        Effect.map((workspaceRoot) => [module.moduleSlug, workspaceRoot] as const)
+      )
+    )
+    const workspaceRootByModule = new Map(workspaceRoots)
+
+    builtModules.forEach((module) => {
+      const workspaceRoot = workspaceRootByModule.get(module.moduleSlug) ?? module.modulePath
+      const bucket = groupedDocuments.get(workspaceRoot) ?? []
+
+      module.module.documents
+        .filter((document) => document.format === "code")
+        .forEach((document) => {
+          bucket.push({
+            document,
+            sourcePath: path.join(repoRoot, document.source_path)
+          })
+        })
+
+      groupedDocuments.set(workspaceRoot, bucket)
+    })
+
+    const graphWorkspaces: Array<GraphWorkspaceInput> = Array.from(groupedDocuments.entries())
+      .filter(([, documents]) => documents.length > 0)
+      .map(([workspaceRoot, documents]) => {
+        const workspaceRelativeRoot = toPosixPath(path.relative(repoRoot, workspaceRoot))
+        const documentsByRelativePath = new Map(
+          documents.map(({ document, sourcePath }) => [
+            toPosixPath(path.relative(workspaceRoot, sourcePath)),
+            document
+          ] as const)
+        )
+        const languages = new Set(documents.map(({ document }) => document.language))
+
+        return {
+          project_slug: manifest.slug,
+          workspace_slug: workspaceRelativeRoot || "root",
+          root_path: workspaceRoot,
+          kind: "scip-java",
+          primary_language: documents[0]?.document.language ?? "java",
+          source_extensions: languageSourceExtensions(languages),
+          documents: documents.map(({ document, sourcePath }) => ({
+            id: document.id,
+            workspace_relative_path: toPosixPath(path.relative(workspaceRoot, sourcePath)),
+            title: document.title,
+            language: document.language
+          })),
+          resolve_file: (workspaceRelativePath) => {
+            const document = documentsByRelativePath.get(workspaceRelativePath)
+            if (!document) {
+              return null
+            }
+
+            return {
+              title: document.title,
+              language: document.language,
+              url: document.url,
+              url_kind: "internal" as const,
+              description: document.source_path
+            }
+          }
+        } satisfies GraphWorkspaceInput
+      })
+
+    return yield* buildCodeReferencePanels(graphWorkspaces)
+  })
+
 const buildSourceNotes = (manifest: ProjectManifest) =>
   Effect.gen(function* () {
     const repoRoot = path.join(rootDirectory, manifest.source_repo_path)
@@ -499,6 +652,18 @@ const buildSourceNotes = (manifest: ProjectManifest) =>
       buildModuleData(manifest, moduleCandidate, repoRoot, gitMetadata)
     , { concurrency: 4 })
 
+    const referencePanels = yield* buildSourceNotesReferencePanels(manifest, repoRoot, builtModules)
+    const modulesWithReferences = builtModules.map((module) => ({
+      ...module,
+      module: {
+        ...module.module,
+        documents: module.module.documents.map((document) => ({
+          ...document,
+          code_references: document.format === "code" ? (referencePanels.get(document.id) ?? null) : null
+        }))
+      }
+    }))
+
     const projectData: SourceNotesProjectData = {
       project: {
         slug: manifest.slug,
@@ -508,19 +673,8 @@ const buildSourceNotes = (manifest: ProjectManifest) =>
         source_url: gitMetadata.sourceUrl,
         hero_image_url: repoReadme.firstImageUrl
       },
-      modules: builtModules.map((module) => module.module)
+      modules: modulesWithReferences.map((module) => module.module)
     }
-
-    const graphData = yield* buildProjectGraph(
-      manifest.slug,
-      repoRoot,
-      builtModules.map((module) => ({
-        slug: module.moduleSlug,
-        absolutePath: module.modulePath,
-        relativePath: module.moduleRelativePath,
-        documents: module.module.documents
-      }))
-    )
 
     const dataFile = yield* encodeYaml(
       `Unable to encode generated source notes for '${manifest.slug}'`,
@@ -533,21 +687,10 @@ const buildSourceNotes = (manifest: ProjectManifest) =>
       } satisfies GeneratedTextFile))
     )
 
-    const graphFile = yield* encodeYaml(
-      `Unable to encode generated source graph for '${manifest.slug}'`,
-      SourceProjectGraphSchema,
-      graphData
-    ).pipe(
-      Effect.map((content) => ({
-        path: path.join(generatedSiteDirectory, `_data/generated/${manifest.slug}/source_graph.yml`),
-        content
-      } satisfies GeneratedTextFile))
-    )
-
     return {
       card: buildCard(manifest, gitMetadata.sourceUrl),
-      files: [dataFile, graphFile, ...builtModules.flatMap((module) => module.files)],
-      assets: [...repoReadme.assets, ...builtModules.flatMap((module) => module.assets)]
+      files: [dataFile, ...modulesWithReferences.flatMap((module) => module.files)],
+      assets: [...repoReadme.assets, ...modulesWithReferences.flatMap((module) => module.assets)]
     } satisfies ProjectBuild
   })
 

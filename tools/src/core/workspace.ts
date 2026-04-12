@@ -3,18 +3,24 @@ import {
   copyFile,
   copyDirectoryContents,
   fileExists,
+  makeDirectory,
+  readBytes,
   readDirectory,
   readText,
   removeDirectory,
   runCommand,
   runGit,
+  writeBytes,
   writeText
 } from "./io.js"
 
 export interface FileStoreService {
   readonly readDirectory: typeof readDirectory
   readonly readText: typeof readText
+  readonly readBytes: typeof readBytes
+  readonly writeBytes: typeof writeBytes
   readonly writeText: typeof writeText
+  readonly makeDirectory: typeof makeDirectory
   readonly copyFile: typeof copyFile
   readonly removeDirectory: typeof removeDirectory
   readonly copyDirectoryContents: typeof copyDirectoryContents
@@ -37,7 +43,10 @@ export class CommandRunner extends Context.Tag("CommandRunner")<CommandRunner, C
 export const FileStoreLive = Layer.succeed(FileStore, {
   readDirectory,
   readText,
+  readBytes,
+  writeBytes,
   writeText,
+  makeDirectory,
   copyFile,
   removeDirectory,
   copyDirectoryContents,

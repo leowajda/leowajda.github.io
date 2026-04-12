@@ -19,8 +19,20 @@ export const writeText = (filePath: string, content: string) =>
       await fs.writeFile(filePath, content, "utf8")
   })
 
+export const writeBytes = (filePath: string, content: Uint8Array | Buffer) =>
+  attemptFileSystem("writeBytes", filePath, async () => {
+      await fs.mkdir(path.dirname(filePath), { recursive: true })
+      await fs.writeFile(filePath, content)
+  })
+
 export const readText = (filePath: string) =>
   attemptFileSystem("readText", filePath, () => fs.readFile(filePath, "utf8"))
+
+export const readBytes = (filePath: string) =>
+  attemptFileSystem("readBytes", filePath, () => fs.readFile(filePath))
+
+export const makeDirectory = (directory: string) =>
+  attemptFileSystem("makeDirectory", directory, () => fs.mkdir(directory, { recursive: true }))
 
 export const copyFile = (fromPath: string, toPath: string) =>
   attemptFileSystem("copyFile", `${fromPath} -> ${toPath}`, async () => {
@@ -59,7 +71,10 @@ export const runGit = (workingDirectory: string, ...args: ReadonlyArray<string>)
 export const runCommand = (workingDirectory: string, command: string, args: ReadonlyArray<string>) =>
   Effect.tryPromise({
     try: async () => {
-      const { stdout } = await execFileAsync(command, [...args], { cwd: workingDirectory })
+      const { stdout } = await execFileAsync(command, [...args], {
+        cwd: workingDirectory,
+        maxBuffer: 1024 * 1024 * 32
+      })
       return stdout
     },
     catch: (error) => new CommandExecutionError({

@@ -1,4 +1,5 @@
 import { Effect, Schema } from "effect"
+import type { GraphBuildSettings } from "../graph/mode.js"
 import type { CommandRunner, FileStore, GitClient } from "../core/workspace.js"
 import type { ProjectManifest } from "./schema.js"
 
@@ -33,5 +34,5 @@ export type ProjectBuild = Schema.Schema.Type<typeof ProjectBuildSchema>
 
 export type ProjectAdapter = {
   readonly kind: string
-  readonly build: (manifest: ProjectManifest) => Effect.Effect<ProjectBuild, Error, FileStore | GitClient | CommandRunner>
+  readonly build: (manifest: ProjectManifest) => Effect.Effect<ProjectBuild, Error, FileStore | GitClient | CommandRunner | GraphBuildSettings>
 }

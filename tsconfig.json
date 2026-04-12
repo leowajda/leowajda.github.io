@@ -12,5 +12,5 @@
     "allowSyntheticDefaultImports": true,
     "types": ["node"]
   },
-  "include": ["tools/src/**/*.ts", "tools/test/**/*.ts", "packages/ui/src/**/*.ts"]
+  "include": ["tools/src/**/*.ts", "tools/test/**/*.ts", "packages/*/src/**/*.ts"]
 }

@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import { spawn } from "node:child_process"
+import { GraphBuildSettings } from "../graph/mode.js"
 import { rootDirectory } from "../core/paths.js"
 import { previewHost, previewPort } from "../core/preview.js"
 import { generateSite } from "./generate.js"
@@ -36,7 +37,7 @@ const startJekyllPreview = Effect.acquireRelease(
 )
 
 const program = Effect.gen(function* () {
-  yield* generateSite
+  yield* generateSite.pipe(Effect.provide(GraphBuildSettings.layer("cache-only")))
   yield* startJekyllPreview
 
   yield* Effect.log(`Preview ready: http://${previewHost}:${previewPort}`)

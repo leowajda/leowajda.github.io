@@ -1,5 +1,6 @@
 import { Effect } from "effect"
 import path from "node:path"
+import type { CodeReferencesPanel } from "../../../../packages/graph/src/index.js"
 import { generatedSiteDirectory } from "../../core/paths.js"
 import { encodeFrontMatter } from "../../core/frontmatter.js"
 import { decodeYaml } from "../../core/yaml.js"
@@ -45,6 +46,7 @@ type BuiltImplementation = {
   readonly code: string
   readonly code_language: string
   readonly detail_url: string
+  readonly code_references: CodeReferencesPanel | null
 }
 
 type ProblemArtifacts = {
@@ -158,7 +160,8 @@ const buildImplementation = (
   language: SourceLanguage,
   approach: string,
   sourceUrl: string,
-  code: string
+  code: string,
+  codeReferences: CodeReferencesPanel | null
 ): BuiltImplementation => {
   const implementationId = slugify(`${languageSlug}-${approach}`)
 
@@ -170,7 +173,8 @@ const buildImplementation = (
     source_url: sourceUrl,
     code,
     code_language: language.code_language,
-    detail_url: `${manifest.route_base}/problems/${problemSlug}/?language=${languageSlug}&implementation=${implementationId}`
+    detail_url: `${manifest.route_base}/problems/${problemSlug}/?language=${languageSlug}&implementation=${implementationId}`,
+    code_references: codeReferences
   }
 }
 
@@ -179,7 +183,8 @@ const buildProblemArtifacts = (
   languageEntries: ReadonlyArray<readonly [string, SourceLanguage]>,
   slug: string,
   problem: ProblemSourceRecord,
-  codes: Readonly<Record<string, string>>
+  codes: Readonly<Record<string, string>>,
+  referencePanels: Readonly<Record<string, CodeReferencesPanel | null>>
 ): Effect.Effect<ProblemArtifacts, Error> =>
   Effect.gen(function* () {
   const implementations = languageEntries.flatMap(([languageSlug, language]) => {
@@ -196,7 +201,8 @@ const buildProblemArtifacts = (
         language,
         approach,
         sourceUrl,
-        codes[`${languageSlug}:${approach}:${sourceUrl}`] ?? ""
+        codes[`${languageSlug}:${approach}:${sourceUrl}`] ?? "",
+        referencePanels[`${languageSlug}:${approach}:${sourceUrl}`] ?? null
       )
     )
   })
@@ -255,7 +261,8 @@ const buildProblemArtifacts = (
 export const buildEurekaModel = (
   manifest: ProjectManifest,
   source: EurekaSource,
-  loadCode: (sourceUrl: string) => Effect.Effect<string, Error>
+  loadCode: (sourceUrl: string) => Effect.Effect<string, Error>,
+  resolveReferences?: (sourceUrl: string, languageSlug: string, approach: string) => CodeReferencesPanel | null
 ) =>
   Effect.gen(function* () {
     const languageEntries = Object.entries(source.languages)
@@ -281,7 +288,26 @@ export const buildEurekaModel = (
     )
 
     const artifacts = yield* Effect.forEach(problemEntries, ([slug, problem]) =>
-      buildProblemArtifacts(manifest, languageEntries, slug, problem, codes)
+      buildProblemArtifacts(
+        manifest,
+        languageEntries,
+        slug,
+        problem,
+        codes,
+        Object.fromEntries(
+          languageEntries.flatMap(([languageSlug]) => {
+            const sources = problem.implementations[languageSlug]
+            if (!sources) {
+              return []
+            }
+
+            return Object.entries(sources).map(([approach, sourceUrl]) => [
+              `${languageSlug}:${approach}:${sourceUrl}`,
+              resolveReferences?.(sourceUrl, languageSlug, approach) ?? null
+            ] as const)
+          })
+        )
+      )
     )
 
     const problemPages = Object.fromEntries(artifacts.map((artifact) => [artifact.slug, artifact.page]))

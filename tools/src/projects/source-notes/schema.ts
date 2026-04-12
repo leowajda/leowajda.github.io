@@ -1,4 +1,5 @@
 import { Schema } from "effect"
+import { CodeReferencesPanelSchema } from "../../../../packages/graph/src/index.js"
 
 export const SourceNotesBreadcrumbSchema = Schema.Struct({
   label: Schema.String,
@@ -31,7 +32,8 @@ export const SourceNotesDocumentSchema = Schema.Struct({
   source_url: Schema.String,
   language: Schema.String,
   format: Schema.Literal("code", "markdown"),
-  breadcrumbs: Schema.Array(SourceNotesBreadcrumbSchema)
+  breadcrumbs: Schema.Array(SourceNotesBreadcrumbSchema),
+  code_references: Schema.NullOr(CodeReferencesPanelSchema)
 })
 
 export const SourceNotesModuleSchema = Schema.Struct({
@@ -58,27 +60,6 @@ export const SourceNotesProjectDataSchema = Schema.Struct({
   modules: Schema.Array(SourceNotesModuleSchema)
 })
 
-export const SourceGraphNodeSchema = Schema.Struct({
-  id: Schema.String,
-  label: Schema.String,
-  url: Schema.String,
-  tree_path: Schema.String,
-  language: Schema.String
-})
-
-export const SourceGraphEdgeSchema = Schema.Struct({
-  source: Schema.String,
-  target: Schema.String,
-  kind: Schema.Literal("reference")
-})
-
-export const SourceProjectGraphSchema = Schema.Struct({
-  version: Schema.Literal(1),
-  project_slug: Schema.String,
-  nodes: Schema.Array(SourceGraphNodeSchema),
-  edges: Schema.Array(SourceGraphEdgeSchema)
-})
-
 export type SourceTreeNode = {
   readonly kind: "directory" | "file"
   readonly title: string
@@ -90,4 +71,3 @@ export type SourceTreeNode = {
 export type SourceNotesProjectData = Schema.Schema.Type<typeof SourceNotesProjectDataSchema>
 export type SourceNotesModule = Schema.Schema.Type<typeof SourceNotesModuleSchema>
 export type SourceNotesDocument = Schema.Schema.Type<typeof SourceNotesDocumentSchema>
-export type SourceProjectGraph = Schema.Schema.Type<typeof SourceProjectGraphSchema>

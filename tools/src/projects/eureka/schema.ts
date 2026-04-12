@@ -1,4 +1,5 @@
 import { Schema } from "effect"
+import { CodeReferencesPanelSchema } from "../../../../packages/graph/src/index.js"
 
 export const EurekaLanguageSchema = Schema.Struct({
   label: Schema.String,
@@ -33,7 +34,8 @@ export const ImplementationRecordSchema = Schema.Struct({
   source_url: Schema.String,
   code: Schema.String,
   code_language: Schema.String,
-  detail_url: Schema.String
+  detail_url: Schema.String,
+  code_references: Schema.NullOr(CodeReferencesPanelSchema)
 })
 
 export const ProblemPageRecordSchema = Schema.Struct({

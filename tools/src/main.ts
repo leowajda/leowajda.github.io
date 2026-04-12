@@ -1,6 +1,7 @@
 import { Command } from "@effect/cli"
 import { NodeContext, NodeRuntime } from "@effect/platform-node"
 import { Effect } from "effect"
+import { GraphBuildSettings, type GraphBuildMode } from "./graph/mode.js"
 import { refreshDocs } from "./programs/docs.js"
 import { generateSite } from "./programs/generate.js"
 import { previewSite } from "./programs/preview.js"
@@ -8,14 +9,14 @@ import { syncSources } from "./programs/sync.js"
 
 const refreshGraphsFlag = "--refresh-graphs"
 const refreshGraphs = process.argv.includes(refreshGraphsFlag)
-if (refreshGraphs) {
-  process.env.SOURCE_GRAPH_REFRESH = "1"
-}
+const graphBuildMode: GraphBuildMode = refreshGraphs ? "refresh" : "build"
 
 const argv = process.argv.filter((argument) => argument !== refreshGraphsFlag)
 
 const docs = Command.make("docs", {}, () => refreshDocs)
-const generate = Command.make("generate", {}, () => generateSite)
+const generate = Command.make("generate", {}, () =>
+  generateSite.pipe(Effect.provide(GraphBuildSettings.layer(graphBuildMode)))
+)
 const preview = Command.make("preview", {}, () => Effect.scoped(previewSite))
 const sync = Command.make("sync-sources", {}, () => syncSources)
 

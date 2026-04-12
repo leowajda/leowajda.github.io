@@ -42,6 +42,13 @@ export class SourceNotesError extends Data.TaggedError("SourceNotesError")<{
   readonly reason: string
 }> {}
 
+export class CodeGraphError extends Data.TaggedError("CodeGraphError")<{
+  readonly project: string
+  readonly workspace: string
+  readonly phase: string
+  readonly reason: string
+}> {}
+
 export class AssetBuildError extends Data.TaggedError("AssetBuildError")<{
   readonly reason: string
 }> {}
