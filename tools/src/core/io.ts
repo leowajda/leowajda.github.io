@@ -1,96 +1,153 @@
+import * as Command from "@effect/platform/Command"
+import type * as CommandExecutor from "@effect/platform/CommandExecutor"
+import * as FileSystem from "@effect/platform/FileSystem"
+import type * as PlatformError from "@effect/platform/Error"
 import { Effect } from "effect"
-import { execFile } from "node:child_process"
-import fs from "node:fs/promises"
 import path from "node:path"
-import { promisify } from "node:util"
 import { CommandExecutionError, FileSystemError } from "./errors.js"
 
-const execFileAsync = promisify(execFile)
+export type DirectoryEntry = {
+  readonly name: string
+  readonly isDirectory: () => boolean
+  readonly isFile: () => boolean
+}
 
-const attemptFileSystem = <T>(operation: string, target: string, task: () => Promise<T>) =>
-  Effect.tryPromise({
-    try: task,
-    catch: (error) => new FileSystemError({ operation, target, reason: String(error) })
+const mapFileSystemError = (operation: string, target: string) => (error: PlatformError.PlatformError) =>
+  new FileSystemError({
+    operation,
+    target,
+    reason: error.message
   })
 
-export const writeText = (filePath: string, content: string) =>
-  attemptFileSystem("writeText", filePath, async () => {
-      await fs.mkdir(path.dirname(filePath), { recursive: true })
-      await fs.writeFile(filePath, content, "utf8")
+const mapCommandError = (command: string, workingDirectory: string) => (error: PlatformError.PlatformError) =>
+  new CommandExecutionError({
+    command,
+    workingDirectory,
+    reason: error.message
   })
 
-export const writeBytes = (filePath: string, content: Uint8Array | Buffer) =>
-  attemptFileSystem("writeBytes", filePath, async () => {
-      await fs.mkdir(path.dirname(filePath), { recursive: true })
-      await fs.writeFile(filePath, content)
-  })
+const toDirectoryEntry = (name: string, type: FileSystem.File.Type): DirectoryEntry => ({
+  name,
+  isDirectory: () => type === "Directory",
+  isFile: () => type === "File"
+})
 
-export const readText = (filePath: string) =>
-  attemptFileSystem("readText", filePath, () => fs.readFile(filePath, "utf8"))
-
-export const readBytes = (filePath: string) =>
-  attemptFileSystem("readBytes", filePath, () => fs.readFile(filePath))
-
-export const readSymbolicLink = (filePath: string) =>
-  attemptFileSystem("readSymbolicLink", filePath, () => fs.readlink(filePath))
-
-export const makeDirectory = (directory: string) =>
-  attemptFileSystem("makeDirectory", directory, () => fs.mkdir(directory, { recursive: true }))
-
-export const copyFile = (fromPath: string, toPath: string) =>
-  attemptFileSystem("copyFile", `${fromPath} -> ${toPath}`, async () => {
-    await fs.mkdir(path.dirname(toPath), { recursive: true })
-    await fs.copyFile(fromPath, toPath)
-  })
-
-export const removeDirectory = (directory: string) =>
-  attemptFileSystem("removeDirectory", directory, () => fs.rm(directory, { recursive: true, force: true }))
-
-export const removePath = (target: string) =>
-  attemptFileSystem("removePath", target, () => fs.rm(target, { recursive: true, force: true }))
-
-export const createSymbolicLink = (target: string, linkPath: string) =>
-  attemptFileSystem("createSymbolicLink", `${target} -> ${linkPath}`, () =>
-    fs.symlink(target, linkPath)
+const makeParentDirectory = (fileSystem: FileSystem.FileSystem, targetPath: string) =>
+  fileSystem.makeDirectory(path.dirname(targetPath), { recursive: true }).pipe(
+    Effect.mapError(mapFileSystemError("makeDirectory", path.dirname(targetPath)))
   )
 
-export const readDirectory = (directory: string) =>
-  attemptFileSystem("readDirectory", directory, () => fs.readdir(directory, { withFileTypes: true }))
-
-export const fileExists = (filePath: string) =>
-  Effect.promise(() => fs.access(filePath).then(() => true).catch(() => false))
-
-export const copyDirectoryContents = (fromDirectory: string, toDirectory: string): Effect.Effect<void, Error> =>
-  attemptFileSystem("copyDirectoryContents", `${fromDirectory} -> ${toDirectory}`, () =>
-    fs.cp(fromDirectory, toDirectory, { recursive: true })
-  )
-
-export const runGit = (workingDirectory: string, ...args: ReadonlyArray<string>) =>
-  runCommand(workingDirectory, "git", args).pipe(
-    Effect.map((result) => result.trim()),
-    Effect.mapError((error) =>
-      error instanceof CommandExecutionError
-        ? new CommandExecutionError({
-            command: `git ${args.join(" ")}`,
-            workingDirectory,
-            reason: error.reason
-          })
-        : error
+export const writeText = (fileSystem: FileSystem.FileSystem, filePath: string, content: string) =>
+  makeParentDirectory(fileSystem, filePath).pipe(
+    Effect.flatMap(() =>
+      fileSystem.writeFileString(filePath, content).pipe(
+        Effect.mapError(mapFileSystemError("writeText", filePath))
+      )
     )
   )
 
-export const runCommand = (workingDirectory: string, command: string, args: ReadonlyArray<string>) =>
-  Effect.tryPromise({
-    try: async () => {
-      const { stdout } = await execFileAsync(command, [...args], {
-        cwd: workingDirectory,
-        maxBuffer: 1024 * 1024 * 32
+export const writeBytes = (fileSystem: FileSystem.FileSystem, filePath: string, content: Uint8Array | Buffer) =>
+  makeParentDirectory(fileSystem, filePath).pipe(
+    Effect.flatMap(() =>
+      fileSystem.writeFile(filePath, content).pipe(
+        Effect.mapError(mapFileSystemError("writeBytes", filePath))
+      )
+    )
+  )
+
+export const readText = (fileSystem: FileSystem.FileSystem, filePath: string) =>
+  fileSystem.readFileString(filePath).pipe(
+    Effect.mapError(mapFileSystemError("readText", filePath))
+  )
+
+export const readBytes = (fileSystem: FileSystem.FileSystem, filePath: string) =>
+  fileSystem.readFile(filePath).pipe(
+    Effect.mapError(mapFileSystemError("readBytes", filePath))
+  )
+
+export const readSymbolicLink = (fileSystem: FileSystem.FileSystem, filePath: string) =>
+  fileSystem.readLink(filePath).pipe(
+    Effect.mapError(mapFileSystemError("readSymbolicLink", filePath))
+  )
+
+export const makeDirectory = (fileSystem: FileSystem.FileSystem, directory: string) =>
+  fileSystem.makeDirectory(directory, { recursive: true }).pipe(
+    Effect.mapError(mapFileSystemError("makeDirectory", directory))
+  )
+
+export const copyFile = (fileSystem: FileSystem.FileSystem, fromPath: string, toPath: string) =>
+  makeParentDirectory(fileSystem, toPath).pipe(
+    Effect.flatMap(() =>
+      fileSystem.copyFile(fromPath, toPath).pipe(
+        Effect.mapError(mapFileSystemError("copyFile", `${fromPath} -> ${toPath}`))
+      )
+    )
+  )
+
+export const removeDirectory = (fileSystem: FileSystem.FileSystem, directory: string) =>
+  fileSystem.remove(directory, { recursive: true, force: true }).pipe(
+    Effect.mapError(mapFileSystemError("removeDirectory", directory))
+  )
+
+export const removePath = (fileSystem: FileSystem.FileSystem, target: string) =>
+  fileSystem.remove(target, { recursive: true, force: true }).pipe(
+    Effect.mapError(mapFileSystemError("removePath", target))
+  )
+
+export const createSymbolicLink = (fileSystem: FileSystem.FileSystem, target: string, linkPath: string) =>
+  fileSystem.symlink(target, linkPath).pipe(
+    Effect.mapError(mapFileSystemError("createSymbolicLink", `${target} -> ${linkPath}`))
+  )
+
+export const readDirectory = (fileSystem: FileSystem.FileSystem, directory: string) =>
+  fileSystem.readDirectory(directory).pipe(
+    Effect.mapError(mapFileSystemError("readDirectory", directory)),
+    Effect.flatMap((entries) =>
+      Effect.forEach(entries, (entryName) =>
+        fileSystem.stat(path.join(directory, entryName)).pipe(
+          Effect.map((info) => toDirectoryEntry(entryName, info.type)),
+          Effect.mapError(mapFileSystemError("readDirectory", directory))
+        )
+      , { concurrency: 8 })
+    )
+  )
+
+export const fileExists = (fileSystem: FileSystem.FileSystem, filePath: string) =>
+  fileSystem.exists(filePath).pipe(
+    Effect.catchAll(() => Effect.succeed(false))
+  )
+
+export const copyDirectoryContents = (fileSystem: FileSystem.FileSystem, fromDirectory: string, toDirectory: string) =>
+  fileSystem.copy(fromDirectory, toDirectory).pipe(
+    Effect.mapError(mapFileSystemError("copyDirectoryContents", `${fromDirectory} -> ${toDirectory}`))
+  )
+
+export const runCommand = (
+  executor: CommandExecutor.CommandExecutor,
+  workingDirectory: string,
+  command: string,
+  args: ReadonlyArray<string>
+) =>
+  executor.string(
+    Command.make(command, ...args).pipe(
+      Command.workingDirectory(workingDirectory)
+    )
+  ).pipe(
+    Effect.mapError(mapCommandError(`${command} ${args.join(" ")}`.trim(), workingDirectory))
+  )
+
+export const runGit = (
+  executor: CommandExecutor.CommandExecutor,
+  workingDirectory: string,
+  ...args: ReadonlyArray<string>
+) =>
+  runCommand(executor, workingDirectory, "git", args).pipe(
+    Effect.map((result) => result.trim()),
+    Effect.mapError((error) =>
+      new CommandExecutionError({
+        command: `git ${args.join(" ")}`,
+        workingDirectory,
+        reason: error.reason
       })
-      return stdout
-    },
-    catch: (error) => new CommandExecutionError({
-      command: `${command} ${args.join(" ")}`.trim(),
-      workingDirectory,
-      reason: String(error)
-    })
-  })
+    )
+  )
