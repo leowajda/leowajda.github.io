@@ -56,6 +56,13 @@ type ProblemArtifacts = {
   readonly files: ReadonlyArray<GeneratedTextFile>
 }
 
+type ProblemImplementationSource = {
+  readonly languageSlug: string
+  readonly language: SourceLanguage
+  readonly approach: string
+  readonly sourceUrl: string
+}
+
 const metadataKeys = new Set(["name", "url", "difficulty", "categories"])
 
 const humanLabel = (value: string) =>
@@ -66,6 +73,27 @@ const humanLabel = (value: string) =>
     .join(" ")
 
 const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9_-]/g, "-")
+
+const implementationKey = (languageSlug: string, approach: string, sourceUrl: string) =>
+  `${languageSlug}:${approach}:${sourceUrl}`
+
+const listProblemImplementations = (
+  languageEntries: ReadonlyArray<readonly [string, SourceLanguage]>,
+  problem: ProblemSourceRecord
+): ReadonlyArray<ProblemImplementationSource> =>
+  languageEntries.flatMap(([languageSlug, language]) => {
+    const sources = problem.implementations[languageSlug]
+    if (!sources) {
+      return []
+    }
+
+    return Object.entries(sources).map(([approach, sourceUrl]) => ({
+      languageSlug,
+      language,
+      approach,
+      sourceUrl
+    }))
+  })
 
 const problemFrontMatter = (manifest: ProjectManifest, slug: string, title: string, embed: boolean) =>
   encodeFrontMatter(`Unable to encode problem front matter for '${slug}'`, {
@@ -187,13 +215,8 @@ const buildProblemArtifacts = (
   referencePanels: Readonly<Record<string, CodeReferencesPanel | null>>
 ): Effect.Effect<ProblemArtifacts, Error> =>
   Effect.gen(function* () {
-  const implementations = languageEntries.flatMap(([languageSlug, language]) => {
-    const sources = problem.implementations[languageSlug]
-    if (!sources) {
-      return []
-    }
-
-    return Object.entries(sources).map(([approach, sourceUrl]) =>
+  const implementations = listProblemImplementations(languageEntries, problem).map(
+    ({ languageSlug, language, approach, sourceUrl }) =>
       buildImplementation(
         manifest,
         slug,
@@ -201,11 +224,10 @@ const buildProblemArtifacts = (
         language,
         approach,
         sourceUrl,
-        codes[`${languageSlug}:${approach}:${sourceUrl}`] ?? "",
-        referencePanels[`${languageSlug}:${approach}:${sourceUrl}`] ?? null
+        codes[implementationKey(languageSlug, approach, sourceUrl)] ?? "",
+        referencePanels[implementationKey(languageSlug, approach, sourceUrl)] ?? null
       )
-    )
-  })
+  )
 
   const implementationsByLanguage = new Map<string, Array<BuiltImplementation>>()
   implementations.forEach((implementation) => {
@@ -271,20 +293,16 @@ export const buildEurekaModel = (
     const codes = Object.fromEntries(
       (
         yield* Effect.forEach(problemEntries, ([, problem]) =>
-          Effect.forEach(languageEntries, ([languageSlug]) => {
-            const sources = problem.implementations[languageSlug]
-            if (!sources) {
-              return Effect.succeed([] as Array<readonly [string, string]>)
-            }
-
-            return Effect.forEach(Object.entries(sources), ([approach, sourceUrl]) =>
+          Effect.forEach(
+            listProblemImplementations(languageEntries, problem),
+            ({ languageSlug, approach, sourceUrl }) =>
               loadCode(sourceUrl).pipe(
-                Effect.map((code) => [[`${languageSlug}:${approach}:${sourceUrl}`, code]] as Array<readonly [string, string]>)
-              )
-            ).pipe(Effect.map((entries) => entries.flat()))
-          }, { concurrency: 8 })
+                Effect.map((code) => [implementationKey(languageSlug, approach, sourceUrl), code] as const)
+              ),
+            { concurrency: 8 }
+          )
         , { concurrency: 8 })
-      ).flat(2)
+      ).flat()
     )
 
     const artifacts = yield* Effect.forEach(problemEntries, ([slug, problem]) =>
@@ -295,17 +313,10 @@ export const buildEurekaModel = (
         problem,
         codes,
         Object.fromEntries(
-          languageEntries.flatMap(([languageSlug]) => {
-            const sources = problem.implementations[languageSlug]
-            if (!sources) {
-              return []
-            }
-
-            return Object.entries(sources).map(([approach, sourceUrl]) => [
-              `${languageSlug}:${approach}:${sourceUrl}`,
-              resolveReferences?.(sourceUrl, languageSlug, approach) ?? null
-            ] as const)
-          })
+          listProblemImplementations(languageEntries, problem).map(({ languageSlug, approach, sourceUrl }) => [
+            implementationKey(languageSlug, approach, sourceUrl),
+            resolveReferences?.(sourceUrl, languageSlug, approach) ?? null
+          ] as const)
         )
       )
     )
