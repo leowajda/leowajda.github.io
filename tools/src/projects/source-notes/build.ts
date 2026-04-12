@@ -11,6 +11,12 @@ import { resolveRepositoryMetadata, toPosixPath } from "../../core/repository.js
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedAssetFile, GeneratedTextFile, ProjectAdapter, ProjectBuild, ProjectCard } from "../types.js"
 import {
+  buildFileTree,
+  buildSourceDocument,
+  toRelativePath,
+  type BuiltSourceDocument
+} from "./documents.js"
+import {
   SourceNotesProjectDataSchema,
   type SourceNotesDocument,
   type SourceNotesModule,
@@ -30,11 +36,6 @@ type PageAsset = {
   readonly markdown: string
   readonly assets: ReadonlyArray<GeneratedAssetFile>
   readonly firstImageUrl: string
-}
-
-type BuiltDocument = {
-  readonly metadata: SourceNotesDocument
-  readonly file: GeneratedTextFile
 }
 
 type BuiltModule = {
@@ -78,9 +79,6 @@ const markdownImagePattern = /!\[([^\]]*)\]\(([^)]+)\)/g
 const gradleWorkspaceRootMarkers = ["gradlew", "settings.gradle", "settings.gradle.kts"] as const
 const gradleWorkspaceMarkers = ["build.gradle", "build.gradle.kts"] as const
 const scalaWorkspaceMarkers = ["build.sbt"] as const
-
-const toRelativePath = (fromPath: string, toPath: string) =>
-  toPosixPath(path.relative(fromPath, toPath))
 
 const slugify = (value: string) =>
   value
@@ -328,90 +326,6 @@ const rewriteMarkdownAssets = (
     } satisfies PageAsset
   })
 
-const buildFileTree = (
-  rootLabel: string,
-  entries: ReadonlyArray<{ readonly relativePath: string; readonly url: string }>
-) => {
-  const root: Array<SourceTreeNode> = []
-
-  for (const entry of entries) {
-    const segments = entry.relativePath.split("/").filter(Boolean)
-    let cursor = root
-
-    segments.forEach((segment, index) => {
-      const isLeaf = index === segments.length - 1
-      const treePath = `${rootLabel}/${segments.slice(0, index + 1).join("/")}`
-      const existing = cursor.find((node) => node.title === segment && node.tree_path === treePath)
-      if (existing) {
-        cursor = existing.children as Array<SourceTreeNode>
-        return
-      }
-
-      const nextNode: SourceTreeNode = {
-        kind: isLeaf ? "file" : "directory",
-        title: segment,
-        tree_path: treePath,
-        url: isLeaf ? entry.url : "",
-        children: []
-      }
-
-      cursor.push(nextNode)
-      cursor = nextNode.children as Array<SourceTreeNode>
-    })
-  }
-
-  const sortNodes = (nodes: Array<SourceTreeNode>) => {
-    nodes.sort((left, right) => {
-      if (left.kind !== right.kind) {
-        return left.kind === "directory" ? -1 : 1
-      }
-
-      return left.title.localeCompare(right.title)
-    })
-    nodes.forEach((node) => sortNodes(node.children as Array<SourceTreeNode>))
-  }
-
-  sortNodes(root)
-  return root
-}
-
-const buildDocumentBody = (content: string, extension: string) => {
-  const metadata = textFileMetadata[extension]
-  if (!metadata) {
-    return content
-  }
-
-  if (metadata.format === "markdown") {
-    return content
-  }
-
-  return `~~~${metadata.syntax}\n${content.trimEnd()}\n~~~\n`
-}
-
-const buildRoutePath = (relativePath: string) =>
-  relativePath
-    .split("/")
-    .map((segment, index, segments) => index === segments.length - 1 ? slugify(path.parse(segment).name) : slugify(segment))
-    .filter(Boolean)
-    .join("/")
-
-const buildDocumentBreadcrumbs = (
-  manifest: ProjectManifest,
-  moduleCandidate: ModuleCandidate,
-  relativePath: string
-) => {
-  const breadcrumbs = [
-    { label: manifest.title, url: "" },
-    { label: moduleCandidate.title, url: `${manifest.route_base}/${moduleCandidate.slug}/` }
-  ]
-
-  relativePath.split("/").slice(0, -1).forEach((segment) => {
-    breadcrumbs.push({ label: segment, url: "" })
-  })
-
-  return breadcrumbs
-}
-
 const buildModuleData = (
   manifest: ProjectManifest,
   moduleCandidate: ModuleCandidate,
@@ -435,53 +349,23 @@ const buildModuleData = (
           Effect.forEach(files, (filePath) =>
             fileStore.readText(filePath).pipe(
               Effect.flatMap((content) => {
-                const relativeToRoot = toRelativePath(root.absolutePath, filePath)
-                const treePath = `${root.label}/${relativeToRoot}`
                 const extension = path.extname(filePath).toLowerCase()
-                const baseName = path.basename(filePath)
-                const routePath = buildRoutePath(relativeToRoot)
-                const url = `${manifest.route_base}/${moduleCandidate.slug}/${routePath}/`
-                const sourcePath = toRelativePath(repoRoot, filePath)
-                const sourceUrl = gitMetadata.sourceUrl ? `${gitMetadata.sourceUrl}/blob/${gitMetadata.branch}/${sourcePath}` : ""
-                const breadcrumbs = buildDocumentBreadcrumbs(manifest, moduleCandidate, relativeToRoot)
-
-                return encodeFrontMatter(
-                  `Unable to encode source document front matter for '${sourcePath}'`,
+                return buildSourceDocument(
                   {
-                    layout: "source_document",
-                    title: baseName,
-                    description: `${baseName} notes`,
-                    permalink: url,
-                    body_class: "page-wide",
-                    project_key: manifest.slug,
-                    module_slug: moduleCandidate.slug,
-                    document_id: `${moduleCandidate.slug}:${treePath}`,
-                    graph_node_id: `${manifest.slug}:${moduleCandidate.slug}:${treePath}`,
-                    page_source_url: sourceUrl,
-                    tree_path: treePath,
-                    source_path: sourcePath,
-                    source_url: sourceUrl
-                  }
-                ).pipe(
-                  Effect.map((frontMatter) => ({
-                    metadata: {
-                      id: `${moduleCandidate.slug}:${treePath}`,
-                      graph_node_id: `${manifest.slug}:${moduleCandidate.slug}:${treePath}`,
-                      title: baseName,
-                      url,
-                      tree_path: treePath,
-                      source_path: sourcePath,
-                      source_url: sourceUrl,
-                      language: textFileMetadata[extension]?.language ?? root.language,
-                      format: textFileMetadata[extension]?.format ?? "code",
-                      breadcrumbs,
-                      code_references: null
-                    } satisfies SourceNotesDocument,
-                    file: {
-                      path: path.join(generatedSiteDirectory, manifest.slug, moduleCandidate.slug, routePath, "index.md"),
-                      content: `${frontMatter}\n${buildDocumentBody(content, extension)}`
-                    } satisfies GeneratedTextFile
-                  } satisfies BuiltDocument))
+                    manifest,
+                    moduleSlug: moduleCandidate.slug,
+                    moduleTitle: moduleCandidate.title,
+                    repoRoot,
+                    rootLabel: root.label,
+                    defaultLanguage: root.language,
+                    filePath,
+                    rootAbsolutePath: root.absolutePath,
+                    gitBranch: gitMetadata.branch,
+                    gitSourceUrl: gitMetadata.sourceUrl,
+                    metadata: textFileMetadata[extension],
+                    slugify
+                  },
+                  content
                 )
               })
             )
