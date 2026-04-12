@@ -79,6 +79,9 @@ const gradleWorkspaceRootMarkers = ["gradlew", "settings.gradle", "settings.grad
 const gradleWorkspaceMarkers = ["build.gradle", "build.gradle.kts"] as const
 const scalaWorkspaceMarkers = ["build.sbt"] as const
 
+const toRelativePath = (fromPath: string, toPath: string) =>
+  toPosixPath(path.relative(fromPath, toPath))
+
 const slugify = (value: string) =>
   value
     .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
@@ -385,6 +388,30 @@ const buildDocumentBody = (content: string, extension: string) => {
   return `~~~${metadata.syntax}\n${content.trimEnd()}\n~~~\n`
 }
 
+const buildRoutePath = (relativePath: string) =>
+  relativePath
+    .split("/")
+    .map((segment, index, segments) => index === segments.length - 1 ? slugify(path.parse(segment).name) : slugify(segment))
+    .filter(Boolean)
+    .join("/")
+
+const buildDocumentBreadcrumbs = (
+  manifest: ProjectManifest,
+  moduleCandidate: ModuleCandidate,
+  relativePath: string
+) => {
+  const breadcrumbs = [
+    { label: manifest.title, url: "" },
+    { label: moduleCandidate.title, url: `${manifest.route_base}/${moduleCandidate.slug}/` }
+  ]
+
+  relativePath.split("/").slice(0, -1).forEach((segment) => {
+    breadcrumbs.push({ label: segment, url: "" })
+  })
+
+  return breadcrumbs
+}
+
 const buildModuleData = (
   manifest: ProjectManifest,
   moduleCandidate: ModuleCandidate,
@@ -408,27 +435,15 @@ const buildModuleData = (
           Effect.forEach(files, (filePath) =>
             fileStore.readText(filePath).pipe(
               Effect.flatMap((content) => {
-                const relativeToRoot = path.relative(root.absolutePath, filePath).split(path.sep).join("/")
+                const relativeToRoot = toRelativePath(root.absolutePath, filePath)
                 const treePath = `${root.label}/${relativeToRoot}`
                 const extension = path.extname(filePath).toLowerCase()
                 const baseName = path.basename(filePath)
-                const routePath = relativeToRoot
-                  .split("/")
-                  .map((segment, index, segments) => index === segments.length - 1 ? slugify(path.parse(segment).name) : slugify(segment))
-                  .filter(Boolean)
-                  .join("/")
+                const routePath = buildRoutePath(relativeToRoot)
                 const url = `${manifest.route_base}/${moduleCandidate.slug}/${routePath}/`
-                const sourcePath = path.relative(repoRoot, filePath).split(path.sep).join("/")
+                const sourcePath = toRelativePath(repoRoot, filePath)
                 const sourceUrl = gitMetadata.sourceUrl ? `${gitMetadata.sourceUrl}/blob/${gitMetadata.branch}/${sourcePath}` : ""
-
-                const breadcrumbs = [
-                  { label: manifest.title, url: "" },
-                  { label: moduleCandidate.title, url: `${manifest.route_base}/${moduleCandidate.slug}/` }
-                ]
-
-                relativeToRoot.split("/").slice(0, -1).forEach((segment) => {
-                  breadcrumbs.push({ label: segment, url: "" })
-                })
+                const breadcrumbs = buildDocumentBreadcrumbs(manifest, moduleCandidate, relativeToRoot)
 
                 return encodeFrontMatter(
                   `Unable to encode source document front matter for '${sourcePath}'`,
@@ -567,10 +582,10 @@ const buildSourceNotesReferencePanels = (
     const graphWorkspaces: Array<GraphWorkspaceInput> = Array.from(groupedDocuments.entries())
       .filter(([, documents]) => documents.length > 0)
       .map(([workspaceRoot, documents]) => {
-        const workspaceRelativeRoot = toPosixPath(path.relative(repoRoot, workspaceRoot))
+        const workspaceRelativeRoot = toRelativePath(repoRoot, workspaceRoot)
         const documentsByRelativePath = new Map(
           documents.map(({ document, sourcePath }) => [
-            toPosixPath(path.relative(workspaceRoot, sourcePath)),
+            toRelativePath(workspaceRoot, sourcePath),
             document
           ] as const)
         )
@@ -585,7 +600,7 @@ const buildSourceNotesReferencePanels = (
           source_extensions: languageSourceExtensions(languages),
           documents: documents.map(({ document, sourcePath }) => ({
             id: document.id,
-            workspace_relative_path: toPosixPath(path.relative(workspaceRoot, sourcePath)),
+            workspace_relative_path: toRelativePath(workspaceRoot, sourcePath),
             title: document.title,
             language: document.language
           })),
