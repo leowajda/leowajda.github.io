@@ -1,6 +1,6 @@
 import { Effect, Layer, Schema } from "effect"
 import path from "node:path"
-import { buildBrowserAssets } from "../core/assets.js"
+import { buildBrowserAssets } from "../core/asset-pipeline.js"
 import { decodeYaml, encodeYaml } from "../core/yaml.js"
 import { FileStore, WorkspaceLive } from "../core/workspace.js"
 import { generatedSiteDirectory, projectsDirectory, rootDirectory, siteSourceDirectory, themeSourceDirectory } from "../core/paths.js"
