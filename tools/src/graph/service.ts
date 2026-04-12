@@ -74,6 +74,25 @@ const fingerprintFileExtensions = new Set([".cmake", ".gradle", ".kts", ".sbt"])
 const formatSchemaError = (error: ParseResult.ParseError) =>
   ParseResult.TreeFormatter.formatErrorSync(error)
 
+const codeGraphError = (
+  workspace: GraphWorkspaceInput,
+  phase: string,
+  reason: string
+) =>
+  new CodeGraphError({
+    project: workspace.project_slug,
+    workspace: workspace.workspace_slug,
+    phase,
+    reason
+  })
+
+const mapWorkspaceError = <E = unknown>(
+  workspace: GraphWorkspaceInput,
+  phase: string,
+  format: (error: E) => string = String as (error: E) => string
+) =>
+  (error: E) => codeGraphError(workspace, phase, format(error))
+
 const safeSegment = (value: string) =>
   value.replace(/[^a-zA-Z0-9._-]/g, "_")
 
@@ -126,18 +145,14 @@ const isFingerprintCandidate = (filePath: string, sourceExtensions: ReadonlyArra
 }
 
 const walkRelevantFiles = (
+  workspace: GraphWorkspaceInput,
   directory: string,
   sourceExtensions: ReadonlyArray<string>
 ): Effect.Effect<ReadonlyArray<string>, CodeGraphError, FileStore> =>
   Effect.gen(function* () {
     const fileStore = yield* FileStore
     const entries = yield* fileStore.readDirectory(directory).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: directory,
-        workspace: directory,
-        phase: "fingerprint-read-directory",
-        reason: String(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, "fingerprint-read-directory"))
     )
 
     const nested = yield* Effect.forEach(entries, (entry) => {
@@ -147,7 +162,7 @@ const walkRelevantFiles = (
           return Effect.succeed([] as ReadonlyArray<string>)
         }
 
-        return walkRelevantFiles(fullPath, sourceExtensions)
+        return walkRelevantFiles(workspace, fullPath, sourceExtensions)
       }
 
       return Effect.succeed(isFingerprintCandidate(fullPath, sourceExtensions) ? [fullPath] : [])
@@ -159,7 +174,7 @@ const walkRelevantFiles = (
 const createWorkspaceFingerprint = (workspace: GraphWorkspaceInput) =>
   Effect.gen(function* () {
     const fileStore = yield* FileStore
-    const files = yield* walkRelevantFiles(workspace.root_path, workspace.source_extensions)
+    const files = yield* walkRelevantFiles(workspace, workspace.root_path, workspace.source_extensions)
     const digest = createHash("sha256")
 
     digest.update(workspace.kind)
@@ -170,12 +185,7 @@ const createWorkspaceFingerprint = (workspace: GraphWorkspaceInput) =>
     for (const filePath of [...files].sort()) {
       const relativePath = path.relative(workspace.root_path, filePath)
       const content = yield* fileStore.readBytes(filePath).pipe(
-        Effect.mapError((error) => new CodeGraphError({
-          project: workspace.project_slug,
-          workspace: workspace.workspace_slug,
-          phase: "fingerprint-read-file",
-          reason: `${relativePath}: ${String(error)}`
-        }))
+        Effect.mapError(mapWorkspaceError(workspace, "fingerprint-read-file", (error) => `${relativePath}: ${String(error)}`))
       )
 
       digest.update(relativePath)
@@ -200,31 +210,16 @@ const readCachePayload = (
     }
 
     const raw = yield* fileStore.readText(filePath).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase: `${phasePrefix}-read`,
-        reason: String(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, `${phasePrefix}-read`))
     )
 
     const decoded = yield* Effect.try({
       try: () => JSON.parse(raw) as unknown,
-      catch: (error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase: `${phasePrefix}-json`,
-        reason: String(error)
-      })
+      catch: mapWorkspaceError(workspace, `${phasePrefix}-json`)
     })
 
     const payload = yield* Schema.decodeUnknown(GraphArtifactCacheSchema)(decoded).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase: `${phasePrefix}-decode`,
-        reason: formatSchemaError(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, `${phasePrefix}-decode`, formatSchemaError))
     )
 
     return payload
@@ -248,12 +243,7 @@ const encodeGraphArtifactCache = (workspace: GraphWorkspaceInput, fingerprint: s
     fingerprint,
     artifact
   }).pipe(
-    Effect.mapError((error) => new CodeGraphError({
-      project: workspace.project_slug,
-      workspace: workspace.workspace_slug,
-      phase: "cache-encode",
-      reason: formatSchemaError(error)
-    }))
+    Effect.mapError(mapWorkspaceError(workspace, "cache-encode", formatSchemaError))
   )
 
 const writeArtifactCacheFiles = (
@@ -270,24 +260,14 @@ const writeArtifactCacheFiles = (
       cacheFilePath(workspace, fingerprint),
       serialized
     ).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase: "cache-write",
-        reason: String(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, "cache-write"))
     )
 
     yield* fileStore.writeText(
       latestCacheFilePath(workspace),
       serialized
     ).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase: "cache-latest-write",
-        reason: String(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, "cache-latest-write"))
     )
   })
 
@@ -301,12 +281,7 @@ const runCommandOrFail = (
   Effect.gen(function* () {
     const commandRunner = yield* CommandRunner
     yield* commandRunner.runCommand(workingDirectory, command, args).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase,
-        reason: formatCommandError(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, phase, formatCommandError))
     )
   })
 
@@ -399,12 +374,7 @@ const resolveCompatibleJavaHome = (workspace: GraphWorkspaceInput) =>
       }
     }
 
-    return yield* Effect.fail(new CodeGraphError({
-      project: workspace.project_slug,
-      workspace: workspace.workspace_slug,
-      phase: "java-runtime",
-      reason: "Unable to resolve a compiler-capable JDK for scip-java"
-    }))
+    return yield* Effect.fail(codeGraphError(workspace, "java-runtime", "Unable to resolve a compiler-capable JDK for scip-java"))
   })
 
 const ensureScipClangBinary = (workspace: GraphWorkspaceInput) =>
@@ -429,12 +399,7 @@ const ensureScipClangBinary = (workspace: GraphWorkspaceInput) =>
       const temporaryPath = `${scipClangBinaryPath}.download`
 
       yield* fileStore.makeDirectory(graphBinaryDirectory).pipe(
-        Effect.mapError((error) => new CodeGraphError({
-          project: workspace.project_slug,
-          workspace: workspace.workspace_slug,
-          phase: "scip-clang-directory",
-          reason: String(error)
-        }))
+        Effect.mapError(mapWorkspaceError(workspace, "scip-clang-directory"))
       )
       yield* runCommandOrFail(
         workspace,
@@ -474,12 +439,7 @@ const configureCppWorkspace = (workspace: GraphWorkspaceInput) =>
     )
 
     yield* fileStore.makeDirectory(buildDirectory).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase: "cmake-directory",
-        reason: String(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, "cmake-directory"))
     )
     yield* runCommandOrFail(
       workspace,
@@ -496,12 +456,7 @@ const runWorkspaceIndexer = (workspace: GraphWorkspaceInput, outputPath: string)
   Effect.gen(function* () {
     const fileStore = yield* FileStore
     yield* fileStore.makeDirectory(path.dirname(outputPath)).pipe(
-      Effect.mapError((error) => new CodeGraphError({
-        project: workspace.project_slug,
-        workspace: workspace.workspace_slug,
-        phase: "index-output-directory",
-        reason: String(error)
-      }))
+      Effect.mapError(mapWorkspaceError(workspace, "index-output-directory"))
     )
 
     switch (workspace.kind) {
@@ -587,22 +542,12 @@ const CodeGraphToolchainLive = Layer.succeed(CodeGraphToolchain, {
 
       const outputPath = cacheIndexPath(workspace, fingerprint)
       yield* fileStore.makeDirectory(workspaceCacheDirectory(workspace, fingerprint)).pipe(
-        Effect.mapError((error) => new CodeGraphError({
-          project: workspace.project_slug,
-          workspace: workspace.workspace_slug,
-          phase: "cache-directory",
-          reason: String(error)
-        }))
+        Effect.mapError(mapWorkspaceError(workspace, "cache-directory"))
       )
       yield* runWorkspaceIndexer(workspace, outputPath)
 
       const rawIndex = yield* fileStore.readBytes(outputPath).pipe(
-        Effect.mapError((error) => new CodeGraphError({
-          project: workspace.project_slug,
-          workspace: workspace.workspace_slug,
-          phase: "index-read",
-          reason: String(error)
-        }))
+        Effect.mapError(mapWorkspaceError(workspace, "index-read"))
       )
 
       const artifact = yield* buildGraphArtifactFromScip(workspace, rawIndex)
