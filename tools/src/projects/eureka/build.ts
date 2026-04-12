@@ -6,7 +6,7 @@ import { FileStore } from "../../core/workspace.js"
 import { resolveRepositoryMetadata } from "../../core/repository.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedTextFile, ProjectAdapter, ProjectBuild, ProjectCard } from "../types.js"
-import { buildEurekaModel, decodeEurekaSource, type EurekaSource } from "./model.js"
+import { buildEurekaModel, decodeEurekaSource } from "./model.js"
 import { buildEurekaReferencePanels, localSourcePath } from "./references.js"
 import { ProblemFiltersSchema, ProblemPagesSchema, ProblemsViewSchema } from "./schema.js"
 

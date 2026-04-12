@@ -6,7 +6,7 @@ import { buildCodeReferencePanels } from "../../graph/service.js"
 import { resolveRepositoryMetadata, toPosixPath } from "../../core/repository.js"
 import { FileStore } from "../../core/workspace.js"
 import type { ProjectManifest } from "../schema.js"
-import type { EurekaSource } from "./model.js"
+import type { EurekaSource } from "./source.js"
 
 type EurekaGraphDocument = {
   readonly key: string
