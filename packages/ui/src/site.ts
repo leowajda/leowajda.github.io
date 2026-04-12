@@ -1,8 +1,8 @@
 import renderMathInElement from "katex/contrib/auto-render"
 import { Effect } from "effect"
 import { Browser, BrowserLive, addEventListener, type Cleanup, combineCleanups } from "./browser"
+import { initializeCodeReferences } from "./code-references"
 import { initializeEurekaUi } from "./eureka-controller"
-import { initializeSourceGraphs } from "./source-graph"
 
 const themeStorageKey = "leowajda.github.io-theme"
 
@@ -234,9 +234,9 @@ const start = Effect.gen(function* () {
     initializeSafely("theme toggle", initializeThemeToggle),
     initializeSafely("back button", initializeBackButton),
     initializeSafely("copy buttons", initializeCopyButtons),
+    initializeSafely("code references", initializeCodeReferences),
     initializeSafely("source sidebar", initializeSourceSidebar),
     initializeSafely("math rendering", initializeMath),
-    initializeSafely("source graphs", initializeSourceGraphs),
     initializeSafely("Eureka UI", initializeEurekaUi)
   ])
 

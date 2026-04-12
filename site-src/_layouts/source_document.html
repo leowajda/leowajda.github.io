@@ -3,18 +3,7 @@ layout: default
 ---
 
 {%- assign notes = site.data.generated[page.project_key].source_notes -%}
-{%- assign graph = site.data.generated[page.project_key].source_graph -%}
 {%- assign current_module = notes.modules | where: "slug", page.module_slug | first -%}
-{%- assign current_graph_edges_out = empty -%}
-{%- assign current_graph_edges_in = empty -%}
-{%- assign current_has_graph_edges = false -%}
-{%- if graph != nil -%}
-  {%- assign current_graph_edges_out = graph.edges | where: "source", page.graph_node_id -%}
-  {%- assign current_graph_edges_in = graph.edges | where: "target", page.graph_node_id -%}
-  {%- if current_graph_edges_out.size > 0 or current_graph_edges_in.size > 0 -%}
-    {%- assign current_has_graph_edges = true -%}
-  {%- endif -%}
-{%- endif -%}
 {%- if current_module != nil -%}
   {%- assign current_document = current_module.documents | where: "id", page.document_id | first -%}
 {%- endif -%}
@@ -22,6 +11,13 @@ layout: default
 {%- if current_module == nil or current_document == nil -%}
   <p>Source document data not found.</p>
 {%- else -%}
+  {%- assign references_panel_id = current_document.id | slugify -%}
+  {%- assign current_document_has_references = false -%}
+  {%- if current_document.code_references != nil -%}
+    {%- if current_document.code_references.uses.size > 0 or current_document.code_references.used_by.size > 0 -%}
+      {%- assign current_document_has_references = true -%}
+    {%- endif -%}
+  {%- endif -%}
   <section class="source-shell">
     {%- include source_sidebar.html notes=notes -%}
 
@@ -51,7 +47,7 @@ layout: default
         <section class="problem-viewer">
           <div class="problem-viewer__frame">
             <section class="code-shell">
-              <section class="code-shell__panel{% if current_has_graph_edges %} code-shell__panel--with-graph{% endif %}">
+              <section class="code-shell__panel">
                 <div class="code-shell__panel-header">
                   <div class="code-shell__panel-actions">
                     {%- if page.page_source_url -%}
@@ -59,19 +55,26 @@ layout: default
                         {%- include icon.html name="github" -%}
                       </a>
                     {%- endif -%}
+                    {%- if current_document_has_references -%}
+                      <button
+                        class="link-button icon-button code-references-button is-active"
+                        type="button"
+                        data-code-references-toggle
+                        aria-controls="code-references-{{ references_panel_id }}"
+                        aria-pressed="true"
+                        aria-label="Hide file references"
+                        title="Hide file references"
+                      >
+                        {%- include icon.html name="references" -%}
+                      </button>
+                    {%- endif -%}
                     <button class="link-button icon-button code-copy-button" type="button" data-code-copy-button aria-label="Copy code" title="Copy code">
                       {%- include icon.html name="copy" -%}
                     </button>
                   </div>
                 </div>
                 <div class="code-markdown">{{ content }}</div>
-                {%- if graph and page.graph_node_id and current_has_graph_edges -%}
-                  <div class="source-graph source-graph--overlay" data-source-graph data-current-node="{{ page.graph_node_id }}">
-                    <script type="application/json" data-source-graph-payload>
-                      {{ graph | jsonify }}
-                    </script>
-                  </div>
-                {%- endif -%}
+                {%- include code_references.html references=current_document.code_references panel_id=references_panel_id -%}
               </section>
             </section>
           </div>

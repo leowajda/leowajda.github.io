@@ -34,6 +34,12 @@
 
               <div class="code-shell__action-groups">
                 {%- for implementation in language_impls -%}
+                  {%- assign implementation_has_references = false -%}
+                  {%- if implementation.code_references != nil -%}
+                    {%- if implementation.code_references.uses.size > 0 or implementation.code_references.used_by.size > 0 -%}
+                      {%- assign implementation_has_references = true -%}
+                    {%- endif -%}
+                  {%- endif -%}
                   <div class="code-shell__actions" data-implementation-actions="{{ implementation.id }}"{% unless forloop.first %} hidden{% endunless %}>
                     {%- if embed -%}
                       <a class="link-button icon-button" href="{{ problem.detail_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}" aria-label="Open page" title="Open page">
@@ -47,6 +53,19 @@
                     <a class="link-button icon-button" href="{{ implementation.source_url }}" target="_blank" rel="noreferrer" aria-label="Open source on GitHub" title="Open source on GitHub">
                       {%- include icon.html name="github" -%}
                     </a>
+                    {%- if implementation_has_references -%}
+                      <button
+                        class="link-button icon-button code-references-button is-active"
+                        type="button"
+                        data-code-references-toggle
+                        aria-controls="code-references-{{ implementation.id }}"
+                        aria-pressed="true"
+                        aria-label="Hide file references"
+                        title="Hide file references"
+                      >
+                        {%- include icon.html name="references" -%}
+                      </button>
+                    {%- endif -%}
                     <button class="link-button icon-button code-copy-button" type="button" data-code-copy-button aria-label="Copy code" title="Copy code">
                       {%- include icon.html name="copy" -%}
                     </button>
@@ -66,6 +85,7 @@
 ```
                 {%- endcapture -%}
                 <div class="code-markdown">{{ code_block | markdownify }}</div>
+                {%- include code_references.html references=implementation.code_references panel_id=implementation.id -%}
               </section>
             {%- endfor -%}
           </section>

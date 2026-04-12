@@ -271,12 +271,15 @@
 
   .highlight pre {
     @apply overflow-x-auto p-4;
+    position: relative;
   }
 
   .highlight code,
   .code-markdown .highlight code {
     @apply bg-transparent;
     color: inherit;
+    position: relative;
+    z-index: 1;
   }
 
   .math-block,
@@ -717,145 +720,83 @@
     @apply relative;
   }
 
-  .code-shell__panel--with-graph .code-markdown .highlight pre {
-    padding-right: min(40rem, 68%);
-    white-space: pre;
+  .code-references-button.is-active {
+    @apply bg-black text-white;
   }
 
-  .source-graph {
-    @apply relative h-full overflow-hidden;
-    min-height: 16rem;
-    --source-graph-node-text: #0f172a;
-    --source-graph-current-bg: rgba(189, 232, 200, 0.62);
-    --source-graph-current-border: rgba(109, 180, 125, 0.74);
-    --source-graph-outbound-node-bg: rgba(179, 218, 255, 0.56);
-    --source-graph-outbound-node-border: rgba(93, 154, 225, 0.74);
-    --source-graph-inbound-node-bg: rgba(255, 222, 181, 0.58);
-    --source-graph-inbound-node-border: rgba(224, 154, 79, 0.76);
-    --source-graph-bidirectional-node-bg: rgba(205, 238, 218, 0.58);
-    --source-graph-bidirectional-node-border: rgba(110, 185, 145, 0.74);
-    --source-graph-edge-outbound: rgba(93, 154, 225, 0.76);
-    --source-graph-edge-inbound: rgba(224, 154, 79, 0.76);
-    --source-graph-edge-outbound-hover: rgba(68, 126, 194, 0.94);
-    --source-graph-edge-inbound-hover: rgba(196, 127, 55, 0.95);
-    --source-graph-arrow-outbound: rgba(93, 154, 225, 0.88);
-    --source-graph-arrow-inbound: rgba(224, 154, 79, 0.88);
+  .code-references {
+    @apply grid gap-[0.85rem] border-t px-[0.95rem] py-[0.9rem];
+    background: rgba(0, 0, 0, 0.012);
+    border-top-color: rgba(0, 0, 0, 0.08);
   }
 
-  .source-graph--overlay {
-    @apply absolute inset-0 z-[4] min-w-0 border-0 bg-transparent;
-    border-radius: 0;
-    pointer-events: none;
-    width: auto;
+  .code-references[hidden] {
+    display: none;
   }
 
-  .source-graph__svg {
-    @apply block h-full w-full overflow-hidden;
-    pointer-events: none;
+  .code-references__groups {
+    @apply grid gap-[0.75rem];
   }
 
-  .source-graph__edge {
-    pointer-events: stroke;
-    stroke-opacity: 0.9;
-    stroke-width: 2.8;
-    transition: stroke-width 0.14s ease, stroke 0.14s ease, stroke-opacity 0.14s ease;
+  .code-references__group {
+    @apply grid gap-[0.35rem] border-l pl-[0.9rem];
+    border-left-color: rgba(0, 0, 0, 0.12);
+    margin-left: 0.2rem;
   }
 
-  .source-graph__edge--outbound {
-    stroke: var(--source-graph-edge-outbound);
+  .code-references__title {
+    @apply m-0 text-[0.72rem] font-semibold uppercase;
+    color: rgba(15, 23, 42, 0.6);
+    letter-spacing: 0.11em;
   }
 
-  .source-graph__edge--inbound {
-    stroke: var(--source-graph-edge-inbound);
+  .code-references__list {
+    @apply m-0 grid list-none gap-[0.16rem] p-0;
   }
 
-  .source-graph__edge--outbound.is-hover {
-    stroke: var(--source-graph-edge-outbound-hover);
-    stroke-opacity: 1;
-    stroke-width: 6.8;
+  .code-references__item {
+    @apply min-w-0;
   }
 
-  .source-graph__edge--inbound.is-hover {
-    stroke: var(--source-graph-edge-inbound-hover);
-    stroke-opacity: 1;
-    stroke-width: 6.8;
+  .code-references__entry,
+  .code-references__link {
+    @apply block min-w-0 py-[0.16rem] no-underline;
+    color: inherit;
   }
 
-  .source-graph__edge.is-dim {
-    stroke-opacity: 0.16;
+  .code-references__entry,
+  .code-references__link:hover {
+    text-decoration: none;
   }
 
-  .source-graph__edge.is-focused,
-  .source-graph__node.is-focused {
-    opacity: 1;
-    stroke-opacity: 1;
+  .code-references__link:hover .code-references__label {
+    text-decoration: underline;
   }
 
-  .source-graph__node {
-    @apply cursor-pointer;
-    transition: opacity 0.14s ease;
+  .code-references__link:focus-visible {
+    outline: 2px solid rgba(17, 24, 39, 0.2);
+    outline-offset: 2px;
   }
 
-  .source-graph__node.is-dim {
-    opacity: 0.18;
+  .code-references__label,
+  .code-references__path {
+    @apply block min-w-0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    overflow-wrap: anywhere;
   }
 
-  .source-graph__node-dot {
-    fill: var(--source-graph-outbound-node-bg);
-    pointer-events: auto;
-    r: 40px;
-    stroke: var(--source-graph-outbound-node-border);
-    stroke-width: 2.2;
+  .code-references__label {
+    @apply text-[0.9rem] font-semibold;
+    color: #111827;
+    line-height: 1.25;
   }
 
-  .source-graph__node-hit {
-    fill: transparent;
-    pointer-events: auto;
-    r: 60px;
+  .code-references__path {
+    @apply text-[0.74rem];
+    color: rgba(15, 23, 42, 0.48);
+    line-height: 1.35;
   }
 
-  .source-graph__node.is-current .source-graph__node-dot {
-    fill: var(--source-graph-current-bg);
-    r: 50px;
-    stroke: var(--source-graph-current-border);
-    stroke-width: 3.2;
-  }
-
-  .source-graph__node.is-inbound .source-graph__node-dot {
-    fill: var(--source-graph-inbound-node-bg);
-    stroke: var(--source-graph-inbound-node-border);
-  }
-
-  .source-graph__node.is-outbound .source-graph__node-dot {
-    fill: var(--source-graph-outbound-node-bg);
-    stroke: var(--source-graph-outbound-node-border);
-  }
-
-  .source-graph__node.is-bidirectional .source-graph__node-dot {
-    fill: var(--source-graph-bidirectional-node-bg);
-    stroke: var(--source-graph-bidirectional-node-border);
-  }
-
-  .source-graph__node-label {
-    fill: var(--source-graph-node-text);
-    dominant-baseline: hanging;
-    font-size: 1.02rem;
-    font-weight: 600;
-    paint-order: stroke;
-    pointer-events: auto;
-    stroke: rgba(255, 255, 255, 0.56);
-    stroke-linejoin: round;
-    stroke-width: 2.2px;
-    transform: translateY(2.2rem);
-  }
-
-  .source-graph__arrow--outbound {
-    fill: var(--source-graph-arrow-outbound);
-  }
-
-  .source-graph__arrow--inbound {
-    fill: var(--source-graph-arrow-inbound);
-  }
 }
 
 @layer utilities {
@@ -977,9 +918,6 @@
     max-width: 100%;
   }
 
-  .code-shell__panel--with-graph .code-markdown .highlight pre {
-    padding-right: 1.1rem;
-  }
 }
 
 @media (max-width: 768px) {
@@ -1033,6 +971,10 @@
 
   .source-page-header__meta {
     white-space: normal;
+  }
+
+  .code-references {
+    padding: 0.85rem 0.9rem;
   }
 }
 
