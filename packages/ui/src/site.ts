@@ -1,12 +1,30 @@
 import renderMathInElement from "katex/contrib/auto-render"
 import { Effect } from "effect"
-import { Browser, BrowserLive, addEventListener, type Cleanup, combineCleanups } from "./browser"
+import { Browser, BrowserLive, addEventListener, type BrowserService, type Cleanup, combineCleanups } from "./browser"
 import { initializeCodeReferences } from "./code-references"
 import { initializeEurekaUi } from "./eureka-controller"
 
 const themeStorageKey = "leowajda.github.io-theme"
+const noopCleanup: Cleanup = () => {}
 
 type Theme = "light" | "dark"
+
+const runBrowserAction = (
+  browser: BrowserService,
+  label: string,
+  effect: Effect.Effect<void, unknown, Browser>
+) => {
+  Effect.runSync(
+    effect.pipe(
+      Effect.provideService(Browser, browser),
+      Effect.catchAllCause((cause) =>
+        Effect.sync(() => {
+          browser.console.error(`Failed to ${label}`, cause)
+        })
+      )
+    )
+  )
+}
 
 const getStoredTheme = Effect.gen(function* () {
   const browser = yield* Browser
@@ -50,24 +68,20 @@ const initializeThemeToggle = Effect.gen(function* () {
   const browser = yield* Browser
   const button = browser.document.querySelector<HTMLButtonElement>("[data-theme-toggle]")
   if (!button) {
-    return () => {}
+    return noopCleanup
   }
 
   yield* updateThemeButton(button)
   return yield* addEventListener(button, "click", () => {
-    Effect.runSync(
+    runBrowserAction(
+      browser,
+      "update theme",
       Effect.gen(function* () {
         const nextTheme = (yield* resolveTheme) === "dark" ? "light" : "dark"
         yield* applyTheme(nextTheme)
         browser.localStorage?.setItem(themeStorageKey, nextTheme)
         yield* updateThemeButton(button)
-      }).pipe(
-        Effect.catchAllCause((cause) =>
-          Effect.sync(() => {
-            browser.console.error("Failed to update theme", cause)
-          })
-        )
-      ).pipe(Effect.provideService(Browser, browser))
+      })
     )
   })
 })
@@ -76,7 +90,7 @@ const initializeBackButton = Effect.gen(function* () {
   const browser = yield* Browser
   const button = browser.document.querySelector<HTMLButtonElement>("[data-back-button]")
   if (!button) {
-    return () => {}
+    return noopCleanup
   }
 
   let referrerUrl: URL | null = null
@@ -95,7 +109,7 @@ const initializeBackButton = Effect.gen(function* () {
 
   if (!referrerUrl) {
     button.hidden = true
-    return () => {}
+    return noopCleanup
   }
 
   button.hidden = false
@@ -165,12 +179,12 @@ const initializeSourceSidebar = Effect.gen(function* () {
   const browser = yield* Browser
   const sidebar = browser.document.querySelector<HTMLElement>(".source-sidebar")
   if (!sidebar) {
-    return () => {}
+    return noopCleanup
   }
 
   const activeLink = sidebar.querySelector<HTMLElement>(".source-tree__link.is-active")
   if (!activeLink) {
-    return () => {}
+    return noopCleanup
   }
 
   const groups = Array.from(sidebar.querySelectorAll<HTMLDetailsElement>(".source-tree__group"))
@@ -191,7 +205,7 @@ const initializeSourceSidebar = Effect.gen(function* () {
     inline: "nearest"
   })
 
-  return () => {}
+  return noopCleanup
 })
 
 const initializeMath = Effect.gen(function* () {
@@ -207,7 +221,7 @@ const initializeMath = Effect.gen(function* () {
     ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"]
   })
 
-  return () => {}
+  return noopCleanup
 })
 
 const initializeSafely = (label: string, effect: Effect.Effect<Cleanup, unknown, Browser>) =>
@@ -217,7 +231,7 @@ const initializeSafely = (label: string, effect: Effect.Effect<Cleanup, unknown,
       Effect.catchAllCause((cause) =>
         Effect.sync(() => {
           browser.console.error(`Failed to initialize ${label}`, cause)
-          return () => {}
+          return noopCleanup
         })
       )
     )
