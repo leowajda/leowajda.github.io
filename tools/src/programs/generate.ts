@@ -8,8 +8,55 @@ import { ProjectAdapterRegistry, ProjectAdapterRegistryLive } from "../projects/
 import { ProjectManifestSchema } from "../projects/schema.js"
 import { ProjectRegistryError, ProjectSourceMissingError } from "../core/errors.js"
 import { ProjectCardSchema, type ProjectBuild } from "../projects/types.js"
+import type { ProjectManifest } from "../projects/schema.js"
+import type { ProjectAdapter } from "../projects/types.js"
 
 const ProjectsSchema = Schema.Array(ProjectCardSchema)
+
+const resolveProjectAdapter = (
+  adapters: Readonly<Record<string, ProjectAdapter>>,
+  manifest: ProjectManifest
+) => {
+  const adapter = adapters[manifest.kind]
+
+  return adapter
+    ? Effect.succeed(adapter)
+    : Effect.fail(new ProjectRegistryError({ kind: manifest.kind }))
+}
+
+const requireProjectSource = (manifest: ProjectManifest) =>
+  Effect.gen(function* () {
+    const fileStore = yield* FileStore
+    const sourcePath = path.join(rootDirectory, manifest.source_repo_path)
+    const exists = yield* fileStore.fileExists(sourcePath)
+
+    if (!exists && manifest.source_optional) {
+      return null
+    }
+
+    if (!exists) {
+      return yield* Effect.fail(new ProjectSourceMissingError({
+        slug: manifest.slug,
+        sourcePath
+      }))
+    }
+
+    return sourcePath
+  })
+
+const buildProject = (
+  adapters: Readonly<Record<string, ProjectAdapter>>,
+  manifest: ProjectManifest
+) =>
+  Effect.gen(function* () {
+    const sourcePath = yield* requireProjectSource(manifest)
+    if (sourcePath === null) {
+      return null
+    }
+
+    const adapter = yield* resolveProjectAdapter(adapters, manifest)
+    return yield* adapter.build(manifest)
+  })
 
 const loadProjectManifests = Effect.gen(function* () {
   const fileStore = yield* FileStore
@@ -38,29 +85,10 @@ const writeBuildOutputs = (builds: ReadonlyArray<ProjectBuild>) =>
 const buildProjects = Effect.gen(function* () {
   const manifests = yield* loadProjectManifests
   const { adapters } = yield* ProjectAdapterRegistry
-  const fileStore = yield* FileStore
 
-  return yield* Effect.forEach(manifests, (manifest) =>
-    fileStore.fileExists(path.join(rootDirectory, manifest.source_repo_path)).pipe(
-      Effect.flatMap((exists) => {
-        if (!exists && manifest.source_optional) {
-          return Effect.succeed(null)
-        }
-
-        if (!exists) {
-          return Effect.fail(new ProjectSourceMissingError({
-            slug: manifest.slug,
-            sourcePath: path.join(rootDirectory, manifest.source_repo_path)
-          }))
-        }
-
-        const adapter = adapters[manifest.kind]
-        return adapter
-          ? adapter.build(manifest)
-          : Effect.fail(new ProjectRegistryError({ kind: manifest.kind }))
-      })
-    )
-  , { concurrency: 4 }).pipe(
+  return yield* Effect.forEach(manifests, (manifest) => buildProject(adapters, manifest), {
+    concurrency: 4
+  }).pipe(
     Effect.map((builds) => builds.filter((build): build is ProjectBuild => build !== null))
   )
 })
