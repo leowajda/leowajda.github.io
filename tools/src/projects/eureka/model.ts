@@ -13,10 +13,9 @@ import {
 import { decodeEurekaSource, type EurekaSource, type ProblemSourceRecord } from "./source.js"
 import {
   buildProblemArtifacts,
-  implementationKey,
-  languageFrontMatter,
-  listProblemImplementations
+  languageFrontMatter
 } from "./artifacts.js"
+import { implementationKey, listProblemImplementations } from "./problem-records.js"
 
 export type EurekaBuildModel = {
   readonly files: ReadonlyArray<GeneratedTextFile>
