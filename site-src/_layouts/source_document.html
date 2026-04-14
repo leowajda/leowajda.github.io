@@ -29,11 +29,6 @@ layout: default
 
       <h1>{{ current_document.title }}</h1>
       <p class="source-page-header__meta">{{ current_document.source_path }}</p>
-      <div class="action-links">
-        {%- if page.page_source_url -%}
-          <a href="{{ page.page_source_url }}" target="_blank" rel="noreferrer">source</a>
-        {%- endif -%}
-      </div>
     </header>
 
     {%- include source_sidebar.html notes=notes -%}

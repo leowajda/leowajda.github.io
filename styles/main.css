@@ -151,6 +151,10 @@
     @apply flex flex-wrap gap-3;
   }
 
+  .site-nav__actions {
+    @apply flex flex-wrap items-center gap-3;
+  }
+
   .site-nav__link,
   .theme-toggle,
   .filter-button {
@@ -167,7 +171,8 @@
   }
 
   .icon-button {
-    @apply min-h-11 min-w-11 p-3;
+    @apply min-h-12 min-w-12 p-3;
+    box-sizing: border-box;
   }
 
   .icon {
@@ -327,7 +332,7 @@
   }
 
   .problem-table {
-    min-width: 42rem;
+    min-width: 52rem;
     width: 100%;
   }
 
@@ -370,10 +375,6 @@
   .solution-list li,
   .references__item {
     margin: 0.2rem 0;
-  }
-
-  .solution-group__label {
-    font-weight: bold;
   }
 
   .action-links a,
@@ -614,6 +615,6 @@
   }
 
   .problem-table {
-    min-width: 36rem;
+    min-width: 48rem;
   }
 }

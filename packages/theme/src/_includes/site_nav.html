@@ -1,30 +1,72 @@
 <nav class="site-nav" aria-label="Main navigation">
-  <div class="site-nav__links">
-    {%- if page.project_key -%}
-      {%- assign current_project = site.data.generated.projects | where: "slug", page.project_key | first -%}
-      {%- assign nav_source_url = page.page_source_url | default: current_project.source_url -%}
-      <button class="site-nav__link icon-button" type="button" data-back-button hidden aria-label="Back to previous page" title="Back to previous page">
-        {%- include icon.html name="back" class="site-nav__link-icon" -%}
-      </button>
-    {%- endif -%}
-    {%- for entry in site.data.navigation.entries -%}
-      <a class="site-nav__link{% if entry.icon %} icon-button{% endif %}" href="{{ entry.url | relative_url }}"{% if entry.icon %} aria-label="{{ entry.title }}" title="{{ entry.title }}"{% endif %}>
-        {%- if entry.icon -%}
-          {%- include icon.html name=entry.icon class="site-nav__link-icon" -%}
-        {%- else -%}
-          <span>{{ entry.title }}</span>
-        {%- endif -%}
-      </a>
-    {%- endfor -%}
-    {%- if page.project_key -%}
-      {%- if nav_source_url -%}
-        <a class="site-nav__link icon-button" href="{{ nav_source_url }}" target="_blank" rel="noreferrer" aria-label="Source on GitHub" title="Source on GitHub">
-          {%- include icon.html name="github" class="site-nav__link-icon" -%}
-        </a>
+  {%- assign current_project = nil -%}
+  {%- assign nav_source_url = '' -%}
+  {%- assign current_problem = nil -%}
+  {%- assign problem_page_url = '' -%}
+  {%- if page.project_key -%}
+    {%- assign current_project = site.data.generated.projects | where: "slug", page.project_key | first -%}
+    {%- assign nav_source_url = page.page_source_url | default: current_project.source_url -%}
+    {%- if page.problem_slug -%}
+      {%- assign current_problem = site.data.generated[page.project_key].problem_pages[page.problem_slug] -%}
+      {%- if current_problem and current_problem.url -%}
+        {%- assign problem_page_url = current_problem.url -%}
       {%- endif -%}
     {%- endif -%}
+  {%- endif -%}
+
+  <div class="site-nav__links">
+    {%- for entry in site.data.navigation.entries -%}
+      {%- unless entry.icon -%}
+        <a class="site-nav__link" href="{{ entry.url | relative_url }}">
+          <span>{{ entry.title }}</span>
+        </a>
+      {%- endunless -%}
+    {%- endfor -%}
   </div>
-  <button class="site-nav__link theme-toggle icon-button" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
-    {%- include icon.html name="theme-dark" class="theme-toggle__icon" -%}
-  </button>
+
+  <div class="site-nav__actions">
+    {%- if page.project_key -%}
+      <button class="site-nav__link theme-toggle icon-button" type="button" data-back-button hidden aria-label="Back to previous page" title="Back to previous page">
+        {%- include icon.html name="back" class="theme-toggle__icon" -%}
+      </button>
+    {%- endif -%}
+
+    {%- for entry in site.data.navigation.entries -%}
+      {%- if entry.icon -%}
+        <a class="site-nav__link theme-toggle icon-button" href="{{ entry.url | relative_url }}" aria-label="{{ entry.title }}" title="{{ entry.title }}">
+          {%- include icon.html name=entry.icon class="theme-toggle__icon" -%}
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+
+    {%- if nav_source_url != '' -%}
+      <a class="site-nav__link theme-toggle icon-button" href="{{ nav_source_url }}" target="_blank" rel="noreferrer" aria-label="Source on GitHub" title="Source on GitHub">
+        {%- include icon.html name="github" class="theme-toggle__icon" -%}
+      </a>
+    {%- endif -%}
+
+    {%- if problem_page_url != '' -%}
+      <a class="site-nav__link theme-toggle icon-button" href="{{ problem_page_url }}" target="_blank" rel="noreferrer" aria-label="Open LeetCode problem" title="Open LeetCode problem">
+        {%- include icon.html name="leetcode" class="theme-toggle__icon" -%}
+      </a>
+    {%- endif -%}
+
+    {%- if page.layout == 'problem_embed' and current_problem != nil -%}
+      {%- assign current_implementation = nil -%}
+      {%- if page.implementation_id -%}
+        {%- assign current_implementation = current_problem.implementations | where: "id", page.implementation_id | first -%}
+      {%- endif -%}
+      {%- assign full_page_url = current_problem.detail_url -%}
+      {%- if current_implementation and current_implementation.detail_url -%}
+        {%- assign full_page_url = current_implementation.detail_url -%}
+      {%- endif -%}
+      <a class="site-nav__link theme-toggle icon-button" href="{{ full_page_url | relative_url }}" aria-label="Open full page" title="Open full page">
+        {%- include icon.html name="open-page" class="theme-toggle__icon" -%}
+      </a>
+    {%- endif -%}
+
+    <button class="site-nav__link theme-toggle icon-button" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
+      {%- include icon.html name="theme-dark" class="theme-toggle__icon" -%}
+    </button>
+  </div>
 </nav>

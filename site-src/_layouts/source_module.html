@@ -14,11 +14,6 @@ layout: default
       <p class="source-page-header__eyebrow">{{ notes.project.title }}</p>
       <h1>{{ current_module.title }}</h1>
       <p class="source-page-header__meta">{{ current_module.language_labels | join: ", " }}</p>
-      <div class="action-links">
-        {%- if page.page_source_url -%}
-          <a href="{{ page.page_source_url }}" target="_blank" rel="noreferrer">source</a>
-        {%- endif -%}
-      </div>
     </header>
 
     {%- include source_sidebar.html notes=notes -%}
