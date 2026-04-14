@@ -1,4 +1,10 @@
-import type { ProblemRowModel } from "./eureka-model"
+export type ProblemRowModel = {
+  readonly searchTitle: string
+  readonly difficulty: string
+  readonly categories: ReadonlyArray<string>
+  readonly languages: ReadonlyArray<string>
+  readonly element: HTMLElement
+}
 
 export type ProblemTableState = {
   readonly search: string

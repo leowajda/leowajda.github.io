@@ -49,7 +49,8 @@ test("buildProblemRecords derives language summaries, implementation urls, and s
     { slug: "java", label: "Java", count: 1 },
     { slug: "python", label: "Python", count: 1 }
   ])
-  assert.equal(records.page.implementations[0]?.detail_url, "/eureka/problems/two-sum/?language=java&implementation=java-iterative")
+  assert.equal(records.page.implementations[0]?.detail_url, "/eureka/problems/two-sum/#java-iterative")
+  assert.equal(records.page.implementations[0]?.embed_url, "/eureka/problems/two-sum/embed/java-iterative/")
   assert.equal(records.page.implementations[1]?.approach_label, "Hash Map")
   assert.equal(records.view.search_title, "two sum")
 })

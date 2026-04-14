@@ -5,7 +5,6 @@
   {%- assign asset_version = site.time | date: '%s' -%}
   <body a="{{ site.theme_config.appearance | default: 'auto' }}" class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}">
     {%- include icon-sprite.html -%}
-    <script type="text/javascript" src="{{ '/assets/js/site.js' | relative_url }}?v={{ asset_version }}"></script>
     <main class="page-content" aria-label="Content">
       <div class="w">
         {%- include site_nav.html -%}
@@ -17,6 +16,7 @@
       {%- include goat_counter.html -%}
     {%- endif -%}
 
+    <script type="text/javascript" src="{{ '/assets/js/core.js' | relative_url }}?v={{ asset_version }}"></script>
     {%- if page.custom_js -%}
       {%- for js_file in page.custom_js -%}
         <script type="text/javascript" src="{{ '/assets/js/' | append: js_file | append: '.js' | relative_url }}?v={{ asset_version }}"></script>

@@ -1,30 +1,20 @@
 {%- assign notes = include.notes -%}
 {%- assign current_module = notes.modules | where: "slug", page.module_slug | first -%}
 
-<aside class="source-sidebar">
-  <div class="source-sidebar__head">
-    <p class="source-sidebar__eyebrow">Project</p>
-    <h2>{{ notes.project.title }}</h2>
-  </div>
+<section class="content-card source-navigation">
+  <h2>Files</h2>
+  <p class="source-sidebar__eyebrow">{{ notes.project.title }}</p>
 
-  <nav class="source-sidebar__nav" aria-label="Project source navigation">
+  <nav aria-label="Project source navigation">
     {%- if current_module -%}
-      <div class="source-module-tree">
-        <div class="source-module-tree__summary">
-          <span>{{ current_module.title }}</span>
-        </div>
-
-        <div class="source-module-tree__body">
-          {%- for root in current_module.roots -%}
-            <section class="source-root">
-              <h3>{{ root.label }}</h3>
-              <ul class="source-tree__list">
-                {%- include source_tree_node.html nodes=root.nodes module_slug=current_module.slug -%}
-              </ul>
-            </section>
-          {%- endfor -%}
-        </div>
-      </div>
+      {%- for root in current_module.roots -%}
+        <section class="source-root">
+          <h3>{{ root.label }}</h3>
+          <ul class="source-tree__list">
+            {%- include source_tree_node.html nodes=root.nodes module_slug=current_module.slug -%}
+          </ul>
+        </section>
+      {%- endfor -%}
     {%- endif -%}
   </nav>
-</aside>
+</section>

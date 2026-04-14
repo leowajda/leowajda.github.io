@@ -81,7 +81,6 @@ const buildModulePage = (
       title: moduleCandidate.title,
       description: `${moduleCandidate.title} notes`,
       permalink: `${manifest.route_base}/${moduleCandidate.slug}/`,
-      body_class: "page-wide",
       project_key: manifest.slug,
       module_slug: moduleCandidate.slug,
       page_source_url: moduleSourceUrl,

@@ -1,96 +1,66 @@
 {%- assign problem = include.problem -%}
 {%- assign embed = include.embed | default: false -%}
-{%- assign first_language = problem.languages.first.slug -%}
+{%- assign requested_implementation = include.implementation_id | default: '' -%}
+{%- assign visible_implementations = problem.implementations -%}
+{%- if requested_implementation != '' -%}
+  {%- assign visible_implementations = problem.implementations | where: "id", requested_implementation -%}
+{%- endif -%}
+{%- if visible_implementations.size == 0 and embed -%}
+  {%- assign visible_implementations = problem.implementations | slice: 0, 1 -%}
+{%- endif -%}
 
-<section class="problem-viewer" data-problem-shell>
-  <div class="problem-viewer__frame">
-    <div class="language-panels">
-      {%- for language in problem.languages -%}
-        {%- assign language_impls = problem.implementations | where: "language", language.slug -%}
-        <section class="language-panel" data-language-panel data-language="{{ language.slug }}" data-default-implementation="{{ language_impls.first.id }}"{% unless forloop.first %} hidden{% endunless %}>
-          <section class="code-shell">
-            <div class="code-shell__toolbar">
-              <div class="code-shell__selector-groups">
-                <div class="language-switcher" data-language-switcher data-default-language="{{ first_language }}">
-                  {%- for language_option in problem.languages -%}
-                    <button class="language-tab{% if forloop.first %} is-active{% endif %}" type="button" data-language-target="{{ language_option.slug }}">{{ language_option.label }}</button>
-                  {%- endfor -%}
-                </div>
+<section class="implementation-list">
+  {%- for language in problem.languages -%}
+    {%- assign language_impls = visible_implementations | where: "language", language.slug -%}
+    {%- if language_impls.size > 0 -%}
+      <section class="problem-section">
+        {%- unless embed and visible_implementations.size == 1 -%}
+          <header class="problem-section__header">
+            <h2>{{ language.label }}</h2>
+            <p>{{ language_impls.size }} solution{% if language_impls.size != 1 %}s{% endif %}</p>
+          </header>
+        {%- endunless -%}
 
-                <div class="approach-switcher" data-implementation-switcher>
-                  {%- for implementation in language_impls -%}
-                    <button class="approach-tab{% if implementation.approach == 'iterative' or implementation.approach == 'recursive' %} icon-button{% endif %}{% if forloop.first %} is-active{% endif %}" type="button" data-implementation-target="{{ implementation.id }}" aria-label="{{ implementation.approach_label }}" title="{{ implementation.approach_label }}">
-                      {%- if implementation.approach == "iterative" -%}
-                        {%- include icon.html name="iterative" -%}
-                      {%- elsif implementation.approach == "recursive" -%}
-                        {%- include icon.html name="recursive" -%}
-                      {%- else -%}
-                        {{ implementation.approach_label }}
-                      {%- endif -%}
-                    </button>
-                  {%- endfor -%}
-                </div>
-              </div>
-
-              <div class="code-shell__action-groups">
-                {%- for implementation in language_impls -%}
-                  {%- assign implementation_has_references = false -%}
-                  {%- if implementation.code_references != nil -%}
-                    {%- if implementation.code_references.uses.size > 0 or implementation.code_references.used_by.size > 0 -%}
-                      {%- assign implementation_has_references = true -%}
-                    {%- endif -%}
+        <div class="implementation-stack">
+          {%- for implementation in language_impls -%}
+            <article class="content-card implementation-card" id="{{ implementation.id }}" data-code-block>
+              <header class="implementation-card__header">
+                <div>
+                  {%- if embed and visible_implementations.size == 1 -%}
+                    <h2 class="implementation-card__title">{{ problem.name }}: {{ implementation.approach_label }}</h2>
+                    <p class="implementation-card__meta">{{ language.label }}</p>
+                  {%- else -%}
+                    <h3 class="implementation-card__title">{{ implementation.approach_label }}</h3>
+                    <p class="implementation-card__meta">{{ language.label }}</p>
                   {%- endif -%}
-                  <div class="code-shell__actions" data-implementation-actions="{{ implementation.id }}"{% unless forloop.first %} hidden{% endunless %}>
-                    {%- if embed -%}
-                      <a class="link-button icon-button" href="{{ problem.detail_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}" aria-label="Open page" title="Open page">
-                        {%- include icon.html name="open-page" -%}
-                      </a>
-                    {%- else -%}
-                      <a class="link-button icon-button" href="{{ problem.embed_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}" aria-label="Open embed" title="Open embed">
-                        {%- include icon.html name="code" -%}
-                      </a>
-                    {%- endif -%}
-                    <a class="link-button icon-button" href="{{ implementation.source_url }}" target="_blank" rel="noreferrer" aria-label="Open source on GitHub" title="Open source on GitHub">
-                      {%- include icon.html name="github" -%}
-                    </a>
-                    {%- if implementation_has_references -%}
-                      <button
-                        class="link-button icon-button code-references-button is-active"
-                        type="button"
-                        data-code-references-toggle
-                        aria-controls="code-references-{{ implementation.id }}"
-                        aria-pressed="true"
-                        aria-label="Hide file references"
-                        title="Hide file references"
-                      >
-                        {%- include icon.html name="references" -%}
-                      </button>
-                    {%- endif -%}
-                    <button class="link-button icon-button code-copy-button" type="button" data-code-copy-button aria-label="Copy code" title="Copy code">
-                      {%- include icon.html name="copy" -%}
-                    </button>
-                    <a class="link-button icon-button" href="{{ problem.url }}" target="_blank" rel="noreferrer" aria-label="Open LeetCode problem" title="Open LeetCode problem">
-                      {%- include icon.html name="leetcode" -%}
-                    </a>
-                  </div>
-                {%- endfor -%}
-              </div>
-            </div>
+                </div>
 
-            {%- for implementation in language_impls -%}
-              <section class="code-shell__panel" data-implementation-panel id="{{ implementation.id }}"{% unless forloop.first %} hidden{% endunless %}>
+                <div class="action-links">
+                  {%- if embed -%}
+                    <a href="{{ implementation.detail_url | relative_url }}">full page</a>
+                  {%- else -%}
+                    <a href="{{ implementation.embed_url | relative_url }}">embed</a>
+                  {%- endif -%}
+                  <a href="{{ implementation.source_url }}" target="_blank" rel="noreferrer">source</a>
+                  <a href="{{ problem.url }}" target="_blank" rel="noreferrer">leetcode</a>
+                  <button type="button" data-code-copy-button data-copy-default-label="copy">copy</button>
+                </div>
+              </header>
+
+              <div class="code-block__content" data-code-source>
                 {%- capture code_block -%}
 ```{{ implementation.code_language }}
 {{ implementation.code }}
 ```
                 {%- endcapture -%}
-                <div class="code-markdown">{{ code_block | markdownify }}</div>
-                {%- include code_references.html references=implementation.code_references panel_id=implementation.id -%}
-              </section>
-            {%- endfor -%}
-          </section>
-        </section>
-      {%- endfor -%}
-    </div>
-  </div>
+                {{ code_block | markdownify }}
+              </div>
+
+              {%- include code_references.html references=implementation.code_references panel_id=implementation.id -%}
+            </article>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  {%- endfor -%}
 </section>

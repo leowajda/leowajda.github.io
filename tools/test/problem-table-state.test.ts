@@ -5,9 +5,9 @@ import {
   isCategoryButtonActive,
   isSingleSelectButtonActive,
   matchesProblemRow,
-  reduceProblemTableState
+  reduceProblemTableState,
+  type ProblemRowModel
 } from "../../packages/ui/src/eureka-problem-table-state.js"
-import type { ProblemRowModel } from "../../packages/ui/src/eureka-model.js"
 
 const row: ProblemRowModel = {
   element: {} as HTMLElement,

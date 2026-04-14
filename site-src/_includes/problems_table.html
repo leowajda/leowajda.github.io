@@ -1,21 +1,11 @@
-{%- assign language_columns = include.project.problem_filters.languages -%}
-{%- assign visible_language_columns = language_columns.size -%}
-{%- if include.page.language_filter -%}
-  {%- assign visible_language_columns = 1 -%}
-{%- endif -%}
-
 <div class="table-wrap">
-  <table class="problem-table" id="problem-table" data-language-filter="{{ include.page.language_filter | default: '' }}" style="--language-columns: {{ visible_language_columns }};">
+  <table class="problem-table" id="problem-table" data-language-filter="{{ include.page.language_filter | default: '' }}">
     <thead>
       <tr>
         <th>Problem</th>
+        <th>Difficulty</th>
         <th>Categories</th>
-        {%- for language in language_columns -%}
-          {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
-            {%- continue -%}
-          {%- endif -%}
-          <th>{{ language.label }}</th>
-        {%- endfor -%}
+        <th>Solutions</th>
       </tr>
     </thead>
     <tbody>
@@ -36,7 +26,7 @@
 
         {%- assign problem_page = include.project.problem_pages[problem.slug] -%}
         <tr
-          class="problem-row problem-row--{{ problem.difficulty_slug }}"
+          class="problem-row"
           data-problem-row
           data-problem-slug="{{ problem.slug }}"
           data-search-title="{{ problem.search_title | escape }}"
@@ -50,38 +40,44 @@
               <div class="problem-title__slug">{{ problem.slug }}</div>
             </div>
           </td>
+          <td>{{ problem.difficulty }}</td>
           <td>
-            <div class="badge-list">
+            <ul class="tag-list">
               {%- for category in problem.categories -%}
-                <span class="badge">{{ category }}</span>
+                <li class="tag">{{ category }}</li>
               {%- endfor -%}
-            </div>
+            </ul>
           </td>
-          {%- for language in language_columns -%}
-            {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
-              {%- continue -%}
-            {%- endif -%}
-            <td>
-              <div class="solution-pills">
-                {%- assign language_implementations = problem_page.implementations | where: "language", language.slug -%}
-                {%- if language_implementations.size > 0 -%}
+          <td>
+            {%- if include.page.language_filter -%}
+              {%- assign language_implementations = problem_page.implementations | where: "language", include.page.language_filter -%}
+              {%- if language_implementations.size > 0 -%}
+                <ul class="solution-list">
                   {%- for implementation in language_implementations -%}
-                    <a class="solution-pill{% if implementation.approach == 'iterative' or implementation.approach == 'recursive' %} solution-pill--icon{% endif %}" href="{{ implementation.detail_url | relative_url }}"{% if implementation.approach == 'iterative' or implementation.approach == 'recursive' %} aria-label="{{ implementation.approach_label }}" title="{{ implementation.approach_label }}"{% endif %}>
-                      {%- if implementation.approach == 'iterative' -%}
-                        {%- include icon.html name="iterative" -%}
-                      {%- elsif implementation.approach == 'recursive' -%}
-                        {%- include icon.html name="recursive" -%}
-                      {%- else -%}
-                        {{ implementation.approach }}
-                      {%- endif -%}
-                    </a>
+                    <li><a href="{{ implementation.detail_url | relative_url }}">{{ implementation.approach_label }}</a></li>
                   {%- endfor -%}
-                {%- else -%}
-                  <span class="solution-empty">—</span>
-                {%- endif -%}
-              </div>
-            </td>
-          {%- endfor -%}
+                </ul>
+              {%- else -%}
+                <span class="solution-empty">—</span>
+              {%- endif -%}
+            {%- else -%}
+              <ul class="solution-list">
+                {%- for language in problem.languages -%}
+                  {%- assign language_implementations = problem_page.implementations | where: "language", language.slug -%}
+                  {%- if language_implementations.size > 0 -%}
+                    <li class="solution-group">
+                      <span class="solution-group__label">{{ language.label }}:</span>
+                      <span class="solution-links">
+                        {%- for implementation in language_implementations -%}
+                          <a href="{{ implementation.detail_url | relative_url }}">{{ implementation.approach_label }}</a>{% unless forloop.last %}, {% endunless %}
+                        {%- endfor -%}
+                      </span>
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </td>
         </tr>
       {%- endfor -%}
     </tbody>

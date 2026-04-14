@@ -142,7 +142,6 @@ export const buildSourceDocument = (
       title: baseName,
       description: `${baseName} notes`,
       permalink: url,
-      body_class: "page-wide",
       project_key: input.manifest.slug,
       module_slug: input.moduleSlug,
       document_id: documentId,

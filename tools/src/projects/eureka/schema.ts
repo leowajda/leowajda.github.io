@@ -35,6 +35,7 @@ export const ImplementationRecordSchema = Schema.Struct({
   code: Schema.String,
   code_language: Schema.String,
   detail_url: Schema.String,
+  embed_url: Schema.String,
   code_references: Schema.NullOr(CodeReferencesPanelSchema)
 })
 

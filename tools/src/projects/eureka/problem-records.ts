@@ -17,6 +17,7 @@ type BuiltImplementation = {
   readonly code: string
   readonly code_language: string
   readonly detail_url: string
+  readonly embed_url: string
   readonly code_references: CodeReferencesPanel | null
 }
 
@@ -82,7 +83,8 @@ const buildImplementation = (
     source_url: sourceUrl,
     code,
     code_language: language.code_language,
-    detail_url: `${manifest.route_base}/problems/${problemSlug}/?language=${languageSlug}&implementation=${implementationId}`,
+    detail_url: `${manifest.route_base}/problems/${problemSlug}/#${implementationId}`,
+    embed_url: `${manifest.route_base}/problems/${problemSlug}/embed/${implementationId}/`,
     code_references: codeReferences
   }
 }

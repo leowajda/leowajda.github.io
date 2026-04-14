@@ -10,5 +10,7 @@
   {%- feed_meta -%}
 
   <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}?v={{ asset_version }}" />
-  <link rel="stylesheet" href="{{ '/assets/vendor/katex/katex.min.css' | relative_url }}?v={{ asset_version }}" />
+  {%- if page.needs_math -%}
+    <link rel="stylesheet" href="{{ '/assets/vendor/katex/katex.min.css' | relative_url }}?v={{ asset_version }}" />
+  {%- endif -%}
 </head>

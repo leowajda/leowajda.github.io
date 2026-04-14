@@ -1,53 +1,59 @@
-<section class="filters" aria-label="Problem filters" data-problem-filters data-language-filter="{{ include.page.language_filter | default: '' }}">
-  <div class="filter-group filter-group--search">
-    <div class="filter-group__head">
-      <h2>Search</h2>
+<form class="filters" aria-label="Problem filters" data-problem-filters>
+  <section class="filter-section">
+    <label class="filter-section__title" for="problem-search">Search</label>
+    <div class="filter-search">
+      <input id="problem-search" name="search" type="search" placeholder="Search problems" autocomplete="off">
+      <button class="filter-button" type="reset">Reset</button>
     </div>
-    <div class="filter-row filter-row--search">
-      <input id="problem-search" type="search" placeholder="Search problems" autocomplete="off" data-search-input>
-      <button class="filter-button" type="button" data-filter-kind="clear">Reset</button>
-    </div>
-  </div>
+  </section>
 
-  <div class="filter-group">
-    <div class="filter-group__head">
-      <h2>Difficulty</h2>
-    </div>
-    <div class="filter-chips" aria-label="Difficulty options">
-      <button class="filter-chip filter-chip--all is-active" type="button" data-filter-kind="difficulty" data-filter-value="">All difficulties</button>
+  <fieldset class="filter-section">
+    <legend class="filter-section__title">Difficulty</legend>
+    <div class="filter-choices">
+      <label class="filter-choice">
+        <input type="radio" name="difficulty" value="" checked>
+        <span>All difficulties</span>
+      </label>
       {%- for difficulty in include.project.problem_filters.difficulties -%}
-        <button class="filter-chip" type="button" data-filter-kind="difficulty" data-filter-value="{{ difficulty }}">{{ difficulty }}</button>
+        <label class="filter-choice">
+          <input type="radio" name="difficulty" value="{{ difficulty }}">
+          <span>{{ difficulty }}</span>
+        </label>
       {%- endfor -%}
     </div>
-  </div>
+  </fieldset>
 
   {%- unless include.page.language_filter -%}
-    <div class="filter-group">
-      <div class="filter-group__head">
-        <h2>Language</h2>
-      </div>
-      <div class="filter-chips" aria-label="Language options">
-        <button class="filter-chip filter-chip--all is-active" type="button" data-filter-kind="language" data-filter-value="">All languages</button>
+    <fieldset class="filter-section">
+      <legend class="filter-section__title">Language</legend>
+      <div class="filter-choices">
+        <label class="filter-choice">
+          <input type="radio" name="language" value="" checked>
+          <span>All languages</span>
+        </label>
         {%- for language in include.project.problem_filters.languages -%}
-          <button class="filter-chip" type="button" data-filter-kind="language" data-filter-value="{{ language.slug }}">{{ language.label }}</button>
+          <label class="filter-choice">
+            <input type="radio" name="language" value="{{ language.slug }}">
+            <span>{{ language.label }}</span>
+          </label>
         {%- endfor -%}
       </div>
-    </div>
+    </fieldset>
   {%- endunless -%}
 
-  <div class="filter-group">
-    <div class="filter-group__head">
-      <h2>Categories</h2>
-    </div>
-    <div class="filter-chips" aria-label="Category options">
-      <button class="filter-chip filter-chip--all is-active" type="button" data-filter-kind="category" data-filter-value="">All categories</button>
+  <fieldset class="filter-section">
+    <legend class="filter-section__title">Categories</legend>
+    <div class="filter-choices filter-choices--stacked">
       {%- for category in include.project.problem_filters.categories -%}
-        <button class="filter-chip" type="button" data-filter-kind="category" data-filter-value="{{ category }}">{{ category }}</button>
+        <label class="filter-choice">
+          <input type="checkbox" name="category" value="{{ category }}">
+          <span>{{ category }}</span>
+        </label>
       {%- endfor -%}
     </div>
-  </div>
+  </fieldset>
 
-  <p class="filters__summary">
+  <p class="filter-summary" aria-live="polite">
     <span data-visible-count>0</span> of <span data-total-count>0</span> problems visible
   </p>
-</section>
+</form>

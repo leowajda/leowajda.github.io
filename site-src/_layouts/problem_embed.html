@@ -7,7 +7,13 @@ layout: default
 {%- if problem == nil -%}
   <p>Problem data not found.</p>
 {%- else -%}
+  {%- assign implementation_id = page.implementation_id | default: problem.implementations.first.id -%}
+  {%- assign implementation = problem.implementations | where: "id", implementation_id | first -%}
   <article class="problem-embed problem-embed--centered">
-    {%- include problem_viewer.html problem=problem embed=true -%}
+    {%- if implementation != nil -%}
+      {%- include problem_viewer.html problem=problem embed=true implementation_id=implementation.id -%}
+    {%- else -%}
+      <p>Problem implementation data not found.</p>
+    {%- endif -%}
   </article>
 {%- endif -%}

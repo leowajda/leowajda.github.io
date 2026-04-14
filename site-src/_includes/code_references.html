@@ -1,65 +1,47 @@
 {%- assign references = include.references -%}
-{%- assign panel_id = include.panel_id -%}
 {%- assign references_has_entries = false -%}
 {%- if references != nil -%}
   {%- if references.uses.size > 0 or references.used_by.size > 0 -%}
     {%- assign references_has_entries = true -%}
   {%- endif -%}
 {%- endif -%}
-{%- if references_has_entries and panel_id != nil and panel_id != "" -%}
-  <section class="code-references" id="code-references-{{ panel_id }}" data-code-references>
-    <div class="code-references__groups">
-      {%- if references.uses.size > 0 -%}
-        <section class="code-references__group">
-          <h4 class="code-references__title">Uses</h4>
-          <ul class="code-references__list">
-            {%- for reference in references.uses -%}
-              <li class="code-references__item">
-                {%- if reference.url != "" and reference.url_kind != "none" -%}
-                  <a
-                    class="code-references__link"
-                    href="{{ reference.url }}"{% if reference.url_kind == "external" %} target="_blank" rel="noopener"{% endif %}
-                  >
-                    <span class="code-references__label">{{ reference.title }}</span>
-                    <span class="code-references__path">{{ reference.file_path }}</span>
-                  </a>
-                {%- else -%}
-                  <div class="code-references__entry">
-                    <span class="code-references__label">{{ reference.title }}</span>
-                    <span class="code-references__path">{{ reference.file_path }}</span>
-                  </div>
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ul>
-        </section>
-      {%- endif -%}
+{%- if references_has_entries -%}
+  <section class="references">
+    <h4>References</h4>
+    {%- if references.uses.size > 0 -%}
+      <section class="references__group">
+        <h5>Uses</h5>
+        <ul class="references__list">
+          {%- for reference in references.uses -%}
+            <li class="references__item">
+              {%- if reference.url != "" and reference.url_kind != "none" -%}
+                <a href="{{ reference.url }}"{% if reference.url_kind == "external" %} target="_blank" rel="noopener"{% endif %}>{{ reference.title }}</a>
+              {%- else -%}
+                <span>{{ reference.title }}</span>
+              {%- endif -%}
+              <div class="references__path">{{ reference.file_path }}</div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </section>
+    {%- endif -%}
 
-      {%- if references.used_by.size > 0 -%}
-        <section class="code-references__group">
-          <h4 class="code-references__title">Referenced By</h4>
-          <ul class="code-references__list">
-            {%- for reference in references.used_by -%}
-              <li class="code-references__item">
-                {%- if reference.url != "" and reference.url_kind != "none" -%}
-                  <a
-                    class="code-references__link"
-                    href="{{ reference.url }}"{% if reference.url_kind == "external" %} target="_blank" rel="noopener"{% endif %}
-                  >
-                    <span class="code-references__label">{{ reference.title }}</span>
-                    <span class="code-references__path">{{ reference.file_path }}</span>
-                  </a>
-                {%- else -%}
-                  <div class="code-references__entry">
-                    <span class="code-references__label">{{ reference.title }}</span>
-                    <span class="code-references__path">{{ reference.file_path }}</span>
-                  </div>
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ul>
-        </section>
-      {%- endif -%}
-    </div>
+    {%- if references.used_by.size > 0 -%}
+      <section class="references__group">
+        <h5>Referenced by</h5>
+        <ul class="references__list">
+          {%- for reference in references.used_by -%}
+            <li class="references__item">
+              {%- if reference.url != "" and reference.url_kind != "none" -%}
+                <a href="{{ reference.url }}"{% if reference.url_kind == "external" %} target="_blank" rel="noopener"{% endif %}>{{ reference.title }}</a>
+              {%- else -%}
+                <span>{{ reference.title }}</span>
+              {%- endif -%}
+              <div class="references__path">{{ reference.file_path }}</div>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </section>
+    {%- endif -%}
   </section>
 {%- endif -%}

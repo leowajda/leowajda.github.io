@@ -11,79 +11,45 @@ layout: default
 {%- if current_module == nil or current_document == nil -%}
   <p>Source document data not found.</p>
 {%- else -%}
-  {%- assign references_panel_id = current_document.id | slugify -%}
-  {%- assign current_document_has_references = false -%}
-  {%- if current_document.code_references != nil -%}
-    {%- if current_document.code_references.uses.size > 0 or current_document.code_references.used_by.size > 0 -%}
-      {%- assign current_document_has_references = true -%}
-    {%- endif -%}
-  {%- endif -%}
-  <section class="source-shell">
+  <article class="source-layout">
+    <header class="page-header source-page-header">
+      <nav class="source-breadcrumbs" aria-label="Breadcrumb">
+        <ol>
+          {%- for crumb in current_document.breadcrumbs -%}
+            <li>
+              {%- if crumb.url != "" -%}
+                <a href="{{ crumb.url | relative_url }}">{{ crumb.label }}</a>
+              {%- else -%}
+                <span>{{ crumb.label }}</span>
+              {%- endif -%}
+            </li>
+          {%- endfor -%}
+        </ol>
+      </nav>
+
+      <h1>{{ current_document.title }}</h1>
+      <p class="source-page-header__meta">{{ current_document.source_path }}</p>
+      <div class="action-links">
+        {%- if page.page_source_url -%}
+          <a href="{{ page.page_source_url }}" target="_blank" rel="noreferrer">source</a>
+        {%- endif -%}
+      </div>
+    </header>
+
     {%- include source_sidebar.html notes=notes -%}
 
-    <article class="source-main">
-      <header class="page-header source-page-header">
-        <nav class="source-breadcrumbs" aria-label="Breadcrumb">
-          <ol>
-            {%- for crumb in current_document.breadcrumbs -%}
-              <li>
-                {%- if crumb.url != "" -%}
-                  <a href="{{ crumb.url | relative_url }}">{{ crumb.label }}</a>
-                {%- else -%}
-                  <span>{{ crumb.label }}</span>
-                {%- endif -%}
-              </li>
-            {%- endfor -%}
-          </ol>
-        </nav>
-
-        <h1>{{ current_document.title }}</h1>
-        <p class="source-page-header__meta">
-          {{ current_document.source_path }}
-        </p>
-      </header>
-
-      {%- if current_document.format == "code" -%}
-        <section class="problem-viewer">
-          <div class="problem-viewer__frame">
-            <section class="code-shell">
-              <section class="code-shell__panel">
-                <div class="code-shell__panel-header">
-                  <div class="code-shell__panel-actions">
-                    {%- if page.page_source_url -%}
-                      <a class="link-button icon-button" href="{{ page.page_source_url }}" target="_blank" rel="noreferrer" aria-label="Open source on GitHub" title="Open source on GitHub">
-                        {%- include icon.html name="github" -%}
-                      </a>
-                    {%- endif -%}
-                    {%- if current_document_has_references -%}
-                      <button
-                        class="link-button icon-button code-references-button is-active"
-                        type="button"
-                        data-code-references-toggle
-                        aria-controls="code-references-{{ references_panel_id }}"
-                        aria-pressed="true"
-                        aria-label="Hide file references"
-                        title="Hide file references"
-                      >
-                        {%- include icon.html name="references" -%}
-                      </button>
-                    {%- endif -%}
-                    <button class="link-button icon-button code-copy-button" type="button" data-code-copy-button aria-label="Copy code" title="Copy code">
-                      {%- include icon.html name="copy" -%}
-                    </button>
-                  </div>
-                </div>
-                <div class="code-markdown">{{ content }}</div>
-                {%- include code_references.html references=current_document.code_references panel_id=references_panel_id -%}
-              </section>
-            </section>
-          </div>
-        </section>
-      {%- else -%}
-        <section class="source-article source-article--document">
-          {{ content }}
-        </section>
-      {%- endif -%}
-    </article>
-  </section>
+    {%- if current_document.format == "code" -%}
+      <section class="content-card source-code-block" data-code-block>
+        <div class="action-links">
+          <button type="button" data-code-copy-button data-copy-default-label="copy">copy</button>
+        </div>
+        <div class="code-block__content" data-code-source>{{ content }}</div>
+        {%- include code_references.html references=current_document.code_references panel_id=current_document.id -%}
+      </section>
+    {%- else -%}
+      <section class="source-article source-article--document">
+        {{ content }}
+      </section>
+    {%- endif -%}
+  </article>
 {%- endif -%}

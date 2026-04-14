@@ -8,30 +8,30 @@ layout: default
   <p>Problem data not found.</p>
 {%- else -%}
   <article class="problem-page">
-    <header class="problem-header">
+    <header class="page-header problem-header">
       <h1>{{ problem.name }}</h1>
+      <div class="action-links">
+        <a href="{{ problem.url }}" target="_blank" rel="noreferrer">LeetCode</a>
+      </div>
     </header>
 
-    <div class="control-group">
-      <div class="control-group__head">
-        <h2>Overview</h2>
-      </div>
-      <div class="problem-meta problem-meta--single-line">
-        <span class="badge badge--{{ problem.difficulty_slug }}">{{ problem.difficulty }}</span>
-        <span class="badge">{{ problem.implementation_count }} solution{% if problem.implementation_count != 1 %}s{% endif %}</span>
-      </div>
-    </div>
+    <section class="content-card">
+      <h2>Overview</h2>
+      <ul class="meta-list">
+        <li><strong>Difficulty:</strong> {{ problem.difficulty }}</li>
+        <li><strong>Solutions:</strong> {{ problem.implementation_count }}</li>
+        <li><strong>Languages:</strong> {{ problem.languages | map: "label" | join: ", " }}</li>
+      </ul>
+    </section>
 
-    <div class="control-group">
-      <div class="control-group__head">
-        <h2>Categories</h2>
-      </div>
-      <div class="badge-list badge-list--single-line">
+    <section class="content-card">
+      <h2>Categories</h2>
+      <ul class="tag-list">
         {%- for category in problem.categories -%}
-          <span class="badge">{{ category }}</span>
+          <li class="tag">{{ category }}</li>
         {%- endfor -%}
-      </div>
-    </div>
+      </ul>
+    </section>
 
     {%- include problem_viewer.html problem=problem embed=false -%}
   </article>

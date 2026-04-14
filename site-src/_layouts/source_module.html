@@ -9,21 +9,24 @@ layout: default
 {%- if current_module == nil -%}
   <p>Source module data not found.</p>
 {%- else -%}
-  <section class="source-shell">
+  <article class="source-layout">
+    <header class="page-header source-page-header">
+      <p class="source-page-header__eyebrow">{{ notes.project.title }}</p>
+      <h1>{{ current_module.title }}</h1>
+      <p class="source-page-header__meta">{{ current_module.language_labels | join: ", " }}</p>
+      <div class="action-links">
+        {%- if page.page_source_url -%}
+          <a href="{{ page.page_source_url }}" target="_blank" rel="noreferrer">source</a>
+        {%- endif -%}
+      </div>
+    </header>
+
     {%- include source_sidebar.html notes=notes -%}
 
-    <article class="source-main">
-      <header class="page-header source-page-header">
-        <p class="source-page-header__eyebrow">{{ notes.project.title }}</p>
-        <h1>{{ current_module.title }}</h1>
-        <p class="source-page-header__meta">{{ current_module.language_labels | join: ", " }}</p>
-      </header>
-
-      {%- if page_content != "" -%}
-        <section class="source-article">
-          {{ content }}
-        </section>
-      {%- endif -%}
-    </article>
-  </section>
+    {%- if page_content != "" -%}
+      <section class="source-article">
+        {{ content }}
+      </section>
+    {%- endif -%}
+  </article>
 {%- endif -%}

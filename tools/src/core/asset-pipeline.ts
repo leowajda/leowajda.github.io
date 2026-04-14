@@ -15,12 +15,15 @@ const assetBuildFailure = (error: unknown) =>
 const buildSiteBundle = Effect.tryPromise({
   try: () => build({
     entryPoints: {
-      site: path.join(rootDirectory, "packages/ui/src/site.ts")
+      core: path.join(rootDirectory, "packages/ui/src/core.ts"),
+      "eureka-filters": path.join(rootDirectory, "packages/ui/src/eureka-filters.ts"),
+      math: path.join(rootDirectory, "packages/ui/src/math.ts")
     },
     bundle: true,
     format: "iife",
     target: "es2022",
     outdir: path.join(generatedSiteDirectory, "assets/js"),
+    entryNames: "[name]",
     minify: false,
     sourcemap: false,
     logLevel: "silent"

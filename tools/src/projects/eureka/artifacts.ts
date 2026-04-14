@@ -16,15 +16,24 @@ export type ProblemArtifacts = {
   readonly files: ReadonlyArray<GeneratedTextFile>
 }
 
-const problemFrontMatter = (manifest: ProjectManifest, slug: string, title: string, embed: boolean) =>
+const problemFrontMatter = (
+  manifest: ProjectManifest,
+  slug: string,
+  title: string,
+  implementationId?: string
+) =>
   encodeFrontMatter(`Unable to encode problem front matter for '${slug}'`, {
-    layout: embed ? "problem_embed" : "problem",
+    layout: implementationId === undefined ? "problem" : "problem_embed",
     title,
     description: `${title} solutions`,
     problem_slug: slug,
     project_key: manifest.slug,
-    permalink: embed ? `${manifest.route_base}/problems/${slug}/embed/` : `${manifest.route_base}/problems/${slug}/`,
-    body_class: embed ? "" : "page-wide"
+    permalink: implementationId === undefined
+      ? `${manifest.route_base}/problems/${slug}/`
+      : (implementationId === ""
+        ? `${manifest.route_base}/problems/${slug}/embed/`
+        : `${manifest.route_base}/problems/${slug}/embed/${implementationId}/`),
+    ...(implementationId !== undefined ? { implementation_id: implementationId } : {})
   })
 
 export const languageFrontMatter = (manifest: ProjectManifest, languageSlug: string, language: SourceLanguage) =>
@@ -33,9 +42,9 @@ export const languageFrontMatter = (manifest: ProjectManifest, languageSlug: str
     title: `${language.label} Solutions`,
     description: `All LeetCode solutions in ${language.label}.`,
     permalink: `${manifest.route_base}/${languageSlug}/`,
-    body_class: "page-wide",
     project_key: manifest.slug,
-    language_filter: languageSlug
+    language_filter: languageSlug,
+    custom_js: ["eureka-filters"]
   })
 
 export const buildProblemArtifacts = (
@@ -48,6 +57,14 @@ export const buildProblemArtifacts = (
 ): Effect.Effect<ProblemArtifacts, Error> =>
   Effect.gen(function* () {
     const { page, view } = buildProblemRecords(manifest, languageEntries, slug, problem, codes, referencePanels)
+    const embedFiles = yield* Effect.forEach(page.implementations, (implementation) =>
+      problemFrontMatter(manifest, slug, `${problem.name} (${implementation.approach_label})`, implementation.id).pipe(
+        Effect.map((frontMatter) => ({
+          path: path.join(generatedSiteDirectory, manifest.slug, "problems", slug, "embed", implementation.id, "index.md"),
+          content: frontMatter
+        } satisfies GeneratedTextFile))
+      )
+    )
 
     return {
       slug,
@@ -56,12 +73,13 @@ export const buildProblemArtifacts = (
       files: [
         {
           path: path.join(generatedSiteDirectory, manifest.slug, "problems", slug, "index.md"),
-          content: yield* problemFrontMatter(manifest, slug, problem.name, false)
+          content: yield* problemFrontMatter(manifest, slug, problem.name)
         },
         {
           path: path.join(generatedSiteDirectory, manifest.slug, "problems", slug, "embed", "index.md"),
-          content: yield* problemFrontMatter(manifest, slug, problem.name, true)
-        }
+          content: yield* problemFrontMatter(manifest, slug, problem.name, "")
+        },
+        ...embedFiles
       ]
     }
   })
