@@ -4,7 +4,7 @@
       <tr>
         <th>Problem</th>
         <th>Categories</th>
-        {%- for language in include.project.problem_filters.languages -%}
+        {%- for language in include.problem_filters.languages -%}
           {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
             {%- continue -%}
           {%- endif -%}
@@ -13,7 +13,7 @@
       </tr>
     </thead>
     <tbody>
-      {%- for problem in include.project.problems_view -%}
+      {%- for problem in include.problems -%}
         {%- assign matches_language = true -%}
         {%- if include.page.language_filter -%}
           {%- assign matches_language = false -%}
@@ -27,12 +27,10 @@
         {%- unless matches_language -%}
           {%- continue -%}
         {%- endunless -%}
-
-        {%- assign problem_page = include.project.problem_pages[problem.slug] -%}
         <tr
           class="problem-row"
           data-problem-row
-          data-problem-slug="{{ problem.slug }}"
+          data-problem-slug="{{ problem.problem_slug }}"
           data-search-title="{{ problem.search_title | escape }}"
           data-difficulty="{{ problem.difficulty }}"
           data-categories="{{ problem.categories | join: '|' }}"
@@ -40,8 +38,8 @@
         >
           <td class="problem-title-cell">
             <div class="problem-title">
-              <a class="problem-title__link" href="{{ problem.detail_url | relative_url }}">{{ problem.name }}</a>
-              <div class="problem-title__slug">{{ problem.slug }}</div>
+              <a class="problem-title__link" href="{{ problem.url | relative_url }}">{{ problem.title }}</a>
+              <div class="problem-title__slug">{{ problem.problem_slug }}</div>
             </div>
           </td>
           <td>
@@ -51,11 +49,11 @@
               {%- endfor -%}
             </ul>
           </td>
-          {%- for language in include.project.problem_filters.languages -%}
+          {%- for language in include.problem_filters.languages -%}
             {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
               {%- continue -%}
             {%- endif -%}
-            {%- assign language_implementations = problem_page.implementations | where: "language", language.slug -%}
+            {%- assign language_implementations = problem.implementations | where: "language", language.slug -%}
             <td>
               {%- if language_implementations.size > 0 -%}
                 <ul class="solution-list">

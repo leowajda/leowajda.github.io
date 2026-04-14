@@ -40,27 +40,14 @@ export const ImplementationRecordSchema = Schema.Struct({
 })
 
 export const ProblemPageRecordSchema = Schema.Struct({
-  slug: Schema.String,
-  name: Schema.String,
-  url: Schema.String,
+  problem_slug: Schema.String,
+  title: Schema.String,
+  problem_source_url: Schema.String,
   difficulty: Schema.String,
   difficulty_slug: Schema.String,
   categories: Schema.Array(Schema.String),
   languages: Schema.Array(LanguageSummarySchema),
   implementations: Schema.Array(ImplementationRecordSchema),
-  implementation_count: Schema.Number,
-  detail_url: Schema.String,
-  embed_url: Schema.String
-})
-
-export const ProblemViewRecordSchema = Schema.Struct({
-  slug: Schema.String,
-  name: Schema.String,
-  url: Schema.String,
-  difficulty: Schema.String,
-  difficulty_slug: Schema.String,
-  categories: Schema.Array(Schema.String),
-  languages: Schema.Array(LanguageSummarySchema),
   implementation_count: Schema.Number,
   detail_url: Schema.String,
   embed_url: Schema.String,
@@ -75,10 +62,6 @@ export const ProblemFiltersSchema = Schema.Struct({
     label: Schema.String
   }))
 })
-
-export const ProblemPagesSchema = Schema.Record({ key: Schema.String, value: ProblemPageRecordSchema })
-export const ProblemsViewSchema = Schema.Array(ProblemViewRecordSchema)
-
 export type SourceLanguage = Schema.Schema.Type<typeof EurekaLanguageSchema>
 export type ProblemMetadata = Schema.Schema.Type<typeof ProblemMetadataSchema>
 export type RawProblemRecord = Schema.Schema.Type<typeof RawProblemSchema>
@@ -87,5 +70,4 @@ export type EurekaSourceRecord = Schema.Schema.Type<typeof EurekaSourceSchema>
 export type LanguageSummary = Schema.Schema.Type<typeof LanguageSummarySchema>
 export type ImplementationRecord = Schema.Schema.Type<typeof ImplementationRecordSchema>
 export type ProblemPageRecord = Schema.Schema.Type<typeof ProblemPageRecordSchema>
-export type ProblemViewRecord = Schema.Schema.Type<typeof ProblemViewRecordSchema>
 export type ProblemFilters = Schema.Schema.Type<typeof ProblemFiltersSchema>

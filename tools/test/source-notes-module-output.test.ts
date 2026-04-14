@@ -39,6 +39,8 @@ const builtDocuments: ReadonlyArray<BuiltSourceDocument> = [
   {
     metadata: {
       id: "core:src/main/java/com/example/Main.java",
+      project_key: "demo",
+      module_slug: "core",
       graph_node_id: "graph:java",
       title: "Main.java",
       url: "/projects/demo/core/com/example/main/",
@@ -58,6 +60,8 @@ const builtDocuments: ReadonlyArray<BuiltSourceDocument> = [
   {
     metadata: {
       id: "core:src/main/scala/example/App.scala",
+      project_key: "demo",
+      module_slug: "core",
       graph_node_id: "graph:scala",
       title: "App.scala",
       url: "/projects/demo/core/example/app/",
@@ -116,5 +120,6 @@ test("assembleSourceNotesModule composes module page and document files", async 
   assert.equal(builtModule.module.source_url, "https://example.com/demo/tree/main/core")
   assert.equal(builtModule.files.length, 3)
   assert.equal(builtModule.assets.length, 1)
-  assert.match(builtModule.files[0]?.content ?? "", /permalink: \/projects\/demo\/core\//)
+  assert.equal(builtModule.files[0]?.path.endsWith("/_source_modules/demo/core.md"), true)
+  assert.match(builtModule.files[0]?.content ?? "", /module_slug: core/)
 })

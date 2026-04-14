@@ -3,7 +3,6 @@ import type { ProjectManifest } from "../schema.js"
 import type {
   LanguageSummary,
   ProblemPageRecord,
-  ProblemViewRecord,
   SourceLanguage
 } from "./schema.js"
 import type { ProblemSourceRecord } from "./source.js"
@@ -30,7 +29,6 @@ type ProblemImplementationSource = {
 
 type ProblemRecords = {
   readonly page: ProblemPageRecord
-  readonly view: ProblemViewRecord
 }
 
 const humanLabel = (value: string) =>
@@ -127,9 +125,9 @@ export const buildProblemRecords = (
     }))
 
   const page: ProblemPageRecord = {
-    slug,
-    name: problem.name,
-    url: problem.url,
+    problem_slug: slug,
+    title: problem.name,
+    problem_source_url: problem.url,
     difficulty: problem.difficulty,
     difficulty_slug: slugify(problem.difficulty),
     categories: problem.categories,
@@ -137,14 +135,11 @@ export const buildProblemRecords = (
     implementations,
     implementation_count: implementations.length,
     detail_url: `${manifest.route_base}/problems/${slug}/`,
-    embed_url: `${manifest.route_base}/problems/${slug}/embed/`
+    embed_url: `${manifest.route_base}/problems/${slug}/embed/`,
+    search_title: problem.name.toLowerCase()
   }
 
   return {
-    page,
-    view: {
-      ...page,
-      search_title: problem.name.toLowerCase()
-    }
+    page
   }
 }

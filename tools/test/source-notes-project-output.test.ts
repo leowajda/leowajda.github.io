@@ -4,8 +4,7 @@ import { Effect } from "effect"
 import type { CodeReferencesPanel } from "../../packages/graph/src/index.js"
 import {
   assembleSourceNotesProject,
-  attachReferencePanels,
-  buildSourceNotesProjectData
+  attachReferencePanels
 } from "../src/projects/source-notes/project-output.js"
 import type { BuiltModule } from "../src/projects/source-notes/module-builder.js"
 import type { ProjectManifest } from "../src/projects/schema.js"
@@ -40,10 +39,62 @@ const builtModules: ReadonlyArray<BuiltModule> = [
         target_path: "/tmp/site/assets/generated/demo/core/diagram.png"
       }
     ],
+    documents: [
+      {
+        metadata: {
+          id: "core:src/Main.java",
+          project_key: "demo",
+          module_slug: "core",
+          graph_node_id: "demo:core:src/Main.java",
+          title: "Main.java",
+          url: "/projects/demo/core/main/",
+          tree_path: "jvm/src/Main.java",
+          source_path: "core/src/Main.java",
+          source_url: "https://example.com/demo/blob/main/core/src/Main.java",
+          language: "java",
+          format: "code",
+          breadcrumbs: [],
+          code_references: null
+        },
+        file: {
+          path: "/tmp/site/_source_documents/demo/core/main.md",
+          content: "---\ntitle: Main.java\n---\n~~~java\nclass Main {}\n~~~\n"
+        }
+      },
+      {
+        metadata: {
+          id: "core:README.md",
+          project_key: "demo",
+          module_slug: "core",
+          graph_node_id: "demo:core:README.md",
+          title: "README.md",
+          url: "/projects/demo/core/readme/",
+          tree_path: "docs/README.md",
+          source_path: "core/README.md",
+          source_url: "https://example.com/demo/blob/main/core/README.md",
+          language: "markdown",
+          format: "markdown",
+          breadcrumbs: [],
+          code_references: null
+        },
+        file: {
+          path: "/tmp/site/_source_documents/demo/core/readme.md",
+          content: "---\ntitle: README.md\n---\n# Readme\n"
+        }
+      }
+    ],
     files: [
       {
-        path: "/tmp/site/demo/core/index.md",
+        path: "/tmp/site/_source_modules/demo/core.md",
         content: "---\n---\n"
+      },
+      {
+        path: "/tmp/site/_source_documents/demo/core/main.md",
+        content: "---\ntitle: Main.java\n---\n~~~java\nclass Main {}\n~~~\n"
+      },
+      {
+        path: "/tmp/site/_source_documents/demo/core/readme.md",
+        content: "---\ntitle: README.md\n---\n# Readme\n"
       }
     ],
     module: {
@@ -58,6 +109,8 @@ const builtModules: ReadonlyArray<BuiltModule> = [
       documents: [
         {
           id: "core:src/Main.java",
+          project_key: "demo",
+          module_slug: "core",
           graph_node_id: "demo:core:src/Main.java",
           title: "Main.java",
           url: "/projects/demo/core/main/",
@@ -71,6 +124,8 @@ const builtModules: ReadonlyArray<BuiltModule> = [
         },
         {
           id: "core:README.md",
+          project_key: "demo",
+          module_slug: "core",
           graph_node_id: "demo:core:README.md",
           title: "README.md",
           url: "/projects/demo/core/readme/",
@@ -87,22 +142,15 @@ const builtModules: ReadonlyArray<BuiltModule> = [
   }
 ]
 
-test("attachReferencePanels only decorates code documents", () => {
-  const modulesWithReferences = attachReferencePanels(
+test("attachReferencePanels only decorates code documents", async () => {
+  const modulesWithReferences = await Effect.runPromise(attachReferencePanels(
     builtModules,
     new Map<string, CodeReferencesPanel>([["core:src/Main.java", referencePanel]])
-  )
+  ))
 
   assert.equal(modulesWithReferences[0]?.module.documents[0]?.code_references?.focus_title, "Main.java")
   assert.equal(modulesWithReferences[0]?.module.documents[1]?.code_references, null)
-})
-
-test("buildSourceNotesProjectData shapes generated source notes data", () => {
-  const projectData = buildSourceNotesProjectData(manifest, "https://example.com/demo", "/assets/hero.png", builtModules)
-
-  assert.equal(projectData.project.slug, "demo")
-  assert.equal(projectData.project.hero_image_url, "/assets/hero.png")
-  assert.equal(projectData.modules[0]?.slug, "core")
+  assert.match(modulesWithReferences[0]?.files[1]?.content ?? "", /focus_title: Main\.java/)
 })
 
 test("assembleSourceNotesProject composes the generated build output", async () => {
@@ -115,17 +163,15 @@ test("assembleSourceNotesProject composes the generated build output", async () 
           source_path: "/tmp/demo/README.png",
           target_path: "/tmp/site/assets/generated/demo/project/README.png"
         }
-      ],
-      firstImageUrl: "/assets/generated/demo/project/README.png"
+      ]
     },
     builtModules,
     new Map<string, CodeReferencesPanel>([["core:src/Main.java", referencePanel]])
   ))
 
   assert.equal(build.card.slug, "demo")
-  assert.equal(build.files.length, 2)
+  assert.equal(build.files.length, 3)
   assert.equal(build.assets.length, 2)
-  assert.equal(build.files[0]?.path.endsWith("/_data/generated/demo/source_notes.yml"), true)
-  assert.match(build.files[0]?.content ?? "", /hero_image_url: \/assets\/generated\/demo\/project\/README\.png/)
-  assert.match(build.files[0]?.content ?? "", /focus_title: Main\.java/)
+  assert.equal(build.files[0]?.path.endsWith("/_source_modules/demo/core.md"), true)
+  assert.match(build.files[1]?.content ?? "", /focus_title: Main\.java/)
 })

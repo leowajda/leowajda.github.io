@@ -27,7 +27,7 @@
               <header class="implementation-card__header">
                 <div>
                   {%- if embed and visible_implementations.size == 1 -%}
-                    <h2 class="implementation-card__title">{{ problem.name }}: {{ implementation.approach_label }}</h2>
+                    <h2 class="implementation-card__title">{{ problem.title }}: {{ implementation.approach_label }}</h2>
                     <p class="implementation-card__meta">{{ language.label }}</p>
                   {%- else -%}
                     <h3 class="implementation-card__title">{{ implementation.approach_label }}</h3>
@@ -42,7 +42,7 @@
                     <a href="{{ implementation.embed_url | relative_url }}">embed</a>
                   {%- endif -%}
                   <a href="{{ implementation.source_url }}" target="_blank" rel="noreferrer">source</a>
-                  <a href="{{ problem.url }}" target="_blank" rel="noreferrer">leetcode</a>
+                  <a href="{{ problem.problem_source_url }}" target="_blank" rel="noreferrer">leetcode</a>
                   <button type="button" data-code-copy-button data-copy-default-label="copy">copy</button>
                 </div>
               </header>

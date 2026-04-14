@@ -24,6 +24,8 @@ export const SourceModuleRootSchema = Schema.Struct({
 
 export const SourceNotesDocumentSchema = Schema.Struct({
   id: Schema.String,
+  project_key: Schema.String,
+  module_slug: Schema.String,
   graph_node_id: Schema.String,
   title: Schema.String,
   url: Schema.String,
@@ -48,18 +50,6 @@ export const SourceNotesModuleSchema = Schema.Struct({
   documents: Schema.Array(SourceNotesDocumentSchema)
 })
 
-export const SourceNotesProjectDataSchema = Schema.Struct({
-  project: Schema.Struct({
-    slug: Schema.String,
-    title: Schema.String,
-    description: Schema.String,
-    url: Schema.String,
-    source_url: Schema.String,
-    hero_image_url: Schema.String
-  }),
-  modules: Schema.Array(SourceNotesModuleSchema)
-})
-
 export type SourceTreeNode = {
   readonly kind: "directory" | "file"
   readonly title: string
@@ -68,6 +58,5 @@ export type SourceTreeNode = {
   readonly children: ReadonlyArray<SourceTreeNode>
 }
 
-export type SourceNotesProjectData = Schema.Schema.Type<typeof SourceNotesProjectDataSchema>
 export type SourceNotesModule = Schema.Schema.Type<typeof SourceNotesModuleSchema>
 export type SourceNotesDocument = Schema.Schema.Type<typeof SourceNotesDocumentSchema>

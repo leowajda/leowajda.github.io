@@ -1,7 +1,8 @@
 import { Effect } from "effect"
 import path from "node:path"
-import { generatedSiteDirectory } from "../../core/paths.js"
+import type { CodeReferencesPanel } from "../../../../packages/graph/src/index.js"
 import { encodeFrontMatter } from "../../core/frontmatter.js"
+import { generatedCollectionFile } from "../../core/jekyll.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedTextFile } from "../types.js"
 import type { SourceNotesDocument, SourceTreeNode } from "./schema.js"
@@ -115,6 +116,50 @@ const buildDocumentBody = (content: string, metadata: TextFileMetadata | undefin
   return `~~~${metadata.syntax}\n${content.trimEnd()}\n~~~\n`
 }
 
+const sourceDocumentFrontMatter = (metadata: SourceNotesDocument) =>
+  encodeFrontMatter(
+    `Unable to encode source document front matter for '${metadata.source_path}'`,
+    {
+      title: metadata.title,
+      description: `${metadata.title} notes`,
+      project_key: metadata.project_key,
+      module_slug: metadata.module_slug,
+      document_id: metadata.id,
+      graph_node_id: metadata.graph_node_id,
+      page_source_url: metadata.source_url,
+      tree_path: metadata.tree_path,
+      source_path: metadata.source_path,
+      source_url: metadata.source_url,
+      language: metadata.language,
+      format: metadata.format,
+      breadcrumbs: metadata.breadcrumbs,
+      code_references: metadata.code_references
+    }
+  )
+
+const stripFrontMatter = (content: string) =>
+  content.replace(/^---\n[\s\S]*?\n---\n?/, "")
+
+export const withSourceDocumentReferences = (
+  document: BuiltSourceDocument,
+  references: CodeReferencesPanel | null
+): Effect.Effect<BuiltSourceDocument, Error> =>
+  sourceDocumentFrontMatter({
+    ...document.metadata,
+    code_references: document.metadata.format === "code" ? references : null
+  }).pipe(
+    Effect.map((frontMatter) => ({
+      metadata: {
+        ...document.metadata,
+        code_references: document.metadata.format === "code" ? references : null
+      },
+      file: {
+        ...document.file,
+        content: `${frontMatter}${stripFrontMatter(document.file.content)}`
+      }
+    }))
+  )
+
 export const buildSourceDocument = (
   input: SourceDocumentBuildInput,
   content: string
@@ -135,40 +180,28 @@ export const buildSourceDocument = (
   const documentId = `${input.moduleSlug}:${treePath}`
   const graphNodeId = `${input.manifest.slug}:${input.moduleSlug}:${treePath}`
 
-  return encodeFrontMatter(
-    `Unable to encode source document front matter for '${sourcePath}'`,
-    {
-      layout: "source_document",
-      title: baseName,
-      description: `${baseName} notes`,
-      permalink: url,
-      project_key: input.manifest.slug,
-      module_slug: input.moduleSlug,
-      document_id: documentId,
-      graph_node_id: graphNodeId,
-      page_source_url: sourceUrl,
-      tree_path: treePath,
-      source_path: sourcePath,
-      source_url: sourceUrl
-    }
-  ).pipe(
+  const metadata: SourceNotesDocument = {
+    id: documentId,
+    project_key: input.manifest.slug,
+    module_slug: input.moduleSlug,
+    graph_node_id: graphNodeId,
+    title: baseName,
+    url,
+    tree_path: treePath,
+    source_path: sourcePath,
+    source_url: sourceUrl,
+    language: input.metadata?.language ?? input.defaultLanguage,
+    format: input.metadata?.format ?? "code",
+    breadcrumbs,
+    code_references: null
+  }
+
+  return sourceDocumentFrontMatter(metadata).pipe(
     Effect.map((frontMatter) => ({
-      metadata: {
-        id: documentId,
-        graph_node_id: graphNodeId,
-        title: baseName,
-        url,
-        tree_path: treePath,
-        source_path: sourcePath,
-        source_url: sourceUrl,
-        language: input.metadata?.language ?? input.defaultLanguage,
-        format: input.metadata?.format ?? "code",
-        breadcrumbs,
-        code_references: null
-      } satisfies SourceNotesDocument,
+      metadata,
       file: {
-        path: path.join(generatedSiteDirectory, input.manifest.slug, input.moduleSlug, routePath, "index.md"),
-        content: `${frontMatter}\n${buildDocumentBody(content, input.metadata)}`
+        path: generatedCollectionFile("source_documents", input.manifest.slug, input.moduleSlug, `${routePath}.md`),
+        content: `${frontMatter}${buildDocumentBody(content, input.metadata)}`
       } satisfies GeneratedTextFile
     } satisfies BuiltSourceDocument))
   )

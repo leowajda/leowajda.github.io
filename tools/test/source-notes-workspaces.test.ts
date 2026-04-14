@@ -12,6 +12,8 @@ test("buildGraphWorkspaceInputs groups code documents by workspace root", () => 
       documents: [
         {
           id: "orders:src/Main.java",
+          project_key: "demo",
+          module_slug: "orders",
           graph_node_id: "graph:orders:main",
           title: "Main.java",
           url: "/orders/main/",
@@ -25,6 +27,8 @@ test("buildGraphWorkspaceInputs groups code documents by workspace root", () => 
         },
         {
           id: "orders:README.md",
+          project_key: "demo",
+          module_slug: "orders",
           graph_node_id: "graph:orders:readme",
           title: "README.md",
           url: "/orders/readme/",
@@ -44,6 +48,8 @@ test("buildGraphWorkspaceInputs groups code documents by workspace root", () => 
       documents: [
         {
           id: "payments:src/App.scala",
+          project_key: "demo",
+          module_slug: "payments",
           graph_node_id: "graph:payments:app",
           title: "App.scala",
           url: "/payments/app/",

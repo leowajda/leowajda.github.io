@@ -2,9 +2,9 @@
 layout: default
 ---
 
-{%- assign problem = site.data.generated[page.project_key].problem_pages[page.problem_slug] -%}
+{%- assign problem = page -%}
 
-{%- if problem == nil -%}
+{%- if problem.implementations == nil -%}
   <p>Problem data not found.</p>
 {%- else -%}
   {%- assign implementation_id = page.implementation_id | default: problem.implementations.first.id -%}

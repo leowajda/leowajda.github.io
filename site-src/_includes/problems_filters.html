@@ -14,7 +14,7 @@
         <input type="radio" name="difficulty" value="" checked>
         <span>All difficulties</span>
       </label>
-      {%- for difficulty in include.project.problem_filters.difficulties -%}
+      {%- for difficulty in include.problem_filters.difficulties -%}
         <label class="filter-choice">
           <input type="radio" name="difficulty" value="{{ difficulty }}">
           <span>{{ difficulty }}</span>
@@ -31,7 +31,7 @@
           <input type="radio" name="language" value="" checked>
           <span>All languages</span>
         </label>
-        {%- for language in include.project.problem_filters.languages -%}
+        {%- for language in include.problem_filters.languages -%}
           <label class="filter-choice">
             <input type="radio" name="language" value="{{ language.slug }}">
             <span>{{ language.label }}</span>
@@ -44,7 +44,7 @@
   <fieldset class="filter-section">
     <legend class="filter-section__title">Categories</legend>
     <div class="filter-choices filter-choices--stacked">
-      {%- for category in include.project.problem_filters.categories -%}
+      {%- for category in include.problem_filters.categories -%}
         <label class="filter-choice">
           <input type="checkbox" name="category" value="{{ category }}">
           <span>{{ category }}</span>

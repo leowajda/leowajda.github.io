@@ -2,13 +2,12 @@
 layout: default
 ---
 
-{%- assign notes = site.data.generated[page.project_key].source_notes -%}
-{%- assign current_module = notes.modules | where: "slug", page.module_slug | first -%}
-{%- if current_module != nil -%}
-  {%- assign current_document = current_module.documents | where: "id", page.document_id | first -%}
-{%- endif -%}
+{%- assign current_project = site.data.generated.projects | where: "slug", page.project_key | first -%}
+{%- assign current_project_title = current_project.title | default: page.project_key -%}
+{%- assign current_module = site.source_modules | where: "project_key", page.project_key | where: "module_slug", page.module_slug | first -%}
+{%- assign current_document = page -%}
 
-{%- if current_module == nil or current_document == nil -%}
+{%- if current_module == nil or current_document.document_id == nil -%}
   <p>Source document data not found.</p>
 {%- else -%}
   <article class="source-layout">
@@ -31,7 +30,7 @@ layout: default
       <p class="source-page-header__meta">{{ current_document.source_path }}</p>
     </header>
 
-    {%- include source_sidebar.html notes=notes -%}
+    {%- include source_sidebar.html module=current_module project_title=current_project_title -%}
 
     {%- if current_document.format == "code" -%}
       <section class="content-card source-code-block" data-code-block>

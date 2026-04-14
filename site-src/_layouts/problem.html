@@ -2,14 +2,14 @@
 layout: default
 ---
 
-{%- assign problem = site.data.generated[page.project_key].problem_pages[page.problem_slug] -%}
+{%- assign problem = page -%}
 
-{%- if problem == nil -%}
+{%- if problem.implementations == nil -%}
   <p>Problem data not found.</p>
 {%- else -%}
   <article class="problem-page">
     <header class="page-header problem-header">
-      <h1>{{ problem.name }}</h1>
+      <h1>{{ problem.title }}</h1>
     </header>
 
     <section class="content-card">

@@ -1,13 +1,9 @@
 import { Effect } from "effect"
 import { build } from "esbuild"
-import { execFile } from "node:child_process"
-import fs from "node:fs/promises"
 import path from "node:path"
-import { promisify } from "node:util"
 import { AssetBuildError } from "./errors.js"
+import { FileStore } from "./workspace.js"
 import { generatedSiteDirectory, nodeModulesDirectory, rootDirectory } from "./paths.js"
-
-const execFileAsync = promisify(execFile)
 
 const assetBuildFailure = (error: unknown) =>
   new AssetBuildError({ reason: String(error) })
@@ -31,42 +27,28 @@ const buildSiteBundle = Effect.tryPromise({
   catch: assetBuildFailure
 })
 
-const buildSiteStyles = Effect.tryPromise({
-  try: async () => {
-    await fs.mkdir(path.join(generatedSiteDirectory, "assets/css"), { recursive: true })
-    await execFileAsync(path.join(nodeModulesDirectory, ".bin", "tailwindcss"), [
-      "-i",
-      path.join(rootDirectory, "styles/main.css"),
-      "-o",
-      path.join(generatedSiteDirectory, "assets/css/main.css")
-    ], {
-      cwd: rootDirectory
-    })
-  },
-  catch: assetBuildFailure
-})
+const copyKatexAssets = Effect.gen(function* () {
+  const fileStore = yield* FileStore
+  const katexDirectory = path.join(nodeModulesDirectory, "katex/dist")
+  const fontsSourceDirectory = path.join(katexDirectory, "fonts")
+  const fontsTargetDirectory = path.join(generatedSiteDirectory, "assets/vendor/katex/fonts")
 
-const copyKatexAssets = Effect.tryPromise({
-  try: async () => {
-    const katexDirectory = path.join(nodeModulesDirectory, "katex/dist")
-    await fs.mkdir(path.join(generatedSiteDirectory, "assets/vendor/katex/fonts"), { recursive: true })
-    await fs.copyFile(
-      path.join(katexDirectory, "katex.min.css"),
-      path.join(generatedSiteDirectory, "assets/vendor/katex/katex.min.css")
-    )
-    const fontEntries = await fs.readdir(path.join(katexDirectory, "fonts"))
-    await Promise.all(fontEntries.map((entry) =>
-      fs.copyFile(
-        path.join(katexDirectory, "fonts", entry),
-        path.join(generatedSiteDirectory, "assets/vendor/katex/fonts", entry)
-      )
-    ))
-  },
-  catch: assetBuildFailure
+  yield* fileStore.makeDirectory(fontsTargetDirectory).pipe(Effect.mapError(assetBuildFailure))
+  yield* fileStore.copyFile(
+    path.join(katexDirectory, "katex.min.css"),
+    path.join(generatedSiteDirectory, "assets/vendor/katex/katex.min.css")
+  ).pipe(Effect.mapError(assetBuildFailure))
+
+  const fontEntries = yield* fileStore.readDirectory(fontsSourceDirectory).pipe(Effect.mapError(assetBuildFailure))
+  yield* Effect.forEach(fontEntries.filter((entry) => entry.isFile()), (entry) =>
+    fileStore.copyFile(
+      path.join(fontsSourceDirectory, entry.name),
+      path.join(fontsTargetDirectory, entry.name)
+    ).pipe(Effect.mapError(assetBuildFailure))
+  , { concurrency: 8 })
 })
 
 export const buildBrowserAssets = Effect.all([
   buildSiteBundle,
-  buildSiteStyles,
   copyKatexAssets
 ]).pipe(Effect.asVoid)
