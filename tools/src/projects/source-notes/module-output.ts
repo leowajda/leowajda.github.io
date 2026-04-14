@@ -1,7 +1,6 @@
 import { Effect } from "effect"
-import path from "node:path"
-import { generatedSiteDirectory } from "../../core/paths.js"
 import { encodeFrontMatter } from "../../core/frontmatter.js"
+import { generatedCollectionFile } from "../../core/jekyll.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedAssetFile, GeneratedTextFile } from "../types.js"
 import type { PageAsset } from "./assets.js"
@@ -14,6 +13,7 @@ export type BuiltModule = {
   readonly moduleSlug: string
   readonly moduleRelativePath: string
   readonly assets: ReadonlyArray<GeneratedAssetFile>
+  readonly documents: ReadonlyArray<BuiltSourceDocument>
   readonly files: ReadonlyArray<GeneratedTextFile>
   readonly module: SourceNotesModule
 }
@@ -70,25 +70,28 @@ export const buildSourceNotesModuleData = (
 
 const buildModulePage = (
   manifest: ProjectManifest,
-  moduleCandidate: ModuleCandidate,
+  module: SourceNotesModule,
   moduleSourceUrl: string,
   readmeMarkdown: string
 ) =>
   encodeFrontMatter(
-    `Unable to encode module front matter for '${moduleCandidate.slug}'`,
+    `Unable to encode module front matter for '${module.slug}'`,
     {
-      layout: "source_module",
-      title: moduleCandidate.title,
-      description: `${moduleCandidate.title} notes`,
-      permalink: `${manifest.route_base}/${moduleCandidate.slug}/`,
+      title: module.title,
+      description: `${module.title} notes`,
       project_key: manifest.slug,
-      module_slug: moduleCandidate.slug,
+      module_slug: module.slug,
       page_source_url: moduleSourceUrl,
+      source_url: module.source_url,
+      hero_image_url: module.hero_image_url,
+      language_labels: module.language_labels,
+      document_count: module.document_count,
+      roots: module.roots,
       tree_path: ""
     }
   ).pipe(
     Effect.map((frontMatter) => ({
-      path: path.join(generatedSiteDirectory, manifest.slug, moduleCandidate.slug, "index.md"),
+      path: generatedCollectionFile("source_modules", manifest.slug, `${module.slug}.md`),
       content: `${frontMatter}\n${readmeMarkdown}\n`
     } satisfies GeneratedTextFile))
   )
@@ -102,20 +105,22 @@ export const assembleSourceNotesModule = (
 ) =>
   Effect.gen(function* () {
     const moduleSourceUrl = buildModuleSourceUrl(moduleCandidate, gitMetadata)
-    const modulePage = yield* buildModulePage(manifest, moduleCandidate, moduleSourceUrl, readme.markdown)
+    const moduleData = buildSourceNotesModuleData(
+      manifest,
+      moduleCandidate,
+      moduleSourceUrl,
+      readme.firstImageUrl,
+      builtDocuments
+    )
+    const modulePage = yield* buildModulePage(manifest, moduleData, moduleSourceUrl, readme.markdown)
 
     return {
       modulePath: moduleCandidate.absolutePath,
       moduleSlug: moduleCandidate.slug,
       moduleRelativePath: moduleCandidate.relativePath,
       assets: readme.assets,
+      documents: builtDocuments,
       files: [modulePage, ...builtDocuments.map((document) => document.file)],
-      module: buildSourceNotesModuleData(
-        manifest,
-        moduleCandidate,
-        moduleSourceUrl,
-        readme.firstImageUrl,
-        builtDocuments
-      )
+      module: moduleData
     } satisfies BuiltModule
   })

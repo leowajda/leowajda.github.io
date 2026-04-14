@@ -1,14 +1,15 @@
 import { Effect } from "effect"
 import path from "node:path"
 import { encodeYaml } from "../../core/yaml.js"
-import { generatedSiteDirectory, rootDirectory } from "../../core/paths.js"
+import { generatedDataFile } from "../../core/jekyll.js"
+import { rootDirectory } from "../../core/paths.js"
 import { FileStore } from "../../core/workspace.js"
 import { resolveRepositoryMetadata } from "../../core/repository.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedTextFile, ProjectAdapter, ProjectBuild, ProjectCard } from "../types.js"
 import { buildEurekaModel, decodeEurekaSource } from "./model.js"
 import { buildEurekaReferencePanels } from "./references.js"
-import { ProblemFiltersSchema, ProblemPagesSchema, ProblemsViewSchema } from "./schema.js"
+import { ProblemFiltersSchema } from "./schema.js"
 import { localSourcePath } from "./workspaces.js"
 
 const slugify = (value: string) => value.toLowerCase().replace(/[^a-z0-9_-]/g, "-")
@@ -50,19 +51,7 @@ const buildEureka = (manifest: ProjectManifest) =>
 
     const dataFiles = yield* Effect.all([
       makeYamlFile(
-        path.join(generatedSiteDirectory, `_data/generated/${manifest.slug}/problem_pages.yml`),
-        `Unable to encode generated problem pages for '${manifest.slug}'`,
-        ProblemPagesSchema,
-        model.problemPages
-      ),
-      makeYamlFile(
-        path.join(generatedSiteDirectory, `_data/generated/${manifest.slug}/problems_view.yml`),
-        `Unable to encode generated problems view for '${manifest.slug}'`,
-        ProblemsViewSchema,
-        model.problemsView
-      ),
-      makeYamlFile(
-        path.join(generatedSiteDirectory, `_data/generated/${manifest.slug}/problem_filters.yml`),
+        generatedDataFile(manifest.slug, "problem_filters.yml"),
         `Unable to encode generated problem filters for '${manifest.slug}'`,
         ProblemFiltersSchema,
         model.problemFilters

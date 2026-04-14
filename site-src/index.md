@@ -8,13 +8,13 @@ description: ""
 
 <div class="content-stack">
   {%- for project in site.data.generated.projects -%}
-    {%- assign source_notes = site.data.generated[project.slug].source_notes -%}
-    {%- if source_notes -%}
+    {%- assign project_modules = site.source_modules | where: "project_key", project.slug | sort: "title" -%}
+    {%- if project_modules.size > 0 -%}
       <article class="content-card content-card--compact">
         <h3>{{ project.title }}</h3>
         <p>{{ project.description }}</p>
         <ul class="project-collection" aria-label="{{ project.title }} entries">
-          {%- for module in source_notes.modules -%}
+          {%- for module in project_modules -%}
             <li class="project-collection__item">
               <a class="project-collection__entry" href="{{ module.url | relative_url }}">{{ module.title }}</a>
             </li>

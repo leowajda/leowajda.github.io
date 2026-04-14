@@ -100,7 +100,7 @@ export const collectEurekaGraphDocuments = (
             key: `${languageSlug}:${approach}:${sourceUrl}`,
             languageSlug,
             title: path.basename(sourcePath),
-            detailUrl: `${manifest.route_base}/problems/${problemSlug}/?language=${languageSlug}&implementation=${implementationSlug(languageSlug, approach)}`,
+            detailUrl: `${manifest.route_base}/problems/${problemSlug}/#${implementationSlug(languageSlug, approach)}`,
             workspaceRoot: workspace.rootPath,
             workspaceRelativePath: toPosixPath(path.relative(workspace.rootPath, sourcePath))
           })

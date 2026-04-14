@@ -1,5 +1,4 @@
 ---
-layout: post
 title: First Note
 needs_math: true
 custom_js:

@@ -17,9 +17,9 @@
 - Prefer `pnpm preview` over `pnpm serve` for debugging and browser automation
 
 ## Styling
-- For styling-related work, treat `styles/` as the styling source of truth and start from [styles/main.css](/home/leowajda/Projects/leowajda.github.io/styles/main.css:1)
+- For styling-related work, treat [packages/theme/src/assets/css](/home/leowajda/Projects/leowajda.github.io/packages/theme/src/assets/css:1) and [packages/theme/src/_sass](/home/leowajda/Projects/leowajda.github.io/packages/theme/src/_sass:1) as the styling source of truth
 - Keep theme markup aligned with [packages/theme/src](/home/leowajda/Projects/leowajda.github.io/packages/theme/src:1) and do not scatter one-off styling logic into unrelated templates or scripts
-- The site styling is Tailwind-based; keep CSS inside the Tailwind entrypoint and `@layer` structure, and prefer existing utilities / `@apply` over introducing a parallel styling system
+- The site styling is Jekyll-native Sass now; prefer semantic theme classes and shared partials over utility-class authoring or external CSS build steps
 - Preserve a Jekyll-first approach for UI work: prefer layouts, includes, Liquid, `site.data`, and front matter over client-side assembly
 
 ## Playwright CLI

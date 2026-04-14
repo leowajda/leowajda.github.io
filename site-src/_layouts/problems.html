@@ -2,10 +2,11 @@
 layout: default
 ---
 
-{%- assign project = site.data.generated[page.project_key] -%}
+{%- assign problem_filters = site.data.generated[page.project_key].problem_filters -%}
+{%- assign problems = site.problems | where: "project_key", page.project_key | sort: "title" -%}
 {%- assign active_language = nil -%}
 {%- if page.language_filter -%}
-  {%- for language in project.problem_filters.languages -%}
+  {%- for language in problem_filters.languages -%}
     {%- if language.slug == page.language_filter -%}
       {%- assign active_language = language -%}
     {%- endif -%}
@@ -20,5 +21,5 @@ layout: default
   {%- endif -%}
 </header>
 
-{%- include problems_filters.html project=project page=page active_language=active_language -%}
-{%- include problems_table.html project=project page=page -%}
+{%- include problems_filters.html problem_filters=problem_filters page=page active_language=active_language -%}
+{%- include problems_table.html problems=problems problem_filters=problem_filters page=page -%}

@@ -1,14 +1,12 @@
 import { Effect } from "effect"
-import path from "node:path"
 import type { CodeReferencesPanel } from "../../../../packages/graph/src/index.js"
-import { generatedSiteDirectory } from "../../core/paths.js"
+import { generatedPageFile } from "../../core/jekyll.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedTextFile } from "../types.js"
 import {
+  type ProblemFilters,
   type ProblemPageRecord,
-  type ProblemViewRecord,
-  type SourceLanguage,
-  type ProblemFilters
+  type SourceLanguage
 } from "./schema.js"
 import { decodeEurekaSource, type EurekaSource, type ProblemSourceRecord } from "./source.js"
 import {
@@ -20,7 +18,6 @@ import { implementationKey, listProblemImplementations } from "./problem-records
 export type EurekaBuildModel = {
   readonly files: ReadonlyArray<GeneratedTextFile>
   readonly problemPages: Readonly<Record<string, ProblemPageRecord>>
-  readonly problemsView: ReadonlyArray<ProblemViewRecord>
   readonly problemFilters: ProblemFilters
 }
 
@@ -69,7 +66,6 @@ export const buildEurekaModel = (
     )
 
     const problemPages = Object.fromEntries(artifacts.map((artifact) => [artifact.slug, artifact.page]))
-    const problemsView = artifacts.map((artifact) => artifact.view)
     const categories = new Set<string>()
     const difficulties = new Set<string>()
 
@@ -90,14 +86,13 @@ export const buildEurekaModel = (
         ...(yield* Effect.forEach(languageEntries, ([languageSlug, language]) =>
           languageFrontMatter(manifest, languageSlug, language).pipe(
             Effect.map((content) => ({
-              path: path.join(generatedSiteDirectory, manifest.slug, languageSlug, "index.md"),
+              path: generatedPageFile(manifest.slug, languageSlug, "index.md"),
               content
             }))
           )
         ))
       ],
       problemPages,
-      problemsView,
       problemFilters
     } satisfies EurekaBuildModel
   })

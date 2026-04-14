@@ -1,9 +1,9 @@
-{%- assign notes = include.notes -%}
-{%- assign current_module = notes.modules | where: "slug", page.module_slug | first -%}
+{%- assign current_module = include.module -%}
+{%- assign project_title = include.project_title -%}
 
 <section class="content-card source-navigation">
   <h2>Files</h2>
-  <p class="source-sidebar__eyebrow">{{ notes.project.title }}</p>
+  <p class="source-sidebar__eyebrow">{{ project_title }}</p>
 
   <nav aria-label="Project source navigation">
     {%- if current_module -%}

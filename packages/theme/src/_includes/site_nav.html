@@ -1,17 +1,10 @@
 <nav class="site-nav" aria-label="Main navigation">
   {%- assign current_project = nil -%}
   {%- assign nav_source_url = '' -%}
-  {%- assign current_problem = nil -%}
-  {%- assign problem_page_url = '' -%}
+  {%- assign problem_source_url = page.problem_source_url | default: '' -%}
   {%- if page.project_key -%}
     {%- assign current_project = site.data.generated.projects | where: "slug", page.project_key | first -%}
-    {%- assign nav_source_url = page.page_source_url | default: current_project.source_url -%}
-    {%- if page.problem_slug -%}
-      {%- assign current_problem = site.data.generated[page.project_key].problem_pages[page.problem_slug] -%}
-      {%- if current_problem and current_problem.url -%}
-        {%- assign problem_page_url = current_problem.url -%}
-      {%- endif -%}
-    {%- endif -%}
+    {%- assign nav_source_url = page.page_source_url | default: page.source_url | default: current_project.source_url -%}
   {%- endif -%}
 
   <div class="site-nav__links">
@@ -45,18 +38,18 @@
       </a>
     {%- endif -%}
 
-    {%- if problem_page_url != '' -%}
-      <a class="site-nav__link theme-toggle icon-button" href="{{ problem_page_url }}" target="_blank" rel="noreferrer" aria-label="Open LeetCode problem" title="Open LeetCode problem">
+    {%- if problem_source_url != '' -%}
+      <a class="site-nav__link theme-toggle icon-button" href="{{ problem_source_url }}" target="_blank" rel="noreferrer" aria-label="Open LeetCode problem" title="Open LeetCode problem">
         {%- include icon.html name="leetcode" class="theme-toggle__icon" -%}
       </a>
     {%- endif -%}
 
-    {%- if page.layout == 'problem_embed' and current_problem != nil -%}
+    {%- if page.layout == 'problem_embed' and page.detail_url -%}
       {%- assign current_implementation = nil -%}
       {%- if page.implementation_id -%}
-        {%- assign current_implementation = current_problem.implementations | where: "id", page.implementation_id | first -%}
+        {%- assign current_implementation = page.implementations | where: "id", page.implementation_id | first -%}
       {%- endif -%}
-      {%- assign full_page_url = current_problem.detail_url -%}
+      {%- assign full_page_url = page.detail_url -%}
       {%- if current_implementation and current_implementation.detail_url -%}
         {%- assign full_page_url = current_implementation.detail_url -%}
       {%- endif -%}

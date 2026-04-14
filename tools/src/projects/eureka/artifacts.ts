@@ -1,50 +1,49 @@
 import { Effect } from "effect"
-import path from "node:path"
 import type { CodeReferencesPanel } from "../../../../packages/graph/src/index.js"
-import { generatedSiteDirectory } from "../../core/paths.js"
 import { encodeFrontMatter } from "../../core/frontmatter.js"
+import { generatedCollectionFile } from "../../core/jekyll.js"
 import type { ProjectManifest } from "../schema.js"
 import type { GeneratedTextFile } from "../types.js"
-import type { ProblemPageRecord, ProblemViewRecord, SourceLanguage } from "./schema.js"
+import type { ProblemPageRecord, SourceLanguage } from "./schema.js"
 import { buildProblemRecords } from "./problem-records.js"
 import type { ProblemSourceRecord } from "./source.js"
 
 export type ProblemArtifacts = {
   readonly slug: string
   readonly page: ProblemPageRecord
-  readonly view: ProblemViewRecord
   readonly files: ReadonlyArray<GeneratedTextFile>
 }
 
 const problemFrontMatter = (
-  manifest: ProjectManifest,
-  slug: string,
-  title: string,
+  context: string,
+  page: ProblemPageRecord,
+  projectKey: string,
   implementationId?: string
 ) =>
-  encodeFrontMatter(`Unable to encode problem front matter for '${slug}'`, {
-    layout: implementationId === undefined ? "problem" : "problem_embed",
-    title,
-    description: `${title} solutions`,
-    problem_slug: slug,
-    project_key: manifest.slug,
-    permalink: implementationId === undefined
-      ? `${manifest.route_base}/problems/${slug}/`
-      : (implementationId === ""
-        ? `${manifest.route_base}/problems/${slug}/embed/`
-        : `${manifest.route_base}/problems/${slug}/embed/${implementationId}/`),
+  encodeFrontMatter(context, {
+    title: page.title,
+    description: `${page.title} solutions`,
+    project_key: projectKey,
+    problem_slug: page.problem_slug,
+    problem_source_url: page.problem_source_url,
+    difficulty: page.difficulty,
+    difficulty_slug: page.difficulty_slug,
+    categories: page.categories,
+    languages: page.languages,
+    implementations: page.implementations,
+    implementation_count: page.implementation_count,
+    detail_url: page.detail_url,
+    embed_url: page.embed_url,
+    search_title: page.search_title,
     ...(implementationId !== undefined ? { implementation_id: implementationId } : {})
   })
 
 export const languageFrontMatter = (manifest: ProjectManifest, languageSlug: string, language: SourceLanguage) =>
   encodeFrontMatter(`Unable to encode language front matter for '${languageSlug}'`, {
-    layout: "problems",
     title: `${language.label} Solutions`,
     description: `All LeetCode solutions in ${language.label}.`,
     permalink: `${manifest.route_base}/${languageSlug}/`,
-    project_key: manifest.slug,
-    language_filter: languageSlug,
-    custom_js: ["eureka-filters"]
+    language_filter: languageSlug
   })
 
 export const buildProblemArtifacts = (
@@ -56,11 +55,16 @@ export const buildProblemArtifacts = (
   referencePanels: Readonly<Record<string, CodeReferencesPanel | null>>
 ): Effect.Effect<ProblemArtifacts, Error> =>
   Effect.gen(function* () {
-    const { page, view } = buildProblemRecords(manifest, languageEntries, slug, problem, codes, referencePanels)
+    const { page } = buildProblemRecords(manifest, languageEntries, slug, problem, codes, referencePanels)
     const embedFiles = yield* Effect.forEach(page.implementations, (implementation) =>
-      problemFrontMatter(manifest, slug, `${problem.name} (${implementation.approach_label})`, implementation.id).pipe(
+      problemFrontMatter(
+        `Unable to encode problem front matter for '${slug}' implementation '${implementation.id}'`,
+        page,
+        manifest.slug,
+        implementation.id
+      ).pipe(
         Effect.map((frontMatter) => ({
-          path: path.join(generatedSiteDirectory, manifest.slug, "problems", slug, "embed", implementation.id, "index.md"),
+          path: generatedCollectionFile("problem_embeds", manifest.slug, "problems", slug, "embed", `${implementation.id}.md`),
           content: frontMatter
         } satisfies GeneratedTextFile))
       )
@@ -69,15 +73,23 @@ export const buildProblemArtifacts = (
     return {
       slug,
       page,
-      view,
       files: [
         {
-          path: path.join(generatedSiteDirectory, manifest.slug, "problems", slug, "index.md"),
-          content: yield* problemFrontMatter(manifest, slug, problem.name)
+          path: generatedCollectionFile("problems", manifest.slug, "problems", `${slug}.md`),
+          content: yield* problemFrontMatter(
+            `Unable to encode problem front matter for '${slug}'`,
+            page,
+            manifest.slug
+          )
         },
         {
-          path: path.join(generatedSiteDirectory, manifest.slug, "problems", slug, "embed", "index.md"),
-          content: yield* problemFrontMatter(manifest, slug, problem.name, "")
+          path: generatedCollectionFile("problem_embeds", manifest.slug, "problems", slug, "embed.md"),
+          content: yield* problemFrontMatter(
+            `Unable to encode problem embed front matter for '${slug}'`,
+            page,
+            manifest.slug,
+            ""
+          )
         },
         ...embedFiles
       ]
