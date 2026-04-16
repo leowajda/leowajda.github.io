@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "eureka",
+    "title": "Eureka",
+    "description": "A collection of LeetCode solutions across multiple programming languages.",
+    "url": "/eureka/",
+    "source_url": "https://github.com/leowajda/eureka"
+  },
+  {
+    "slug": "zibaldone-java",
+    "title": "Zibaldone Java",
+    "description": "Notes and source-based study material across selected Java projects.",
+    "url": "",
+    "source_url": "https://github.com/leowajda/zibaldone-java"
+  },
+  {
+    "slug": "zibaldone-scala",
+    "title": "Zibaldone Scala",
+    "description": "Notes and source-based study material across selected Scala projects.",
+    "url": "",
+    "source_url": "https://github.com/leowajda/zibaldone-scala"
+  }
+]

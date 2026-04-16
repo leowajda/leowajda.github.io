@@ -1,0 +1,64 @@
+{%- assign problem = include.problem -%}
+{%- assign embed = include.embed | default: false -%}
+{%- assign requested_implementation = include.implementation_id | default: '' -%}
+{%- assign visible_implementations = problem.implementations -%}
+{%- if requested_implementation != '' -%}
+  {%- assign visible_implementations = problem.implementations | where: "id", requested_implementation -%}
+{%- endif -%}
+{%- if visible_implementations.size == 0 and embed -%}
+  {%- assign visible_implementations = problem.implementations | slice: 0, 1 -%}
+{%- endif -%}
+
+<section class="implementation-list">
+  {%- for language in problem.languages -%}
+    {%- assign language_impls = visible_implementations | where: "language", language.slug -%}
+    {%- if language_impls.size > 0 -%}
+      <section class="problem-section">
+        {%- unless embed and visible_implementations.size == 1 -%}
+          <header class="problem-section__header">
+            <h2>{{ language.label }}</h2>
+            <p>{{ language_impls.size }} solution{% if language_impls.size != 1 %}s{% endif %}</p>
+          </header>
+        {%- endunless -%}
+
+        <div class="implementation-stack">
+          {%- for implementation in language_impls -%}
+            <article class="content-card implementation-card" id="{{ implementation.id }}" data-code-block>
+              <header class="implementation-card__header">
+                <div>
+                  {%- if embed and visible_implementations.size == 1 -%}
+                    <h2 class="implementation-card__title">{{ problem.title }}: {{ implementation.approach_label }}</h2>
+                    <p class="implementation-card__meta">{{ language.label }}</p>
+                  {%- else -%}
+                    <h3 class="implementation-card__title">{{ implementation.approach_label }}</h3>
+                    <p class="implementation-card__meta">{{ language.label }}</p>
+                  {%- endif -%}
+                </div>
+
+                <div class="action-links">
+                  {%- if embed -%}
+                    <a href="{{ implementation.detail_url | relative_url }}">full page</a>
+                  {%- else -%}
+                    <a href="{{ implementation.embed_url | relative_url }}">embed</a>
+                  {%- endif -%}
+                  <a href="{{ implementation.source_url }}" target="_blank" rel="noreferrer">source</a>
+                  <a href="{{ problem.problem_source_url }}" target="_blank" rel="noreferrer">leetcode</a>
+                  <button type="button" data-code-copy-button data-copy-default-label="copy">copy</button>
+                </div>
+              </header>
+
+              <div class="code-block__content" data-code-source>
+                {%- capture code_block -%}
+```{{ implementation.code_language }}
+{{ implementation.code }}
+```
+                {%- endcapture -%}
+                {{ code_block | markdownify }}
+              </div>
+            </article>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+  {%- endfor -%}
+</section>

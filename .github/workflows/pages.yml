@@ -2,7 +2,7 @@ name: Deploy GitHub Pages
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 permissions:
@@ -19,26 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
+        uses: actions/checkout@v6
 
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v5
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'pnpm'
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.6.5
-
-      - name: Install Node dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -46,11 +31,15 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
 
-      - name: Generate site source
-        run: pnpm generate
+      - name: Write Pages config override
+        run: |
+          cat > "$RUNNER_TEMP/pages-config.yml" <<EOF
+          url: ${{ steps.pages.outputs.origin }}
+          baseurl: ${{ steps.pages.outputs.base_path }}
+          EOF
 
       - name: Build Jekyll site
-        run: bundle exec jekyll build --source site --destination _site
+        run: bundle exec jekyll build --source site-src --destination _site --config site-src/_config.yml,"$RUNNER_TEMP/pages-config.yml"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

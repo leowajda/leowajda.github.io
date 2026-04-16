@@ -1,3 +1,11 @@
 [submodule "sources/eureka"]
 	path = sources/eureka
 	url = https://github.com/leowajda/eureka.git
+[submodule "sources/zibaldone-scala"]
+	path = sources/zibaldone-scala
+	url = https://github.com/leowajda/zibaldone-scala.git
+	branch = master
+[submodule "sources/zibaldone-java"]
+	path = sources/zibaldone-java
+	url = https://github.com/leowajda/zibaldone-java.git
+	branch = master

@@ -1,0 +1,2007 @@
+{
+  "project": {
+    "slug": "zibaldone-scala",
+    "title": "Zibaldone Scala",
+    "description": "Notes and source-based study material across selected Scala projects.",
+    "url": "",
+    "source_url": "https://github.com/leowajda/zibaldone-scala"
+  },
+  "modules": [
+    {
+      "project_key": "zibaldone-scala",
+      "slug": "cats",
+      "title": "Cats",
+      "url": "/zibaldone-scala/cats/",
+      "source_url": "https://github.com/leowajda/zibaldone-scala/tree/master/cats",
+      "hero_image_url": "/assets/generated/zibaldone-scala/cats/cats.png",
+      "language_labels": [
+        "Scala"
+      ],
+      "document_count": 35,
+      "roots": [
+        {
+          "label": "src/main/scala",
+          "tree_path": "src/main/scala/",
+          "nodes": [
+            {
+              "kind": "directory",
+              "title": "ch_01",
+              "tree_path": "src/main/scala/ch_01",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "functor.scala",
+                  "tree_path": "src/main/scala/ch_01/functor.scala",
+                  "url": "/zibaldone-scala/cats/ch-01/functor/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "monad.scala",
+                  "tree_path": "src/main/scala/ch_01/monad.scala",
+                  "url": "/zibaldone-scala/cats/ch-01/monad/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "monadTransformer.scala",
+                  "tree_path": "src/main/scala/ch_01/monadTransformer.scala",
+                  "url": "/zibaldone-scala/cats/ch-01/monad-transformer/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "monoid.scala",
+                  "tree_path": "src/main/scala/ch_01/monoid.scala",
+                  "url": "/zibaldone-scala/cats/ch-01/monoid/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "semigroup.scala",
+                  "tree_path": "src/main/scala/ch_01/semigroup.scala",
+                  "url": "/zibaldone-scala/cats/ch-01/semigroup/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "ch_02",
+              "tree_path": "src/main/scala/ch_02",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "dataValidation.scala",
+                  "tree_path": "src/main/scala/ch_02/dataValidation.scala",
+                  "url": "/zibaldone-scala/cats/ch-02/data-validation/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "evaluation.scala",
+                  "tree_path": "src/main/scala/ch_02/evaluation.scala",
+                  "url": "/zibaldone-scala/cats/ch-02/evaluation/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "reader.scala",
+                  "tree_path": "src/main/scala/ch_02/reader.scala",
+                  "url": "/zibaldone-scala/cats/ch-02/reader/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "state.scala",
+                  "tree_path": "src/main/scala/ch_02/state.scala",
+                  "url": "/zibaldone-scala/cats/ch-02/state/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "writer.scala",
+                  "tree_path": "src/main/scala/ch_02/writer.scala",
+                  "url": "/zibaldone-scala/cats/ch-02/writer/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "ch_03",
+              "tree_path": "src/main/scala/ch_03",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "applicative.scala",
+                  "tree_path": "src/main/scala/ch_03/applicative.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/applicative/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "applicativeError.scala",
+                  "tree_path": "src/main/scala/ch_03/applicativeError.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/applicative-error/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "apply.scala",
+                  "tree_path": "src/main/scala/ch_03/apply.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/apply/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "flatMap.scala",
+                  "tree_path": "src/main/scala/ch_03/flatMap.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/flat-map/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "foldable.scala",
+                  "tree_path": "src/main/scala/ch_03/foldable.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/foldable/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "monadError.scala",
+                  "tree_path": "src/main/scala/ch_03/monadError.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/monad-error/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "semigroupal.scala",
+                  "tree_path": "src/main/scala/ch_03/semigroupal.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/semigroupal/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "traverse.scala",
+                  "tree_path": "src/main/scala/ch_03/traverse.scala",
+                  "url": "/zibaldone-scala/cats/ch-03/traverse/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "ch_04",
+              "tree_path": "src/main/scala/ch_04",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "contravariant.scala",
+                  "tree_path": "src/main/scala/ch_04/contravariant.scala",
+                  "url": "/zibaldone-scala/cats/ch-04/contravariant/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "invariant.scala",
+                  "tree_path": "src/main/scala/ch_04/invariant.scala",
+                  "url": "/zibaldone-scala/cats/ch-04/invariant/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "kleisli.scala",
+                  "tree_path": "src/main/scala/ch_04/kleisli.scala",
+                  "url": "/zibaldone-scala/cats/ch-04/kleisli/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "hierarchy",
+              "tree_path": "src/main/scala/hierarchy",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "Applicative.scala",
+                  "tree_path": "src/main/scala/hierarchy/Applicative.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/applicative/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "ApplicativeError.scala",
+                  "tree_path": "src/main/scala/hierarchy/ApplicativeError.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/applicative-error/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Apply.scala",
+                  "tree_path": "src/main/scala/hierarchy/Apply.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/apply/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Contravariant.scala",
+                  "tree_path": "src/main/scala/hierarchy/Contravariant.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/contravariant/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "FlatMap.scala",
+                  "tree_path": "src/main/scala/hierarchy/FlatMap.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/flat-map/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Foldable.scala",
+                  "tree_path": "src/main/scala/hierarchy/Foldable.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/foldable/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Functor.scala",
+                  "tree_path": "src/main/scala/hierarchy/Functor.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/functor/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Invariant.scala",
+                  "tree_path": "src/main/scala/hierarchy/Invariant.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/invariant/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Monad.scala",
+                  "tree_path": "src/main/scala/hierarchy/Monad.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/monad/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "MonadError.scala",
+                  "tree_path": "src/main/scala/hierarchy/MonadError.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/monad-error/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Monoid.scala",
+                  "tree_path": "src/main/scala/hierarchy/Monoid.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/monoid/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Semigroup.scala",
+                  "tree_path": "src/main/scala/hierarchy/Semigroup.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/semigroup/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Semigroupal.scala",
+                  "tree_path": "src/main/scala/hierarchy/Semigroupal.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/semigroupal/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Traverse.scala",
+                  "tree_path": "src/main/scala/hierarchy/Traverse.scala",
+                  "url": "/zibaldone-scala/cats/hierarchy/traverse/",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "documents": [
+        {
+          "id": "cats:src/main/scala/ch_01/functor.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "functor.scala",
+          "url": "/zibaldone-scala/cats/ch-01/functor/",
+          "tree_path": "src/main/scala/ch_01/functor.scala",
+          "source_path": "cats/src/main/scala/ch_01/functor.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_01/functor.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_01",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_01\n\nimport cats.Functor\nimport cats.syntax.functor.*\n\nextension [F[_]: Functor as functor, A](container: F[A])\n  // ex. use extension method\n  def mapContainer[B](f: A => B): F[B] = container.map(f)\n\n// a.k.a the covariant functor\ntrait `functor`[F[_]] extends ch_04.`invariant`[F]:\n\n  def map[A, B](fa: F[A])(f: A => B): F[B]\n  override def imap[A, B](fa: F[A])(forth: A => B)(back: B => A): F[B] = map(fa)(forth)\n\n// ex. define functor for binary tree\nenum Tree[+T]:\n\n  case Leaf(value: T)\n  case Branch(left: Tree[T], value: T, right: Tree[T])\n\nobject Tree:\n\n  // smart constructors are needed to solve the covariance problem in cats\n  def leaf[T](value: T): Tree[T]                                  = Leaf(value)\n  def branch[T](left: Tree[T], value: T, right: Tree[T]): Tree[T] = Branch(left, value, right)\n\n  given Functor[Tree] = new Functor[Tree]:\n\n    override def map[A, B](tree: Tree[A])(f: A => B): Tree[B] = tree match\n      case Leaf(value)                => Leaf(f(value))\n      case Branch(left, value, right) => Branch(map(left)(f), f(value), map(right)(f))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_01/monad.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "monad.scala",
+          "url": "/zibaldone-scala/cats/ch-01/monad/",
+          "tree_path": "src/main/scala/ch_01/monad.scala",
+          "source_path": "cats/src/main/scala/ch_01/monad.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_01/monad.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_01",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_01\n\nimport cats.syntax.applicative.*\nimport cats.syntax.flatMap.*\nimport cats.syntax.functor.*\nimport cats.{FlatMap, Monad}\n\nimport scala.annotation.tailrec\nimport scala.collection.mutable\nimport scala.util.Try\n\n// flatMap is a mental model of chained transformations\nextension [F[_]: FlatMap, A](container: F[A])\n\n  // ex. return all combinations (A, B)\n  def combine[B](otherContainer: F[B]): F[(A, B)] =\n    for // a.k.a `product` from the Semigroupal typeclass\n      a <- container\n      b <- otherContainer\n    yield (a, b)\n\ntrait `monad`[F[_]] extends ch_03.`applicative`[F] with ch_03.`flatMap`[F]:\n\n  // ex. implement map\n  final override def map[A, B](fa: F[A])(f: A => B): F[B] = flatMap(fa)(a => pure(f(a)))\n\n  final override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] =\n    flatMap(fa)(a => map(fb)(b => (a, b)))\n\n// ex. service layer API\nfinal case class Connection(host: String, port: String)\n\nsealed trait HttpService[F[_]: Monad]:\n\n  def connection(config: Map[String, String]): F[Connection]\n\n  def request(connection: Connection, payload: String): F[Int]\n\n  def response(config: Map[String, String], payload: String): F[Int] =\n    for connection <- connection(config); response <- request(connection, payload) yield response\n\nobject OptionalHttpService extends HttpService[Option]:\n\n  override def connection(config: Map[String, String]): Option[Connection] =\n    Option.when(config.contains(\"host\") && config.contains(\"port\")) { Connection(config(\"host\"), config(\"port\")) }\n\n  override def request(connection: Connection, payload: String): Option[Int] =\n    Option.when(payload.length >= 20) { 42 }\n\nobject TryHttpService extends HttpService[Try]:\n\n  override def connection(config: Map[String, String]): Try[Connection] =\n    Try { Connection(config(\"host\"), config(\"port\")) }\n\n  override def request(connection: Connection, payload: String): Try[Int] =\n    Try { if payload.length < 20 then throw new IllegalArgumentException() else 42 }\n\n// ex. monad for identity type\nopaque type Id[A] = A\n\ngiven Monad[Id] = new Monad[Id]:\n\n  override def pure[A](x: A): Id[A] = x\n\n  override def flatMap[A, B](fa: Id[A])(f: A => Id[B]): Id[B] = f(fa)\n\n  @tailrec override def tailRecM[A, B](a: A)(f: A => Id[Either[A, B]]): Id[B] = f(a) match\n    case Left(value)  => tailRecM(value)(f) // left == false\n    case Right(value) => value              // right == true\n\n// ex. monad for tree type\nenum BinaryTree[+T]:\n\n  case Leaf(value: T)\n  case Branch(left: BinaryTree[T], right: BinaryTree[T])\n\n  // for simplicity only hashes on the memory ref\n  override def hashCode(): Int = System.identityHashCode(this)\n\ngiven Monad[BinaryTree] = new Monad[BinaryTree]:\n\n  import ch_01.BinaryTree.{Branch, Leaf}\n\n  override def pure[A](x: A): BinaryTree[A] = Leaf(x)\n\n  override def flatMap[A, B](fa: BinaryTree[A])(f: A => BinaryTree[B]): BinaryTree[B] = fa match\n    case Leaf(value)         => f(value)\n    case Branch(left, right) => Branch(flatMap(left)(f), flatMap(right)(f))\n\n  override def tailRecM[A, B](a: A)(f: A => BinaryTree[Either[A, B]]): BinaryTree[B] =\n\n    @tailrec def loop(\n      notVisited: List[BinaryTree[Either[A, B]]],\n      visited: mutable.Set[BinaryTree[Either[A, B]]],\n      done: List[BinaryTree[B]]\n    ): BinaryTree[B] = notVisited match\n      case Nil          => done.head\n      case head :: next => head match\n          case Leaf(Right(value))                           => loop(next, visited, Leaf(value) :: done)\n          case Leaf(Left(value))                            => loop(f(value) :: next, visited, done)\n          case root @ Branch(left, right) if !visited(root) => loop(right :: left :: notVisited, visited + root, done)\n          case root @ Branch(left, right)                   => loop(next, visited, Branch(done.head, done.tail.head) :: done.drop(2))\n\n    loop(f(a) :: Nil, mutable.Set.empty, Nil)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_01/monadTransformer.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "monadTransformer.scala",
+          "url": "/zibaldone-scala/cats/ch-01/monad-transformer/",
+          "tree_path": "src/main/scala/ch_01/monadTransformer.scala",
+          "source_path": "cats/src/main/scala/ch_01/monadTransformer.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_01/monadTransformer.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_01",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_01\n\nimport cats.data.EitherT\nimport cats.instances.future.*\nimport scala.concurrent.ExecutionContext.Implicits.global\n\nimport scala.concurrent.Future\n\n// ex. request spike\nfinal case class AsyncService(bandwidths: Map[String, Int]):\n\n  opaque type AsyncResponse[T] = EitherT[Future, String, T] // Future[Either[String, T]]\n\n  private def bandwidth(server: String): AsyncResponse[Int] = bandwidths.get(server) match\n    case None        => EitherT.left { Future.successful(\"absent\") }\n    case Some(value) => EitherT.right { Future.successful(value) }\n\n  private def canWithstandSurge(a: String, b: String): AsyncResponse[Boolean] =\n    for\n      aBandwidth <- bandwidth(a)\n      bBandwidth <- bandwidth(b)\n    yield aBandwidth + bBandwidth > 250\n\n  def report(a: String, b: String): AsyncResponse[String] = canWithstandSurge(a, b).transform {\n    case Left(rootCause) => Left(rootCause)\n    case Right(true)     => Right(\"enough bandwidth\")\n    case Right(false)    => Left(\"not enough bandwidth\")\n  }\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_01/monoid.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "monoid.scala",
+          "url": "/zibaldone-scala/cats/ch-01/monoid/",
+          "tree_path": "src/main/scala/ch_01/monoid.scala",
+          "source_path": "cats/src/main/scala/ch_01/monoid.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_01/monoid.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_01",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_01\n\nimport cats.Monoid\nimport cats.instances.int.*\nimport cats.syntax.monoid.*\n\nextension [T: Monoid as monoid](iterable: Iterable[T])\n  // ex. implement combineFold\n  def foldIterable: T = iterable.fold(monoid.empty)(_ |+| _)\n\ntrait `monoid`[A] extends ch_01.`semigroup`[A]:\n  def empty: A\n\n// ex. combine a list of phonebooks as Map[String, Int]\nimport cats.instances.map.*\n\nval phoneBookA = Map[String, Int](\"a\" -> 1, \"b\" -> 2)\nval phoneBookB = Map[String, Int](\"c\" -> 3, \"a\" -> 2)\nval phoneBookC = List(phoneBookA, phoneBookB).foldIterable // \"a\" -> 3\n\n// ex. shopping cart and online stores\nfinal case class ShoppingCart(items: List[String], total: Double)\n\nobject ShoppingCart:\n\n  given Monoid[ShoppingCart] = Monoid.instance(\n    emptyValue = ShoppingCart(Nil, 0.0),\n    cmb = (a, b) => ShoppingCart(a.items |+| b.items, a.total |+| b.total)\n  )\n\n  def checkout(shoppingCarts: List[ShoppingCart]): ShoppingCart = shoppingCarts.foldIterable\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_01/semigroup.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "semigroup.scala",
+          "url": "/zibaldone-scala/cats/ch-01/semigroup/",
+          "tree_path": "src/main/scala/ch_01/semigroup.scala",
+          "source_path": "cats/src/main/scala/ch_01/semigroup.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_01/semigroup.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_01",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_01\n\nimport cats.Semigroup\nimport cats.instances.int.*\nimport cats.syntax.semigroup.*\n\n// will throw an exception on empty iterables\nextension [T: Semigroup](iterable: Iterable[T])\n  // ex. use extension method\n  def reduceIterable: T = iterable.reduce(_ |+| _)\n\ntrait `semigroup`[A]:\n  def combine(x: A, y: A): A\n\nfinal case class Expense(id: Long, amount: Double)\n\nobject Expense:\n  // ex. support new type\n  given Semigroup[Expense] = Semigroup.instance { (a, b) => Expense(a.id |+| b.id, a.amount |+| b.amount) }\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_02/dataValidation.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "dataValidation.scala",
+          "url": "/zibaldone-scala/cats/ch-02/data-validation/",
+          "tree_path": "src/main/scala/ch_02/dataValidation.scala",
+          "source_path": "cats/src/main/scala/ch_02/dataValidation.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_02/dataValidation.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_02\n\nimport cats.data.Validated\nimport cats.kernel.Semigroup\n\nimport scala.annotation.tailrec\n\ndef isPrime(n: Int): Boolean                      =\n  @tailrec def loop(d: Int): Boolean = if d <= 1 then true else n % d == 0 && loop(d - 1)\n  if n == 0 || n == -1 || n == 1 then false else loop(math.abs(n / 2))\n\n// ex. use Either[A, B]\ndef testNumber(n: Int): Either[List[String], Int] =\n\n  val isEven      = if n % 2 == 0 then Nil else \"not even\" :: Nil\n  val lessThan100 = if n <= 100 then Nil else \"> 100\" :: Nil\n  val isPositive  = if n >= 0 then Nil else \"negative\" :: Nil\n  val isPrimeNum  = if isPrime(n) then Nil else \"non-prime\" :: Nil\n\n  val errors = isEven ++ lessThan100 ++ isPositive ++ isPrimeNum\n  // Either[A, B] is not ideal for working on the left projections\n  if errors.isEmpty then Right(n) else Left(errors)\n\ndef validatedNumber(n: Int): Validated[List[String], Int] =\n\n  given Semigroup[Int] = Semigroup.first\n\n  val isEven      = Validated.cond(n % 2 == 0, n, \"not even\" :: Nil)\n  val lessThan100 = Validated.cond(n <= 100, n, \"> 100\" :: Nil)\n  val isPositive  = Validated.cond(n >= 0, n, \"negative\" :: Nil)\n  val isPrimeNum  = Validated.cond(isPrime(n), n, \"non-prime\" :: Nil)\n\n  isEven.combine(lessThan100).combine(isPositive).combine(isPrimeNum)\n\n// ex. form validation\nobject Form:\n\n  opaque type FormValidation[A] = Validated[List[String], A]\n\n  private def getField(form: Map[String, String], fieldName: String): FormValidation[String] =\n    Validated.fromOption(form.get(fieldName), s\"$fieldName is missing\" :: Nil)\n\n  private def nonBlank(field: String)(fieldName: String): FormValidation[String] =\n    Validated.cond(!field.isBlank, field, s\"$fieldName is blank\" :: Nil)\n\n  private def isProperEmail(field: String)(fieldName: String): FormValidation[String] =\n    Validated.cond(field.contains(\"@\"), field, s\"$fieldName is not valid\" :: Nil)\n\n  private def isValidPasswordLength(field: String)(fieldName: String): FormValidation[String] =\n    Validated.cond(field.length >= 10, field, s\"$fieldName is not valid\" :: Nil)\n\n  def validateForm(form: Map[String, String]): FormValidation[String] =\n\n    given Semigroup[String] = Semigroup.first // no need to concatenate strings\n\n    val isValidName     = getField(form, \"name\").andThen(nonBlank(\"Name\"))\n    val isValidPassword = getField(form, \"password\").andThen(isValidPasswordLength(\"Password\"))\n    val isValidEmail    = getField(form, \"email\").andThen(isProperEmail(\"Email\"))\n\n    isValidName.combine(isValidPassword).combine(isValidEmail).map(_ => \"OK\")\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_02/evaluation.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "evaluation.scala",
+          "url": "/zibaldone-scala/cats/ch-02/evaluation/",
+          "tree_path": "src/main/scala/ch_02/evaluation.scala",
+          "source_path": "cats/src/main/scala/ch_02/evaluation.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_02/evaluation.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_02\n\nimport cats.Eval\n\ndef mixedEvaluation: Eval[Int]                   =\n  for\n    a <- Eval.now(40)   // val\n    b <- Eval.later(1)  // memo\n    c <- Eval.always(1) // def\n  yield a + b + c\n\n// ex. implement defer such that defer(Eval.now) does NOT run side effects\ndef defer[A](expr: => Eval[A]): Eval[A]          =\n  for\n    _    <- Eval.later(())\n    eval <- expr\n  yield eval\n\n// ex. reverse linked list\ndef reverseEval[A](list: List[A]): Eval[List[A]] = list match\n  case Nil          => Eval.now(Nil)\n  case head :: tail => Eval.defer { reverseEval(tail).map(_ :+ head) } // stack-safe\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_02/reader.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "reader.scala",
+          "url": "/zibaldone-scala/cats/ch-02/reader/",
+          "tree_path": "src/main/scala/ch_02/reader.scala",
+          "source_path": "cats/src/main/scala/ch_02/reader.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_02/reader.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_02\n\nimport cats.data.Reader\n\nfinal case class Configuration(dbUsername: String, dbPassword: String, host: String, port: Int)\n\nfinal case class DbConnection(username: String, password: String)\n\nobject DbConnection:\n\n  val reader: Reader[Configuration, DbConnection] = Reader { conf => DbConnection(conf.dbUsername, conf.dbPassword) }\n\nfinal case class EmailService(host: String, port: Int, dbConnection: DbConnection)\n\n// reader is a Kleisli so it chains higher-order functions\nobject EmailService:\n\n  // ex. email service\n  val reader: Reader[Configuration, EmailService] =\n    for\n      conf   <- Reader[Configuration, Configuration](identity)\n      dbConn <- DbConnection.reader\n    yield EmailService(conf.host, conf.port, dbConn)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_02/state.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "state.scala",
+          "url": "/zibaldone-scala/cats/ch-02/state/",
+          "tree_path": "src/main/scala/ch_02/state.scala",
+          "source_path": "cats/src/main/scala/ch_02/state.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_02/state.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_02\n\nimport cats.data.State\n\n// iterative computations without mutations\n// S => (S, A)\ndef compute(num: Int): (String, String) =\n  var a                 = num\n  a += 1\n  val firstComputation  = s\"Added ${1} obtained $a\"\n  a *= 5\n  val secondComputation = s\"Multiplied with ${5}, obtained $a\"\n  (firstComputation, secondComputation)\n\nval compute: State[Int, (String, String)] =\n  for\n    firstComputation  <- State[Int, String] { num => (num + 1, s\"Added ${1} obtained ${num + 1}\") }\n    secondComputation <- State[Int, String] { num => (num * 5, s\"Multiplied with ${5}, obtained ${num * 5}\") }\n  yield (firstComputation, secondComputation)\n\n// ex. shopping cart\nfinal case class ShoppingCart(items: List[String], total: Double)\n\nobject ShoppingCart:\n\n  val empty: ShoppingCart = ShoppingCart(Nil, 0.0)\n\n  def addToCart(item: String, price: Double): State[ShoppingCart, Double] = State { shoppingCart =>\n    (ShoppingCart(item :: shoppingCart.items, shoppingCart.total + price), shoppingCart.total + price)\n  }\n\n// ex. mental gymnastic\ndef inspect[A, B](f: A => B): State[A, B] = State { s => (s, f(s)) }\ndef get[A]: State[A, A]                   = State { s => (s, s) }\ndef set[A](a: A): State[A, Unit]          = State { _ => (a, ()) }\ndef modify[A](f: A => A): State[A, Unit]  = State { s => (f(s), ()) }\n\n// sequential imperative computation reduced to pure functional programming\ndef program: State[Int, (Int, Int, Int)] =\n  for\n    a <- get[Int]\n    _ <- set[Int](a + 10)\n    b <- get[Int]\n    _ <- modify[Int](_ + 43)\n    c <- inspect[Int, Int](_ * 2)\n  yield (a, b, c)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_02/writer.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "writer.scala",
+          "url": "/zibaldone-scala/cats/ch-02/writer/",
+          "tree_path": "src/main/scala/ch_02/writer.scala",
+          "source_path": "cats/src/main/scala/ch_02/writer.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_02/writer.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_02\n\nimport cats.Semigroup\nimport cats.data.Writer\nimport cats.instances.vector.*\nimport cats.syntax.semigroup.*\n\ndef combineLogs[B: Semigroup, A: Semigroup](writerA: Writer[B, A])(writerB: Writer[B, A]): Writer[B, A] =\n  for\n    a <- writerA // Semigroup[B] for combining the logs\n    b <- writerB\n  yield a |+| b\n\n// ex. log using writer\ndef countAndPrint(n: Int): Writer[Vector[String], Int]                                                               =\n  if n <= 0 then Writer(Vector.empty, 0) else countAndPrint(n - 1).flatMap(_ => Writer(Vector(s\"logging $n\"), n))\n\n// ex. naive sum\ndef naiveSum(n: Int): Writer[Vector[String], Int]                                                                    =\n  if n <= 0 then Writer(Vector.empty, 0)\n  else\n    // works safely in multithreaded environments\n    for\n      _        <- Writer(Vector(s\"Now at $n\"), n)\n      lowerSum <- naiveSum(n - 1)\n      _        <- Writer(Vector(s\"Computed naiveSum(${n - 1}) = $lowerSum\"), n)\n    yield lowerSum + n\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/applicative.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "applicative.scala",
+          "url": "/zibaldone-scala/cats/ch-03/applicative/",
+          "tree_path": "src/main/scala/ch_03/applicative.scala",
+          "source_path": "cats/src/main/scala/ch_03/applicative.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/applicative.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\n// cats.data.Validated can't be a Monad, but it still qualifies as an Applicative\ntrait `applicative`[F[_]] extends ch_03.`apply`[F]:\n  def pure[A](a: A): F[A]\n\nobject `applicative`:\n\n  extension [A](any: A)\n    def lift[F[_]: `applicative` as applicative]: F[A] = applicative.pure(any)\n\nimport cats.Applicative\n\n// ex. product in terms of applicative\ndef productWithApplicative[F[_]: Applicative as applicative, A, B](fa: F[A], fb: F[B]): F[(A, B)] =\n  val ff: F[A => (A, B)] = applicative.map(fb)(b => (a: A) => (a, b))\n  applicative.ap(ff)(fa) // def ap[F[_], A, B](ff: F[A => B])(fa: F[A]): F[B]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/applicativeError.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "applicativeError.scala",
+          "url": "/zibaldone-scala/cats/ch-03/applicative-error/",
+          "tree_path": "src/main/scala/ch_03/applicativeError.scala",
+          "source_path": "cats/src/main/scala/ch_03/applicativeError.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/applicativeError.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\ntrait `applicativeError`[F[_], E] extends ch_03.`applicative`[F]:\n\n  def raiseError[A](e: E): F[A]\n  def handleErrorWith[A](fa: F[A])(f: E => F[A]): F[A]\n  def handleError[A](fa: F[A])(f: E => A): F[A] = handleErrorWith(fa)(e => pure(f(e)))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/apply.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "apply.scala",
+          "url": "/zibaldone-scala/cats/ch-03/apply/",
+          "tree_path": "src/main/scala/ch_03/apply.scala",
+          "source_path": "cats/src/main/scala/ch_03/apply.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/apply.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\ntrait `apply`[F[_]] extends ch_01.`functor`[F] with ch_03.`semigroupal`[F]:\n\n  def ap[A, B](ff: F[A => B])(fa: F[A]): F[B]\n  \n  override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] =\n    val ff: F[A => (A, B)] = map(fb)(b => (a: A) => (a, b))\n    ap(ff)(fa)\n\n  // ex. implement mapN\n  def mapN[A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] = map(product(fa, fb))(f(_, _))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/flatMap.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "flatMap.scala",
+          "url": "/zibaldone-scala/cats/ch-03/flat-map/",
+          "tree_path": "src/main/scala/ch_03/flatMap.scala",
+          "source_path": "cats/src/main/scala/ch_03/flatMap.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/flatMap.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\ntrait `flatMap`[F[_]] extends `apply`[F]:\n\n  def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]\n  final override def ap[A, B](ff: F[A => B])(fa: F[A]): F[B] = flatMap(ff)(f => map(fa)(f(_)))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/foldable.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "foldable.scala",
+          "url": "/zibaldone-scala/cats/ch-03/foldable/",
+          "tree_path": "src/main/scala/ch_03/foldable.scala",
+          "source_path": "cats/src/main/scala/ch_03/foldable.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/foldable.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\n// foldRight in cats is stack-safe\nimport cats.{Eval, Foldable, Monoid}\n\nobject list:\n\n  // ex. implement in terms of fold\n  def map[A, B](list: List[A])(f: A => B): List[B]           = list.foldRight(Nil) { (a, b) => f(a) :: b }\n  def flatMap[A, B](list: List[A])(f: A => List[B]): List[B] = list.foldLeft(Nil) { (b, a) => b ++ f(a) }\n  def filter[A](list: List[A])(f: A => Boolean): List[A]     = list.foldRight(Nil) { (a, b) => if f(a) then a :: b else b }\n  def combineAll[A: Monoid as monoid](list: List[A]): A      = list.foldLeft(monoid.empty)(monoid.combine)\n\ndef combineAll[F[_]: Foldable as ff, M[_]: Foldable as mf, A: Monoid](container: F[M[A]]): A =\n  ff.compose[M](using mf).combineAll(container)\n\ntrait `foldable`[F[_]]:\n\n  def foldLeft[A, B](fa: F[A], b: B)(f: (B, A) => B): B\n  def foldRight[A, B](fa: F[A], b: Eval[B])(f: (A, Eval[B]) => Eval[B]): Eval[B]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/monadError.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "monadError.scala",
+          "url": "/zibaldone-scala/cats/ch-03/monad-error/",
+          "tree_path": "src/main/scala/ch_03/monadError.scala",
+          "source_path": "cats/src/main/scala/ch_03/monadError.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/monadError.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\n// MonadError[Try, Throwable]\ntrait `monadError`[F[_], E] extends ch_03.`applicativeError`[F, E] with ch_01.`monad`[F]:\n  def ensure[A](fa: F[A])(e: E)(f: E => Boolean): F[A]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/semigroupal.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "semigroupal.scala",
+          "url": "/zibaldone-scala/cats/ch-03/semigroupal/",
+          "tree_path": "src/main/scala/ch_03/semigroupal.scala",
+          "source_path": "cats/src/main/scala/ch_03/semigroupal.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/semigroupal.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\nimport cats.{Monad, Semigroupal}\n\ntrait `semigroupal`[F[_]]:\n  // Semigroupal doesn't have to be defined in terms of Monad, sometimes that would be illegal.\n  def product[A, B](fa: F[A], fb: F[B]): F[(A, B)]\n\nimport cats.syntax.flatMap.*\nimport cats.syntax.functor.*\n\n// ex. implement semigroupal with monad\ndef productWithMonads[F[_]: Monad, A, B](fa: F[A], fb: F[B]): F[(A, B)] =\n  for\n    a <- fa\n    b <- fb\n  yield (a, b)\n\n// Semigroupal[ErrorOrEither] === Monad[ErrorOrEither]\nimport cats.instances.either.*\ntype ErrorOrEither[A] = Either[List[String], A]\n// because of the short-circuiting in flatMap, 'c' will never be accumulated\nval eitherSemigroupal = Semigroupal[ErrorOrEither].product(\n  fa = Left(\"a\" :: \"b\" :: Nil),\n  fb = Left(\"c\" :: Nil)\n)\n\nimport cats.data.Validated\ntype ErrorOrValidated[A] = Validated[List[String], A]\n// Semigroupal[ErrorOrValidated] provides a more flexible definition of product `without` using flatMap\nval validatedSemigroupal = Semigroupal[ErrorOrValidated].product(\n  fa = Validated.invalid(\"a\" :: \"b\" :: Nil),\n  fb = Validated.invalid(\"c\" :: Nil)\n)\n\n// ex. Semigroupal[List] that zips\ngiven Semigroupal[List] = new Semigroupal[List]:\n  override def product[A, B](fa: List[A], fb: List[B]): List[(A, B)] = fa.zip(fb)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_03/traverse.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "traverse.scala",
+          "url": "/zibaldone-scala/cats/ch-03/traverse/",
+          "tree_path": "src/main/scala/ch_03/traverse.scala",
+          "source_path": "cats/src/main/scala/ch_03/traverse.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_03/traverse.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_03\n\nimport cats.{Applicative, Monad}\nimport cats.syntax.flatMap.*\nimport cats.syntax.functor.*\nimport cats.syntax.applicative.*\nimport cats.syntax.apply.*\n\n// ex. list traverse\ndef monadListTraverse[F[_]: Monad as monad, A, B](fa: List[A])(f: A => F[B]): F[List[B]]    =\n  val pureF: F[List[B]] = List.empty[B].pure[F]\n  fa.foldLeft(pureF) { (listF, a) =>\n    for\n      list <- listF\n      fb   <- f(a)\n    yield list :+ fb\n  }\n\n// when F[_] == Vector[_] the lists are combinations because map is implemented in terms of flatMap\n// behaves differently for cats.data.Validated\ndef applicativeListTraverse[F[_]: Applicative, A, B](fa: List[A])(f: A => F[B]): F[List[B]] =\n  val pureF: F[List[B]] = List.empty[B].pure[F]\n  fa.foldLeft(pureF) { (listF, a) => (listF, f(a)).mapN(_ :+ _) }\n\n// ex. implement sequence\ndef listSequence[F[_]: Applicative as applicative, A](fa: List[F[A]]): F[List[A]]           =\n  applicativeListTraverse(fa)(identity)\n\ntrait `traverse`[F[_]] extends `foldable`[F] with ch_01.`functor`[F]:\n\n  def traverse[M[_]: Applicative, A, B](fa: F[A])(f: A => M[B]): M[F[B]]\n  def sequence[M[_]: Applicative, A](fa: F[M[A]]): M[F[A]] = traverse(fa)(identity)\n\n  // ex. implement map\n  type Identity[A] = A // <-- BiMonad\n  def map[A, B](fa: F[A])(f: A => B): F[B] = traverse[Identity, A, B](fa)(f(_))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_04/contravariant.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "contravariant.scala",
+          "url": "/zibaldone-scala/cats/ch-04/contravariant/",
+          "tree_path": "src/main/scala/ch_04/contravariant.scala",
+          "source_path": "cats/src/main/scala/ch_04/contravariant.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_04/contravariant.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_04",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_04\n\n// contravariant type class\ntrait Format[T]:\n\n  def format(value: T): String\n\n  // functor applies transformations in order\n  // contramap applies transformation in reverse order\n  def contramap[A](f: A => T): Format[A] = (a: A) => format(f(a))\n\ntrait `contravariant`[F[_]] extends ch_04.`invariant`[F]:\n\n  def contramap[A, B](fa: F[A])(f: B => A): F[B]\n  override def imap[A, B](fa: F[A])(forth: A => B)(back: B => A): F[B] = contramap(fa)(back)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_04/invariant.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "invariant.scala",
+          "url": "/zibaldone-scala/cats/ch-04/invariant/",
+          "tree_path": "src/main/scala/ch_04/invariant.scala",
+          "source_path": "cats/src/main/scala/ch_04/invariant.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_04/invariant.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_04",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_04\n\ntrait Crypto[A]:\n  self =>\n\n  def encrypt(value: A): String\n  def decrypt(value: String): A\n\n  def imap[B](back: B => A)(forth: A => B): Crypto[B] = new Crypto[B]:\n\n    override def encrypt(value: B): String = self.encrypt(back(value))\n    override def decrypt(value: String): B = forth(self.decrypt(value))\n\nobject Crypto:\n\n  given caesarCypher: Crypto[String] = new Crypto[String]:\n\n    override def encrypt(value: String): String = value.map { c => (c + 2).toChar }\n    override def decrypt(value: String): String = value.map { c => (c - 2).toChar }\n\n  given doubleCypher: Crypto[Double]            = caesarCypher.imap[Double](_.toString)(_.toDouble)\n  // ex. Option[String]\n  given optCaesarCypher: Crypto[Option[String]] = caesarCypher.imap[Option[String]](_.getOrElse(\"\"))(Option(_))\n\n  extension [A: Crypto as crypto](value: A)\n    def encrypt: String = crypto.encrypt(value)\n\n  extension (value: String)\n    def decrypt[A: Crypto as crypto]: A = crypto.decrypt(value)\n\ntrait `invariant`[F[_]]:\n  def imap[A, B](fa: F[A])(forth: A => B)(back: B => A): F[B]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/ch_04/kleisli.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "kleisli.scala",
+          "url": "/zibaldone-scala/cats/ch-04/kleisli/",
+          "tree_path": "src/main/scala/ch_04/kleisli.scala",
+          "source_path": "cats/src/main/scala/ch_04/kleisli.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/ch_04/kleisli.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "ch_04",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage ch_04\n\nfinal case class `kleisli`[F[_], A, B](run: A => F[B])\n\nimport cats.data.Kleisli\n\n// ex. kleisli Id\n// type Reader[-A, B] = ReaderT[Id, A, B]\n// type ReaderT[F[_], -A, B] = Kleisli[F, A, B]\ntype IdKleisli[A, B] = Kleisli[cats.Id, A, B]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Applicative.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Applicative.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/applicative/",
+          "tree_path": "src/main/scala/hierarchy/Applicative.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Applicative.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Applicative.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Applicative[F[_]] extends Apply[F]:\n  def pure[A](a: A): F[A]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/ApplicativeError.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "ApplicativeError.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/applicative-error/",
+          "tree_path": "src/main/scala/hierarchy/ApplicativeError.scala",
+          "source_path": "cats/src/main/scala/hierarchy/ApplicativeError.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/ApplicativeError.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait ApplicativeError[F[_], E] extends Applicative[F]:\n\n  def raiseError[A](e: E): F[A]\n  def handleErrorWith[A](fa: F[A])(f: E => F[A]): F[A]\n  def handleError[A](fa: F[A])(f: E => A): F[A] = handleErrorWith(fa)(e => pure(f(e)))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Apply.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Apply.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/apply/",
+          "tree_path": "src/main/scala/hierarchy/Apply.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Apply.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Apply.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Apply[F[_]] extends Functor[F] with Semigroupal[F]:\n\n  def ap[A, B](ff: F[A => B])(fa: F[A]): F[B]\n\n  override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] =\n    val ff: F[A => (A, B)] = map(fb)(b => (a: A) => (a, b))\n    ap(ff)(fa)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Contravariant.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Contravariant.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/contravariant/",
+          "tree_path": "src/main/scala/hierarchy/Contravariant.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Contravariant.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Contravariant.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Contravariant[F[_]] extends Invariant[F]:\n\n  def contramap[A, B](fa: F[A])(f: B => A): F[B]\n  override def imap[A, B](fa: F[A])(forth: A => B)(back: B => A): F[B] = contramap(fa)(back)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/FlatMap.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "FlatMap.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/flat-map/",
+          "tree_path": "src/main/scala/hierarchy/FlatMap.scala",
+          "source_path": "cats/src/main/scala/hierarchy/FlatMap.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/FlatMap.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait FlatMap[F[_]] extends Apply[F]:\n\n  def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B]\n  override def ap[A, B](ff: F[A => B])(fa: F[A]): F[B] = flatMap(ff)(f => map(fa)(f(_)))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Foldable.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Foldable.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/foldable/",
+          "tree_path": "src/main/scala/hierarchy/Foldable.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Foldable.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Foldable.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\nimport cats.Eval\n\ntrait Foldable[F[_]]:\n\n  def foldLeft[A, B](fa: F[A], b: B)(f: (B, A) => B): B\n  def foldRight[A, B](fa: F[A], b: Eval[B])(f: (A, Eval[B]) => Eval[B]): Eval[B]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Functor.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Functor.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/functor/",
+          "tree_path": "src/main/scala/hierarchy/Functor.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Functor.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Functor.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Functor[F[_]] extends Invariant[F]:\n\n  def map[A, B](fa: F[A])(f: A => B): F[B]\n  override def imap[A, B](fa: F[A])(forth: A => B)(back: B => A): F[B] = map(fa)(forth)\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Invariant.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Invariant.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/invariant/",
+          "tree_path": "src/main/scala/hierarchy/Invariant.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Invariant.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Invariant.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Invariant[F[_]]:\n  def imap[A, B](fa: F[A])(forth: A => B)(back: B => A): F[B]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Monad.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Monad.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/monad/",
+          "tree_path": "src/main/scala/hierarchy/Monad.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Monad.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Monad.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Monad[F[_]] extends Applicative[F] with FlatMap[F]:\n\n  override def map[A, B](fa: F[A])(f: A => B): F[B]         = flatMap(fa)(a => pure(f(a)))\n  override def product[A, B](fa: F[A], fb: F[B]): F[(A, B)] = flatMap(fa)(a => map(fb)(b => (a, b)))\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/MonadError.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "MonadError.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/monad-error/",
+          "tree_path": "src/main/scala/hierarchy/MonadError.scala",
+          "source_path": "cats/src/main/scala/hierarchy/MonadError.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/MonadError.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait MonadError[F[_], E] extends ApplicativeError[F, E] with Monad[F]:\n  def ensure[A](fa: F[A])(e: => E)(f: E => Boolean): F[A]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Monoid.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Monoid.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/monoid/",
+          "tree_path": "src/main/scala/hierarchy/Monoid.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Monoid.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Monoid.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Monoid[A] extends Semigroup[A]:\n  def empty: A\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Semigroup.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Semigroup.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/semigroup/",
+          "tree_path": "src/main/scala/hierarchy/Semigroup.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Semigroup.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Semigroup.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Semigroup[A]:\n  def combine(x: A, y: A): A\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Semigroupal.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Semigroupal.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/semigroupal/",
+          "tree_path": "src/main/scala/hierarchy/Semigroupal.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Semigroupal.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Semigroupal.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Semigroupal[F[_]]:\n  def product[A, B](fa: F[A], fb: F[B]): F[(A, B)]\n~~~\n"
+        },
+        {
+          "id": "cats:src/main/scala/hierarchy/Traverse.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats",
+          "title": "Traverse.scala",
+          "url": "/zibaldone-scala/cats/hierarchy/traverse/",
+          "tree_path": "src/main/scala/hierarchy/Traverse.scala",
+          "source_path": "cats/src/main/scala/hierarchy/Traverse.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats/src/main/scala/hierarchy/Traverse.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats",
+              "url": "/zibaldone-scala/cats/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage com.zibaldone.cats\npackage hierarchy\n\ntrait Traverse[F[_]] extends Foldable[F] with Functor[F]:\n\n  def traverse[M[_]: Applicative, A, B](fa: F[A])(f: A => M[B]): M[F[B]]\n  def sequence[M[_]: Applicative, A](fa: F[M[A]]): M[F[A]] = traverse(fa)(identity)\n~~~\n"
+        }
+      ],
+      "readme_markdown": "![https://rockthejvm.com/courses/cats](/assets/generated/zibaldone-scala/cats/cats.png)"
+    },
+    {
+      "project_key": "zibaldone-scala",
+      "slug": "cats-effect",
+      "title": "Cats Effect",
+      "url": "/zibaldone-scala/cats-effect/",
+      "source_url": "https://github.com/leowajda/zibaldone-scala/tree/master/cats-effect",
+      "hero_image_url": "/assets/generated/zibaldone-scala/cats-effect/cats-effect.png",
+      "language_labels": [
+        "Scala"
+      ],
+      "document_count": 20,
+      "roots": [
+        {
+          "label": "src/main/scala",
+          "tree_path": "src/main/scala/",
+          "nodes": [
+            {
+              "kind": "directory",
+              "title": "ch_01",
+              "tree_path": "src/main/scala/ch_01",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "effects.scala",
+                  "tree_path": "src/main/scala/ch_01/effects.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-01/effects/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "ch_02",
+              "tree_path": "src/main/scala/ch_02",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "async.scala",
+                  "tree_path": "src/main/scala/ch_02/async.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-02/async/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "blocking.scala",
+                  "tree_path": "src/main/scala/ch_02/blocking.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-02/blocking/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "brackets.scala",
+                  "tree_path": "src/main/scala/ch_02/brackets.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-02/brackets/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "cancellation.scala",
+                  "tree_path": "src/main/scala/ch_02/cancellation.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-02/cancellation/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "fibers.scala",
+                  "tree_path": "src/main/scala/ch_02/fibers.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-02/fibers/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "resources.scala",
+                  "tree_path": "src/main/scala/ch_02/resources.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-02/resources/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "ch_03",
+              "tree_path": "src/main/scala/ch_03",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "countDownLatch.scala",
+                  "tree_path": "src/main/scala/ch_03/countDownLatch.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-03/count-down-latch/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "cyclicBarrier.scala",
+                  "tree_path": "src/main/scala/ch_03/cyclicBarrier.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-03/cyclic-barrier/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "deferred.scala",
+                  "tree_path": "src/main/scala/ch_03/deferred.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-03/deferred/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "mutex.scala",
+                  "tree_path": "src/main/scala/ch_03/mutex.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-03/mutex/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "ref.scala",
+                  "tree_path": "src/main/scala/ch_03/ref.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-03/ref/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "semaphore.scala",
+                  "tree_path": "src/main/scala/ch_03/semaphore.scala",
+                  "url": "/zibaldone-scala/cats-effect/ch-03/semaphore/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "hierarchy",
+              "tree_path": "src/main/scala/hierarchy",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "Async.scala",
+                  "tree_path": "src/main/scala/hierarchy/Async.scala",
+                  "url": "/zibaldone-scala/cats-effect/hierarchy/async/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Concurrent.scala",
+                  "tree_path": "src/main/scala/hierarchy/Concurrent.scala",
+                  "url": "/zibaldone-scala/cats-effect/hierarchy/concurrent/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "MonadCancel.scala",
+                  "tree_path": "src/main/scala/hierarchy/MonadCancel.scala",
+                  "url": "/zibaldone-scala/cats-effect/hierarchy/monad-cancel/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Spawn.scala",
+                  "tree_path": "src/main/scala/hierarchy/Spawn.scala",
+                  "url": "/zibaldone-scala/cats-effect/hierarchy/spawn/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Sync.scala",
+                  "tree_path": "src/main/scala/hierarchy/Sync.scala",
+                  "url": "/zibaldone-scala/cats-effect/hierarchy/sync/",
+                  "children": []
+                },
+                {
+                  "kind": "file",
+                  "title": "Temporal.scala",
+                  "tree_path": "src/main/scala/hierarchy/Temporal.scala",
+                  "url": "/zibaldone-scala/cats-effect/hierarchy/temporal/",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "kind": "directory",
+              "title": "utils",
+              "tree_path": "src/main/scala/utils",
+              "url": "",
+              "children": [
+                {
+                  "kind": "file",
+                  "title": "utils.scala",
+                  "tree_path": "src/main/scala/utils/utils.scala",
+                  "url": "/zibaldone-scala/cats-effect/utils/utils/",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "documents": [
+        {
+          "id": "cats-effect:src/main/scala/ch_01/effects.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "effects.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-01/effects/",
+          "tree_path": "src/main/scala/ch_01/effects.scala",
+          "source_path": "cats-effect/src/main/scala/ch_01/effects.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_01/effects.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_01",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_01\n\nfinal case class IO[A](unsafeRun: () => A):\n\n  def map[B](f: A => B): IO[B]         = IO(() => f(unsafeRun()))\n  def flatMap[B](f: A => IO[B]): IO[B] = IO(() => f(unsafeRun()).unsafeRun())\n\n// ex. IO which returns the current time\nval clock: IO[Long] = IO(() => System.currentTimeMillis())\n\n// ex. IO which measures the duration of a computation\ndef measure[A](computation: IO[A]): IO[Long] =\n  for\n    start <- clock\n    _     <- computation\n    end   <- clock\n  yield end - start\n\n// ex. IO which prints to the console\ndef putStrLn(line: String): IO[Unit] = IO(() => println(line))\n\n// ex. IO which reads from the console\ndef readStrLn(): IO[String] = IO(() => io.StdIn.readLine())\n\n// IO bridges functional and imperative programming\nval program: IO[Unit] =\n  for\n    _         <- putStrLn(\"args[0]\")\n    firstArg  <- readStrLn()\n    _         <- putStrLn(\"args[1]\")\n    secondArg <- readStrLn()\n    _         <- putStrLn(s\"$firstArg $secondArg\")\n  yield ()\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_02/async.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "async.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-02/async/",
+          "tree_path": "src/main/scala/ch_02/async.scala",
+          "source_path": "cats-effect/src/main/scala/ch_02/async.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_02/async.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_02\n\nimport cats.effect.*\nimport utils.*\nimport java.util.concurrent.Executors\nimport scala.concurrent.{ExecutionContext, Future}\nimport scala.util.{Failure, Success, Try}\n\nval threadPool         = Executors.newFixedThreadPool(8)\ngiven ExecutionContext = ExecutionContext.fromExecutorService(threadPool)\n\ntype CallBack[A] = Either[Throwable, A] => Unit\n\n// async is a foreign interface which lifts async computation to an IO\n// CE blocks (semantically) until 'cb' is invoked (by some other thread)\ndef async[A](f: () => Either[Throwable, A]): IO[A] = IO.async_ { (cb: CallBack[A]) =>\n  threadPool.execute { () =>\n    val result: Either[Throwable, A] = f()\n    cb(result) // CE is notified of the result\n  }\n}\n\n// ex. lift lambda to IO\ndef asyncToIO[A](f: () => A): IO[A] = IO.async_ { (cb: CallBack[A]) =>\n  threadPool.execute { () =>\n    val result: Either[Throwable, A] = Try(f()).toEither\n    cb(result)\n  }\n}\n\n// ex. lift Future to IO (a.k.a IO.fromFuture)\ndef asyncFuture[A](future: => Future[A]): IO[A] = IO.async_ { (cb: CallBack[A]) =>\n  future.onComplete {\n    case Failure(exception) => cb(Left(exception))\n    case Success(value)     => cb(Right(value))\n  }\n}\n\n// ex. implement a never ending IO (a.k.a IO.never)\ndef neverEndingIO: IO[Unit] = IO.async_ { _ => () }\n\n// in case the async computation gets canceled, a finalizer is also needed\ndef asyncWithFinalizer[A](f: () => Either[Throwable, A]): IO[A] = IO.async { (cb: CallBack[A]) =>\n  // finalizer in case the computation gets canceled  => IO[Unit]\n  // finalizer might not be present                   => Option[IO[Unit]]\n  IO {\n    threadPool.execute { () =>\n      val result = f()\n      cb(result)\n    }\n  }.as(Some(IO(\"canceled\").inspect.void)) // onCancel\n}\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_02/blocking.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "blocking.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-02/blocking/",
+          "tree_path": "src/main/scala/ch_02/blocking.scala",
+          "source_path": "cats-effect/src/main/scala/ch_02/blocking.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_02/blocking.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_02\n\nimport cats.effect.*\n\nimport java.util.concurrent.Executors\nimport scala.concurrent.ExecutionContext\nimport scala.concurrent.duration.FiniteDuration\n\ndef semanticBlocking(duration: FiniteDuration): IO[Unit] = IO.sleep(duration)\n\n// NOT semantic blocking - shifts computation to a blocking thread pool\ndef actualBlocking(duration: FiniteDuration): IO[Unit] = IO.blocking(Thread.sleep(duration.toMillis))\n\nval ec: ExecutionContext = ExecutionContext.fromExecutorService(Executors.newFixedThreadPool(8))\n\n// IO.cede is a fairness boundary that yields control back to the scheduler of the runtime system\n// only needed for CPU bound applications\ndef cpuBoundCompute(hugeRange: Range): IO[Int] = hugeRange.map(IO.pure).reduce(_ >> IO.cede >> _).evalOn(ec)\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_02/brackets.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "brackets.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-02/brackets/",
+          "tree_path": "src/main/scala/ch_02/brackets.scala",
+          "source_path": "cats-effect/src/main/scala/ch_02/brackets.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_02/brackets.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_02\n\nimport cats.effect.*\n\nimport java.io.{File, FileReader}\nimport java.util.Scanner\nimport scala.concurrent.duration.*\nimport utils.*\n\nfinal case class Connection(url: String):\n\n  def open: IO[Unit]  = IO(s\"opening connection: $url\").inspect.void\n  def close: IO[Unit] = IO(s\"closing connection: $url\").inspect.void\n\nobject brackets:\n\n  // cancellation is not aware of the resource leakage, connection.close is never invoked\n  def leakyConnection: IO[Unit] =\n    for\n      fib <- (Connection(\"wikipedia.org\").open *> IO.sleep(5.seconds)).start\n      _   <- IO.sleep(1.second) *> fib.cancel\n    yield ()\n\n  // manually registering a callback is prone to error and lacks composition\n  def safeConnection: IO[Unit] =\n    for\n      conn <- IO.pure(Connection(\"wikipedia.org\"))\n      fib  <- (conn.open *> IO.sleep(5.seconds)).onCancel(conn.close).start\n      _    <- IO.sleep(1.second) *> fib.cancel\n    yield ()\n\n  // resource gets released upon error or cancellation\n  def bracketConnection: IO[Unit] =\n    for\n      fib <- IO.pure(Connection(\"wikipedia.org\")).bracket(_.open *> IO.sleep(5.seconds))(_.close).start\n      _   <- IO.sleep(1.second) *> fib.cancel\n    yield ()\n\n  // ex. read file line by line every 100 millis\n  def fileScanner(path: String): IO[Scanner] = IO(new Scanner(new FileReader(new File(path))))\n\n  def scannerReader(scanner: Scanner): IO[Unit] =\n    if scanner.hasNextLine then IO.println(scanner.nextLine()) >> IO.sleep(100.millis) >> scannerReader(scanner)\n    else IO.unit\n\n  def fileReader(path: String): IO[Unit] = fileScanner(path).bracket(scannerReader)(scanner => IO(scanner.close()))\n\n  // ex. create a connection from a configuration file\n  // bracket composition is no different from imperative try-catch statements\n  def connectionFromConfig(path: String): IO[Unit] = fileScanner(path).bracket { scanner =>\n    IO(Connection(scanner.nextLine())).bracket { _.open *> IO.sleep(5.seconds) } { _.close }\n  } { scanner => IO(scanner.close()) }\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_02/cancellation.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "cancellation.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-02/cancellation/",
+          "tree_path": "src/main/scala/ch_02/cancellation.scala",
+          "source_path": "cats-effect/src/main/scala/ch_02/cancellation.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_02/cancellation.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_02\n\nimport cats.effect.*\nimport utils.*\nimport scala.concurrent.duration.*\nimport scala.io.StdIn\n\n// unrestricted cancellation may lead to inconsistent state\ndef faultyPaymentSystem[A](core: IO[A]): IO[Unit] =\n  for\n    fib <- core.delayBy(1.second).onCancel(IO.pure(\"shouldn't be possible\").void).start\n    _   <- IO.sleep(500.millis) >> fib.cancel\n    _   <- fib.join\n  yield ()\n\n// Poll[F] => F[_] marks sections within the returned effect which can be canceled\ndef uncancelledPaymentSystem[A](core: IO[A]): IO[Unit] =\n  for\n    fib <- core.delayBy(1.second).uncancelable.start\n    _   <- IO.sleep(500.millis) >> fib.cancel\n    _   <- fib.join\n  yield ()\n\ndef inputPassword: IO[String]          = IO(StdIn.readLine()).delayBy(2.seconds)\ndef hashPassword(pwd: String): IO[Int] = IO.pure(pwd).delayBy(2.seconds).map(util.hashing.MurmurHash3.stringHash)\n\ndef authFlow(dbHash: IO[Int]): IO[Boolean] = IO.uncancelable { (poll: Poll[IO]) =>\n  for\n    pwd    <- poll(inputPassword).onCancel(IO(\"inputPassword canceled\").void)\n    hash   <- hashPassword(pwd)     // no longer cancelable\n    isSame <- dbHash.map(_ == hash) // no longer cancelable\n  yield isSame\n}\n\n// IO.canceled is ignored because it's not explicitly marked by Poll[F] (think in terms of the call-stack)\ndef overrideCancellation: IO[Unit] = IO.uncancelable(_ => IO.canceled >> IO.unit)\n\n// the outer Poll[F] mask overrides the inner Poll[F] mask so the authFlow effect is entirely uncancelable\ndef overrideAuthFlowCancellation(dbHash: IO[Int]): IO[OutcomeIO[Boolean]] =\n  for\n    authFib <- IO.uncancelable(_ => authFlow(dbHash)).start // while IO.uncancelable(poll => poll(authFlow)) == authFlow\n    _       <- IO.sleep(1.second) >> authFib.cancel\n    res     <- authFib.join\n  yield res\n\ndef cancellationSignals: IO[Unit] =\n  val program = IO.uncancelable { poll =>\n    poll(IO.pure(\"first cancelable region\").inspect >> IO.sleep(1.second)) >>\n      IO.pure(\"uncancelable region\").inspect >> IO.sleep(1.second) >>\n      poll(IO.pure(\"second cancelable region\").inspect >> IO.sleep(1.second))\n  }\n\n  program.onCancel(IO.pure(\"successful cancellation\").inspect.void)\n  // [0 - 1000]    - cancellation signal is received within the first cancelable region, 'program' gets canceled\n  // [1000 - 2000] - cancellation signal is received within an uncancelable region, 'program' continues to execute until\n  //                 it enters the second cancelable region where it gets canceled\n  // [2000 - 3000] - cancellation signal is received within the second cancelable region, 'program' gets canceled\n  for\n    fib <- program.start\n    _   <- IO.pure(\"cancellation attempt\").inspect.delayBy(1500.millis) >> fib.cancel\n    _   <- fib.join\n  yield ()\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_02/fibers.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "fibers.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-02/fibers/",
+          "tree_path": "src/main/scala/ch_02/fibers.scala",
+          "source_path": "cats-effect/src/main/scala/ch_02/fibers.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_02/fibers.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_02\n\nimport scala.concurrent.duration.*\nimport cats.effect.*\nimport cats.effect.kernel.Outcome.*\nimport utils.*\n\n// Succeeded(io)\ndef outcomeSucceeded: IO[Outcome[IO, Throwable, Unit]] =\n  for\n    fib <- IO.unit.start\n    res <- fib.join\n  yield res\n\n// Errored(e)\ndef outcomeFailed: IO[Outcome[IO, Throwable, Unit]] =\n  for\n    fib <- IO.raiseError[Unit](new RuntimeException).start\n    res <- fib.join\n  yield res\n\n// Canceled()\ndef outcomeCanceled: IO[Outcome[IO, Throwable, Unit]] =\n  for\n    fib <- IO.sleep(5.seconds).onCancel(IO(\"cancelling ... \").inspect.void).start\n    _   <- IO.sleep(1.second) >> fib.cancel\n    res <- fib.join\n  yield res\n\n// ex. run IO on separate fiber and recover from cancellation or error\ndef processResultFromFiber[A](io: IO[A]): IO[A] =\n  for\n    fib <- io.start\n    out <- fib.join\n    res <- fallback(out)\n  yield res\n\ndef fallback[A](outcome: OutcomeIO[A]): IO[A] =\n  outcome match\n    case Succeeded(fa) => fa\n    case Errored(e)    => IO.raiseError[A](e)\n    case Canceled()    => IO.raiseError[A](new RuntimeException(\"canceled\"))\n\n// ex. take two IOs, run on different fibers and tuple their return values\ndef tupleIOs[A, B](ioa: IO[A], iob: IO[B]): IO[(A, B)] =\n  def tuple(a: OutcomeIO[A], b: OutcomeIO[B]): IO[(A, B)] = (a, b) match\n    case (Succeeded(fa), Succeeded(fb)) => fa.flatMap(a => fb.map(b => (a, b)))\n    case (Errored(e), _)                => IO.raiseError(e)\n    case (_, Errored(e))                => IO.raiseError(e)\n    case _                              => IO.raiseError(new RuntimeException(\"canceled\"))\n\n  for\n    aFib <- ioa.start\n    bFib <- iob.start\n    aOut <- aFib.join\n    bOut <- bFib.join\n    res  <- tuple(aOut, bOut)\n  yield res\n\n// ex. implement timeout\ndef timeout[A](io: IO[A], duration: FiniteDuration): IO[A] =\n  for\n    fib <- io.start\n    _   <- IO.sleep(duration) >> fib.cancel\n    out <- fib.join\n    res <- fallback(out)\n  yield res\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_02/resources.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "resources.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-02/resources/",
+          "tree_path": "src/main/scala/ch_02/resources.scala",
+          "source_path": "cats-effect/src/main/scala/ch_02/resources.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_02/resources.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_02",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_02\n\nimport cats.effect.*\nimport java.util.Scanner\n\nobject resources:\n\n  // ex. refactor ch_02.brackets.fileReader\n  def fileReader(path: String): IO[Unit] =\n    Resource.make(ch_02.brackets.fileScanner(path))(scanner => IO(scanner.close())).use(ch_02.brackets.scannerReader)\n\n  // ex. refactor ch_02.brackets.connectionFromConfig\n  // resources compose, brackets do not\n  def connectionFromConfig(path: String): IO[Unit] =\n    val connection =\n      for\n        scanner <- Resource.make(ch_02.brackets.fileScanner(path))(scanner => IO(scanner.close()))\n        conn    <- Resource.make(IO.pure(Connection(scanner.nextLine)))(_.close)\n      yield conn\n\n    connection.use(_.open)\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_03/countDownLatch.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "countDownLatch.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-03/count-down-latch/",
+          "tree_path": "src/main/scala/ch_03/countDownLatch.scala",
+          "source_path": "cats-effect/src/main/scala/ch_03/countDownLatch.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_03/countDownLatch.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_03\n\nimport cats.effect.*\nimport cats.effect.std.CountDownLatch\nimport utils.*\nimport cats.syntax.parallel.*\nimport cats.syntax.traverse.*\n\nimport java.io.FileWriter\nimport scala.concurrent.duration.*\nimport scala.io.Source\n\ndef race(counter: Int): IO[Unit] =\n  def notifier(latch: CountDownLatch[IO], counter: Int): IO[Unit] =\n    (1 to counter + 1)\n      .toList\n      .map(IO.pure)\n      .reduce { _.inspect >> IO.sleep(1.second) >> latch.release >> _ }\n      .void\n\n  def runner(id: Int, latch: CountDownLatch[IO]): IO[Unit] =\n    for\n      _ <- IO.pure(s\"[runner-$id] - waiting for notification...\").inspect\n      _ <- latch.await\n      _ <- IO.pure(s\"[runner-$id] - executing\").inspect\n    yield ()\n\n  for\n    latch       <- CountDownLatch[IO](counter)\n    notifierFib <- notifier(latch, counter).start\n    _           <- (1 to counter).toList.parTraverse(runner(_, latch))\n    _           <- notifierFib.join\n  yield ()\n\n// ex. multithreaded file downloader\ntrait FileServer:\n\n  def numChunks: IO[Int]\n  def chunk(at: Int): IO[String]\n\nobject FileServer:\n\n  private def writeToFile(path: String, content: String): IO[Unit] =\n    val file = Resource.make(IO(FileWriter(path)))(writer => IO(writer.close()))\n    file.use { writer => IO(writer.write(content)) }\n\n  private def copyToFile(fromFile: String, toFile: String): IO[Unit] =\n    val resources =\n      for\n        reader <- Resource.make(IO(Source.fromFile(fromFile)))(source => IO(source.close()))\n        writer <- Resource.make(IO(FileWriter(toFile, true)))(writer => IO(writer.close()))\n      yield (reader, writer)\n\n    resources.use { (reader, writer) => IO(reader.getLines().foreach(writer.write)) }\n\n  private def downloadChunk(\n    id: Int,\n    fileServer: FileServer,\n    latch: CountDownLatch[IO],\n    fileName: String,\n    destFolder: String\n  ): IO[Unit] =\n    for\n      _     <- IO.pure(s\"[chunk-$id] - downloading...\").inspect\n      chunk <- fileServer.chunk(id).delayBy(1.second)\n      _     <- IO.pure(s\"[chunk-$id] - writing to disk\").inspect\n      _     <- writeToFile(s\"$destFolder/$fileName.part$id\", chunk)\n      _     <- latch.release\n      _     <- IO.pure(s\"[chunk-$id] - latch released\").inspect\n    yield ()\n\n  def downloadFile(fileServer: FileServer, fileName: String, folder: String): IO[Unit] =\n    for\n      nChunks <- fileServer.numChunks\n      latch   <- CountDownLatch[IO](nChunks)\n      _       <- (0 until nChunks).toList.parTraverse(downloadChunk(_, fileServer, latch, fileName, folder))\n      _       <- latch.await\n      _       <- (0 until nChunks).toList.traverse(id => copyToFile(s\"$folder/$fileName.part$id\", s\"$folder/$fileName\"))\n    yield ()\n\n// ex. implement CountDownLatch\nabstract class CountDownLatchIO:\n\n  def await: IO[Unit]\n  def release: IO[Unit]\n\nobject CountDownLatchIO:\n\n  private[CountDownLatchIO] enum State:\n\n    case Done         extends State\n    case Live(n: Int) extends State\n\n  private[CountDownLatchIO] object State:\n    def live(n: Int): State = Live(n)\n\n  def apply(n: Int): IO[CountDownLatchIO] =\n    for\n      signal <- IO.deferred[Unit]\n      state  <- IO.ref(State.live(n))\n    yield new CountDownLatchIO:\n\n      override def await: IO[Unit] = state.get.flatMap {\n        case State.Done => IO.unit\n        case _          => signal.get\n      }\n\n      override def release: IO[Unit] = state.modify {\n        case State.Done    => State.Done        -> IO.unit\n        case State.Live(1) => State.Done        -> signal.complete(()).void\n        case State.Live(n) => State.Live(n - 1) -> IO.unit\n      }.flatten\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_03/cyclicBarrier.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "cyclicBarrier.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-03/cyclic-barrier/",
+          "tree_path": "src/main/scala/ch_03/cyclicBarrier.scala",
+          "source_path": "cats-effect/src/main/scala/ch_03/cyclicBarrier.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_03/cyclicBarrier.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_03\n\nimport cats.effect.*\nimport cats.effect.std.CyclicBarrier\nimport utils.*\nimport scala.concurrent.duration.*\nimport cats.syntax.parallel.*\n\ndef batchRequest(id: Int, barrier: CyclicBarrier[IO]): IO[Unit] =\n  for\n    _ <- IO.pure(s\"[request-$id] - registered\").inspect\n    _ <- IO.sleep(1.second)\n    _ <- barrier.await\n    _ <- IO.pure(s\"[request-$id] - fulfilled\").inspect\n  yield ()\n\ndef batchRequests(batchSize: Int, numRequests: Int): IO[Unit] =\n  for\n    barrier <- CyclicBarrier[IO](batchSize)\n    _       <- (1 to numRequests).toList.parTraverse(batchRequest(_, barrier))\n  yield ()\n\n// ex. implement CyclicBarrier\nabstract class CyclicBarrierIO:\n  def await: IO[Unit]\n\nobject CyclicBarrierIO:\n\n  private[CyclicBarrierIO] final case class State(n: Int, signal: Deferred[IO, Unit])\n\n  def apply(n: Int): IO[CyclicBarrierIO] =\n    for\n      signal <- IO.deferred[Unit]\n      state  <- IO.ref(State(n, signal))\n    yield new CyclicBarrierIO:\n\n      override def await: IO[Unit] = IO.deferred[Unit].flatMap { newSignal =>\n        state.modify {\n          case State(1, oldSignal) => State(n, newSignal)     -> oldSignal.complete(()).void\n          case State(n, oldSignal) => State(n - 1, oldSignal) -> oldSignal.get\n        }.flatten\n      }\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_03/deferred.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "deferred.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-03/deferred/",
+          "tree_path": "src/main/scala/ch_03/deferred.scala",
+          "source_path": "cats-effect/src/main/scala/ch_03/deferred.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_03/deferred.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_03\n\nimport utils.*\nimport cats.effect.*\nimport scala.concurrent.duration.*\n\ndef producerConsumer[A](value: A): IO[Unit] =\n\n  def consumer(signal: Deferred[IO, A]): IO[Unit] =\n    for\n      _      <- IO.pure(\"[consumer] - waiting for result\").inspect\n      result <- signal.get\n      _      <- IO.pure(s\"[consumer] - result: $result\").inspect\n    yield ()\n\n  def producer(signal: Deferred[IO, A]): IO[Unit] =\n    for\n      _ <- IO.pure(s\"[producer] - producing result\").inspect\n      _ <- signal.complete(value).delayBy(5.seconds)\n    yield ()\n\n  for\n    signal      <- IO.deferred[A]\n    consumerFib <- consumer(signal).start\n    producerFib <- producer(signal).start\n    _           <- consumerFib.join\n    _           <- producerFib.join\n  yield ()\n\n// ex. rewrite with deferred\ndef refFileNotifier(fileParts: List[String]): IO[Unit] =\n\n  def downloadFile(ref: Ref[IO, String]): IO[Unit] =\n    fileParts\n      .map { part => ref.update(_ + part).delayBy(1.second) }\n      .sequence\n      .void\n\n  // busy waiting\n  def notifyFileComplete(ref: Ref[IO, String]): IO[Unit] =\n    for\n      content <- ref.get\n      _       <- if content.endsWith(\"<EOF>\") then IO.unit else notifyFileComplete(ref).delayBy(500.millis)\n    yield ()\n\n  for\n    ref         <- IO.ref(\"\")\n    fibDownload <- downloadFile(ref).start\n    fibNotifier <- notifyFileComplete(ref).start\n    _           <- fibDownload.join\n    _           <- fibNotifier.join\n    _           <- ref.get.map(content => s\"Final content: $content\")\n  yield ()\n\ndef deferredFileNotifier(fileParts: List[String]): IO[Unit] =\n\n  def downloadFile(part: String, ref: Ref[IO, String], signal: Deferred[IO, String]): IO[Unit] =\n    for\n      _       <- IO.pure(s\"part: $part\").inspect\n      content <- ref.updateAndGet(_ + part).delayBy(500.millis)\n      _       <- if content.endsWith(\"<EOF>\") then signal.complete(content) else IO.unit\n    yield ()\n\n  def notifyFileComplete(signal: Deferred[IO, String]): IO[Unit] =\n    for\n      content <- signal.get\n      -       <- IO.pure(s\"Final content: $content\").inspect\n    yield ()\n\n  for\n    signal      <- IO.deferred[String]\n    ref         <- IO.ref(\"\")\n    fibDownload <- fileParts.map(downloadFile(_, ref, signal)).sequence.start\n    fibNotifier <- notifyFileComplete(signal).start\n    _           <- fibDownload.join\n    _           <- fibNotifier.join\n  yield ()\n\n// ex. implement timer with Deferred\ndef timer(duration: FiniteDuration): IO[Unit] =\n\n  def incrementTimer(timer: Ref[IO, Int], signal: Deferred[IO, Boolean]): IO[Unit] =\n    for\n      time <- timer.updateAndGet(_ + 1).delayBy(1.second)\n      _    <- if time >= duration.toSeconds then signal.complete(true) else incrementTimer(timer, signal)\n    yield ()\n\n  def notify(signal: Deferred[IO, Boolean]): IO[Unit] = signal.get.as(\"Time's up\").inspect.void\n\n  for\n    signal      <- IO.deferred[Boolean]\n    ref         <- IO.ref(0)\n    fibTimer    <- incrementTimer(ref, signal).start\n    fibNotifier <- notify(signal).start\n    _           <- fibTimer.join\n    _           <- fibNotifier.join\n  yield ()\n\n// ex. implement race in terms of Deferred\ndef racePair[A, B](ioa: IO[A], iob: IO[B]): IO[Either[(OutcomeIO[A], FiberIO[B]), (FiberIO[A], OutcomeIO[B])]] =\n  type EitherOutcome = Either[OutcomeIO[A], OutcomeIO[B]]\n\n  IO.uncancelable { poll =>\n    for\n      signal <- IO.deferred[EitherOutcome]\n      fibA   <- ioa.guaranteeCase(outcomeA => signal.complete(Left(outcomeA)).void).start\n      fibB   <- iob.guaranteeCase(outcomeB => signal.complete(Right(outcomeB)).void).start\n      res    <- poll(signal.get).onCancel {\n                  for\n                    cancelFibA <- fibA.cancel.start\n                    cancelFibB <- fibB.cancel.start\n                    _          <- cancelFibA.join\n                    _          <- cancelFibB.join\n                  yield ()\n                }\n    yield res match\n      case Left(outcomeA)  => Left((outcomeA, fibB))\n      case Right(outcomeB) => Right((fibA, outcomeB))\n  }\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_03/mutex.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "mutex.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-03/mutex/",
+          "tree_path": "src/main/scala/ch_03/mutex.scala",
+          "source_path": "cats-effect/src/main/scala/ch_03/mutex.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_03/mutex.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_03\n\nimport utils.*\nimport cats.effect.*\nimport cats.syntax.parallel.*\n\nimport scala.collection.immutable.Queue\nimport scala.concurrent.duration.*\nimport scala.util.Random\n\nabstract class MutexIO:\n\n  def acquire: IO[Unit]\n  def release: IO[Unit]\n\nobject MutexIO:\n\n  private[MutexIO] type Signal = Deferred[IO, Unit]\n  private[MutexIO] final case class State(isLocked: Boolean, queue: Queue[Signal])\n  private[MutexIO] val unlocked: State = State(false, Queue.empty)\n\n  def apply(): IO[MutexIO] = IO.ref(unlocked).map { state =>\n    new MutexIO:\n\n      override def acquire: IO[Unit] = IO.uncancelable { poll =>\n        IO.deferred[Unit].flatMap { signal =>\n\n          val cleanup: IO[Unit] = state.modify {\n            case State(isLocked, queue) =>\n              val newQueue  = queue.filterNot(_ eq signal)\n              val isRunning = newQueue.size == queue.size\n              State(isLocked, queue) -> (if isRunning then release else IO.unit)\n          }.flatten\n\n          state.modify {\n            case State(false, _)    => State(true, Queue.empty)           -> IO.unit\n            case State(true, queue) => State(true, queue.enqueue(signal)) -> poll(signal.get).onCancel(cleanup)\n          }.flatten\n        }\n      }\n\n      override def release: IO[Unit] = state.modify {\n        case State(false, _)                     => unlocked -> IO.unit\n        case State(true, queue) if queue.isEmpty => unlocked -> IO.unit\n        case State(true, queue)                  =>\n          val (signal, rest) = queue.dequeue\n          State(true, rest) -> signal.complete(()).void\n      }.flatten\n\n  }\n\ndef criticalTask: IO[Int] = IO.sleep(5.seconds) >> IO(Random.nextInt(100))\n\ndef lockingTask(id: Int, mutex: MutexIO): IO[Int] =\n  for\n    _   <- IO.pure(s\"[task-$id] - acquiring lock\").inspect\n    _   <- mutex.acquire\n    _   <- IO.pure(s\"[task-$id] - critical section\").inspect\n    res <- criticalTask\n    _   <- IO.pure(s\"[task-$id] - releasing mutex\").inspect\n    _   <- mutex.release\n    _   <- IO.pure(s\"[task-$id] - lock removed\").inspect\n  yield res\n\ndef lockingTasks: IO[Int] =\n  for\n    mutex <- MutexIO()\n    res   <- (1 to 10).toList.parTraverse(lockingTask(_, mutex))\n  yield res.sum\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_03/ref.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "ref.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-03/ref/",
+          "tree_path": "src/main/scala/ch_03/ref.scala",
+          "source_path": "cats-effect/src/main/scala/ch_03/ref.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_03/ref.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_03\n\nimport scala.concurrent.duration.*\nimport cats.syntax.parallel.*\nimport cats.effect.*\nimport utils.*\n\ndef unsafeCounter(words: List[String]): IO[Unit] =\n  var total = 0\n\n  def task(word: String): IO[Unit] =\n    val wordCount = word.split(\" \").length\n    for\n      _ <- IO(s\"$word -> $wordCount\").inspect\n      _ <- IO(total += wordCount)\n      _ <- IO(s\"current total: $total\").inspect\n    yield ()\n\n  words.map(task).parSequence.void\n\ndef safeCounter(words: List[String]): IO[Unit] =\n\n  def task(word: String, total: Ref[IO, Int]): IO[Unit] =\n    val wordCount = word.split(\" \").length\n    for\n      _        <- IO(s\"$word -> $wordCount\").inspect\n      newTotal <- total.updateAndGet(_ + wordCount)\n      _        <- IO(s\"current total: $newTotal\").inspect\n    yield ()\n\n  for\n    ref <- IO.ref(0)\n    _   <- words.map(task(_, ref)).parSequence\n  yield ()\n\n// ex. refactor to IO.ref\ndef unsafeTickingClock(interval: FiniteDuration): IO[Unit] =\n  var ticks = 0L\n\n  def tickClock: IO[Unit] =\n    for\n      _ <- IO.sleep(1.second)\n      _ <- IO(ticks += 1)\n      _ <- tickClock\n    yield ()\n\n  def showTickingClock(interval: FiniteDuration): IO[Unit] =\n    for\n      _ <- IO.sleep(interval)\n      _ <- IO(s\"ticks: $ticks\").inspect\n      _ <- showTickingClock(interval)\n    yield ()\n\n  (tickClock, showTickingClock(interval)).parTupled.void\n\ndef safeTickingClock(interval: FiniteDuration): IO[Unit] =\n\n  def tickClock(ref: Ref[IO, Long]): IO[Unit] =\n    for\n      _ <- IO.sleep(1.second)\n      _ <- ref.update(_ + 1)\n      _ <- tickClock(ref)\n    yield ()\n\n  def showTickingClock(interval: FiniteDuration, ref: Ref[IO, Long]): IO[Unit] =\n    for\n      _ <- IO.sleep(interval)\n      _ <- ref.get.map(ticks => s\"ticks: $ticks\").inspect\n      _ <- showTickingClock(interval, ref)\n    yield ()\n\n  for\n    ref                 <- IO.ref(0L)\n    fibTickClock        <- tickClock(ref).start\n    fibShowTickingClock <- showTickingClock(interval, ref).start\n    _                   <- fibTickClock.join\n    _                   <- fibShowTickingClock.join\n  yield ()\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/ch_03/semaphore.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "semaphore.scala",
+          "url": "/zibaldone-scala/cats-effect/ch-03/semaphore/",
+          "tree_path": "src/main/scala/ch_03/semaphore.scala",
+          "source_path": "cats-effect/src/main/scala/ch_03/semaphore.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/ch_03/semaphore.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "ch_03",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage ch_03\n\nimport cats.effect.*\nimport cats.effect.std.Semaphore\nimport utils.*\n\nimport cats.syntax.parallel.*\nimport scala.concurrent.duration.*\n\nval serverLogic: IO[Unit] = IO.sleep(2.seconds)\n\ndef serverLogic(id: Int, sem: Semaphore[IO]): IO[Unit] =\n  for\n    _ <- IO.pure(s\"[session-$id] - waiting to run..\").inspect\n    _ <- sem.acquire\n    _ <- IO.pure(s\"[session-$id] - logged in\").inspect\n    _ <- serverLogic\n    _ <- sem.release\n    _ <- IO.pure(s\"[session-$id] - logged out\").inspect\n  yield ()\n\ndef cappedServer(capSize: Int = 1 /* mutex */, numSessions: Int): IO[Unit] =\n  for\n    sem <- Semaphore[IO](capSize)\n    _   <- (1 to numSessions).toList.parTraverse(serverLogic(_, sem))\n  yield ()\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/hierarchy/Async.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "Async.scala",
+          "url": "/zibaldone-scala/cats-effect/hierarchy/async/",
+          "tree_path": "src/main/scala/hierarchy/Async.scala",
+          "source_path": "cats-effect/src/main/scala/hierarchy/Async.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/hierarchy/Async.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage hierarchy\n\nimport scala.concurrent.ExecutionContext\n\ntrait Async[F[_]] extends Sync[F] with Temporal[F]:\n\n  def executionContext: F[ExecutionContext]\n  def evalOn[A](fa: F[A], ec: ExecutionContext): F[A]\n  def async[A](cb: (Either[Throwable, A] => Unit) => F[Option[F[Unit]]]): F[A]\n\n  def async_[A](cb: (Either[Throwable, A] => Unit) => Unit): F[A] = async(kb => map(pure(cb(kb)))(_ => None))\n  override def never[A]: F[A]                                     = async(_ => pure(Some(unit)))\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/hierarchy/Concurrent.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "Concurrent.scala",
+          "url": "/zibaldone-scala/cats-effect/hierarchy/concurrent/",
+          "tree_path": "src/main/scala/hierarchy/Concurrent.scala",
+          "source_path": "cats-effect/src/main/scala/hierarchy/Concurrent.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/hierarchy/Concurrent.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage hierarchy\n\nimport cats.effect.kernel.{Deferred, Ref}\n\ntrait Concurrent[F[_]] extends GenConcurrent[F, Throwable]\n\ntrait GenConcurrent[F[_], E] extends GenSpawn[F, E]:\n\n  def ref[A](a: A): F[Ref[F, A]]\n  def deferred[A]: F[Deferred[F, A]]\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/hierarchy/MonadCancel.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "MonadCancel.scala",
+          "url": "/zibaldone-scala/cats-effect/hierarchy/monad-cancel/",
+          "tree_path": "src/main/scala/hierarchy/MonadCancel.scala",
+          "source_path": "cats-effect/src/main/scala/hierarchy/MonadCancel.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/hierarchy/MonadCancel.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage hierarchy\n\n// onCancel, guarantee, guaranteeCase, bracket\ntrait MonadCancel[F[_], E] extends cats.MonadError[F, E]:\n\n  def canceled: F[Unit]\n  def uncancelable[A](poll: Poll[F] => F[A]): F[A]\n\ntrait Poll[F[_]]:\n  def apply[A](fa: F[A]): F[A]\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/hierarchy/Spawn.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "Spawn.scala",
+          "url": "/zibaldone-scala/cats-effect/hierarchy/spawn/",
+          "tree_path": "src/main/scala/hierarchy/Spawn.scala",
+          "source_path": "cats-effect/src/main/scala/hierarchy/Spawn.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/hierarchy/Spawn.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage hierarchy\n\nimport cats.effect.kernel.Fiber\n\ntrait Spawn[F[_]] extends GenSpawn[F, Throwable]\n\ntrait GenSpawn[F[_], E] extends MonadCancel[F, E]:\n\n  def start[A](fa: F[A]): F[Fiber[F, E, A]]\n  def never[A]: F[A]\n  def cede: F[Unit]\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/hierarchy/Sync.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "Sync.scala",
+          "url": "/zibaldone-scala/cats-effect/hierarchy/sync/",
+          "tree_path": "src/main/scala/hierarchy/Sync.scala",
+          "source_path": "cats-effect/src/main/scala/hierarchy/Sync.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/hierarchy/Sync.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage hierarchy\n\ntrait Sync[F[_]] extends MonadCancel[F, Throwable] with cats.Defer[F]:\n\n  def delay[A](thunk: => A): F[A]\n  def blocking[A](thunk: => A): F[A]\n\n  override def defer[A](thunk: => F[A]): F[A] = flatMap(delay(thunk))(identity)\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/hierarchy/Temporal.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "Temporal.scala",
+          "url": "/zibaldone-scala/cats-effect/hierarchy/temporal/",
+          "tree_path": "src/main/scala/hierarchy/Temporal.scala",
+          "source_path": "cats-effect/src/main/scala/hierarchy/Temporal.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/hierarchy/Temporal.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "hierarchy",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage hierarchy\n\nimport scala.concurrent.duration.FiniteDuration\n\ntrait Temporal[F[_]] extends GenTemporal[F, Throwable]\n\ntrait GenTemporal[F[_], E] extends GenConcurrent[F, E]:\n  def sleep(duration: FiniteDuration): F[Unit]\n~~~\n"
+        },
+        {
+          "id": "cats-effect:src/main/scala/utils/utils.scala",
+          "project_key": "zibaldone-scala",
+          "module_slug": "cats-effect",
+          "title": "utils.scala",
+          "url": "/zibaldone-scala/cats-effect/utils/utils/",
+          "tree_path": "src/main/scala/utils/utils.scala",
+          "source_path": "cats-effect/src/main/scala/utils/utils.scala",
+          "source_url": "https://github.com/leowajda/zibaldone-scala/blob/master/cats-effect/src/main/scala/utils/utils.scala",
+          "language": "scala",
+          "format": "code",
+          "breadcrumbs": [
+            {
+              "label": "Zibaldone Scala",
+              "url": ""
+            },
+            {
+              "label": "Cats Effect",
+              "url": "/zibaldone-scala/cats-effect/"
+            },
+            {
+              "label": "utils",
+              "url": ""
+            }
+          ],
+          "body": "~~~scala\npackage utils\n\nimport cats.effect.IO\n\nextension [A](io: IO[A])\n\n  def inspect: IO[A] =\n    for\n      a <- io\n      t = Thread.currentThread().getName\n      _ = println(s\"[$t] - $a\")\n    yield a\n~~~\n"
+        }
+      ],
+      "readme_markdown": "![https://rockthejvm.com/courses/cats-effect](/assets/generated/zibaldone-scala/cats-effect/cats-effect.png)"
+    }
+  ]
+}

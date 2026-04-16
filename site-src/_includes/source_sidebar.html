@@ -1,0 +1,19 @@
+{%- assign current_module = include.module -%}
+{%- assign project_title = include.project_title -%}
+
+<section class="content-card source-navigation">
+  <h2>Files</h2>
+
+  <nav aria-label="Project source navigation">
+    {%- if current_module -%}
+      {%- for root in current_module.roots -%}
+        <section class="source-root">
+          <h3>{{ root.label }}</h3>
+          <ul class="source-tree__list">
+            {%- include source_tree_node.html nodes=root.nodes module_slug=current_module.slug -%}
+          </ul>
+        </section>
+      {%- endfor -%}
+    {%- endif -%}
+  </nav>
+</section>

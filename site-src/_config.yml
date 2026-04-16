@@ -3,13 +3,13 @@ author: Leonardo Wajda
 email: dev.leowajda@tuta.io
 url: https://leowajda.github.io
 baseurl: ""
-description: >
-  Personal website and project hub.
+description: "A focused personal website for algorithm solutions, source notes, and technical writing."
 
 markdown: kramdown
 highlighter: rouge
 
 sass:
+  sass_dir: _sass
   style: compressed
 
 plugins:
@@ -19,9 +19,23 @@ plugins:
 
 theme_config:
   appearance: "auto"
-  back_home_text: ".."
   date_format: "%Y-%m-%d"
   show_description: true
   lowercase_titles: false
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: "eureka"
+      type: pages
+    values:
+      layout: problems
+      project_key: eureka
+      custom_js:
+        - eureka-filters
 
 generated_data_namespace: generated

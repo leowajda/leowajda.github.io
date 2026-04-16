@@ -2,71 +2,18 @@
 layout: default
 ---
 
-{%- assign problem = site.data.generated[page.project_key].problem_pages[page.problem_slug] -%}
+{%- assign problem = page -%}
 
-{%- if problem == nil -%}
-  {%- include back_link.html -%}
+{%- if problem.implementations == nil -%}
   <p>Problem data not found.</p>
 {%- else -%}
-  {%- assign first_language = problem.languages.first.slug -%}
-
-  <article class="problem-embed" data-problem-shell>
-    <header class="problem-header">
-      <h1>{{ problem.name }}</h1>
-      <div class="problem-meta">
-        <span class="badge badge--{{ problem.difficulty_slug }}">{{ problem.difficulty }}</span>
-        <span class="badge">{{ problem.implementation_count }} solutions</span>
-      </div>
-    </header>
-
-    <div class="control-group">
-      <div class="control-group__head">
-        <h2>Languages</h2>
-        <p>Choose which language to preview in RemNote.</p>
-      </div>
-      <div class="language-switcher" data-language-switcher data-default-language="{{ first_language }}">
-        {%- for language in problem.languages -%}
-          <button class="language-tab{% if forloop.first %} is-active{% endif %}" type="button" data-language-target="{{ language.slug }}">{{ language.label }}</button>
-        {%- endfor -%}
-      </div>
-    </div>
-
-    <div class="language-panels">
-      {%- for language in problem.languages -%}
-        {%- assign language_impls = problem.implementations | where: "language", language.slug -%}
-        <section class="language-panel" data-language-panel data-language="{{ language.slug }}" data-default-implementation="{{ language_impls.first.id }}"{% unless forloop.first %} hidden{% endunless %}>
-          <div class="control-group__head control-group__head--inline">
-            <h3>Implementations</h3>
-            <p>{{ language.label }} solutions</p>
-          </div>
-          <div class="approach-switcher" data-implementation-switcher>
-            {%- for implementation in language_impls -%}
-              <button class="approach-tab{% if forloop.first %} is-active{% endif %}" type="button" data-implementation-target="{{ implementation.id }}">{{ implementation.approach }} solution</button>
-            {%- endfor -%}
-          </div>
-
-          {%- for implementation in language_impls -%}
-            <section class="code-shell__panel" data-implementation-panel id="{{ implementation.id }}"{%- unless forloop.first -%} hidden{%- endunless -%}>
-              <div class="code-shell__bar">
-                <div class="code-shell__title">
-                  <strong>{{ language.label }}</strong>
-                  <span>{{ implementation.approach }} solution</span>
-                </div>
-                <div class="code-shell__actions">
-                  <a class="link-button" href="{{ problem.detail_url | relative_url }}?language={{ language.slug }}&implementation={{ implementation.id }}">Open page</a>
-                  <a class="link-button" href="{{ problem.url }}" target="_blank" rel="noreferrer">LeetCode</a>
-                </div>
-              </div>
-              {%- capture code_block -%}
-```{{ implementation.code_language }}
-{{ implementation.code }}
-```
-              {%- endcapture -%}
-              <div class="code-markdown">{{ code_block | markdownify }}</div>
-            </section>
-          {%- endfor -%}
-        </section>
-      {%- endfor -%}
-    </div>
+  {%- assign implementation_id = page.implementation_id | default: problem.implementations.first.id -%}
+  {%- assign implementation = problem.implementations | where: "id", implementation_id | first -%}
+  <article class="problem-embed problem-embed--centered">
+    {%- if implementation != nil -%}
+      {%- include problem_viewer.html problem=problem embed=true implementation_id=implementation.id -%}
+    {%- else -%}
+      <p>Problem implementation data not found.</p>
+    {%- endif -%}
   </article>
 {%- endif -%}

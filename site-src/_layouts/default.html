@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: 'en' }}" a="{{ site.theme_config.appearance | default: 'auto' }}">
+  {%- include head.html -%}
+  {%- assign body_class = page.body_class | default: '' -%}
+  {%- assign shell_class = 'w' -%}
+  {%- if page.layout == 'source_module' or page.layout == 'source_document' -%}
+    {%- assign shell_class = shell_class | append: ' w--source' -%}
+  {%- endif -%}
+  <body class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}">
+    {%- include icon-sprite.html -%}
+    <main class="page-content" aria-label="Content">
+      <div class="{{ shell_class }}">
+        {%- include site_nav.html -%}
+        {{ content }}
+      </div>
+    </main>
+
+    {%- if site.goat_counter and jekyll.environment == 'production' -%}
+      {%- include goat_counter.html -%}
+    {%- endif -%}
+
+    {%- if page.needs_math -%}
+      <script src="{{ '/assets/vendor/katex/katex.min.js' | relative_url }}"></script>
+      <script src="{{ '/assets/vendor/katex/contrib/auto-render.min.js' | relative_url }}"></script>
+      <script type="module" src="{{ '/assets/js/math.js' | relative_url }}"></script>
+    {%- endif -%}
+    <script type="module" src="{{ '/assets/js/core.js' | relative_url }}"></script>
+    {%- if page.custom_js -%}
+      {%- for js_file in page.custom_js -%}
+        <script type="module" src="{{ '/assets/js/' | append: js_file | append: '.js' | relative_url }}"></script>
+      {%- endfor -%}
+    {%- endif -%}
+  </body>
+</html>

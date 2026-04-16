@@ -1,0 +1,18 @@
+{%- for node in include.nodes -%}
+  <li class="source-tree__item source-tree__item--{{ node.kind }}">
+    {%- if node.kind == "directory" -%}
+      {%- assign node_path_size = node.tree_path | size -%}
+      {%- assign current_prefix = page.tree_path | slice: 0, node_path_size -%}
+      <details class="source-tree__group"{% if page.module_slug == include.module_slug and current_prefix == node.tree_path %} open{% endif %}>
+        <summary class="source-tree__summary">{{ node.title }}</summary>
+        <ul class="source-tree__list">
+          {%- include source_tree_node.html nodes=node.children module_slug=include.module_slug -%}
+        </ul>
+      </details>
+    {%- else -%}
+      <a class="source-tree__link" href="{{ node.url | relative_url }}#source-content">
+        {{ node.title }}
+      </a>
+    {%- endif -%}
+  </li>
+{%- endfor -%}

@@ -5,8 +5,12 @@ dist/
 
 vendor/bundle/
 .bundle/
+__pycache__/
 
 site/
 _site/
+.cache/
+.playwright-cli/
+site-src/.generated-files.json
 
 .DS_Store

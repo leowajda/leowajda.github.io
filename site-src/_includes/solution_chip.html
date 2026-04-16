@@ -1,0 +1,16 @@
+{%- assign implementation = include.implementation -%}
+{%- assign approach_icon = "code" -%}
+{%- case implementation.approach -%}
+  {%- when "iterative" -%}
+    {%- assign approach_icon = "iterative" -%}
+  {%- when "recursive" -%}
+    {%- assign approach_icon = "recursive" -%}
+{%- endcase -%}
+<a
+  class="solution-chip"
+  href="{{ implementation.detail_url | relative_url }}"
+  aria-label="{{ implementation.approach_label }}"
+  title="{{ implementation.approach_label }}"
+>
+  {%- include icon.html name=approach_icon class="solution-chip__icon" -%}
+</a>

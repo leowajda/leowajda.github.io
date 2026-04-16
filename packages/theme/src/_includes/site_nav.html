@@ -1,8 +1,0 @@
-<nav class="site-nav" aria-label="Main navigation">
-  <div class="site-nav__links">
-    {%- for entry in site.data.navigation.entries -%}
-      <a class="site-nav__link" href="{{ entry.url | relative_url }}">{{ entry.title }}</a>
-    {%- endfor -%}
-  </div>
-  <button class="theme-toggle" type="button" data-theme-toggle>Dark mode</button>
-</nav>

@@ -1,0 +1,44 @@
+{%- assign default_appearance = site.theme_config.appearance | default: 'auto' -%}
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
+  <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml" />
+
+  {%- seo title=false -%}
+  {%- feed_meta -%}
+
+  <script>
+    (() => {
+      const root = document.documentElement
+      const fallbackTheme = "{{ default_appearance }}"
+      const storageKey = "leowajda.github.io-theme"
+
+      let theme = fallbackTheme
+
+      try {
+        const storedTheme = window.localStorage.getItem(storageKey)
+        if (storedTheme === "light" || storedTheme === "dark") {
+          theme = storedTheme
+        }
+      } catch {
+        theme = fallbackTheme
+      }
+
+      root.setAttribute("a", theme)
+
+      const resolvedTheme = theme === "auto"
+        ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+        : theme
+
+      root.style.colorScheme = resolvedTheme
+    })()
+  </script>
+
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}" />
+  {%- if page.needs_math -%}
+    <link rel="stylesheet" href="{{ '/assets/vendor/katex/katex.min.css' | relative_url }}" />
+  {%- endif -%}
+</head>

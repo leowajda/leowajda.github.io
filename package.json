@@ -1,30 +1,20 @@
 {
-  "name": "nexum",
+  "name": "leowajda.github.io",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
   "packageManager": "pnpm@10.6.5",
   "scripts": {
-    "generate": "tsx tools/src/main.ts generate",
-    "build:site": "pnpm generate && bundle exec jekyll build --source site --destination _site",
-    "serve": "pnpm generate && bundle exec jekyll serve --source site --destination _site --livereload",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@effect/cli": "^0.75.0",
-    "@effect/platform": "^0.96.0",
-    "@effect/platform-node": "^0.106.0",
-    "@effect/printer": "^0.49.0",
-    "@effect/printer-ansi": "^0.49.0",
-    "@effect/typeclass": "^0.40.0",
-    "effect": "^3.13.8",
-    "esbuild": "^0.25.2",
-    "katex": "^0.16.22",
-    "yaml": "^2.7.1"
+    "docs:refresh": "ln -sfn AGENTS.md README.md",
+    "sync:sources": "git submodule sync --recursive && git submodule update --init --recursive --remote",
+    "check:refresh": "ruby -c script/refresh_data.rb",
+    "refresh:data": "ruby script/refresh_data.rb",
+    "generate": "ruby script/refresh_data.rb",
+    "preview": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
+    "build:site": "bundle exec jekyll build --source site-src --destination _site",
+    "serve": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
+    "test:site": "ruby script/refresh_data.rb && bundle exec jekyll build --source site-src --destination _site"
   },
   "devDependencies": {
-    "@types/node": "^22.13.13",
-    "tsx": "^4.19.3",
-    "typescript": "^5.8.3"
+    "@playwright/test": "^1.59.1"
   }
 }

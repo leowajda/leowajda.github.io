@@ -1,0 +1,6 @@
+kind: source-notes
+slug: zibaldone-scala
+title: Zibaldone Scala
+description: Notes and source-based study material across selected Scala projects.
+route_base: /zibaldone-scala
+source_repo_path: sources/zibaldone-scala

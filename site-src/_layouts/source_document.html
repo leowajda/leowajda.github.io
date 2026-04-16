@@ -1,0 +1,47 @@
+---
+layout: default
+---
+
+{%- assign current_project = site.data.generated.projects | where: "slug", page.project_key | first -%}
+{%- assign current_project_title = current_project.title | default: page.project_key -%}
+{%- assign source_notes_project = site.data.generated.source_notes[page.project_key] -%}
+{%- assign current_module = source_notes_project.modules | where: "slug", page.module_slug | first -%}
+{%- assign current_document = page -%}
+
+{%- if current_module == nil or current_document.document_id == nil -%}
+  <p>Source document data not found.</p>
+{%- else -%}
+  <article class="source-layout">
+    <header class="page-header source-page-header">
+      <p class="source-page-header__eyebrow">
+        <span>{{ current_project_title }}</span>
+        <span>/</span>
+        <a href="{{ current_module.url | relative_url }}">{{ current_module.title }}</a>
+      </p>
+      <h1>{{ current_document.title }}</h1>
+    </header>
+
+    <div class="source-layout__body">
+      {%- include source_sidebar.html module=current_module project_title=current_project_title -%}
+
+      {%- if current_document.format == "code" -%}
+        <section class="content-card source-code-block source-layout__content" id="source-content" data-code-block>
+          <div class="content-card__meta source-document-meta">
+            <span class="source-document-meta__path" title="{{ current_document.source_path }}">{{ current_document.source_path }}</span>
+          </div>
+          <div class="action-links">
+            <button type="button" data-code-copy-button data-copy-default-label="copy">copy</button>
+          </div>
+          <div class="code-block__content" data-code-source>{{ content }}</div>
+        </section>
+      {%- else -%}
+        <section class="source-article source-article--document source-layout__content" id="source-content">
+          <div class="content-card__meta source-document-meta">
+            <span class="source-document-meta__path" title="{{ current_document.source_path }}">{{ current_document.source_path }}</span>
+          </div>
+          {{ content }}
+        </section>
+      {%- endif -%}
+    </div>
+  </article>
+{%- endif -%}
