@@ -5,6 +5,9 @@ on:
     - cron: "15 * * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
@@ -26,7 +29,6 @@ jobs:
       - name: Build commit message
         id: commit_message
         env:
-          repository: ${{ github.repository }}
           server_url: ${{ github.server_url }}
         run: python .github/workflows/scripts/update_submodules.py
 
