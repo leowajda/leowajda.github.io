@@ -4,8 +4,9 @@ updates:
     directory: /
     target-branch: master
     schedule:
-      interval: cron
-      cronjob: "0 * * * *"
+      interval: daily
+      time: "03:00"
+      timezone: "UTC"
     open-pull-requests-limit: 1
     labels:
       - dependencies
