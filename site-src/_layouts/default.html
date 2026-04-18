@@ -5,6 +5,8 @@
   {%- assign shell_class = 'w' -%}
   {%- if page.layout == 'source_module' or page.layout == 'source_document' -%}
     {%- assign shell_class = shell_class | append: ' w--source' -%}
+  {%- elsif page.layout == 'problem' or page.layout == 'problems' -%}
+    {%- assign shell_class = shell_class | append: ' w--desktop-wide' -%}
   {%- endif -%}
   <body class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}">
     {%- include icon-sprite.html -%}

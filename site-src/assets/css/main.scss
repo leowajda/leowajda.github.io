@@ -16,6 +16,7 @@
   --code-number: #953800;
   --code-name: #24292f;
   --content-width: 860px;
+  --content-width-wide: 1180px;
   --muted-opacity: 0.75;
 }
 
@@ -105,6 +106,11 @@ li {
   margin: 0 auto;
   max-width: var(--content-width);
   padding: 2rem;
+  width: 100%;
+}
+
+.w--desktop-wide {
+  max-width: var(--content-width-wide);
 }
 
 .w--source {
@@ -550,6 +556,12 @@ img {
   margin: 0;
 }
 
+.problem-page .code-block__content .highlight,
+.problem-page .code-block__content .highlighter-rouge {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .highlight {
   background: var(--code-surface);
   border: thin solid var(--border);
@@ -569,6 +581,14 @@ img {
 }
 
 .source-code-block .highlight pre {
+  max-width: 100%;
+  overflow-x: hidden;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+
+.problem-page .code-block__content .highlight pre {
   max-width: 100%;
   overflow-x: hidden;
   overflow-wrap: anywhere;
