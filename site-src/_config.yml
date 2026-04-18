@@ -12,10 +12,33 @@ sass:
   sass_dir: _sass
   style: compressed
 
+collections_dir: collections
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
+
+collections:
+  projects:
+    output: false
+  eureka_indexes:
+    output: false
+  eureka_languages:
+    output: true
+    permalink: /:path/
+  eureka_problems:
+    output: true
+    permalink: /:path/
+  eureka_implementations:
+    output: true
+    permalink: /:path/
+  source_modules:
+    output: true
+    permalink: /:path/
+  source_documents:
+    output: true
+    permalink: /:path/
 
 theme_config:
   appearance: "auto"
@@ -30,12 +53,56 @@ defaults:
     values:
       layout: post
   - scope:
-      path: "eureka"
-      type: pages
+      path: ""
+      type: projects
+    values:
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: eureka_indexes
+    values:
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: eureka_languages
     values:
       layout: problems
-      project_key: eureka
+      shell: wide
       custom_js:
         - eureka-filters
-
-generated_data_namespace: generated
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: eureka_problems
+    values:
+      layout: problem
+      shell: wide
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: eureka_implementations
+    values:
+      layout: problem_embed
+      shell: wide
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: source_modules
+    values:
+      layout: source_module
+      shell: source
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: source_documents
+    values:
+      layout: source_document
+      shell: source
+      seo:
+        type: WebPage

@@ -1,0 +1,30 @@
+---
+layout: default
+---
+
+{%- assign current_project = site.projects | where: "slug", page.project_slug | first -%}
+{%- assign modules = site.source_modules | where: "project_slug", page.project_slug | sort: "title" -%}
+{%- assign project_title = page.title | default: current_project.title -%}
+{%- assign project_description = page.description | default: current_project.description -%}
+
+<article class="content-stack source-layout source-layout--project">
+  <header class="page-header page-header--hero source-page-header">
+    <p class="page-eyebrow">{{ current_project.title | default: project_title }}</p>
+    <h1>{{ project_title }}</h1>
+    <p>{{ project_description }}</p>
+  </header>
+
+  <div class="content-stack">
+    {%- for module in modules -%}
+      <article class="content-card content-card--compact">
+        <h3><a href="{{ module.url | relative_url }}">{{ module.title }}</a></h3>
+        <p>{{ module.language_labels | join: ", " }}</p>
+        {%- if module.source_url != "" -%}
+          <div class="content-card__meta">
+            <a href="{{ module.source_url }}" target="_blank" rel="noreferrer">source</a>
+          </div>
+        {%- endif -%}
+      </article>
+    {%- endfor -%}
+  </div>
+</article>

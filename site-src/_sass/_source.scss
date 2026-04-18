@@ -1,0 +1,144 @@
+.references__path {
+  overflow-wrap: anywhere;
+}
+
+.source-tree__list {
+  list-style: none;
+  margin: 0;
+  min-width: 0;
+  padding-left: 0.85rem;
+}
+
+.source-tree__item {
+  margin: 0.1rem 0;
+  min-width: 0;
+}
+
+.source-tree__group {
+  margin: 0;
+  min-width: 0;
+}
+
+.source-tree__summary,
+.source-tree__link {
+  box-sizing: border-box;
+  display: block;
+  line-height: 1.3;
+  max-width: 100%;
+  min-width: 0;
+  width: 100%;
+}
+
+.source-tree__summary {
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-tree__link:focus,
+.source-tree__link:focus-visible,
+.source-tree__summary:focus,
+.source-tree__summary:focus-visible,
+#source-content:focus,
+#source-content:focus-visible {
+  box-shadow: none;
+  outline: none;
+}
+
+.source-tree__link,
+.source-tree__summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.source-tree__link,
+.source-root .side-panel__section-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-page-header__eyebrow {
+  align-items: center;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.45rem;
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.source-page-header__eyebrow > * {
+  flex: 0 0 auto;
+}
+
+.source-page-header__eyebrow a {
+  color: inherit;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-decoration: none;
+  text-overflow: ellipsis;
+}
+
+.source-page-header__eyebrow a:hover {
+  text-decoration: underline;
+}
+
+.source-tree__link {
+  border-left: thin solid transparent;
+  padding-left: 0.35rem;
+}
+
+.source-tree__link--active {
+  border-left-color: currentColor;
+  font-weight: bold;
+}
+
+.source-document-meta {
+  margin-bottom: 0.5rem;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.source-document-meta__path {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.source-breadcrumbs ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.source-breadcrumbs li {
+  margin: 0;
+}
+
+.source-breadcrumbs li:not(:last-child)::after {
+  content: "/";
+  opacity: 0.45;
+}
+
+.source-article > :first-child {
+  margin-top: 0;
+}
+
+.source-article > :last-child {
+  margin-bottom: 0;
+}
+
+.source-article img {
+  border: thin solid var(--border);
+}
+
+.source-navigation nav {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+}

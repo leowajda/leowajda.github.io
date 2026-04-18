@@ -3,26 +3,23 @@ layout: default
 ---
 
 {%- assign problem = page -%}
+{%- assign implementations = site.eureka_implementations | where: "project_slug", page.project_slug | where: "problem_slug", problem.problem_slug | sort: "implementation_id" -%}
 
-{%- if problem.implementations == nil -%}
+{%- if problem.implementations == nil or implementations.size == 0 -%}
   <p>Problem data not found.</p>
 {%- else -%}
   <article class="problem-page">
-    <header class="page-header problem-header">
+    <header class="page-header page-header--hero problem-header">
+      <p class="page-eyebrow">Eureka Problem</p>
       <h1>{{ problem.title }}</h1>
+      <div class="problem-summary">
+        <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug }}">{{ problem.difficulty }}</span>
+        <span class="problem-summary__item">{{ problem.languages | map: "label" | join: ", " }}</span>
+      </div>
     </header>
 
-    <section class="content-card">
-      <h2>Overview</h2>
-      <ul class="meta-list">
-        <li><strong>Difficulty:</strong> {{ problem.difficulty }}</li>
-        <li><strong>Solutions:</strong> {{ problem.implementation_count }}</li>
-        <li><strong>Languages:</strong> {{ problem.languages | map: "label" | join: ", " }}</li>
-      </ul>
-    </section>
-
-    <section class="content-card">
-      <h2>Categories</h2>
+    <section class="content-card content-card--compact">
+      <p class="section-eyebrow">Categories</p>
       <ul class="tag-list">
         {%- for category in problem.categories -%}
           <li class="tag">{{ category }}</li>
@@ -30,6 +27,23 @@ layout: default
       </ul>
     </section>
 
-    {%- include problem_viewer.html problem=problem embed=false -%}
+    {%- if problem.implementation_count > 1 -%}
+      <section class="content-card problem-jump-card">
+        <div class="problem-jump-card__header">
+          <p class="section-eyebrow">Jump To Implementation</p>
+          <h2>Solution Map</h2>
+        </div>
+        <div class="problem-jump-links">
+          {%- for implementation in problem.implementations -%}
+            <a class="jump-link" href="#{{ implementation.implementation_id }}">
+              <span>{{ implementation.language_label }}</span>
+              <span>{{ implementation.approach_label }}</span>
+            </a>
+          {%- endfor -%}
+        </div>
+      </section>
+    {%- endif -%}
+
+    {%- include problem_viewer.html problem=problem implementations=implementations embed=false -%}
   </article>
 {%- endif -%}

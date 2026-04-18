@@ -1,0 +1,12 @@
+{%- assign title_tag = include.title_tag | default: "h3" -%}
+<section class="side-panel__section{% if include.class %} {{ include.class }}{% endif %}">
+  {%- if include.header -%}
+    <div class="side-panel__section-header">
+      {{ include.header }}
+    </div>
+  {%- elsif include.title -%}
+    <{{ title_tag }} class="side-panel__section-title"{% if include.title_for %} for="{{ include.title_for }}"{% endif %}>{{ include.title }}</{{ title_tag }}>
+  {%- endif -%}
+
+  {{ include.body }}
+</section>

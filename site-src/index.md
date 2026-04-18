@@ -7,14 +7,12 @@ description: "Algorithm solutions, source notes, and technical writing."
 ## Projects
 
 <div class="content-stack">
-  {%- for project in site.data.generated.projects -%}
-    {%- assign source_notes_project = site.data.generated.source_notes[project.slug] -%}
-    {%- assign project_modules = source_notes_project.modules -%}
+  {%- assign projects = site.projects | sort: "homepage_order" -%}
+  {%- for project in projects -%}
+    {%- assign project_modules = site.source_modules | where: "project_slug", project.slug | sort: "title" -%}
     <article class="content-card content-card--compact">
-      {%- if project_modules and project_modules.size > 0 -%}
-      <h3>{{ project.title }}</h3>
-      {%- elsif project.url != "" -%}
-      <h3><a href="{{ project.url | relative_url }}">{{ project.title }}</a></h3>
+      {%- if project.entry_url != "" -%}
+      <h3><a href="{{ project.entry_url | relative_url }}">{{ project.title }}</a></h3>
       {%- else -%}
       <h3>{{ project.title }}</h3>
       {%- endif -%}

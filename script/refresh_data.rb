@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require "fileutils"
-require "json"
 require "open3"
 require "pathname"
 require "yaml"
@@ -10,9 +9,21 @@ require "yaml"
 module RefreshData
   ROOT = File.expand_path("..", __dir__)
   SITE_SOURCE = File.join(ROOT, "site-src")
-  GENERATED_DATA_DIRECTORY = File.join(SITE_SOURCE, "_data", "generated")
-  GENERATED_MANIFEST_PATH = File.join(SITE_SOURCE, ".generated-files.json")
-  PROJECTS_DIRECTORY = File.join(ROOT, "projects")
+  COLLECTIONS_DIRECTORY = File.join(SITE_SOURCE, "collections")
+  LEGACY_COLLECTIONS_DIRECTORY = File.join(SITE_SOURCE, "_collections")
+  PROJECT_COLLECTIONS_DIRECTORY = File.join(COLLECTIONS_DIRECTORY, "_projects")
+  LEGACY_GENERATED_MANIFEST_PATH = File.join(SITE_SOURCE, ".generated-files.json")
+  GENERATED_DIRECTORIES = [
+    File.join(COLLECTIONS_DIRECTORY, "_eureka_indexes"),
+    File.join(COLLECTIONS_DIRECTORY, "_eureka_languages"),
+    File.join(COLLECTIONS_DIRECTORY, "_eureka_problems"),
+    File.join(COLLECTIONS_DIRECTORY, "_eureka_implementations"),
+    File.join(COLLECTIONS_DIRECTORY, "_source_modules"),
+    File.join(COLLECTIONS_DIRECTORY, "_source_documents"),
+    File.join(SITE_SOURCE, "_data", "generated"),
+    File.join(SITE_SOURCE, "assets", "generated"),
+    LEGACY_COLLECTIONS_DIRECTORY
+  ].freeze
 
   module Helpers
     module_function
@@ -43,14 +54,6 @@ module RefreshData
       raise "#{context}: #{error.message}"
     end
 
-    def load_yaml_file(path, context)
-      parse_yaml(read_text(path), context)
-    end
-
-    def pretty_json(value)
-      JSON.pretty_generate(value).gsub(/\[\n\s*\]/, "[]")
-    end
-
     def ensure_hash(value, context)
       return value if value.is_a?(Hash)
 
@@ -61,6 +64,12 @@ module RefreshData
       return value if value.is_a?(String)
 
       raise "#{context} must be a string"
+    end
+
+    def ensure_array(value, context)
+      return value if value.is_a?(Array)
+
+      raise "#{context} must be an array"
     end
 
     def ensure_boolean_or_nil(value, context)
@@ -75,12 +84,6 @@ module RefreshData
       end
 
       value
-    end
-
-    def ensure_string_map(value, context)
-      ensure_hash(value, context).each_with_object({}) do |(key, entry), result|
-        result[ensure_string(key, "#{context} key")] = ensure_string(entry, "#{context}.#{key}")
-      end
     end
 
     def normalize_remote_url(remote_url)
@@ -106,37 +109,38 @@ module RefreshData
       { "source_url" => "", "branch" => "master" }
     end
 
-    def relative_site_path(path)
-      pathname = Pathname.new(path)
-      site_pathname = Pathname.new(SITE_SOURCE)
-      relative = pathname.relative_path_from(site_pathname).to_s
-      return nil if relative.start_with?("..")
-
-      relative
-    rescue ArgumentError
-      nil
-    end
-
-    def load_generated_manifest
-      parsed = JSON.parse(read_text(GENERATED_MANIFEST_PATH))
-      files = parsed["files"]
-      return [] unless parsed["version"] == 1 && files.is_a?(Array) && files.all? { |item| item.is_a?(String) }
-
-      files
-    rescue StandardError
-      []
-    end
-
     def clear_generated_outputs
-      load_generated_manifest.each do |relative_path|
-        FileUtils.rm_rf(File.join(SITE_SOURCE, relative_path))
+      GENERATED_DIRECTORIES.each do |path|
+        FileUtils.rm_rf(path)
       end
-      FileUtils.rm_f(GENERATED_MANIFEST_PATH)
+      FileUtils.rm_f(LEGACY_GENERATED_MANIFEST_PATH)
     end
 
-    def write_generated_manifest(paths)
-      files = paths.filter_map { |path| relative_site_path(path) }.uniq.sort
-      write_text(GENERATED_MANIFEST_PATH, pretty_json({ version: 1, files: files }) + "\n")
+    def generated_collection_path(collection_name, *segments)
+      File.join(COLLECTIONS_DIRECTORY, "_#{collection_name}", *segments)
+    end
+
+    def parse_document_front_matter(raw, context)
+      match = raw.match(/\A---\s*\n(.*?)\n---\s*(?:\n|\z)/m)
+      raise "#{context} is missing valid front matter" unless match
+
+      ensure_hash(parse_yaml(match[1], context), context)
+    end
+
+    def load_document_front_matter(path, context)
+      parse_document_front_matter(read_text(path), context)
+    end
+
+    def render_document(front_matter, body = "")
+      serialized_front_matter = YAML.dump(front_matter).sub(/\A---\s*\n?/, "")
+      content = +"---\n#{serialized_front_matter}---\n"
+      if body.to_s.empty?
+        content << "\n"
+      else
+        content << "\n#{body}"
+        content << "\n" unless body.end_with?("\n")
+      end
+      content
     end
 
     def slugify(value)
@@ -162,29 +166,36 @@ module RefreshData
     include Helpers
 
     def load
-      Dir.glob(File.join(PROJECTS_DIRECTORY, "*.yml")).sort.map do |path|
-        parse(load_yaml_file(path, "Unable to decode project manifest '#{File.basename(path)}'"), File.basename(path))
+      Dir.glob(File.join(PROJECT_COLLECTIONS_DIRECTORY, "*.md")).sort.map do |path|
+        parse(
+          load_document_front_matter(path, "Unable to decode project document '#{File.basename(path)}'"),
+          File.basename(path)
+        )
       end
     end
 
     private
 
     def parse(value, label)
-      record = Helpers.ensure_hash(value, "Project manifest #{label}")
+      record = Helpers.ensure_hash(value, "Project document #{label}")
       {
-        "kind" => Helpers.ensure_string(record["kind"], "Project manifest #{label}.kind"),
-        "slug" => Helpers.ensure_string(record["slug"], "Project manifest #{label}.slug"),
-        "title" => Helpers.ensure_string(record["title"], "Project manifest #{label}.title"),
-        "description" => Helpers.ensure_string(record["description"], "Project manifest #{label}.description"),
-        "route_base" => Helpers.ensure_string(record["route_base"], "Project manifest #{label}.route_base"),
-        "source_repo_path" => Helpers.ensure_string(record["source_repo_path"], "Project manifest #{label}.source_repo_path"),
-        "source_optional" => Helpers.ensure_boolean_or_nil(record["source_optional"], "Project manifest #{label}.source_optional")
+        "kind" => Helpers.ensure_string(record["kind"], "Project document #{label}.kind"),
+        "slug" => Helpers.ensure_string(record["slug"], "Project document #{label}.slug"),
+        "title" => Helpers.ensure_string(record["title"], "Project document #{label}.title"),
+        "description" => Helpers.ensure_string(record["description"], "Project document #{label}.description"),
+        "route_base" => Helpers.ensure_string(record["route_base"], "Project document #{label}.route_base"),
+        "entry_url" => Helpers.ensure_string(record["entry_url"], "Project document #{label}.entry_url"),
+        "source_url" => Helpers.ensure_string(record["source_url"], "Project document #{label}.source_url"),
+        "source_repo_path" => Helpers.ensure_string(record["source_repo_path"], "Project document #{label}.source_repo_path"),
+        "source_optional" => Helpers.ensure_boolean_or_nil(record["source_optional"], "Project document #{label}.source_optional")
       }
     end
   end
 
   class EurekaBuilder
+    CATALOG_VERSION = 2
     METADATA_KEYS = %w[name url difficulty categories].freeze
+    IMPLEMENTATION_KEYS = %w[language approach file_path].freeze
 
     def initialize(manifest)
       @manifest = manifest
@@ -192,40 +203,31 @@ module RefreshData
     end
 
     def build
-      source = decode_source(Helpers.read_text(File.join(@source_root, "_data", "problems.yml")))
-      metadata = Helpers.repository_metadata(@source_root)
+      source = decode_source(Helpers.read_text(File.join(@source_root, "data", "problems.yml")))
+      @source_url_base = source.fetch("source_url_base")
+      project_context = {
+        "project_slug" => @manifest.fetch("slug")
+      }
       model = build_model(source)
 
       {
-        card: build_card(metadata.fetch("source_url")),
         files: [
-          {
-            path: generated_data_path(@manifest.fetch("slug"), "problem_filters.json"),
-            content: Helpers.pretty_json(model.fetch(:problem_filters)) + "\n"
-          },
-          {
-            path: generated_data_path(@manifest.fetch("slug"), "problems.json"),
-            content: Helpers.pretty_json(model.fetch(:content)) + "\n"
-          }
-        ],
+          build_problem_filter_document(model.fetch(:problem_filters), project_context)
+        ] + build_problem_documents(model.fetch(:problems), project_context) +
+          build_implementation_documents(model.fetch(:implementations), project_context) +
+          build_language_documents(model.fetch(:languages), project_context),
         assets: []
       }
     end
 
     private
 
-    def build_card(source_url)
-      {
-        "slug" => @manifest.fetch("slug"),
-        "title" => @manifest.fetch("title"),
-        "description" => @manifest.fetch("description"),
-        "url" => "#{@manifest.fetch('route_base')}/",
-        "source_url" => source_url
-      }
-    end
-
     def decode_source(raw)
       source = Helpers.ensure_hash(Helpers.parse_yaml(raw, "Unable to decode Eureka problem table"), "Eureka source")
+      version = source["version"]
+      raise "Eureka source.version must be #{CATALOG_VERSION}" unless version == CATALOG_VERSION
+
+      source_url_base = Helpers.ensure_string(source["source_url_base"], "Eureka source.source_url_base")
       languages = Helpers.ensure_hash(source["languages"], "Eureka source.languages").each_with_object({}) do |(slug, value), result|
         record = Helpers.ensure_hash(value, "Eureka source.languages.#{slug}")
         result[slug] = {
@@ -238,19 +240,44 @@ module RefreshData
         result[slug] = decode_problem(slug, Helpers.ensure_hash(value, "Problem '#{slug}'"), languages)
       end
 
-      { "languages" => languages, "problems" => problems }
+      {
+        "source_url_base" => source_url_base,
+        "languages" => languages,
+        "problems" => problems
+      }
     end
 
     def decode_problem(slug, raw_problem, languages)
-      unknown_keys = raw_problem.keys - METADATA_KEYS - languages.keys
+      unknown_keys = raw_problem.keys - (METADATA_KEYS + ["implementations"])
       unless unknown_keys.empty?
         raise "Problem '#{slug}' references unsupported keys: #{unknown_keys.join(', ')}"
       end
 
-      implementations = languages.keys.each_with_object({}) do |language_slug, result|
-        next unless raw_problem.key?(language_slug)
+      implementations = Helpers.ensure_array(raw_problem["implementations"], "Problem '#{slug}'.implementations").map.with_index do |entry, index|
+        implementation = Helpers.ensure_hash(entry, "Problem '#{slug}'.implementations[#{index}]")
+        unknown_implementation_keys = implementation.keys - IMPLEMENTATION_KEYS
+        unless unknown_implementation_keys.empty?
+          raise "Problem '#{slug}' implementation #{index} references unsupported keys: #{unknown_implementation_keys.join(', ')}"
+        end
 
-        result[language_slug] = Helpers.ensure_string_map(raw_problem[language_slug], "Problem '#{slug}' implementations for '#{language_slug}'")
+        language_slug = Helpers.ensure_string(
+          implementation["language"],
+          "Problem '#{slug}'.implementations[#{index}].language"
+        )
+        language = languages[language_slug]
+        raise "Problem '#{slug}' implementation #{index} references unknown language '#{language_slug}'" unless language
+
+        {
+          "language" => language_slug,
+          "approach" => Helpers.ensure_string(
+            implementation["approach"],
+            "Problem '#{slug}'.implementations[#{index}].approach"
+          ),
+          "file_path" => Helpers.ensure_string(
+            implementation["file_path"],
+            "Problem '#{slug}'.implementations[#{index}].file_path"
+          )
+        }
       end
 
       raise "Problem '#{slug}' has no implementations" if implementations.empty?
@@ -271,13 +298,29 @@ module RefreshData
 
       problem_entries.each do |_slug, problem|
         list_problem_implementations(language_entries, problem).each do |implementation|
-          codes[implementation_key(implementation.fetch(:language_slug), implementation.fetch(:approach), implementation.fetch(:source_url))] =
-            load_code(implementation.fetch(:source_url))
+          codes[implementation.fetch(:file_path)] = load_code(implementation.fetch(:file_path))
         end
       end
 
+      implementation_records = problem_entries.flat_map do |slug, problem|
+        list_problem_implementations(language_entries, problem).map do |implementation|
+          build_implementation_record(
+            slug,
+            problem.fetch("name"),
+            problem.fetch("url"),
+            implementation.fetch(:language_slug),
+            implementation.fetch(:language),
+            implementation.fetch(:approach),
+            implementation.fetch(:source_url),
+            codes.fetch(implementation.fetch(:file_path))
+          )
+        end
+      end
+
+      implementations_by_problem = implementation_records.group_by { |implementation| implementation.fetch("problem_slug") }
+
       problem_pages = problem_entries.map do |slug, problem|
-        build_problem_page(language_entries, slug, problem, codes)
+        build_problem_page(language_entries, slug, problem, implementations_by_problem.fetch(slug, []))
       end
 
       categories = []
@@ -287,21 +330,19 @@ module RefreshData
         Helpers.append_unique!(difficulties, [problem_page.fetch("difficulty")])
       end
 
+      language_pages = language_entries.map do |slug, language|
+        {
+          "slug" => slug,
+          "label" => language.fetch("label"),
+          "title" => "#{language.fetch('label')} Solutions",
+          "description" => "All LeetCode solutions in #{language.fetch('label')}."
+        }
+      end
+
       {
-        content: {
-          "project_key" => @manifest.fetch("slug"),
-          "route_base" => @manifest.fetch("route_base"),
-          "languages" => language_entries.map do |slug, language|
-            {
-              "slug" => slug,
-              "label" => language.fetch("label"),
-              "title" => "#{language.fetch('label')} Solutions",
-              "description" => "All LeetCode solutions in #{language.fetch('label')}.",
-              "url" => "#{@manifest.fetch('route_base')}/#{slug}/"
-            }
-          end,
-          "problems" => problem_pages
-        },
+        problems: problem_pages,
+        implementations: implementation_records,
+        languages: language_pages,
         problem_filters: {
           "difficulties" => difficulties,
           "categories" => categories,
@@ -310,18 +351,59 @@ module RefreshData
       }
     end
 
-    def build_problem_page(language_entries, slug, problem, codes)
-      implementations = list_problem_implementations(language_entries, problem).map do |implementation|
-        build_implementation(
-          slug,
-          implementation.fetch(:language_slug),
-          implementation.fetch(:language),
-          implementation.fetch(:approach),
-          implementation.fetch(:source_url),
-          codes[implementation_key(implementation.fetch(:language_slug), implementation.fetch(:approach), implementation.fetch(:source_url))] || ""
+    def build_problem_filter_document(problem_filters, project_context)
+      {
+        path: generated_index_path,
+        content: Helpers.render_document(
+          {
+            "title" => "#{Helpers.human_label(project_context.fetch('project_slug'))} Filters",
+            "project_slug" => project_context.fetch("project_slug"),
+            "problem_filters" => problem_filters
+          }
         )
-      end
+      }
+    end
 
+    def build_problem_documents(problems, project_context)
+      problems.map do |problem|
+        {
+          path: generated_problem_path(problem.fetch("problem_slug")),
+          content: Helpers.render_document(
+            problem.merge(
+              "description" => "#{problem.fetch('title')} solutions"
+            ).merge(project_context)
+          )
+        }
+      end
+    end
+
+    def build_implementation_documents(implementations, project_context)
+      implementations.map do |implementation|
+        {
+          path: generated_implementation_path(implementation.fetch("problem_slug"), implementation.fetch("implementation_id")),
+          content: Helpers.render_document(
+            implementation.reject { |key, _value| key == "code" }.merge(project_context),
+            render_implementation_body(implementation.fetch("code_language"), implementation.fetch("code"))
+          )
+        }
+      end
+    end
+
+    def build_language_documents(languages, project_context)
+      languages.map do |language|
+        {
+          path: generated_language_path(language.fetch("slug")),
+          content: Helpers.render_document(
+            language.merge(
+              "language_filter" => language.fetch("slug"),
+              "project_slug" => project_context.fetch("project_slug")
+            )
+          )
+        }
+      end
+    end
+
+    def build_problem_page(language_entries, slug, problem, implementations)
       implementations_by_language = implementations.group_by { |implementation| implementation.fetch("language") }
       languages = language_entries.filter_map do |language_slug, language|
         next unless implementations_by_language.key?(language_slug)
@@ -341,37 +423,43 @@ module RefreshData
         "difficulty_slug" => Helpers.slugify(problem.fetch("difficulty")),
         "categories" => problem.fetch("categories"),
         "languages" => languages,
-        "implementations" => implementations,
+        "implementations" => implementations.map { |implementation| implementation_summary(implementation) },
         "implementation_count" => implementations.size,
-        "detail_url" => "#{@manifest.fetch('route_base')}/problems/#{slug}/",
-        "embed_url" => "#{@manifest.fetch('route_base')}/problems/#{slug}/embed/",
         "search_title" => problem.fetch("name").downcase
       }
     end
 
     def list_problem_implementations(language_entries, problem)
       language_entries.flat_map do |language_slug, language|
-        sources = problem.fetch("implementations")[language_slug]
-        next [] unless sources
+        problem.fetch("implementations").filter_map do |implementation|
+          next unless implementation.fetch("language") == language_slug
 
-        sources.map do |approach, source_url|
           {
             language_slug: language_slug,
             language: language,
-            approach: approach,
-            source_url: source_url
+            approach: implementation.fetch("approach"),
+            file_path: implementation.fetch("file_path"),
+            source_url: source_url_for(implementation.fetch("file_path"))
           }
         end
       end
     end
 
-    def build_implementation(problem_slug, language_slug, language, approach, source_url, code)
+    def build_implementation_record(problem_slug, problem_title, problem_source_url, language_slug, language, approach, source_url, code)
       implementation_id = Helpers.slugify("#{language_slug}-#{approach}")
+      approach_label = Helpers.human_label(approach)
+      language_label = language.fetch("label")
       {
-        "id" => implementation_id,
+        "problem_slug" => problem_slug,
+        "problem_title" => problem_title,
+        "problem_source_url" => problem_source_url,
+        "implementation_id" => implementation_id,
         "language" => language_slug,
+        "language_label" => language_label,
         "approach" => approach,
-        "approach_label" => Helpers.human_label(approach),
+        "approach_label" => approach_label,
+        "title" => "#{problem_title} · #{language_label} #{approach_label}",
+        "description" => "#{problem_title} solution in #{language_label} using the #{approach_label.downcase} approach.",
         "source_url" => source_url,
         "code" => code,
         "code_language" => language.fetch("code_language"),
@@ -380,26 +468,59 @@ module RefreshData
       }
     end
 
-    def implementation_key(language_slug, approach, source_url)
-      "#{language_slug}:#{approach}:#{source_url}"
+    def implementation_summary(implementation)
+      implementation.slice(
+        "implementation_id",
+        "language",
+        "language_label",
+        "approach",
+        "approach_label",
+        "source_url",
+        "code_language",
+        "detail_url",
+        "embed_url"
+      )
     end
 
-    def local_source_path(github_url)
-      match = github_url.match(%r{\Ahttps://github\.com/[^/]+/([^/]+)/blob/[^/]+/(.+)\z})
-      return nil unless match
-
-      File.join(@source_root, match[1], match[2])
+    def render_implementation_body(code_language, code)
+      "~~~#{code_language}\n#{code.rstrip}\n~~~\n"
     end
 
-    def load_code(github_url)
-      source_path = local_source_path(github_url)
-      return "" unless source_path && File.exist?(source_path)
-
-      Helpers.read_text(source_path)
+    def source_url_for(file_path)
+      "#{@source_url_base}/#{file_path}"
     end
 
-    def generated_data_path(*segments)
-      File.join(GENERATED_DATA_DIRECTORY, *segments)
+    def load_code(file_path)
+      source_path = File.join(@source_root, file_path)
+      raise "Eureka implementation source is missing: '#{source_path}'" unless File.exist?(source_path)
+
+      code = Helpers.read_text(source_path)
+      raise "Eureka implementation source is empty: '#{source_path}'" if code.strip.empty?
+
+      code
+    end
+
+    def generated_problem_path(problem_slug)
+      Helpers.generated_collection_path("eureka_problems", @manifest.fetch("slug"), "problems", "#{problem_slug}.md")
+    end
+
+    def generated_index_path
+      Helpers.generated_collection_path("eureka_indexes", "#{@manifest.fetch('slug')}.md")
+    end
+
+    def generated_implementation_path(problem_slug, implementation_id)
+      Helpers.generated_collection_path(
+        "eureka_implementations",
+        @manifest.fetch("slug"),
+        "problems",
+        problem_slug,
+        "embed",
+        "#{implementation_id}.md"
+      )
+    end
+
+    def generated_language_path(language_slug)
+      Helpers.generated_collection_path("eureka_languages", @manifest.fetch("slug"), "#{language_slug}.md")
     end
   end
 
@@ -438,44 +559,21 @@ module RefreshData
 
     def build
       metadata = Helpers.repository_metadata(@repo_root)
-      repo_readme = rewrite_markdown_assets(
-        Helpers.maybe_read_text(File.join(@repo_root, "README.md")),
-        @repo_root,
-        "#{@manifest.fetch('slug')}/project"
-      )
+      project_context = {
+        "project_slug" => @manifest.fetch("slug")
+      }
       module_candidates = discover_module_candidates
       raise "No displayable modules found in '#{@repo_root}'" if module_candidates.empty?
 
-      built_modules = module_candidates.map { |module_candidate| build_module(module_candidate, metadata) }
-      card = build_card(metadata.fetch("source_url"))
-      project_data = {
-        "project" => card,
-        "modules" => built_modules.map { |built_module| built_module.fetch(:module) }
-      }
+      built_modules = module_candidates.map { |module_candidate| build_module(module_candidate, metadata, project_context) }
 
       {
-        card: card,
-        files: [
-          {
-            path: File.join(GENERATED_DATA_DIRECTORY, "source_notes", "#{@manifest.fetch('slug')}.json"),
-            content: Helpers.pretty_json(project_data) + "\n"
-          }
-        ],
-        assets: repo_readme.fetch(:assets) + built_modules.flat_map { |built_module| built_module.fetch(:assets) }
+        files: built_modules.flat_map { |built_module| built_module.fetch(:files) },
+        assets: built_modules.flat_map { |built_module| built_module.fetch(:assets) }
       }
     end
 
     private
-
-    def build_card(source_url)
-      {
-        "slug" => @manifest.fetch("slug"),
-        "title" => @manifest.fetch("title"),
-        "description" => @manifest.fetch("description"),
-        "url" => "",
-        "source_url" => source_url
-      }
-    end
 
     def discover_module_candidates
       root_candidate = {
@@ -520,7 +618,7 @@ module RefreshData
       end
     end
 
-    def build_module(module_candidate, metadata)
+    def build_module(module_candidate, metadata, project_context)
       readme = rewrite_markdown_assets(
         Helpers.maybe_read_text(File.join(module_candidate.fetch("absolute_path"), "README.md")),
         module_candidate.fetch("absolute_path"),
@@ -528,15 +626,43 @@ module RefreshData
       )
       documents = build_module_documents(module_candidate, metadata)
       module_source_url = build_module_source_url(module_candidate, metadata)
-      module_record = build_module_record(module_candidate, readme.fetch(:first_image_url), module_source_url, documents)
-      module_data = module_record.merge(
-        "readme_markdown" => readme.fetch(:markdown),
-        "documents" => documents.map { |document| document.fetch(:generated) }
-      )
+      module_record = build_module_record(module_candidate, module_source_url, documents, project_context)
+      module_data = module_record.merge("readme_markdown" => readme.fetch(:markdown))
 
       {
         assets: readme.fetch(:assets),
+        files: [
+          build_module_page(module_data)
+        ] + documents.map { |document| build_document_page(document.fetch(:generated)) },
         module: module_data
+      }
+    end
+
+    def build_module_page(module_data)
+      front_matter = module_data.reject { |key, _value| key == "readme_markdown" }
+      {
+        path: generated_source_module_path(module_data.fetch("slug")),
+        content: Helpers.render_document(
+          front_matter.merge(
+            "description" => "#{module_data.fetch('title')} notes",
+            "module_slug" => module_data.fetch("slug")
+          ),
+          module_data.fetch("readme_markdown")
+        )
+      }
+    end
+
+    def build_document_page(document)
+      front_matter = document.reject { |key, _value| key == "body" || key == "id" || key == "route_url" }
+        .merge("document_id" => document.fetch("id"))
+      {
+        path: generated_source_document_path(document.fetch("module_slug"), document.fetch("route_url")),
+        content: Helpers.render_document(
+          front_matter.merge(
+            "description" => "#{document.fetch('title')} notes"
+          ),
+          document.fetch("body")
+        )
       }
     end
 
@@ -574,15 +700,17 @@ module RefreshData
       tree_path = "#{root.fetch('label')}/#{relative_to_root}"
       source_path = relative_path(@repo_root, file_path)
       document_metadata = TEXT_FILE_METADATA[File.extname(file_path).downcase]
+      repository_url = metadata.fetch("source_url").empty? ? @manifest.fetch("source_url") : metadata.fetch("source_url")
       document = {
         "id" => "#{module_candidate.fetch('slug')}:#{tree_path}",
-        "project_key" => @manifest.fetch("slug"),
+        "project_slug" => @manifest.fetch("slug"),
         "module_slug" => module_candidate.fetch("slug"),
+        "module_title" => module_candidate.fetch("title"),
         "title" => File.basename(file_path),
-        "url" => "#{@manifest.fetch('route_base')}/#{module_candidate.fetch('slug')}/#{route_path}/",
+        "route_url" => "#{@manifest.fetch('route_base')}/#{module_candidate.fetch('slug')}/#{route_path}/",
         "tree_path" => tree_path,
         "source_path" => source_path,
-        "source_url" => metadata.fetch("source_url").empty? ? "" : "#{metadata.fetch('source_url')}/blob/#{metadata.fetch('branch')}/#{source_path}",
+        "source_url" => repository_url.empty? ? "" : "#{repository_url}/blob/#{metadata.fetch('branch')}/#{source_path}",
         "language" => document_metadata ? document_metadata.fetch("language") : root.fetch("language"),
         "format" => document_metadata ? document_metadata.fetch("format") : "code",
         "breadcrumbs" => build_document_breadcrumbs(module_candidate.fetch("slug"), module_candidate.fetch("title"), relative_to_root)
@@ -603,7 +731,7 @@ module RefreshData
 
     def build_document_breadcrumbs(module_slug, module_title, relative_path)
       breadcrumbs = [
-        { "label" => @manifest.fetch("title"), "url" => "" },
+        { "label" => @manifest.fetch("title"), "url" => "#{@manifest.fetch('route_base')}/" },
         { "label" => module_title, "url" => "#{@manifest.fetch('route_base')}/#{module_slug}/" }
       ]
 
@@ -622,28 +750,26 @@ module RefreshData
     end
 
     def build_module_source_url(module_candidate, metadata)
-      return "" if metadata.fetch("source_url").empty?
+      repository_url = metadata.fetch("source_url").empty? ? @manifest.fetch("source_url") : metadata.fetch("source_url")
+      return "" if repository_url.empty?
 
       if module_candidate.fetch("relative_path").empty?
-        "#{metadata.fetch('source_url')}/tree/#{metadata.fetch('branch')}"
+        "#{repository_url}/tree/#{metadata.fetch('branch')}"
       else
-        "#{metadata.fetch('source_url')}/tree/#{metadata.fetch('branch')}/#{module_candidate.fetch('relative_path')}"
+        "#{repository_url}/tree/#{metadata.fetch('branch')}/#{module_candidate.fetch('relative_path')}"
       end
     end
 
-    def build_module_record(module_candidate, hero_image_url, module_source_url, documents)
+    def build_module_record(module_candidate, module_source_url, documents, project_context)
       document_entries = documents.map { |document| document.fetch(:metadata) }
       {
-        "project_key" => @manifest.fetch("slug"),
+        "project_slug" => project_context.fetch("project_slug"),
         "slug" => module_candidate.fetch("slug"),
         "title" => module_candidate.fetch("title"),
-        "url" => "#{@manifest.fetch('route_base')}/#{module_candidate.fetch('slug')}/",
         "source_url" => module_source_url,
-        "hero_image_url" => hero_image_url,
         "language_labels" => module_candidate.fetch("roots").map { |root| titleize_module_name(root.fetch("language")) }.uniq,
         "document_count" => document_entries.size,
-        "roots" => build_module_roots(module_candidate, document_entries),
-        "documents" => document_entries
+        "roots" => build_module_roots(module_candidate, document_entries)
       }
     end
 
@@ -655,7 +781,7 @@ module RefreshData
           .map do |document|
             {
               relative_path: document.fetch("tree_path").delete_prefix(prefix),
-              url: document.fetch("url")
+              url: document.fetch("route_url")
             }
           end
 
@@ -769,6 +895,15 @@ module RefreshData
         .map { |part| part[0] ? part[0].upcase + part[1..] : part }
         .join(" ")
     end
+
+    def generated_source_module_path(module_slug)
+      Helpers.generated_collection_path("source_modules", @manifest.fetch("slug"), "#{module_slug}.md")
+    end
+
+    def generated_source_document_path(module_slug, url)
+      route_path = url.delete_prefix(@manifest.fetch("route_base")).sub(%r{\A/}, "").sub(%r{/$}, "")
+      Helpers.generated_collection_path("source_documents", @manifest.fetch("slug"), "#{route_path}.md")
+    end
   end
 
   class Runner
@@ -776,8 +911,7 @@ module RefreshData
       Helpers.clear_generated_outputs
       manifests = ManifestRepository.new.load
       builds = manifests.filter_map { |manifest| build_project(manifest) }
-      generated_paths = write_outputs(builds)
-      Helpers.write_generated_manifest(generated_paths)
+      write_outputs(builds)
     end
 
     private
@@ -798,14 +932,10 @@ module RefreshData
     end
 
     def write_outputs(builds)
-      project_cards = builds.map { |build| build.fetch(:card) }
       files = builds.flat_map { |build| build.fetch(:files) }
       assets = builds.flat_map { |build| build.fetch(:assets) }
-      projects_data_path = File.join(GENERATED_DATA_DIRECTORY, "projects.json")
-      Helpers.write_text(projects_data_path, Helpers.pretty_json(project_cards) + "\n")
       files.each { |file| Helpers.write_text(file.fetch(:path), file.fetch(:content)) }
       assets.each { |asset| Helpers.copy_file(asset.fetch(:source_path), asset.fetch(:target_path)) }
-      files.map { |file| file.fetch(:path) } + assets.map { |asset| asset.fetch(:target_path) } + [projects_data_path]
     end
   end
 end

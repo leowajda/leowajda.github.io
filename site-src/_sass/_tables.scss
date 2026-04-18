@@ -1,0 +1,242 @@
+.filter-summary,
+.problem-title__slug,
+.implementation-card__meta,
+.references__path,
+.problem-section__header p,
+.solution-empty {
+  opacity: var(--muted-opacity);
+}
+
+.active-filter-list {
+  gap: 0.4rem 0.9rem;
+}
+
+.active-filter {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.active-filter:hover,
+.active-filter--clear {
+  color: var(--accent-text);
+}
+
+.problem-table-shell {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.problem-table {
+  min-width: 0;
+  width: 100%;
+}
+
+.problem-table--matrix {
+  min-width: 0;
+  table-layout: fixed;
+  --problem-column-width: 25%;
+  --category-column-width: 23%;
+  --visible-language-count: 4;
+}
+
+.problem-table--single-language {
+  table-layout: fixed;
+}
+
+.problem-table th {
+  background: var(--surface);
+  text-align: left;
+}
+
+.problem-table--matrix th:nth-child(1),
+.problem-table--matrix td:nth-child(1) {
+  width: var(--problem-column-width);
+}
+
+.problem-table--matrix th:nth-child(2),
+.problem-table--matrix td:nth-child(2) {
+  width: var(--category-column-width);
+}
+
+.problem-table--matrix th:nth-child(n + 3),
+.problem-table--matrix td:nth-child(n + 3) {
+  width: calc((100% - var(--problem-column-width) - var(--category-column-width)) / var(--visible-language-count));
+}
+
+.problem-table--single-language th:nth-child(1),
+.problem-table--single-language td:nth-child(1) {
+  width: 38%;
+}
+
+.problem-table--single-language th:nth-child(2),
+.problem-table--single-language td:nth-child(2) {
+  width: 30%;
+}
+
+.problem-table td {
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+.problem-table tbody tr:nth-child(even) td {
+  background: var(--surface-muted);
+}
+
+.problem-table tbody tr:hover td {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.problem-table tbody tr:hover .tag,
+.problem-table tbody tr:hover .difficulty-badge,
+.problem-table tbody tr:hover .solution-chip {
+  background: transparent;
+  border-color: currentColor;
+  color: inherit;
+}
+
+.problem-table--matrix th:first-child,
+.problem-table--matrix td:first-child {
+  left: 0;
+  position: sticky;
+  z-index: 1;
+}
+
+.problem-table--matrix th:first-child {
+  z-index: 2;
+}
+
+.problem-title {
+  gap: 0.15rem;
+}
+
+.problem-title__meta {
+  gap: 0.45rem;
+}
+
+.meta-list,
+.solution-list,
+.references__list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.tag-list {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tag {
+  border: thin solid var(--border);
+  display: inline-flex;
+  margin: 0;
+  max-width: 100%;
+  padding: 0.15rem 0.5rem;
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.difficulty-badge {
+  border: thin solid currentColor;
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: bold;
+  letter-spacing: 0.06em;
+  padding: 0.12rem 0.45rem;
+  text-transform: uppercase;
+}
+
+.difficulty-badge--medium {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.difficulty-badge--hard {
+  background: transparent;
+  border-style: dashed;
+}
+
+.solution-list li,
+.references__item {
+  margin: 0.2rem 0;
+}
+
+.solution-chip-list {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.solution-chip {
+  align-items: center;
+  border: thin solid var(--border);
+  color: inherit;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 2.1rem;
+  padding: 0.25rem 0.45rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.solution-chip:hover {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.solution-chip__icon {
+  font-size: 0.92rem;
+}
+
+.action-links a,
+.action-links button {
+  background: none;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.action-links a:hover,
+.action-links button:hover {
+  text-decoration-thickness: 2px;
+}
+
+.implementation-card__meta {
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .problem-toolbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .problem-table--matrix {
+    min-width: 58rem;
+    table-layout: auto;
+  }
+
+  .problem-table--matrix th:first-child,
+  .problem-table--matrix td:first-child {
+    position: static;
+  }
+}

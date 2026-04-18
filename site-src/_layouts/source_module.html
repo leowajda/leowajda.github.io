@@ -3,25 +3,34 @@ layout: default
 ---
 
 {%- assign current_module = page -%}
-{%- assign current_project = site.data.generated.projects | where: "slug", page.project_key | first -%}
-{%- assign current_project_title = current_project.title | default: page.project_key -%}
+{%- assign current_project = site.projects | where: "slug", page.project_slug | first -%}
 {%- assign page_content = content | strip -%}
 
 {%- if current_module.roots == nil -%}
   <p>Source module data not found.</p>
 {%- else -%}
   <article class="source-layout">
-    <header class="page-header source-page-header">
-      <p class="source-page-header__eyebrow">{{ current_project_title }}</p>
+    <header class="page-header page-header--hero source-page-header">
+      <p class="page-eyebrow">
+        {%- if current_project and current_project.entry_url != "" -%}
+          <a href="{{ current_project.entry_url | relative_url }}">{{ current_project.title }}</a>
+        {%- else -%}
+          {{ current_project.title }}
+        {%- endif -%}
+      </p>
       <h1>{{ current_module.title }}</h1>
-      <p class="source-page-header__meta">{{ current_module.language_labels | join: ", " }}</p>
+      <div class="page-meta">
+        <span>{{ current_module.language_labels | join: ", " }}</span>
+      </div>
     </header>
 
     <div class="source-layout__body">
-      {%- include source_sidebar.html module=current_module project_title=current_project_title -%}
+      <aside class="source-layout__sidebar">
+        {%- include source_sidebar.html module=current_module project_title=current_project.title project_url=current_project.entry_url -%}
+      </aside>
 
       {%- if page_content != "" -%}
-        <section class="source-article source-layout__content">
+        <section class="content-card source-article source-layout__content source-module-content">
           {{ content }}
         </section>
       {%- endif -%}

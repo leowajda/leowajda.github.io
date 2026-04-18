@@ -1,0 +1,17 @@
+{%- assign panel_tag = include.tag | default: "section" -%}
+<{{ panel_tag }} class="side-panel{% if include.class %} {{ include.class }}{% endif %}"{% if include.attributes %} {{ include.attributes }}{% endif %}>
+  {%- if include.eyebrow or include.title -%}
+    <div class="side-panel__header">
+      {%- if include.eyebrow -%}
+        <p class="section-eyebrow">{{ include.eyebrow }}</p>
+      {%- endif -%}
+      {%- if include.title -%}
+        <h2>{{ include.title }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="side-panel__body">
+    {{ include.body }}
+  </div>
+</{{ panel_tag }}>

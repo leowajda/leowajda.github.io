@@ -1,6 +1,0 @@
-kind: source-notes
-slug: zibaldone-java
-title: Zibaldone Java
-description: Notes and source-based study material across selected Java projects.
-route_base: /zibaldone-java
-source_repo_path: sources/zibaldone-java

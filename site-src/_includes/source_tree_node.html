@@ -10,7 +10,11 @@
         </ul>
       </details>
     {%- else -%}
-      <a class="source-tree__link" href="{{ node.url | relative_url }}#source-content">
+      <a
+        class="source-tree__link{% if page.url == node.url %} source-tree__link--active{% endif %}"
+        href="{{ node.url | relative_url }}#source-content"
+        {% if page.url == node.url %}aria-current="page"{% endif %}
+      >
         {{ node.title }}
       </a>
     {%- endif -%}

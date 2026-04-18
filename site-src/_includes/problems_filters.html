@@ -1,59 +1,92 @@
-<form class="filters" aria-label="Problem filters" data-problem-filters>
-  <section class="filter-section">
-    <label class="filter-section__title" for="problem-search">Search</label>
-    <div class="filter-search">
-      <input id="problem-search" name="search" type="search" placeholder="Search problems" autocomplete="off">
-      <button class="filter-button" type="reset">Reset</button>
-    </div>
-  </section>
+{%- capture search_body -%}
+  <div class="filter-search">
+    <input id="problem-search" name="search" type="search" placeholder="Search problems" autocomplete="off">
+    <button class="filter-button filter-button--icon" type="reset" aria-label="Reset filters" title="Reset filters">
+      {%- include icon.html name="reset" -%}
+    </button>
+  </div>
+{%- endcapture -%}
 
-  <fieldset class="filter-section">
-    <legend class="filter-section__title">Difficulty</legend>
-    <div class="filter-choices">
-      <label class="filter-choice">
-        <input type="radio" name="difficulty" value="" checked>
-        <span>All difficulties</span>
+{%- if include.active_language == nil -%}
+  {%- capture languages_body -%}
+    <div class="filter-options filter-options--stacked filter-options--languages" role="group" aria-label="Languages">
+      {%- for language in include.problem_filters.languages -%}
+        <label class="filter-option filter-option--stacked filter-option--language">
+          <input type="checkbox" name="language" value="{{ language.slug }}" checked>
+          <span>{{ language.label }}</span>
+        </label>
+      {%- endfor -%}
+    </div>
+  {%- endcapture -%}
+{%- endif -%}
+
+{%- capture scope_body -%}
+  <div class="filter-scope">
+    <span>{{ include.active_language.label }}</span>
+    <a class="side-panel__link side-panel__link--inline" href="{{ include.project_url | relative_url }}">Show all languages</a>
+  </div>
+{%- endcapture -%}
+
+{%- capture view_body -%}
+  <nav class="side-panel__links" aria-label="Eureka views">
+    <a class="side-panel__link" href="{{ include.project_url | relative_url }}">
+      All languages
+    </a>
+    {%- for language in include.problem_filters.languages -%}
+      {%- assign language_page = include.language_pages | where: "slug", language.slug | first -%}
+      {%- if language_page -%}
+        <a class="side-panel__link{% if include.active_language and include.active_language.slug == language.slug %} side-panel__link--active{% endif %}" href="{{ language_page.url | relative_url }}"{% if include.active_language and include.active_language.slug == language.slug %} aria-current="page"{% endif %}>
+          {{ language.label }}
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </nav>
+{%- endcapture -%}
+
+{%- capture difficulty_body -%}
+  <div class="filter-options" role="radiogroup" aria-label="Difficulty">
+    <label class="filter-option">
+      <input type="radio" name="difficulty" value="" checked>
+      <span>All difficulties</span>
+    </label>
+    {%- for difficulty in include.problem_filters.difficulties -%}
+      <label class="filter-option">
+        <input type="radio" name="difficulty" value="{{ difficulty }}">
+        <span>{{ difficulty }}</span>
       </label>
-      {%- for difficulty in include.problem_filters.difficulties -%}
-        <label class="filter-choice">
-          <input type="radio" name="difficulty" value="{{ difficulty }}">
-          <span>{{ difficulty }}</span>
-        </label>
-      {%- endfor -%}
-    </div>
-  </fieldset>
+    {%- endfor -%}
+  </div>
+{%- endcapture -%}
 
-  {%- unless include.page.language_filter -%}
-    <fieldset class="filter-section">
-      <legend class="filter-section__title">Language</legend>
-      <div class="filter-choices">
-        <label class="filter-choice">
-          <input type="radio" name="language" value="" checked>
-          <span>All languages</span>
-        </label>
-        {%- for language in include.problem_filters.languages -%}
-          <label class="filter-choice">
-            <input type="radio" name="language" value="{{ language.slug }}">
-            <span>{{ language.label }}</span>
-          </label>
-        {%- endfor -%}
-      </div>
-    </fieldset>
-  {%- endunless -%}
+{%- capture categories_body -%}
+  <div class="filter-options filter-options--stacked" data-category-options>
+    {%- for category in include.problem_filters.categories -%}
+      <label class="filter-option filter-option--stacked" data-category-option data-category-label="{{ category | downcase }}">
+        <input type="checkbox" name="category" value="{{ category }}">
+        <span>{{ category }}</span>
+      </label>
+    {%- endfor -%}
+  </div>
+  <p class="filter-empty" data-category-empty hidden>No categories match.</p>
+{%- endcapture -%}
 
-  <fieldset class="filter-section">
-    <legend class="filter-section__title">Categories</legend>
-    <div class="filter-choices filter-choices--stacked">
-      {%- for category in include.problem_filters.categories -%}
-        <label class="filter-choice">
-          <input type="checkbox" name="category" value="{{ category }}">
-          <span>{{ category }}</span>
-        </label>
-      {%- endfor -%}
-    </div>
-  </fieldset>
+{%- capture panel_body -%}
+  {%- include side_panel_section.html title="Search" title_tag="label" title_for="problem-search" body=search_body class="filter-group side-panel__section--search" -%}
+  {%- if include.active_language == nil -%}
+    {%- include side_panel_section.html title="Languages" body=languages_body class="filter-group" -%}
+  {%- else -%}
+    {%- include side_panel_section.html title="Scope" body=scope_body class="filter-group" -%}
+    {%- include side_panel_section.html title="Routes" body=view_body class="filter-group" -%}
+  {%- endif -%}
+  {%- include side_panel_section.html title="Difficulty" body=difficulty_body class="filter-group" -%}
+  {%- include side_panel_section.html title="Categories" body=categories_body class="filter-group" -%}
+{%- endcapture -%}
 
-  <p class="filter-summary" aria-live="polite">
-    <span data-visible-count>0</span> of <span data-total-count>0</span> problems visible
-  </p>
-</form>
+{%- include side_panel.html
+  tag="form"
+  class="filters"
+  attributes='aria-label="Problem filters" data-problem-filters'
+  eyebrow=include.project_title
+  title="Problem Explorer"
+  body=panel_body
+-%}

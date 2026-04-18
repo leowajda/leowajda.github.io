@@ -1,6 +1,0 @@
-kind: eureka
-slug: eureka
-title: Eureka
-description: A collection of LeetCode solutions across multiple programming languages.
-route_base: /eureka
-source_repo_path: sources/eureka

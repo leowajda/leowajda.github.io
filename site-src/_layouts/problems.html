@@ -2,8 +2,12 @@
 layout: default
 ---
 
-{%- assign problem_filters = site.data.generated[page.project_key].problem_filters -%}
-{%- assign problems = site.data.generated[page.project_key].problems.problems | sort: "title" -%}
+{%- assign project_slug = page.project_slug -%}
+{%- assign current_project = site.projects | where: "slug", project_slug | first -%}
+{%- assign problem_index = site.eureka_indexes | where: "project_slug", project_slug | first -%}
+{%- assign problem_filters = problem_index.problem_filters -%}
+{%- assign problems = site.eureka_problems | where: "project_slug", project_slug | sort: "title" -%}
+{%- assign language_pages = site.eureka_languages | where: "project_slug", project_slug -%}
 {%- assign active_language = nil -%}
 {%- if page.language_filter -%}
   {%- for language in problem_filters.languages -%}
@@ -13,13 +17,31 @@ layout: default
   {%- endfor -%}
 {%- endif -%}
 
-<header class="page-header">
+<header class="page-header page-header--hero problem-browser-header">
   <h1>{{ page.title }}</h1>
   <p>{{ page.description }}</p>
   {%- if active_language -%}
-    <p>Language view: {{ active_language.label }}</p>
+    <p class="page-note">Viewing {{ active_language.label }} solutions.</p>
   {%- endif -%}
 </header>
 
-{%- include problems_filters.html problem_filters=problem_filters page=page active_language=active_language -%}
-{%- include problems_table.html problems=problems problem_filters=problem_filters page=page -%}
+{%- assign page_content = content | strip -%}
+{%- if page_content != "" -%}
+  <section class="problem-browser__intro">
+    {{ content }}
+  </section>
+{%- endif -%}
+
+<section class="problem-browser">
+  <aside class="problem-browser__filters">
+    {%- include problems_filters.html problem_filters=problem_filters page=page active_language=active_language project_title=current_project.title project_url=current_project.entry_url language_pages=language_pages -%}
+  </aside>
+
+  <div class="problem-browser__results">
+    <section class="problem-toolbar">
+      <div class="active-filter-list" data-active-filter-list hidden></div>
+    </section>
+
+    {%- include problems_table.html problems=problems problem_filters=problem_filters page=page -%}
+  </div>
+</section>

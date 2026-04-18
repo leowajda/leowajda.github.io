@@ -1,12 +1,13 @@
 {%- assign problem = include.problem -%}
 {%- assign embed = include.embed | default: false -%}
 {%- assign requested_implementation = include.implementation_id | default: '' -%}
-{%- assign visible_implementations = problem.implementations -%}
+{%- assign all_implementations = include.implementations | default: problem.implementations -%}
+{%- assign visible_implementations = all_implementations -%}
 {%- if requested_implementation != '' -%}
-  {%- assign visible_implementations = problem.implementations | where: "id", requested_implementation -%}
+  {%- assign visible_implementations = all_implementations | where: "implementation_id", requested_implementation -%}
 {%- endif -%}
 {%- if visible_implementations.size == 0 and embed -%}
-  {%- assign visible_implementations = problem.implementations | slice: 0, 1 -%}
+  {%- assign visible_implementations = all_implementations | slice: 0, 1 -%}
 {%- endif -%}
 
 <section class="implementation-list">
@@ -17,25 +18,24 @@
         {%- unless embed and visible_implementations.size == 1 -%}
           <header class="problem-section__header">
             <h2>{{ language.label }}</h2>
-            <p>{{ language_impls.size }} solution{% if language_impls.size != 1 %}s{% endif %}</p>
           </header>
         {%- endunless -%}
 
         <div class="implementation-stack">
           {%- for implementation in language_impls -%}
-            <article class="content-card implementation-card" id="{{ implementation.id }}" data-code-block>
+            <article class="content-card implementation-card" id="{{ implementation.implementation_id }}" data-code-block>
               <header class="implementation-card__header">
-                <div>
+                <div class="implementation-card__heading">
+                  <p class="implementation-card__eyebrow">{{ language.label }}</p>
                   {%- if embed and visible_implementations.size == 1 -%}
                     <h2 class="implementation-card__title">{{ problem.title }}: {{ implementation.approach_label }}</h2>
-                    <p class="implementation-card__meta">{{ language.label }}</p>
                   {%- else -%}
                     <h3 class="implementation-card__title">{{ implementation.approach_label }}</h3>
-                    <p class="implementation-card__meta">{{ language.label }}</p>
                   {%- endif -%}
+                  <p class="implementation-card__meta">{{ implementation.code_language }}</p>
                 </div>
 
-                <div class="action-links">
+                <div class="action-links implementation-card__actions">
                   {%- if embed -%}
                     <a href="{{ implementation.detail_url | relative_url }}">full page</a>
                   {%- else -%}
@@ -47,14 +47,18 @@
                 </div>
               </header>
 
-              <div class="code-block__content" data-code-source>
-                {%- capture code_block -%}
+	              <div class="code-block__content" data-code-source>
+	                {%- if implementation.code -%}
+	                  {%- capture code_block -%}
 ```{{ implementation.code_language }}
 {{ implementation.code }}
 ```
-                {%- endcapture -%}
-                {{ code_block | markdownify }}
-              </div>
+	                  {%- endcapture -%}
+	                  {{ code_block | markdownify }}
+	                {%- else -%}
+	                  {{ implementation.content | markdownify }}
+	                {%- endif -%}
+	              </div>
             </article>
           {%- endfor -%}
         </div>

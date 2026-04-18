@@ -1,5 +1,9 @@
 ---
+layout: redirect
 title: Eureka
-description: A collection of LeetCode solutions across multiple programming languages.
+redirect_to: /eureka/problems/
 permalink: /eureka/
+seo:
+  type: WebPage
+sitemap: false
 ---

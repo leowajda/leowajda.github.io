@@ -11,6 +11,6 @@ site/
 _site/
 .cache/
 .playwright-cli/
-site-src/.generated-files.json
+site-src/.jekyll-cache/
 
 .DS_Store

@@ -1,14 +1,24 @@
-<div class="table-wrap">
-  <table class="problem-table" id="problem-table" data-language-filter="{{ include.page.language_filter | default: '' }}">
+{%- assign table_mode = "matrix" -%}
+{%- if include.page.language_filter -%}
+  {%- assign table_mode = "single-language" -%}
+{%- endif -%}
+
+<section class="content-card content-card--flush problem-table-shell">
+  <div class="table-wrap">
+    <table
+      class="problem-table problem-table--{{ table_mode }}"
+      id="problem-table"
+      data-language-filter="{{ include.page.language_filter | default: '' }}"
+    >
     <thead>
       <tr>
-        <th>Problem</th>
+        <th class="problem-table__problem-column">Problem</th>
         <th>Categories</th>
         {%- for language in include.problem_filters.languages -%}
           {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
             {%- continue -%}
           {%- endif -%}
-          <th>{{ language.label }}</th>
+          <th data-language-column="{{ language.slug }}">{{ language.label }}</th>
         {%- endfor -%}
       </tr>
     </thead>
@@ -33,16 +43,19 @@
           data-problem-slug="{{ problem.problem_slug }}"
           data-search-title="{{ problem.search_title | escape }}"
           data-difficulty="{{ problem.difficulty }}"
+          data-difficulty-slug="{{ problem.difficulty_slug }}"
           data-categories="{{ problem.categories | join: '|' }}"
           data-languages="{{ problem.languages | map: 'slug' | join: '|' }}"
         >
           <td class="problem-title-cell">
             <div class="problem-title">
-              <a class="problem-title__link" href="{{ problem.detail_url | relative_url }}">{{ problem.title }}</a>
-              <div class="problem-title__slug">{{ problem.problem_slug }}</div>
+              <a class="problem-title__link" href="{{ problem.url | relative_url }}">{{ problem.title }}</a>
+              <div class="problem-title__meta">
+                <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug }}">{{ problem.difficulty }}</span>
+              </div>
             </div>
           </td>
-          <td>
+          <td class="problem-categories-cell">
             <ul class="tag-list">
               {%- for category in problem.categories -%}
                 <li class="tag">{{ category }}</li>
@@ -54,7 +67,7 @@
               {%- continue -%}
             {%- endif -%}
             {%- assign language_implementations = problem.implementations | where: "language", language.slug -%}
-            <td>
+            <td data-language-column="{{ language.slug }}">
               {%- if language_implementations.size > 0 -%}
                 <div class="solution-chip-list" aria-label="{{ language.label }} solutions">
                   {%- for implementation in language_implementations -%}
@@ -69,5 +82,6 @@
         </tr>
       {%- endfor -%}
     </tbody>
-  </table>
-</div>
+    </table>
+  </div>
+</section>

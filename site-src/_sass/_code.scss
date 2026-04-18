@@ -1,0 +1,162 @@
+.code-block__content,
+.source-code-block {
+  min-width: 0;
+}
+
+.highlight,
+.highlighter-rouge {
+  margin: 1rem 0;
+}
+
+.code-block__content .highlight,
+.code-block__content .highlighter-rouge {
+  margin: 0;
+}
+
+.problem-page .code-block__content .highlight,
+.problem-page .code-block__content .highlighter-rouge {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.highlight {
+  background: var(--code-surface);
+  border: thin solid var(--border);
+}
+
+.highlight pre {
+  margin: 0;
+  overflow-x: auto;
+  padding: 1rem;
+}
+
+.source-code-block .highlight,
+.source-code-block .highlighter-rouge,
+.source-code-block .code-block__content {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.source-code-block .highlight pre {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+
+.problem-page .code-block__content .highlight pre {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-break: normal;
+}
+
+.code-block__content .highlight code {
+  color: inherit;
+}
+
+.highlight .c,
+.highlight .c1,
+.highlight .cm,
+.highlight .cp,
+.code-block__content .highlight .c,
+.code-block__content .highlight .c1,
+.code-block__content .highlight .cm,
+.code-block__content .highlight .cp {
+  color: var(--code-comment);
+  font-style: italic;
+}
+
+.highlight .k,
+.highlight .kd,
+.highlight .kn,
+.highlight .kp,
+.highlight .kr,
+.code-block__content .highlight .k,
+.code-block__content .highlight .kd,
+.code-block__content .highlight .kn,
+.code-block__content .highlight .kp,
+.code-block__content .highlight .kr {
+  color: var(--code-keyword);
+}
+
+.highlight .kt,
+.highlight .nc,
+.highlight .nd,
+.code-block__content .highlight .kt,
+.code-block__content .highlight .nc,
+.code-block__content .highlight .nd {
+  color: var(--code-type);
+}
+
+.highlight .nf,
+.highlight .fm,
+.code-block__content .highlight .nf,
+.code-block__content .highlight .fm {
+  color: var(--code-function);
+}
+
+.highlight .s,
+.highlight .sa,
+.highlight .sb,
+.highlight .sc,
+.highlight .dl,
+.highlight .sd,
+.highlight .s2,
+.highlight .sh,
+.highlight .si,
+.highlight .sr,
+.highlight .ss,
+.code-block__content .highlight .s,
+.code-block__content .highlight .sa,
+.code-block__content .highlight .sb,
+.code-block__content .highlight .sc,
+.code-block__content .highlight .dl,
+.code-block__content .highlight .sd,
+.code-block__content .highlight .s2,
+.code-block__content .highlight .sh,
+.code-block__content .highlight .si,
+.code-block__content .highlight .sr,
+.code-block__content .highlight .ss {
+  color: var(--code-string);
+}
+
+.highlight .m,
+.highlight .mb,
+.highlight .mf,
+.highlight .mh,
+.highlight .mi,
+.highlight .il,
+.code-block__content .highlight .m,
+.code-block__content .highlight .mb,
+.code-block__content .highlight .mf,
+.code-block__content .highlight .mh,
+.code-block__content .highlight .mi,
+.code-block__content .highlight .il {
+  color: var(--code-number);
+}
+
+.highlight .o,
+.highlight .ow,
+.code-block__content .highlight .o,
+.code-block__content .highlight .ow {
+  color: var(--code-keyword);
+}
+
+.highlight .p,
+.code-block__content .highlight .p {
+  color: inherit;
+}
+
+.highlight .na,
+.highlight .nb,
+.highlight .bp,
+.highlight .nv,
+.code-block__content .highlight .na,
+.code-block__content .highlight .nb,
+.code-block__content .highlight .bp,
+.code-block__content .highlight .nv {
+  color: var(--code-name);
+}

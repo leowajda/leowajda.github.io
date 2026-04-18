@@ -3,11 +3,12 @@
   {%- include head.html -%}
   {%- assign body_class = page.body_class | default: '' -%}
   {%- assign shell_class = 'w' -%}
-  {%- if page.layout == 'source_module' or page.layout == 'source_document' -%}
-    {%- assign shell_class = shell_class | append: ' w--source' -%}
-  {%- elsif page.layout == 'problem' or page.layout == 'problems' -%}
-    {%- assign shell_class = shell_class | append: ' w--desktop-wide' -%}
-  {%- endif -%}
+  {%- case page.shell -%}
+    {%- when 'source' -%}
+      {%- assign shell_class = shell_class | append: ' w--source' -%}
+    {%- when 'wide' -%}
+      {%- assign shell_class = shell_class | append: ' w--wide' -%}
+  {%- endcase -%}
   <body class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}">
     {%- include icon-sprite.html -%}
     <main class="page-content" aria-label="Content">

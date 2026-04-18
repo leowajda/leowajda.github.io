@@ -19,6 +19,11 @@ test:
 
 clean:
 	rm -rf _site node_modules vendor .bundle
-	rm -rf site-src/.generated-files.json
-	rm -rf site-src/_data/generated
+	rm -rf site-src/collections/_eureka_indexes
+	rm -rf site-src/collections/_eureka_languages
+	rm -rf site-src/collections/_eureka_problems
+	rm -rf site-src/collections/_eureka_implementations
+	rm -rf site-src/collections/_source_modules
+	rm -rf site-src/collections/_source_documents
+	rm -rf site-src/_collections
 	rm -rf site-src/assets/generated
