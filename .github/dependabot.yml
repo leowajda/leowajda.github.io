@@ -1,5 +1,16 @@
 version: 2
 updates:
+  - package-ecosystem: gitsubmodule
+    directory: /
+    target-branch: master
+    schedule:
+      interval: cron
+      cronjob: "0 * * * *"
+    open-pull-requests-limit: 1
+    labels:
+      - dependencies
+      - submodules
+
   - package-ecosystem: github-actions
     directory: /
     schedule:
