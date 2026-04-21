@@ -1,0 +1,550 @@
+graph:
+  sections:
+    - title: "What This Means"
+      text: "The problem can be modeled as a graph, whether that graph is stated directly or implied by the rules."
+    - title: "What To Look For"
+      items:
+        - "The statement talks about nodes, edges, neighbors, routes, or connections."
+        - "Grid movement rules define **adjacency** between cells."
+        - "States and transitions can be represented as vertices and edges."
+    - title: "How To Decide"
+      text: "Traversal, reachability, ordering, shortest path, or connectivity is the real task."
+tree:
+  sections:
+    - title: "What This Means"
+      text: "Trees are hierarchical graphs with no cycles and a single parent chain for each node."
+    - title: "What To Look For"
+      items:
+        - "Terms like root, leaf, parent, or child."
+        - "A structure with tree properties, such as $n$ nodes and **$n - 1$ edges**."
+        - "A clear hierarchy rather than a general graph."
+    - title: "How To Decide"
+      text: "The input already is a tree, or hierarchy plus acyclicity make it one."
+tree-dfs:
+  sections:
+    - title: "What It Is"
+      text: "DFS follows one branch of the tree at a time, usually through **recursion** or an explicit stack."
+    - title: "When To Use It"
+      items:
+        - "Subtree information, path state, or **postorder** reasoning matters."
+        - "Child results combine into the final answer."
+        - "Level order is not the main requirement."
+    - title: "Why It Helps"
+      text: "Natural fit for tree structure and recursive state transitions."
+directed-graph:
+  sections:
+    - title: "What This Means"
+      text: "DAG problems are about one-way relationships with an ordering that cannot loop back on itself."
+    - title: "What To Look For"
+      items:
+        - "Terms like directed, one-way, prerequisite, before, or after."
+        - "A relation from A to B does not imply the reverse relation."
+        - "The task depends on **cycle detection** or a valid ordering."
+    - title: "How To Decide"
+      text: "Direction matters, and cycles are either forbidden or something you must detect."
+directed-graph-topo:
+  sections:
+    - title: "What It Is"
+      text: "Topological sort produces a linear order in which every directed edge goes from an earlier node to a later one."
+    - title: "When To Use It"
+      items:
+        - "The graph is a **DAG** or the problem is about prerequisite ordering."
+        - "Dependencies must be processed before dependents."
+        - "Valid ordering or cycle detection is part of the task."
+    - title: "Why It Helps"
+      text: "Produces a dependency-safe order and exposes cycles when no valid order exists."
+shortest-path:
+  sections:
+    - title: "What This Means"
+      text: "The problem asks for the minimum-cost route through an explicit graph or an implicit state graph."
+    - title: "What To Look For"
+      items:
+        - "Minimum steps, moves, time, cost, or transformations."
+        - "The fastest or least expensive way to reach a target."
+        - "Restrictions on where or how movement is allowed."
+    - title: "How To Decide"
+      text: "The task is to minimize path value over a set of allowed transitions."
+shortest-path-weighted:
+  sections:
+    - title: "What This Means"
+      text: "**Edge weights** matter here, so the best path depends on accumulated cost rather than hop count alone."
+    - title: "What To Look For"
+      items:
+        - "Each move or edge has its own cost, time, distance, or probability."
+        - "Edge values vary instead of all counting as one."
+        - "The statement explicitly gives weights or per-edge scores."
+    - title: "How To Decide"
+      text: "BFS depth alone cannot determine the best path."
+shortest-path-dijkstra:
+  sections:
+    - title: "What It Is"
+      text: "Dijkstra's algorithm expands the cheapest reachable state first by using a **priority queue**."
+    - title: "When To Use It"
+      items:
+        - "Edge weights are non-negative."
+        - "Shortest distances in a weighted graph."
+        - "Plain BFS no longer works because edge costs vary."
+    - title: "Why It Helps"
+      text: "Correct shortest-path distances with the frontier advancing in increasing cost order."
+shortest-path-bfs:
+  sections:
+    - title: "What It Is"
+      text: "BFS explores the graph level by level from the start state."
+    - title: "When To Use It"
+      items:
+        - "All edges have the same cost."
+        - "**Minimum steps** or moves."
+        - "The first time you reach a state should already be optimal."
+    - title: "Why It Helps"
+      text: "Finds shortest distances in an **unweighted graph** with a simple queue traversal."
+connectivity:
+  sections:
+    - title: "What This Means"
+      text: "Connectivity problems are about which items belong to the same component and how components merge."
+    - title: "What To Look For"
+      items:
+        - "Terms like connected, component, island, group, or cluster."
+        - "Merging entities or checking whether two entities are related."
+        - "Counting or identifying connected pieces."
+    - title: "How To Decide"
+      text: "**Reachability** or component membership is the main question."
+connectivity-dsu:
+  sections:
+    - title: "What It Is"
+      text: "Disjoint Set Union tracks which elements currently belong to the same connected set."
+    - title: "When To Use It"
+      items:
+        - "Merging groups or checking whether two nodes are connected."
+        - "Edges are added dynamically or processed in batches."
+        - "Explicit traversal paths are unnecessary."
+    - title: "Why It Helps"
+      text: "Near-constant **`union`** and `find` operations for component membership, without full traversals."
+graph-smallcontraints:
+  sections:
+    - title: "What This Means"
+      text: "Small graph constraints can make **exhaustive search** a reasonable first option."
+    - title: "What To Look For"
+      items:
+        - "The natural search space is large, but the input bounds are still small."
+        - "The prompt asks for all paths, all configurations, or every valid arrangement."
+        - "No clear optimization pattern stands out yet."
+    - title: "How To Decide"
+      text: "DFS or backtracking can plausibly cover the full search space in time."
+graph-smallcontraints-dfs:
+  sections:
+    - title: "What It Is"
+      text: "DFS and **backtracking** explore candidate graph paths or states one branch at a time."
+    - title: "When To Use It"
+      items:
+        - "The graph is small enough to try many possibilities."
+        - "The task asks for all valid paths or configurations."
+        - "Path-specific state must be carried and undone on return."
+    - title: "Why It Helps"
+      text: "Straightforward exhaustive search with natural places to prune."
+graph-smallcontraints-bfs:
+  sections:
+    - title: "What It Is"
+      text: "BFS explores reachable states in widening layers from a start node or start set."
+    - title: "When To Use It"
+      items:
+        - "The search space is small and you want a broad, systematic exploration."
+        - "Connectivity or minimum-step behavior matters."
+        - "State transitions are easier to reason about level by level than recursively."
+    - title: "Why It Helps"
+      text: "Complete layer-by-layer exploration, especially useful for shortest unweighted transitions."
+kth-smallest:
+  sections:
+    - title: "What This Means"
+      text: "These problems ask for an element by rank instead of asking for one global optimum."
+    - title: "What To Look For"
+      items:
+        - "The prompt says $k$th smallest, $k$th largest, **top $k$**, or $k$ closest."
+        - "**Ranking** is the core requirement."
+        - "The value of $k$ drives the algorithm choice."
+    - title: "How To Decide"
+      text: "The result is an **order statistic**, not a threshold or path value."
+kth-smallest-heap:
+  sections:
+    - title: "What It Is"
+      text: "Sorting gives a full order, while a **heap** keeps only the candidates that matter for the $k$th answer."
+    - title: "When To Use It"
+      items:
+        - "The task is to find a ranked element rather than fully sort for its own sake."
+        - "$k$ is much smaller than the total number of items."
+        - "The input is easier to process incrementally."
+    - title: "Why It Helps"
+      text: "Keeps focus on the $k$th answer and often avoids a full ordering."
+linked-list:
+  sections:
+    - title: "What This Means"
+      text: "The data structure itself determines the pattern because traversal and updates happen through pointers."
+    - title: "What To Look For"
+      items:
+        - "The input is a linked list or node-next structure."
+        - "Random access is unavailable or expensive."
+        - "Pointer movement or **rewiring** is part of the solution."
+    - title: "How To Decide"
+      text: "List topology and pointer manipulation drive the problem."
+linked-list-twopointers:
+  sections:
+    - title: "What It Is"
+      text: "Two-pointer linked-list techniques move pointers at different speeds or offsets through the same list."
+    - title: "When To Use It"
+      items:
+        - "Middle, cycle, nth-from-end, or intersection behavior."
+        - "A single traversal is preferable."
+        - "Extra memory for visited nodes is unnecessary or not allowed."
+    - title: "Why It Helps"
+      text: "Tracks relative position without random access, often in **one pass** and constant extra space."
+small-constraints:
+  sections:
+    - title: "What This Means"
+      text: "**Small bounds** make slower exact methods viable, including brute force, backtracking, or dynamic programming."
+    - title: "What To Look For"
+      items:
+        - "n or length is low enough that cubic or even exponential work may still fit."
+        - "The task is combinatorial, such as subsets, permutations, or placements."
+        - "A straightforward exhaustive search is easy to describe."
+    - title: "How To Decide"
+      text: "The constraints are small enough that a slower but direct method deserves a real first look."
+small-constraints-efficiency:
+  sections:
+    - title: "What This Means"
+      text: "After identifying small constraints, the next question is whether the full brute-force space still fits."
+    - title: "What To Look For"
+      items:
+        - "The natural brute-force approach is exponential or factorial."
+        - "You can estimate a concrete upper bound from the constraints."
+        - "If full enumeration looks too large, repeated subproblems usually appear."
+    - title: "How To Decide"
+      text: "Use brute force if the full search space fits comfortably; otherwise move toward dynamic programming."
+small-constraints-bruteforce/backtracking:
+  sections:
+    - title: "What It Is"
+      text: "Backtracking builds candidate answers step by step and abandons branches that can no longer work."
+    - title: "When To Use It"
+      items:
+        - "The search space is explicit and still small enough to enumerate."
+        - "The problem asks for arrangements, choices, or configurations."
+        - "Constraints can prune invalid branches early."
+    - title: "Why It Helps"
+      text: "Exact search with clear control over branching and **pruning**."
+small-constraints-dp:
+  sections:
+    - title: "What It Is"
+      text: "Dynamic programming replaces repeated enumeration with stored answers for smaller counting states."
+    - title: "When To Use It"
+      items:
+        - "Brute force is too slow but the same subcounts repeat."
+        - "The answer can be built from smaller states."
+        - "Base cases and transitions can be written down cleanly."
+    - title: "Why It Helps"
+      text: "Replaces exponential counting with reusable state transitions when subproblems overlap."
+sums:
+  sections:
+    - title: "What This Means"
+      text: "**Additive structure** is central here, so cumulative information can simplify repeated range work."
+    - title: "What To Look For"
+      items:
+        - "The statement asks about sums, totals, balances, or additive constraints."
+        - "Repeated range-sum checks or comparisons."
+        - "Accumulated value over a segment or prefix matters."
+    - title: "How To Decide"
+      text: "Prefix-style preprocessing removes repeated sum work."
+subarrays:
+  sections:
+    - title: "What This Means"
+      text: "Contiguous ranges inside an array, string, or matrix are the core object."
+    - title: "What To Look For"
+      items:
+        - "Terms like subarray, substring, window, segment, or submatrix."
+        - "The answer depends on a contiguous range, not arbitrary elements."
+        - "Left and right boundaries are the natural state."
+    - title: "How To Decide"
+      text: "Contiguity is essential to the problem definition."
+subarrays-prefixsums:
+  sections:
+    - title: "What It Is"
+      text: "A prefix-sum array stores **cumulative totals** so any range sum can be derived from two prefix values."
+    - title: "When To Use It"
+      items:
+        - "Many subarray-sum queries or comparisons."
+        - "Additive relationships matter more than dynamic window adjustment."
+        - "Constant-time range queries after preprocessing are useful."
+    - title: "Why It Helps"
+      text: "Fast range-sum lookups that simplify counting and target-sum work."
+subarrays-twopointers:
+  sections:
+    - title: "What It Is"
+      text: "**Sliding window** maintains a contiguous range and moves its boundaries as the condition changes."
+    - title: "When To Use It"
+      items:
+        - "Subarrays or substrings are the core object."
+        - "Expanding or shrinking the range changes the condition in a useful direction."
+        - "A linear scan beats checking all ranges."
+    - title: "Why It Helps"
+      text: "Linear control over a contiguous range without quadratic enumeration."
+max/min:
+  sections:
+    - title: "What This Means"
+      text: "The goal is to optimize one value under the rules of the problem."
+    - title: "What To Look For"
+      items:
+        - "Terms like maximum, minimum, longest, shortest, least, or greatest."
+        - "The **objective** is a single score such as cost, time, profit, or distance."
+        - "The challenge is choosing actions that improve that score."
+    - title: "How To Decide"
+      text: "One best achievable value defines the result."
+max/min-monotonic:
+  sections:
+    - title: "What This Means"
+      text: "A monotonic feasibility rule is the clearest sign that binary search may fit."
+    - title: "What To Look For"
+      items:
+        - "A yes-or-no condition changes only once as the answer grows or shrinks."
+        - "You can test whether a guessed answer works."
+        - "Sorting or reframing makes the search space ordered."
+    - title: "How To Decide"
+      text: "A one-way true-or-false boundary exists over candidate answers."
+max/min-binarysearch:
+  sections:
+    - title: "What It Is"
+      text: "**Binary search** on the answer tests candidate values over an ordered search space."
+    - title: "When To Use It"
+      items:
+        - "Feasibility becomes true or false at a single boundary."
+        - "You can check a guessed answer efficiently."
+        - "The smallest valid or largest invalid value."
+    - title: "Why It Helps"
+      text: "Searches the answer space in logarithmic steps instead of scanning every candidate."
+max/min-subproblem:
+  sections:
+    - title: "What This Means"
+      text: "Dynamic programming fits when the best answer can be built from smaller answers of the same kind."
+    - title: "What To Look For"
+      items:
+        - "Recursive exploration recomputes the same states."
+        - "The whole answer depends on prefixes, suffixes, intervals, or states."
+        - "Memoization would remove repeated work."
+    - title: "How To Decide"
+      text: "The optimization breaks into overlapping smaller optimizations."
+max/min-dp:
+  sections:
+    - title: "What It Is"
+      text: "Dynamic programming stores the best value for smaller states and reuses them to build the final optimum."
+    - title: "When To Use It"
+      items:
+        - "The optimum depends on prefixes, intervals, positions, or states."
+        - "Recursive exploration repeats the same best-subanswer questions."
+        - "A clean recurrence and base cases can be defined."
+    - title: "Why It Helps"
+      text: "Turns repeated optimization work into reusable **state transitions**."
+max/min-greedyhuh:
+  sections:
+    - title: "What This Means"
+      text: "Greedy fits only when a locally best move can be shown to stay globally safe."
+    - title: "What To Look For"
+      items:
+        - "The solution is a sequence of decisions."
+        - "A simple local rule appears to work on small cases."
+        - "You can justify that delaying the local best move never helps."
+    - title: "How To Decide"
+      text: "Choose greed only if the local choice stays optimal."
+max/min-greedy:
+  sections:
+    - title: "What It Is"
+      text: "A greedy algorithm commits to the best local move according to a rule chosen for the problem."
+    - title: "When To Use It"
+      items:
+        - "A sequence of choices."
+        - "A local rule appears to preserve global optimality."
+        - "Small examples support the rule and no counterexample appears."
+    - title: "Why It Helps"
+      text: "Often the simplest and fastest valid solution when the local rule is sound."
+counting:
+  sections:
+    - title: "What This Means"
+      text: "The output is a number of **valid outcomes**, not one example of a valid outcome."
+    - title: "What To Look For"
+      items:
+        - "The prompt asks for the **number of ways**, count, or total arrangements."
+        - "Returning one valid construction is not enough."
+        - "The task is naturally combinatorial."
+    - title: "How To Decide"
+      text: "The result is a count of possibilities."
+counting-efficiency:
+  sections:
+    - title: "What This Means"
+      text: "Once the problem is about counting, the next question is whether explicit enumeration is still cheap enough."
+    - title: "What To Look For"
+      items:
+        - "The brute-force tree is exponential or factorial."
+        - "Small constraints may still allow backtracking."
+        - "If not, the same subcounts usually recur."
+    - title: "How To Decide"
+      text: "Use brute force only if full enumeration is acceptable; otherwise move toward dynamic programming."
+counting-bruteforce/backtracking:
+  sections:
+    - title: "What It Is"
+      text: "Backtracking enumerates every valid construction and increments the count for each one that works."
+    - title: "When To Use It"
+      items:
+        - "The full search tree is still small enough to explore."
+        - "You can validate candidates as you build them."
+        - "The goal is **exact counting** rather than optimization."
+    - title: "Why It Helps"
+      text: "Direct exact method and a clean baseline before moving to dynamic programming."
+counting-dp:
+  sections:
+    - title: "What It Is"
+      text: "Counting DP stores the number of ways to solve smaller states and composes them into larger ones."
+    - title: "When To Use It"
+      items:
+        - "Full enumeration is too slow."
+        - "The same subcounts appear across many branches."
+        - "The count for a state can be expressed from earlier states."
+    - title: "Why It Helps"
+      text: "Exact counts without explicitly generating every valid construction."
+sequence-count:
+  sections:
+    - title: "What This Means"
+      text: "Problems over **two sequences** often reduce to coordinated traversal or dynamic programming over prefixes."
+    - title: "What To Look For"
+      items:
+        - "The input has two arrays, two strings, or two ordered streams."
+        - "You are comparing, aligning, merging, or matching across both sequences."
+        - "**Relative order** inside each sequence matters."
+    - title: "How To Decide"
+      text: "Interaction between multiple sequences defines the problem."
+sequence-count-monotonic:
+  sections:
+    - title: "What This Means"
+      text: "Two-pointer methods on multiple sequences need a one-way rule for pointer movement."
+    - title: "What To Look For"
+      items:
+        - "Advancing one side predictably strengthens or weakens the condition."
+        - "Both sequences can be swept in order without backtracking."
+        - "Sorted order or input order supports a **single pass**."
+    - title: "How To Decide"
+      text: "Pointer movement can follow a monotonic condition."
+sequence-count-twopointers:
+  sections:
+    - title: "What It Is"
+      text: "Two pointers traverse two ordered sequences together and coordinate decisions between them."
+    - title: "When To Use It"
+      items:
+        - "You are matching, merging, or comparing two ordered inputs."
+        - "A single forward sweep is enough."
+        - "Relative order in each sequence must be preserved."
+    - title: "Why It Helps"
+      text: "Linear comparison across two ordered inputs without nested scans."
+sequence-count-subproblems:
+  sections:
+    - title: "What This Means"
+      text: "Dynamic programming fits when the same pairs of sequence positions are revisited."
+    - title: "What To Look For"
+      items:
+        - "A recursive view naturally uses one index per sequence, often as `i` and `j`."
+        - "The same prefix pair appears in many branches."
+        - "`match`, `skip`, or `edit` decisions lead to repeated subcases."
+    - title: "How To Decide"
+      text: "The natural state is **two indices** with overlapping subproblems."
+sequence-count-dp:
+  sections:
+    - title: "What It Is"
+      text: "Sequence DP treats each state as a pair of positions, one in each sequence."
+    - title: "When To Use It"
+      items:
+        - "Comparing the sequences leads to repeated prefix-pair subproblems."
+        - "`match`, `skip`, or `edit` choices branch recursively."
+        - "A **`dp[i][j]`**-style state table naturally describes progress."
+    - title: "Why It Helps"
+      text: "Stable structure for alignment, subsequence, and edit-style problems."
+find-indices:
+  sections:
+    - title: "What This Means"
+      text: "The core task is to find, count, or enumerate pairs of positions that satisfy a condition."
+    - title: "What To Look For"
+      items:
+        - "The statement refers to pairs **$i < j$**, two indices, or two elements meeting a relation."
+        - "The relationship depends on positions working together."
+        - "Sorting or scanning candidate pairs feels natural."
+    - title: "How To Decide"
+      text: "**Pair search** is the real problem before any later optimization."
+find-indices-monotonic:
+  sections:
+    - title: "What This Means"
+      text: "Pair-search problems often become two-pointer problems after sorting into a monotonic order."
+    - title: "What To Look For"
+      items:
+        - "Moving one pointer predictably strengthens or weakens the condition."
+        - "Sorting does not destroy the objective."
+        - "One comparison can eliminate a whole range of pairs."
+    - title: "How To Decide"
+      text: "An ordered sweep can replace nested pair enumeration."
+find-indices-twopointers:
+  sections:
+    - title: "What It Is"
+      text: "Two pointers search candidate pairs in order instead of checking every pair explicitly."
+    - title: "When To Use It"
+      items:
+        - "The array is sorted or can be sorted safely."
+        - "Moving one pointer changes the pair condition predictably."
+        - "Pair counts, pair existence, or pair optimization."
+    - title: "Why It Helps"
+      text: "Collapses quadratic pair search into an ordered linear scan."
+constant-memory:
+  sections:
+    - title: "What This Means"
+      text: "The space bound is part of the problem, so extra structures are limited from the start."
+    - title: "What To Look For"
+      items:
+        - "The prompt explicitly requires $O(1)$ extra space or **in-place** processing."
+        - "The input can be reused or rearranged as working memory."
+        - "Auxiliary arrays or maps would violate the requirement."
+    - title: "How To Decide"
+      text: "The memory constraint should shape the algorithm from the start."
+constant-memory-monotonic:
+  sections:
+    - title: "What This Means"
+      text: "Two pointers are especially useful when you need ordered processing with almost no extra space."
+    - title: "What To Look For"
+      items:
+        - "A monotonic or ordered condition lets two indices sweep the data."
+        - "The input is already ordered or can be sorted in place."
+        - "The full state fits in a **few variables**."
+    - title: "How To Decide"
+      text: "Constant-space processing and one-directional pointer movement can coexist."
+constant-memory-twopointers:
+  sections:
+    - title: "What It Is"
+      text: "Two pointers track just a few positions while scanning or rearranging data in place."
+    - title: "When To Use It"
+      items:
+        - "The problem requires **$O(1)$ extra space**."
+        - "The input is ordered or can be processed with local swaps or updates."
+        - "A small fixed set of pointers is enough to represent the current state."
+    - title: "Why It Helps"
+      text: "In-place traversal and reordering without auxiliary arrays or hash maps."
+parse-symbols:
+  sections:
+    - title: "What This Means"
+      text: "Reading symbols requires tracking **nesting**, pairing, or evaluation state."
+    - title: "What To Look For"
+      items:
+        - "The input contains parentheses, brackets, operators, or structured tokens."
+        - "Validating **pairing**, precedence, or expression correctness."
+        - "Nested structure matters as you scan from left to right."
+    - title: "How To Decide"
+      text: "Correctness depends on unmatched openings or explicit **parse state**."
+parse-symbols-stack:
+  sections:
+    - title: "What It Is"
+      text: "A **stack** keeps the most recent unmatched context available while you read symbols from left to right."
+    - title: "When To Use It"
+      items:
+        - "Matching nested delimiters or validating structure."
+        - "Operators or grouped expressions depend on prior unresolved tokens."
+        - "The most recently opened context must be closed first."
+    - title: "Why It Helps"
+      text: "One-pass handling of nesting, pairing, and deferred evaluation."

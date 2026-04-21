@@ -1,0 +1,63 @@
+---
+layout: default
+---
+
+{%- assign template_groups = page.template_groups | default: empty -%}
+{%- assign default_template_id = page.default_template | default: 'binary-search' -%}
+
+<article class="template-library" data-template-library data-template-default="{{ default_template_id }}" data-template-default-language="java">
+  {%- include page_hero_header.html
+    class="template-library__header"
+    title=page.title
+    description=page.description
+    links=page.header_links
+  -%}
+
+  <section class="template-library__content">
+    <div class="template-library__controls">
+      <nav class="template-library__groups" aria-label="Template families">
+        {%- for group in template_groups -%}
+          {%- assign first_group_template = group.templates | first -%}
+          <button
+            type="button"
+            class="template-library__group"
+            data-template-group-control
+            data-template-group="{{ group.id }}"
+            data-template-target="{{ first_group_template.template_id }}"
+          >
+            {{ group.title }}
+          </button>
+        {%- endfor -%}
+      </nav>
+
+      {%- for group in template_groups -%}
+        <section class="template-library__group-panel" data-template-group-tabs="{{ group.id }}" hidden>
+          <nav class="template-library__tabs" aria-label="{{ group.title }} templates">
+            {%- for template in group.templates -%}
+              <button
+                type="button"
+                class="template-library__tab"
+                data-template-nav
+                data-template-group="{{ group.id }}"
+                data-template-target="{{ template.template_id }}"
+              >
+                {{ template.title }}
+              </button>
+            {%- endfor -%}
+          </nav>
+        </section>
+      {%- endfor -%}
+    </div>
+
+    {%- for group in template_groups -%}
+      {%- for template in group.templates -%}
+        {%- assign template_id = template.template_id -%}
+        {%- assign is_default = false -%}
+        {%- if template_id == default_template_id -%}
+          {%- assign is_default = true -%}
+        {%- endif -%}
+        {%- include template_panel.html template=template default=is_default -%}
+{%- endfor -%}
+    {%- endfor -%}
+  </section>
+</article>

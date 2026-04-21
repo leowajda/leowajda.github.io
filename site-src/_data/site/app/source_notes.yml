@@ -1,0 +1,56 @@
+catalog_version: 1
+ignored_directories:
+  - .git
+  - .idea
+  - .bsp
+  - build
+  - dist
+  - node_modules
+  - out
+  - target
+text_file_metadata:
+  ".conf":
+    format: code
+    syntax: conf
+  ".gradle":
+    format: code
+    syntax: groovy
+  ".java":
+    format: code
+    syntax: java
+  ".json":
+    format: code
+    syntax: json
+  ".kts":
+    format: code
+    syntax: kotlin
+  ".md":
+    format: markdown
+    syntax: ""
+  ".properties":
+    format: code
+    syntax: properties
+  ".scala":
+    format: code
+    syntax: scala
+  ".sc":
+    format: code
+    syntax: scala
+  ".sbt":
+    format: code
+    syntax: scala
+  ".sql":
+    format: code
+    syntax: sql
+  ".txt":
+    format: markdown
+    syntax: ""
+  ".xml":
+    format: code
+    syntax: xml
+  ".yaml":
+    format: code
+    syntax: yaml
+  ".yml":
+    format: code
+    syntax: yaml

@@ -13,7 +13,6 @@
 .content-card,
 .problem-title,
 .problem-section__header,
-.implementation-card__header,
 .post-article,
 .card-grid,
 .problem-browser__intro,
@@ -31,8 +30,14 @@
   padding: 1.25rem;
 }
 
-.page-header p {
-  max-width: 60ch;
+.page-header__description,
+.page-header__meta,
+.page-header__note {
+  margin: 0;
+}
+
+.page-header__description {
+  max-width: none;
 }
 
 .page-header--hero {
@@ -54,8 +59,7 @@
 }
 
 .page-eyebrow,
-.section-eyebrow,
-.implementation-card__eyebrow {
+.section-eyebrow {
   letter-spacing: 0.08em;
   margin: 0;
   text-transform: uppercase;
@@ -72,7 +76,6 @@
 
 .page-note,
 .page-meta,
-.implementation-card__eyebrow,
 .problem-title__meta,
 .problem-summary {
   align-items: center;
@@ -86,7 +89,20 @@
   row-gap: 0.35rem;
 }
 
-.page-meta span:not(:last-child)::after,
+.page-meta > * {
+  align-items: center;
+  display: inline-flex;
+  min-width: 0;
+}
+
+.page-meta a {
+  color: inherit;
+}
+
+.page-meta__separator {
+  opacity: 0.45;
+}
+
 .problem-summary__item:not(:last-child)::after {
   content: "•";
   margin-left: 0.5rem;
@@ -150,6 +166,34 @@
   padding: 1rem;
 }
 
+.content-card__header,
+.content-card__footer {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.content-card__heading {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.content-card__summary {
+  margin: 0;
+  max-width: none;
+}
+
+.content-card__footer {
+  align-items: center;
+}
+
+.content-card__footer .page-note {
+  margin: 0;
+}
+
 .content-card--compact {
   gap: 0.45rem;
 }
@@ -164,7 +208,6 @@
 .content-card h4,
 .page-header h1,
 .problem-section__header h2,
-.implementation-card__title,
 .references h4,
 .references h5 {
   margin: 0;
@@ -174,28 +217,76 @@
   text-align: right;
 }
 
-.project-collection {
-  gap: 0.35rem;
-  list-style: disc;
-  margin: 0.35rem 0 0;
-  padding-left: 1.25rem;
+.home-card {
+  gap: 0.85rem;
 }
 
-.project-collection__item {
+.home-card .content-card__summary,
+.home-card .page-note,
+.page-header__description,
+.page-header__meta,
+.page-header__note {
+  max-width: none;
+}
+
+.project-tree,
+.project-tree__children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.project-tree {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.project-tree__group,
+.project-tree__children {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.project-tree__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  opacity: var(--muted-opacity);
+  text-transform: uppercase;
+}
+
+.project-tree__children {
+  border-left: thin solid var(--border);
+  margin-left: 0.35rem;
+  padding-left: 0.85rem;
+}
+
+.project-tree__item {
   margin: 0;
 }
 
-.project-collection__entry,
+.project-tree__entry,
 .problem-title__link,
 .source-tree__link {
   color: inherit;
   text-decoration: none;
 }
 
-.project-collection__entry:hover,
+.project-tree__entry:hover,
 .problem-title__link:hover,
 .source-tree__link:hover {
   text-decoration: underline;
+}
+
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 
 .filters {
@@ -223,15 +314,6 @@
 
 .problem-section__header p {
   margin: 0;
-}
-
-.implementation-card__header {
-  gap: 0.75rem;
-}
-
-.implementation-card__heading {
-  display: grid;
-  gap: 0.2rem;
 }
 
 .source-page-header,
@@ -298,7 +380,7 @@
   .source-layout__body {
     align-items: start;
     gap: 1.5rem;
-    grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr);
+    grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
   }
 
   .source-code-block,

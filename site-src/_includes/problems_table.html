@@ -1,76 +1,56 @@
-{%- assign table_mode = "matrix" -%}
-{%- if include.page.language_filter -%}
-  {%- assign table_mode = "single-language" -%}
-{%- endif -%}
+{%- assign table = include.table | default: empty -%}
+{%- assign table_mode = table.mode | default: "matrix" -%}
+{%- assign columns = table.columns | default: empty -%}
+{%- assign rows = table.rows | default: empty -%}
 
 <section class="content-card content-card--flush problem-table-shell">
   <div class="table-wrap">
     <table
       class="problem-table problem-table--{{ table_mode }}"
       id="problem-table"
-      data-language-filter="{{ include.page.language_filter | default: '' }}"
+      data-language-filter="{{ table.language_filter | default: '' }}"
     >
     <thead>
       <tr>
         <th class="problem-table__problem-column">Problem</th>
         <th>Categories</th>
-        {%- for language in include.problem_filters.languages -%}
-          {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
-            {%- continue -%}
-          {%- endif -%}
+        {%- for language in columns -%}
           <th data-language-column="{{ language.slug }}">{{ language.label }}</th>
         {%- endfor -%}
       </tr>
     </thead>
     <tbody>
-      {%- for problem in include.problems -%}
-        {%- assign matches_language = true -%}
-        {%- if include.page.language_filter -%}
-          {%- assign matches_language = false -%}
-          {%- for language in problem.languages -%}
-            {%- if language.slug == include.page.language_filter -%}
-              {%- assign matches_language = true -%}
-            {%- endif -%}
-          {%- endfor -%}
-        {%- endif -%}
-
-        {%- unless matches_language -%}
-          {%- continue -%}
-        {%- endunless -%}
+      {%- for row in rows -%}
         <tr
           class="problem-row"
           data-problem-row
-          data-problem-slug="{{ problem.problem_slug }}"
-          data-search-title="{{ problem.search_title | escape }}"
-          data-difficulty="{{ problem.difficulty }}"
-          data-difficulty-slug="{{ problem.difficulty_slug }}"
-          data-categories="{{ problem.categories | join: '|' }}"
-          data-languages="{{ problem.languages | map: 'slug' | join: '|' }}"
+          data-problem-slug="{{ row.problem_slug }}"
+          data-search-title="{{ row.search_title | escape }}"
+          data-difficulty="{{ row.difficulty }}"
+          data-difficulty-slug="{{ row.difficulty_slug }}"
+          data-categories="{{ row.categories_joined }}"
+          data-languages="{{ row.languages_joined }}"
         >
           <td class="problem-title-cell">
             <div class="problem-title">
-              <a class="problem-title__link" href="{{ problem.url | relative_url }}">{{ problem.title }}</a>
+              <a class="problem-title__link" href="{{ row.url | relative_url }}">{{ row.title }}</a>
               <div class="problem-title__meta">
-                <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug }}">{{ problem.difficulty }}</span>
+                <span class="difficulty-badge difficulty-badge--{{ row.difficulty_slug }}">{{ row.difficulty }}</span>
               </div>
             </div>
           </td>
           <td class="problem-categories-cell">
             <ul class="tag-list">
-              {%- for category in problem.categories -%}
+              {%- for category in row.categories -%}
                 <li class="tag">{{ category }}</li>
               {%- endfor -%}
             </ul>
           </td>
-          {%- for language in include.problem_filters.languages -%}
-            {%- if include.page.language_filter and language.slug != include.page.language_filter -%}
-              {%- continue -%}
-            {%- endif -%}
-            {%- assign language_implementations = problem.implementations | where: "language", language.slug -%}
-            <td data-language-column="{{ language.slug }}">
-              {%- if language_implementations.size > 0 -%}
-                <div class="solution-chip-list" aria-label="{{ language.label }} solutions">
-                  {%- for implementation in language_implementations -%}
+          {%- for cell in row.cells -%}
+            <td data-language-column="{{ cell.language_slug }}">
+              {%- if cell.implementations.size > 0 -%}
+                <div class="solution-chip-list" aria-label="{{ cell.language_label }} solutions">
+                  {%- for implementation in cell.implementations -%}
                     {%- include solution_chip.html implementation=implementation -%}
                   {%- endfor -%}
                 </div>

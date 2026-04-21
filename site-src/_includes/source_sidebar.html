@@ -1,20 +1,8 @@
 {%- assign current_module = include.module -%}
-{%- assign project_title = include.project_title -%}
-{%- capture panel_eyebrow -%}
-  {%- if include.project_url and include.project_url != "" -%}
-    <a href="{{ include.project_url | relative_url }}">{{ project_title }}</a>
-  {%- else -%}
-    {{ project_title }}
-  {%- endif -%}
-  {%- if include.language_title and include.language_title != "" -%}
-    <span>/</span>
-    {%- if include.language_url and include.language_url != "" -%}
-      <a href="{{ include.language_url | relative_url }}">{{ include.language_title }}</a>
-    {%- else -%}
-      {{ include.language_title }}
-    {%- endif -%}
-  {%- endif -%}
-{%- endcapture -%}
+{%- assign panel_title = current_module.title -%}
+{%- if include.hide_title == true or include.hide_title == 'true' -%}
+  {%- assign panel_title = '' -%}
+{%- endif -%}
 {%- capture panel_body -%}
   <nav aria-label="Project source navigation">
     {%- if current_module -%}
@@ -32,7 +20,6 @@
 
 {%- include side_panel.html
   class="source-navigation side-panel--sticky side-panel--scrollable"
-  eyebrow=panel_eyebrow
-  title=current_module.title
+  title=panel_title
   body=panel_body
 -%}

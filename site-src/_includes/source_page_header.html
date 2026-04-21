@@ -1,0 +1,11 @@
+{%- assign header_class = include.class | default: 'source-page-header' -%}
+{%- assign source_header = include.header -%}
+{%- include page_hero_header.html
+  class=header_class
+  eyebrow=source_header.eyebrow
+  title=source_header.title
+  description=source_header.description
+  links=source_header.links
+  note=source_header.note
+  extra=source_header.extra
+-%}

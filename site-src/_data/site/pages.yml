@@ -1,0 +1,9 @@
+problem_explorer:
+  label: Problem Explorer
+  url: /eureka/problems/
+algorithmic_flowchart:
+  label: Algorithmic Flowchart
+  url: /writing/algorithmic-flowchart/
+algorithmic_templates:
+  label: Algorithmic Templates
+  url: /writing/algorithmic-templates/

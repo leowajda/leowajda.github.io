@@ -1,61 +1,29 @@
 <nav class="site-nav" aria-label="Main navigation">
-  {%- assign current_project_title = page.project_title | default: '' -%}
-  {%- assign current_project_url = page.project_url | default: '' -%}
-  {%- assign current_project_source_url = page.project_source_url | default: '' -%}
-  {%- if page.project_slug and (current_project_title == '' or current_project_url == '' or current_project_source_url == '') -%}
-    {%- assign current_project = site.projects | where: "slug", page.project_slug | first -%}
-    {%- if current_project -%}
-      {%- assign current_project_title = current_project_title | default: current_project.title -%}
-      {%- assign current_project_url = current_project_url | default: current_project.entry_url -%}
-      {%- assign current_project_source_url = current_project_source_url | default: current_project.source_url -%}
-    {%- endif -%}
-  {%- endif -%}
-  {%- assign nav_source_url = '' -%}
   {%- assign problem_source_url = page.problem_source_url | default: '' -%}
-  {%- assign nav_source_url = page.source_url | default: current_project_source_url -%}
+  {%- assign home_url = '/' | relative_url -%}
 
   <div class="site-nav__links">
-    <a class="site-nav__brand" href="{{ '/' | relative_url }}">
-      {%- include icon.html name="home" class="theme-toggle__icon" -%}
-      <span>Home</span>
-    </a>
-
-    {%- if current_project_title != '' -%}
-      {%- if current_project_url != '' -%}
-        <a class="site-nav__context" href="{{ current_project_url | relative_url }}">{{ current_project_title }}</a>
-      {%- else -%}
-        <span class="site-nav__context">{{ current_project_title }}</span>
-      {%- endif -%}
-    {%- endif -%}
+    {%- include icon_action_link.html href=home_url icon="home" label="Home" external=false class="icon-action--nav" -%}
   </div>
 
   <div class="site-nav__actions">
+    {%- assign profiles = site.profiles | default: empty -%}
     {%- if page.project_slug -%}
-      <button class="site-nav__link theme-toggle icon-button" type="button" data-back-button hidden aria-label="Back to previous page" title="Back to previous page">
-        {%- include icon.html name="back" class="theme-toggle__icon" -%}
-      </button>
+      {%- include icon_action_button.html icon="back" label="Back to previous page" class="icon-action--nav" attributes='data-back-button hidden' -%}
     {%- endif -%}
 
-    {%- if nav_source_url != '' -%}
-      <a class="site-nav__link theme-toggle icon-button" href="{{ nav_source_url }}" target="_blank" rel="noreferrer" aria-label="Source on GitHub" title="Source on GitHub">
-        {%- include icon.html name="github" class="theme-toggle__icon" -%}
-      </a>
-    {%- endif -%}
+    {%- for profile in profiles -%}
+      {%- include icon_action_link.html href=profile.url icon=profile.icon label=profile.label class="icon-action--nav" rel=profile.rel external=true -%}
+    {%- endfor -%}
 
     {%- if problem_source_url != '' -%}
-      <a class="site-nav__link theme-toggle icon-button" href="{{ problem_source_url }}" target="_blank" rel="noreferrer" aria-label="Open LeetCode problem" title="Open LeetCode problem">
-        {%- include icon.html name="leetcode" class="theme-toggle__icon" -%}
-      </a>
+      {%- include icon_action_link.html href=problem_source_url icon="leetcode" label="Open LeetCode problem" class="icon-action--nav" -%}
     {%- endif -%}
 
     {%- if page.layout == 'problem_embed' and page.detail_url -%}
-      <a class="site-nav__link theme-toggle icon-button" href="{{ page.detail_url | relative_url }}" aria-label="Open full page" title="Open full page">
-        {%- include icon.html name="open-page" class="theme-toggle__icon" -%}
-      </a>
+      {%- include icon_action_link.html href=page.detail_url icon="open-page" label="Open full page" external=false class="icon-action--nav" -%}
     {%- endif -%}
 
-    <button class="site-nav__link theme-toggle icon-button" type="button" data-theme-toggle aria-label="Switch theme" title="Switch theme">
-      {%- include icon.html name="theme-dark" class="theme-toggle__icon" -%}
-    </button>
+    {%- include icon_action_button.html icon="theme-dark" label="Switch theme" class="icon-action--nav" attributes='data-theme-toggle' -%}
   </div>
 </nav>

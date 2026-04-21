@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://leowajda.github.io/sitemap.xml

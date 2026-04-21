@@ -1,0 +1,144 @@
+# frozen_string_literal: true
+
+module SiteKit
+  class ProblemFilterPanelBuilder
+    NAVIGATION_PAGES = {
+      "algorithmic_flowchart" => "Algorithmic Flowchart",
+      "algorithmic_templates" => "Algorithmic Templates"
+    }.freeze
+
+    def initialize(browser:, active_language:, site_pages:)
+      @browser = browser
+      @active_language = active_language
+      @site_pages = site_pages
+    end
+
+    def build
+      {
+        "sections" => [navigation_section, search_section, *language_sections, difficulty_section, category_section].compact
+      }
+    end
+
+    private
+
+    attr_reader :browser, :active_language, :site_pages
+
+    def navigation_section
+      section(
+        kind: "links",
+        title: "Navigate",
+        aria_label: "Eureka navigation",
+        links: NAVIGATION_PAGES.map { |key, label| link_item(label:, url: site_page_url(key)) }
+      )
+    end
+
+    def search_section
+      section(
+        kind: "search",
+        title: "Search",
+        class: "side-panel__section--search",
+        title_tag: "label",
+        title_for: "problem-search"
+      )
+    end
+
+    def language_sections
+      return [scope_section, route_section] if active_language
+
+      [languages_section]
+    end
+
+    def scope_section
+      section(
+        kind: "scope",
+        title: "Scope",
+        label: active_language.fetch("label"),
+        url: browser.fetch("browser_url"),
+        link_label: "Show all languages"
+      )
+    end
+
+    def route_section
+      section(
+        kind: "links",
+        title: "Routes",
+        aria_label: "Eureka views",
+        links: [
+          link_item(label: "All languages", url: browser.fetch("browser_url"))
+        ] + browser.fetch("languages").map do |language|
+          link_item(
+            label: language.fetch("label"),
+            url: language.fetch("url"),
+            active: active_language.fetch("slug") == language.fetch("slug")
+          )
+        end
+      )
+    end
+
+    def difficulty_section
+      section(
+        kind: "radios",
+        title: "Difficulty",
+        aria_label: "Difficulty",
+        input_name: "difficulty",
+        items: [
+          choice_item(value: "", label: "All difficulties", checked: true)
+        ] + browser.fetch("filters").fetch("difficulties").map do |difficulty|
+          choice_item(value: difficulty, label: difficulty)
+        end
+      )
+    end
+
+    def category_section
+      section(
+        kind: "categories",
+        title: "Categories",
+        items: browser.fetch("filters").fetch("categories").map do |category|
+          choice_item(value: category, label: category)
+        end
+      )
+    end
+
+    def languages_section
+      section(
+        kind: "checkboxes",
+        title: "Languages",
+        aria_label: "Languages",
+        items: browser.fetch("filters").fetch("languages").map do |language|
+          choice_item(
+            value: language.fetch("slug"),
+            label: language.fetch("label"),
+            checked: true,
+            class_name: "filter-option filter-option--stacked filter-option--language"
+          )
+        end,
+        wrapper_class: "filter-options filter-options--stacked filter-options--languages",
+        input_name: "language"
+      )
+    end
+
+    def section(kind:, title:, **attributes)
+      record(kind:, title:, **attributes)
+    end
+
+    def link_item(label:, url:, active: nil)
+      record(label:, url:, active:)
+    end
+
+    def choice_item(value:, label:, checked: nil, class_name: nil)
+      record(value:, label:, checked:, class: class_name)
+    end
+
+    def site_page_url(key)
+      site_pages.fetch(key).fetch("url")
+    end
+
+    def record(**attributes)
+      attributes.each_with_object({}) do |(key, value), result|
+        next if value.nil?
+
+        result[key.to_s] = value
+      end
+    end
+  end
+end

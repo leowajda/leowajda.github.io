@@ -1,0 +1,1786 @@
+backtracking:
+  - entry_id: backtracking-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      List<List<Integer>> subsets(int[] nums) {
+          List<List<Integer>> subsets = new ArrayList<>();
+          collectSubsets(0, nums, new ArrayList<>(), subsets);
+          return subsets;
+      }
+
+      void collectSubsets(int index, int[] nums, List<Integer> path, List<List<Integer>> subsets) {
+          subsets.add(new ArrayList<>(path));
+
+          for (int i = index; i < nums.length; i++) {
+              path.add(nums[i]);
+              collectSubsets(i + 1, nums, path, subsets);
+              path.remove(path.size() - 1);
+          }
+      }
+  - entry_id: backtracking-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def subsets(nums: Array[Int]): List[List[Int]] =
+        val subsets = scala.collection.mutable.ListBuffer.empty[List[Int]]
+        val path = scala.collection.mutable.ArrayBuffer.empty[Int]
+
+        def collect(index: Int): Unit =
+          subsets += path.toList
+
+          for i <- index until nums.length do
+            path += nums(i)
+            collect(i + 1)
+            path.remove(path.length - 1)
+
+        collect(0)
+        subsets.toList
+  - entry_id: backtracking-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def subsets(nums: list[int]) -> list[list[int]]:
+          subsets: list[list[int]] = []
+          path: list[int] = []
+
+          def collect(index: int) -> None:
+              subsets.append(path.copy())
+
+              for i in range(index, len(nums)):
+                  path.append(nums[i])
+                  collect(i + 1)
+                  path.pop()
+
+          collect(0)
+          return subsets
+  - entry_id: backtracking-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      void collectSubsets(
+          int index,
+          const std::vector<int>& nums,
+          std::vector<int>& path,
+          std::vector<std::vector<int>>& subsets
+      ) {
+          subsets.push_back(path);
+
+          for (int i = index; i < static_cast<int>(nums.size()); i++) {
+              path.push_back(nums[i]);
+              collectSubsets(i + 1, nums, path, subsets);
+              path.pop_back();
+          }
+      }
+
+      std::vector<std::vector<int>> subsets(const std::vector<int>& nums) {
+          std::vector<std::vector<int>> subsets;
+          std::vector<int> path;
+
+          collectSubsets(0, nums, path, subsets);
+          return subsets;
+      }
+
+backtracking-aggregation:
+  - entry_id: backtracking-aggregation-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int countCombinations(int[] nums, int target) {
+          return countCombinations(0, target, nums);
+      }
+
+      int countCombinations(int index, int remaining, int[] nums) {
+          if (remaining == 0) {
+              return 1;
+          }
+
+          int combinations = 0;
+
+          for (int i = index; i < nums.length; i++) {
+              if (nums[i] > remaining) {
+                  continue;
+              }
+
+              combinations += countCombinations(i, remaining - nums[i], nums);
+          }
+
+          return combinations;
+      }
+  - entry_id: backtracking-aggregation-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def countCombinations(nums: Array[Int], target: Int): Int =
+        def countFrom(index: Int, remaining: Int): Int =
+          if remaining == 0 then
+            1
+          else
+            (index until nums.length).foldLeft(0) { (count, i) =>
+              if nums(i) > remaining then count
+              else count + countFrom(i, remaining - nums(i))
+            }
+
+        countFrom(0, target)
+  - entry_id: backtracking-aggregation-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def count_combinations(nums: list[int], target: int) -> int:
+          def count_from(index: int, remaining: int) -> int:
+              if remaining == 0:
+                  return 1
+
+              combinations = 0
+
+              for i in range(index, len(nums)):
+                  if nums[i] > remaining:
+                      continue
+                  combinations += count_from(i, remaining - nums[i])
+
+              return combinations
+
+          return count_from(0, target)
+  - entry_id: backtracking-aggregation-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int countCombinations(int index, int remaining, const std::vector<int>& nums) {
+          if (remaining == 0) {
+              return 1;
+          }
+
+          int combinations = 0;
+
+          for (int i = index; i < static_cast<int>(nums.size()); i++) {
+              if (nums[i] > remaining) {
+                  continue;
+              }
+
+              combinations += countCombinations(i, remaining - nums[i], nums);
+          }
+
+          return combinations;
+      }
+
+      int countCombinations(const std::vector<int>& nums, int target) {
+          return countCombinations(0, target, nums);
+      }
+
+binary-search:
+  - entry_id: binary-search-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int firstTrue(int left, int right, IntPredicate feasible) {
+          int answer = -1;
+
+          while (left <= right) {
+              int mid = left + (right - left) / 2;
+
+              if (feasible.test(mid)) {
+                  answer = mid;
+                  right = mid - 1;
+              } else {
+                  left = mid + 1;
+              }
+          }
+
+          return answer;
+      }
+  - entry_id: binary-search-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def firstTrue(left0: Int, right0: Int)(feasible: Int => Boolean): Int =
+        var left = left0
+        var right = right0
+        var answer = -1
+
+        while left <= right do
+          val mid = left + (right - left) / 2
+
+          if feasible(mid) then
+            answer = mid
+            right = mid - 1
+          else
+            left = mid + 1
+
+        answer
+  - entry_id: binary-search-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      from collections.abc import Callable
+
+      def first_true(left: int, right: int, feasible: Callable[[int], bool]) -> int:
+          answer = -1
+
+          while left <= right:
+              mid = left + (right - left) // 2
+
+              if feasible(mid):
+                  answer = mid
+                  right = mid - 1
+              else:
+                  left = mid + 1
+
+          return answer
+  - entry_id: binary-search-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int firstTrue(int left, int right, const std::function<bool(int)>& feasible) {
+          int answer = -1;
+
+          while (left <= right) {
+              int mid = left + (right - left) / 2;
+
+              if (feasible(mid)) {
+                  answer = mid;
+                  right = mid - 1;
+              } else {
+                  left = mid + 1;
+              }
+          }
+
+          return answer;
+      }
+
+breadth-first-search:
+  - entry_id: breadth-first-search-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      List<List<Integer>> levelOrder(TreeNode root) {
+          if (root == null) {
+              return List.of();
+          }
+
+          List<List<Integer>> levels = new ArrayList<>();
+          ArrayDeque<TreeNode> queue = new ArrayDeque<>();
+          queue.addLast(root);
+
+          while (!queue.isEmpty()) {
+              int levelSize = queue.size();
+              List<Integer> level = new ArrayList<>(levelSize);
+
+              for (int i = 0; i < levelSize; i++) {
+                  TreeNode node = queue.removeFirst();
+                  level.add(node.val);
+
+                  if (node.left != null) {
+                      queue.addLast(node.left);
+                  }
+                  if (node.right != null) {
+                      queue.addLast(node.right);
+                  }
+              }
+
+              levels.add(level);
+          }
+
+          return levels;
+      }
+  - entry_id: breadth-first-search-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def levelOrder(root: TreeNode): List[List[Int]] =
+        if root == null then
+          List.empty
+        else
+          val levels = scala.collection.mutable.ListBuffer.empty[List[Int]]
+          val queue = scala.collection.mutable.Queue(root)
+
+          while queue.nonEmpty do
+            val levelSize = queue.size
+            val level = scala.collection.mutable.ListBuffer.empty[Int]
+
+            for _ <- 0 until levelSize do
+              val node = queue.dequeue()
+              level += node.val
+              if node.left != null then queue.enqueue(node.left)
+              if node.right != null then queue.enqueue(node.right)
+
+            levels += level.toList
+
+          levels.toList
+  - entry_id: breadth-first-search-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      from collections import deque
+
+      def level_order(root: TreeNode | None) -> list[list[int]]:
+          if root is None:
+              return []
+
+          levels: list[list[int]] = []
+          queue = deque([root])
+
+          while queue:
+              level: list[int] = []
+
+              for _ in range(len(queue)):
+                  node = queue.popleft()
+                  level.append(node.val)
+
+                  if node.left is not None:
+                      queue.append(node.left)
+                  if node.right is not None:
+                      queue.append(node.right)
+
+              levels.append(level)
+
+          return levels
+  - entry_id: breadth-first-search-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      std::vector<std::vector<int>> levelOrder(TreeNode* root) {
+          if (root == nullptr) {
+              return {};
+          }
+
+          std::vector<std::vector<int>> levels;
+          std::queue<TreeNode*> queue;
+          queue.push(root);
+
+          while (!queue.empty()) {
+              int levelSize = static_cast<int>(queue.size());
+              std::vector<int> level;
+              level.reserve(levelSize);
+
+              for (int i = 0; i < levelSize; i++) {
+                  TreeNode* node = queue.front();
+                  queue.pop();
+
+                  level.push_back(node->val);
+
+                  if (node->left != nullptr) {
+                      queue.push(node->left);
+                  }
+                  if (node->right != nullptr) {
+                      queue.push(node->right);
+                  }
+              }
+
+              levels.push_back(std::move(level));
+          }
+
+          return levels;
+      }
+
+depth-first-search:
+  - entry_id: depth-first-search-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int maxDepth(TreeNode root) {
+          if (root == null) {
+              return 0;
+          }
+
+          return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+      }
+  - entry_id: depth-first-search-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def maxDepth(root: TreeNode): Int =
+        if root == null then
+          0
+        else
+          1 + math.max(maxDepth(root.left), maxDepth(root.right))
+  - entry_id: depth-first-search-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def max_depth(root: TreeNode | None) -> int:
+          if root is None:
+              return 0
+
+          return 1 + max(max_depth(root.left), max_depth(root.right))
+  - entry_id: depth-first-search-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int maxDepth(TreeNode* root) {
+          if (root == nullptr) {
+              return 0;
+          }
+
+          return 1 + std::max(maxDepth(root->left), maxDepth(root->right));
+      }
+
+graph-bfs:
+  - entry_id: graph-bfs-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int[] shortestPaths(List<List<Integer>> graph, int start) {
+          int[] distance = new int[graph.size()];
+          Arrays.fill(distance, -1);
+
+          ArrayDeque<Integer> queue = new ArrayDeque<>();
+          queue.addLast(start);
+          distance[start] = 0;
+
+          while (!queue.isEmpty()) {
+              int node = queue.removeFirst();
+
+              for (int neighbor : graph.get(node)) {
+                  if (distance[neighbor] != -1) {
+                      continue;
+                  }
+
+                  distance[neighbor] = distance[node] + 1;
+                  queue.addLast(neighbor);
+              }
+          }
+
+          return distance;
+      }
+  - entry_id: graph-bfs-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def shortestPaths(graph: List[List[Int]], start: Int): Array[Int] =
+        val distance = Array.fill(graph.length)(-1)
+        val queue = scala.collection.mutable.Queue(start)
+        distance(start) = 0
+
+        while queue.nonEmpty do
+          val node = queue.dequeue()
+
+          for neighbor <- graph(node) do
+            if distance(neighbor) == -1 then
+              distance(neighbor) = distance(node) + 1
+              queue.enqueue(neighbor)
+
+        distance
+  - entry_id: graph-bfs-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      from collections import deque
+
+      def shortest_paths(graph: list[list[int]], start: int) -> list[int]:
+          distance = [-1] * len(graph)
+          distance[start] = 0
+          queue = deque([start])
+
+          while queue:
+              node = queue.popleft()
+
+              for neighbor in graph[node]:
+                  if distance[neighbor] != -1:
+                      continue
+
+                  distance[neighbor] = distance[node] + 1
+                  queue.append(neighbor)
+
+          return distance
+  - entry_id: graph-bfs-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      std::vector<int> shortestPaths(const std::vector<std::vector<int>>& graph, int start) {
+          std::vector<int> distance(graph.size(), -1);
+          std::queue<int> queue;
+
+          queue.push(start);
+          distance[start] = 0;
+
+          while (!queue.empty()) {
+              int node = queue.front();
+              queue.pop();
+
+              for (int neighbor : graph[node]) {
+                  if (distance[neighbor] != -1) {
+                      continue;
+                  }
+
+                  distance[neighbor] = distance[node] + 1;
+                  queue.push(neighbor);
+              }
+          }
+
+          return distance;
+      }
+
+graph-dfs:
+  - entry_id: graph-dfs-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int componentSize(int node, List<List<Integer>> graph, boolean[] seen) {
+          seen[node] = true;
+
+          int size = 1;
+          for (int neighbor : graph.get(node)) {
+              if (seen[neighbor]) {
+                  continue;
+              }
+
+              size += componentSize(neighbor, graph, seen);
+          }
+
+          return size;
+      }
+  - entry_id: graph-dfs-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def componentSize(node: Int, graph: List[List[Int]], seen: Array[Boolean]): Int =
+        seen(node) = true
+
+        graph(node).foldLeft(1) { (size, neighbor) =>
+          if seen(neighbor) then size
+          else size + componentSize(neighbor, graph, seen)
+        }
+  - entry_id: graph-dfs-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def component_size(node: int, graph: list[list[int]], seen: list[bool]) -> int:
+          seen[node] = True
+          size = 1
+
+          for neighbor in graph[node]:
+              if seen[neighbor]:
+                  continue
+              size += component_size(neighbor, graph, seen)
+
+          return size
+  - entry_id: graph-dfs-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int componentSize(int node, const std::vector<std::vector<int>>& graph, std::vector<bool>& seen) {
+          seen[node] = true;
+
+          int size = 1;
+          for (int neighbor : graph[node]) {
+              if (seen[neighbor]) {
+                  continue;
+              }
+
+              size += componentSize(neighbor, graph, seen);
+          }
+
+          return size;
+      }
+
+matrix-bfs:
+  - entry_id: matrix-bfs-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int shortestPath(int[][] grid, int startRow, int startCol, int targetRow, int targetCol) {
+          int rows = grid.length;
+          int cols = grid[0].length;
+          int[][] distance = new int[rows][cols];
+          int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+          for (int[] row : distance) {
+              Arrays.fill(row, -1);
+          }
+
+          ArrayDeque<int[]> queue = new ArrayDeque<>();
+          queue.addLast(new int[]{startRow, startCol});
+          distance[startRow][startCol] = 0;
+
+          while (!queue.isEmpty()) {
+              int[] cell = queue.removeFirst();
+              int row = cell[0];
+              int col = cell[1];
+
+              if (row == targetRow && col == targetCol) {
+                  return distance[row][col];
+              }
+
+              for (int[] direction : directions) {
+                  int nextRow = row + direction[0];
+                  int nextCol = col + direction[1];
+
+                  if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols) {
+                      continue;
+                  }
+                  if (grid[nextRow][nextCol] == 1 || distance[nextRow][nextCol] != -1) {
+                      continue;
+                  }
+
+                  distance[nextRow][nextCol] = distance[row][col] + 1;
+                  queue.addLast(new int[]{nextRow, nextCol});
+              }
+          }
+
+          return -1;
+      }
+  - entry_id: matrix-bfs-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def shortestPath(
+          grid: Array[Array[Int]],
+          startRow: Int,
+          startCol: Int,
+          targetRow: Int,
+          targetCol: Int
+      ): Int =
+        val rows = grid.length
+        val cols = grid.head.length
+        val distance = Array.fill(rows, cols)(-1)
+        val directions = List((1, 0), (-1, 0), (0, 1), (0, -1))
+        val queue = scala.collection.mutable.Queue((startRow, startCol))
+
+        distance(startRow)(startCol) = 0
+
+        while queue.nonEmpty do
+          val (row, col) = queue.dequeue()
+
+          if row == targetRow && col == targetCol then
+            return distance(row)(col)
+
+          for (deltaRow, deltaCol) <- directions do
+            val nextRow = row + deltaRow
+            val nextCol = col + deltaCol
+
+            if
+              nextRow >= 0
+              && nextRow < rows
+              && nextCol >= 0
+              && nextCol < cols
+              && grid(nextRow)(nextCol) == 0
+              && distance(nextRow)(nextCol) == -1
+            then
+              distance(nextRow)(nextCol) = distance(row)(col) + 1
+              queue.enqueue((nextRow, nextCol))
+
+        -1
+  - entry_id: matrix-bfs-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      from collections import deque
+
+      def shortest_path(
+          grid: list[list[int]],
+          start_row: int,
+          start_col: int,
+          target_row: int,
+          target_col: int,
+      ) -> int:
+          rows = len(grid)
+          cols = len(grid[0])
+          distance = [[-1] * cols for _ in range(rows)]
+          directions = ((1, 0), (-1, 0), (0, 1), (0, -1))
+          queue = deque([(start_row, start_col)])
+
+          distance[start_row][start_col] = 0
+
+          while queue:
+              row, col = queue.popleft()
+
+              if (row, col) == (target_row, target_col):
+                  return distance[row][col]
+
+              for delta_row, delta_col in directions:
+                  next_row = row + delta_row
+                  next_col = col + delta_col
+
+                  if not (0 <= next_row < rows and 0 <= next_col < cols):
+                      continue
+                  if grid[next_row][next_col] == 1 or distance[next_row][next_col] != -1:
+                      continue
+
+                  distance[next_row][next_col] = distance[row][col] + 1
+                  queue.append((next_row, next_col))
+
+          return -1
+  - entry_id: matrix-bfs-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int shortestPath(
+          const std::vector<std::vector<int>>& grid,
+          int startRow,
+          int startCol,
+          int targetRow,
+          int targetCol
+      ) {
+          int rows = static_cast<int>(grid.size());
+          int cols = static_cast<int>(grid[0].size());
+          std::vector distance(rows, std::vector<int>(cols, -1));
+          std::queue<std::pair<int, int>> queue;
+          constexpr std::array<std::pair<int, int>, 4> directions{{
+              {1, 0},
+              {-1, 0},
+              {0, 1},
+              {0, -1},
+          }};
+
+          queue.push({startRow, startCol});
+          distance[startRow][startCol] = 0;
+
+          while (!queue.empty()) {
+              auto [row, col] = queue.front();
+              queue.pop();
+
+              if (row == targetRow && col == targetCol) {
+                  return distance[row][col];
+              }
+
+              for (auto [deltaRow, deltaCol] : directions) {
+                  int nextRow = row + deltaRow;
+                  int nextCol = col + deltaCol;
+
+                  if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols) {
+                      continue;
+                  }
+                  if (grid[nextRow][nextCol] == 1 || distance[nextRow][nextCol] != -1) {
+                      continue;
+                  }
+
+                  distance[nextRow][nextCol] = distance[row][col] + 1;
+                  queue.push({nextRow, nextCol});
+              }
+          }
+
+          return -1;
+      }
+
+mono-stack:
+  - entry_id: mono-stack-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int[] nextGreaterIndices(int[] nums) {
+          int[] nextGreater = new int[nums.length];
+          Arrays.fill(nextGreater, -1);
+
+          ArrayDeque<Integer> stack = new ArrayDeque<>();
+
+          for (int index = 0; index < nums.length; index++) {
+              while (!stack.isEmpty() && nums[stack.peek()] < nums[index]) {
+                  nextGreater[stack.pop()] = index;
+              }
+              stack.push(index);
+          }
+
+          return nextGreater;
+      }
+  - entry_id: mono-stack-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def nextGreaterIndices(nums: Array[Int]): Array[Int] =
+        val nextGreater = Array.fill(nums.length)(-1)
+        val stack = scala.collection.mutable.ArrayDeque.empty[Int]
+
+        for index <- nums.indices do
+          while stack.nonEmpty && nums(stack.last) < nums(index) do
+            nextGreater(stack.removeLast()) = index
+
+          stack.append(index)
+
+        nextGreater
+  - entry_id: mono-stack-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def next_greater_indices(nums: list[int]) -> list[int]:
+          next_greater = [-1] * len(nums)
+          stack: list[int] = []
+
+          for index, value in enumerate(nums):
+              while stack and nums[stack[-1]] < value:
+                  next_greater[stack.pop()] = index
+              stack.append(index)
+
+          return next_greater
+  - entry_id: mono-stack-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      std::vector<int> nextGreaterIndices(const std::vector<int>& nums) {
+          std::vector<int> nextGreater(nums.size(), -1);
+          std::vector<int> stack;
+
+          for (int index = 0; index < static_cast<int>(nums.size()); index++) {
+              while (!stack.empty() && nums[stack.back()] < nums[index]) {
+                  nextGreater[stack.back()] = index;
+                  stack.pop_back();
+              }
+
+              stack.push_back(index);
+          }
+
+          return nextGreater;
+      }
+
+prefix-sum:
+  - entry_id: prefix-sum-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      class PrefixSum {
+          private final int[] prefix;
+
+          PrefixSum(int[] nums) {
+              prefix = new int[nums.length + 1];
+
+              for (int i = 0; i < nums.length; i++) {
+                  prefix[i + 1] = prefix[i] + nums[i];
+              }
+          }
+
+          int rangeSum(int left, int right) {
+              return prefix[right + 1] - prefix[left];
+          }
+      }
+  - entry_id: prefix-sum-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      final class PrefixSum(nums: Array[Int]):
+        private val prefix =
+          nums.foldLeft(List(0)) { (values, value) =>
+            (values.head + value) :: values
+          }.reverse.toArray
+
+        def rangeSum(left: Int, right: Int): Int =
+          prefix(right + 1) - prefix(left)
+  - entry_id: prefix-sum-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      class PrefixSum:
+          def __init__(self, nums: list[int]) -> None:
+              self.prefix = [0]
+
+              for value in nums:
+                  self.prefix.append(self.prefix[-1] + value)
+
+          def range_sum(self, left: int, right: int) -> int:
+              return self.prefix[right + 1] - self.prefix[left]
+  - entry_id: prefix-sum-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      class PrefixSum {
+      public:
+          explicit PrefixSum(const std::vector<int>& nums) : prefix(nums.size() + 1, 0) {
+              for (int i = 0; i < static_cast<int>(nums.size()); i++) {
+                  prefix[i + 1] = prefix[i] + nums[i];
+              }
+          }
+
+          int rangeSum(int left, int right) const {
+              return prefix[right + 1] - prefix[left];
+          }
+
+      private:
+          std::vector<int> prefix;
+      };
+
+sliding-window-fixed:
+  - entry_id: sliding-window-fixed-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int maxWindowSum(int[] nums, int k) {
+          int windowSum = 0;
+
+          for (int i = 0; i < k; i++) {
+              windowSum += nums[i];
+          }
+
+          int best = windowSum;
+
+          for (int right = k; right < nums.length; right++) {
+              windowSum += nums[right] - nums[right - k];
+              best = Math.max(best, windowSum);
+          }
+
+          return best;
+      }
+  - entry_id: sliding-window-fixed-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def maxWindowSum(nums: Array[Int], k: Int): Int =
+        var windowSum = nums.take(k).sum
+        var best = windowSum
+
+        for right <- k until nums.length do
+          windowSum += nums(right) - nums(right - k)
+          best = math.max(best, windowSum)
+
+        best
+  - entry_id: sliding-window-fixed-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def max_window_sum(nums: list[int], k: int) -> int:
+          window_sum = sum(nums[:k])
+          best = window_sum
+
+          for right in range(k, len(nums)):
+              window_sum += nums[right] - nums[right - k]
+              best = max(best, window_sum)
+
+          return best
+  - entry_id: sliding-window-fixed-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int maxWindowSum(const std::vector<int>& nums, int k) {
+          int windowSum = std::accumulate(nums.begin(), nums.begin() + k, 0);
+          int best = windowSum;
+
+          for (int right = k; right < static_cast<int>(nums.size()); right++) {
+              windowSum += nums[right] - nums[right - k];
+              best = std::max(best, windowSum);
+          }
+
+          return best;
+      }
+
+sliding-window-longest:
+  - entry_id: sliding-window-longest-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int longestUniqueSubstring(String s) {
+          Map<Character, Integer> counts = new HashMap<>();
+          int best = 0;
+
+          for (int left = 0, right = 0; right < s.length(); right++) {
+              char current = s.charAt(right);
+              counts.merge(current, 1, Integer::sum);
+
+              while (counts.get(current) > 1) {
+                  char outgoing = s.charAt(left++);
+                  counts.compute(outgoing, (ignored, count) -> count == 1 ? null : count - 1);
+              }
+
+              best = Math.max(best, right - left + 1);
+          }
+
+          return best;
+      }
+  - entry_id: sliding-window-longest-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def longestUniqueSubstring(s: String): Int =
+        val counts = scala.collection.mutable.Map.empty[Char, Int].withDefaultValue(0)
+        var left = 0
+        var best = 0
+
+        for right <- s.indices do
+          val current = s(right)
+          counts(current) = counts(current) + 1
+
+          while counts(current) > 1 do
+            val outgoing = s(left)
+            counts(outgoing) = counts(outgoing) - 1
+            left += 1
+
+          best = math.max(best, right - left + 1)
+
+        best
+  - entry_id: sliding-window-longest-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def longest_unique_substring(s: str) -> int:
+          counts: dict[str, int] = {}
+          left = 0
+          best = 0
+
+          for right, current in enumerate(s):
+              counts[current] = counts.get(current, 0) + 1
+
+              while counts[current] > 1:
+                  outgoing = s[left]
+                  counts[outgoing] -= 1
+                  left += 1
+
+              best = max(best, right - left + 1)
+
+          return best
+  - entry_id: sliding-window-longest-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int longestUniqueSubstring(const std::string& s) {
+          std::array<int, 128> counts{};
+          int left = 0;
+          int best = 0;
+
+          for (int right = 0; right < static_cast<int>(s.size()); right++) {
+              counts[s[right]]++;
+
+              while (counts[s[right]] > 1) {
+                  counts[s[left]]--;
+                  left++;
+              }
+
+              best = std::max(best, right - left + 1);
+          }
+
+          return best;
+      }
+
+sliding-window-shortest:
+  - entry_id: sliding-window-shortest-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int minWindowLength(int target, int[] nums) {
+          int best = Integer.MAX_VALUE;
+          int sum = 0;
+
+          for (int left = 0, right = 0; right < nums.length; right++) {
+              sum += nums[right];
+
+              while (sum >= target) {
+                  best = Math.min(best, right - left + 1);
+                  sum -= nums[left++];
+              }
+          }
+
+          return best == Integer.MAX_VALUE ? 0 : best;
+      }
+  - entry_id: sliding-window-shortest-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def minWindowLength(target: Int, nums: Array[Int]): Int =
+        var left = 0
+        var sum = 0
+        var best = Int.MaxValue
+
+        for right <- nums.indices do
+          sum += nums(right)
+
+          while sum >= target do
+            best = math.min(best, right - left + 1)
+            sum -= nums(left)
+            left += 1
+
+        if best == Int.MaxValue then 0 else best
+  - entry_id: sliding-window-shortest-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def min_window_length(target: int, nums: list[int]) -> int:
+          left = 0
+          total = 0
+          best = len(nums) + 1
+
+          for right, value in enumerate(nums):
+              total += value
+
+              while total >= target:
+                  best = min(best, right - left + 1)
+                  total -= nums[left]
+                  left += 1
+
+          return 0 if best == len(nums) + 1 else best
+  - entry_id: sliding-window-shortest-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int minWindowLength(int target, const std::vector<int>& nums) {
+          int left = 0;
+          int sum = 0;
+          int best = static_cast<int>(nums.size()) + 1;
+
+          for (int right = 0; right < static_cast<int>(nums.size()); right++) {
+              sum += nums[right];
+
+              while (sum >= target) {
+                  best = std::min(best, right - left + 1);
+                  sum -= nums[left];
+                  left++;
+              }
+          }
+
+          return best == static_cast<int>(nums.size()) + 1 ? 0 : best;
+      }
+
+topological-sort:
+  - entry_id: topological-sort-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      List<Integer> topologicalOrder(List<List<Integer>> graph) {
+          int[] indegree = new int[graph.size()];
+
+          for (List<Integer> neighbors : graph) {
+              for (int neighbor : neighbors) {
+                  indegree[neighbor]++;
+              }
+          }
+
+          ArrayDeque<Integer> queue = new ArrayDeque<>();
+          for (int node = 0; node < graph.size(); node++) {
+              if (indegree[node] == 0) {
+                  queue.addLast(node);
+              }
+          }
+
+          List<Integer> order = new ArrayList<>(graph.size());
+
+          while (!queue.isEmpty()) {
+              int node = queue.removeFirst();
+              order.add(node);
+
+              for (int neighbor : graph.get(node)) {
+                  indegree[neighbor]--;
+                  if (indegree[neighbor] == 0) {
+                      queue.addLast(neighbor);
+                  }
+              }
+          }
+
+          return order.size() == graph.size() ? order : List.of();
+      }
+  - entry_id: topological-sort-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def topologicalOrder(graph: List[List[Int]]): List[Int] =
+        val indegree = Array.fill(graph.length)(0)
+
+        for
+          neighbors <- graph
+          neighbor <- neighbors
+        do indegree(neighbor) += 1
+
+        val queue = scala.collection.mutable.Queue.from(
+          graph.indices.filter(node => indegree(node) == 0)
+        )
+        val order = scala.collection.mutable.ListBuffer.empty[Int]
+
+        while queue.nonEmpty do
+          val node = queue.dequeue()
+          order += node
+
+          for neighbor <- graph(node) do
+            indegree(neighbor) -= 1
+            if indegree(neighbor) == 0 then queue.enqueue(neighbor)
+
+        if order.length == graph.length then order.toList else List.empty
+  - entry_id: topological-sort-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      from collections import deque
+
+      def topological_order(graph: list[list[int]]) -> list[int]:
+          indegree = [0] * len(graph)
+
+          for neighbors in graph:
+              for neighbor in neighbors:
+                  indegree[neighbor] += 1
+
+          queue = deque(node for node, degree in enumerate(indegree) if degree == 0)
+          order: list[int] = []
+
+          while queue:
+              node = queue.popleft()
+              order.append(node)
+
+              for neighbor in graph[node]:
+                  indegree[neighbor] -= 1
+                  if indegree[neighbor] == 0:
+                      queue.append(neighbor)
+
+          return order if len(order) == len(graph) else []
+  - entry_id: topological-sort-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      std::vector<int> topologicalOrder(const std::vector<std::vector<int>>& graph) {
+          std::vector<int> indegree(graph.size(), 0);
+
+          for (const auto& neighbors : graph) {
+              for (int neighbor : neighbors) {
+                  indegree[neighbor]++;
+              }
+          }
+
+          std::queue<int> queue;
+          for (int node = 0; node < static_cast<int>(graph.size()); node++) {
+              if (indegree[node] == 0) {
+                  queue.push(node);
+              }
+          }
+
+          std::vector<int> order;
+          order.reserve(graph.size());
+
+          while (!queue.empty()) {
+              int node = queue.front();
+              queue.pop();
+              order.push_back(node);
+
+              for (int neighbor : graph[node]) {
+                  indegree[neighbor]--;
+                  if (indegree[neighbor] == 0) {
+                      queue.push(neighbor);
+                  }
+              }
+          }
+
+          return order.size() == graph.size() ? order : std::vector<int>{};
+      }
+
+trie:
+  - entry_id: trie-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      class Trie {
+          private static final class Node {
+              private final Node[] children = new Node[26];
+              private boolean terminal;
+          }
+
+          private final Node root = new Node();
+
+          void insert(String word) {
+              Node node = root;
+
+              for (char current : word.toCharArray()) {
+                  int index = current - 'a';
+                  if (node.children[index] == null) {
+                      node.children[index] = new Node();
+                  }
+                  node = node.children[index];
+              }
+
+              node.terminal = true;
+          }
+
+          boolean search(String word) {
+              Node node = walk(word);
+              return node != null && node.terminal;
+          }
+
+          boolean startsWith(String prefix) {
+              return walk(prefix) != null;
+          }
+
+          private Node walk(String text) {
+              Node node = root;
+
+              for (char current : text.toCharArray()) {
+                  node = node.children[current - 'a'];
+                  if (node == null) {
+                      return null;
+                  }
+              }
+
+              return node;
+          }
+      }
+  - entry_id: trie-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      final class Trie:
+        private final class Node:
+          val children = scala.collection.mutable.Map.empty[Char, Node]
+          var terminal = false
+
+        private val root = Node()
+
+        def insert(word: String): Unit =
+          var node = root
+
+          for current <- word do
+            node = node.children.getOrElseUpdate(current, Node())
+
+          node.terminal = true
+
+        def search(word: String): Boolean =
+          walk(word).exists(_.terminal)
+
+        def startsWith(prefix: String): Boolean =
+          walk(prefix).nonEmpty
+
+        private def walk(text: String): Option[Node] =
+          text.foldLeft(Option(root)) { (node, current) =>
+            node.flatMap(_.children.get(current))
+          }
+  - entry_id: trie-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      class TrieNode:
+          def __init__(self) -> None:
+              self.children: dict[str, TrieNode] = {}
+              self.terminal = False
+
+
+      class Trie:
+          def __init__(self) -> None:
+              self.root = TrieNode()
+
+          def insert(self, word: str) -> None:
+              node = self.root
+
+              for current in word:
+                  node = node.children.setdefault(current, TrieNode())
+
+              node.terminal = True
+
+          def search(self, word: str) -> bool:
+              node = self._walk(word)
+              return node is not None and node.terminal
+
+          def starts_with(self, prefix: str) -> bool:
+              return self._walk(prefix) is not None
+
+          def _walk(self, text: str) -> TrieNode | None:
+              node = self.root
+
+              for current in text:
+                  node = node.children.get(current)
+                  if node is None:
+                      return None
+
+              return node
+  - entry_id: trie-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      class Trie {
+      public:
+          void insert(const std::string& word) {
+              Node* node = &root;
+
+              for (char current : word) {
+                  int index = current - 'a';
+                  if (!node->children[index]) {
+                      node->children[index] = std::make_unique<Node>();
+                  }
+                  node = node->children[index].get();
+              }
+
+              node->terminal = true;
+          }
+
+          bool search(const std::string& word) const {
+              const Node* node = walk(word);
+              return node != nullptr && node->terminal;
+          }
+
+          bool startsWith(const std::string& prefix) const {
+              return walk(prefix) != nullptr;
+          }
+
+      private:
+          struct Node {
+              std::array<std::unique_ptr<Node>, 26> children{};
+              bool terminal = false;
+          };
+
+          const Node* walk(const std::string& text) const {
+              const Node* node = &root;
+
+              for (char current : text) {
+                  node = node->children[current - 'a'].get();
+                  if (node == nullptr) {
+                      return nullptr;
+                  }
+              }
+
+              return node;
+          }
+
+          Node root;
+      };
+
+two-pointers-opposite:
+  - entry_id: two-pointers-opposite-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int[] twoSumSorted(int[] nums, int target) {
+          int left = 0;
+          int right = nums.length - 1;
+
+          while (left < right) {
+              int sum = nums[left] + nums[right];
+
+              if (sum == target) {
+                  return new int[]{left, right};
+              }
+              if (sum < target) {
+                  left++;
+              } else {
+                  right--;
+              }
+          }
+
+          return new int[]{-1, -1};
+      }
+  - entry_id: two-pointers-opposite-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def twoSumSorted(nums: Array[Int], target: Int): (Int, Int) =
+        var left = 0
+        var right = nums.length - 1
+
+        while left < right do
+          val sum = nums(left) + nums(right)
+
+          if sum == target then
+            return (left, right)
+          else if sum < target then
+            left += 1
+          else
+            right -= 1
+
+        (-1, -1)
+  - entry_id: two-pointers-opposite-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def two_sum_sorted(nums: list[int], target: int) -> tuple[int, int]:
+          left = 0
+          right = len(nums) - 1
+
+          while left < right:
+              current = nums[left] + nums[right]
+
+              if current == target:
+                  return left, right
+              if current < target:
+                  left += 1
+              else:
+                  right -= 1
+
+          return -1, -1
+  - entry_id: two-pointers-opposite-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      std::pair<int, int> twoSumSorted(const std::vector<int>& nums, int target) {
+          int left = 0;
+          int right = static_cast<int>(nums.size()) - 1;
+
+          while (left < right) {
+              int current = nums[left] + nums[right];
+
+              if (current == target) {
+                  return {left, right};
+              }
+              if (current < target) {
+                  left++;
+              } else {
+                  right--;
+              }
+          }
+
+          return {-1, -1};
+      }
+
+two-pointers-same:
+  - entry_id: two-pointers-same-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      int removeDuplicates(int[] nums) {
+          if (nums.length == 0) {
+              return 0;
+          }
+
+          int write = 1;
+
+          for (int read = 1; read < nums.length; read++) {
+              if (nums[read] == nums[write - 1]) {
+                  continue;
+              }
+
+              nums[write] = nums[read];
+              write++;
+          }
+
+          return write;
+      }
+  - entry_id: two-pointers-same-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      def removeDuplicates(nums: Array[Int]): Int =
+        if nums.isEmpty then
+          0
+        else
+          var write = 1
+
+          for read <- 1 until nums.length do
+            if nums(read) != nums(write - 1) then
+              nums(write) = nums(read)
+              write += 1
+
+          write
+  - entry_id: two-pointers-same-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      def remove_duplicates(nums: list[int]) -> int:
+          if not nums:
+              return 0
+
+          write = 1
+
+          for read in range(1, len(nums)):
+              if nums[read] == nums[write - 1]:
+                  continue
+
+              nums[write] = nums[read]
+              write += 1
+
+          return write
+  - entry_id: two-pointers-same-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      int removeDuplicates(std::vector<int>& nums) {
+          if (nums.empty()) {
+              return 0;
+          }
+
+          int write = 1;
+
+          for (int read = 1; read < static_cast<int>(nums.size()); read++) {
+              if (nums[read] == nums[write - 1]) {
+                  continue;
+              }
+
+              nums[write] = nums[read];
+              write++;
+          }
+
+          return write;
+      }
+
+union-find:
+  - entry_id: union-find-java
+    language: java
+    language_label: Java
+    code_language: java
+    code: |
+      class UnionFind {
+          private final int[] parent;
+          private final int[] size;
+
+          UnionFind(int size) {
+              parent = new int[size];
+              this.size = new int[size];
+
+              for (int node = 0; node < size; node++) {
+                  parent[node] = node;
+                  this.size[node] = 1;
+              }
+          }
+
+          int find(int node) {
+              if (parent[node] != node) {
+                  parent[node] = find(parent[node]);
+              }
+              return parent[node];
+          }
+
+          boolean unite(int left, int right) {
+              int leftRoot = find(left);
+              int rightRoot = find(right);
+
+              if (leftRoot == rightRoot) {
+                  return false;
+              }
+              if (size[leftRoot] < size[rightRoot]) {
+                  int swap = leftRoot;
+                  leftRoot = rightRoot;
+                  rightRoot = swap;
+              }
+
+              parent[rightRoot] = leftRoot;
+              size[leftRoot] += size[rightRoot];
+              return true;
+          }
+      }
+  - entry_id: union-find-scala
+    language: scala
+    language_label: Scala
+    code_language: scala
+    code: |
+      final class UnionFind(size: Int):
+        private val parent = Array.tabulate(size)(identity)
+        private val sizes = Array.fill(size)(1)
+
+        def find(node: Int): Int =
+          if parent(node) == node then
+            node
+          else
+            parent(node) = find(parent(node))
+            parent(node)
+
+        def unite(left: Int, right: Int): Boolean =
+          var leftRoot = find(left)
+          var rightRoot = find(right)
+
+          if leftRoot == rightRoot then
+            false
+          else
+            if sizes(leftRoot) < sizes(rightRoot) then
+              val swap = leftRoot
+              leftRoot = rightRoot
+              rightRoot = swap
+
+            parent(rightRoot) = leftRoot
+            sizes(leftRoot) += sizes(rightRoot)
+            true
+  - entry_id: union-find-python
+    language: python
+    language_label: Python
+    code_language: python
+    code: |
+      class UnionFind:
+          def __init__(self, size: int) -> None:
+              self.parent = list(range(size))
+              self.sizes = [1] * size
+
+          def find(self, node: int) -> int:
+              if self.parent[node] != node:
+                  self.parent[node] = self.find(self.parent[node])
+              return self.parent[node]
+
+          def unite(self, left: int, right: int) -> bool:
+              left_root = self.find(left)
+              right_root = self.find(right)
+
+              if left_root == right_root:
+                  return False
+              if self.sizes[left_root] < self.sizes[right_root]:
+                  left_root, right_root = right_root, left_root
+
+              self.parent[right_root] = left_root
+              self.sizes[left_root] += self.sizes[right_root]
+              return True
+  - entry_id: union-find-cpp
+    language: cpp
+    language_label: C++
+    code_language: cpp
+    code: |
+      class UnionFind {
+      public:
+          explicit UnionFind(int size) : parent(size), sizes(size, 1) {
+              std::iota(parent.begin(), parent.end(), 0);
+          }
+
+          int find(int node) {
+              if (parent[node] != node) {
+                  parent[node] = find(parent[node]);
+              }
+              return parent[node];
+          }
+
+          bool unite(int left, int right) {
+              int leftRoot = find(left);
+              int rightRoot = find(right);
+
+              if (leftRoot == rightRoot) {
+                  return false;
+              }
+              if (sizes[leftRoot] < sizes[rightRoot]) {
+                  std::swap(leftRoot, rightRoot);
+              }
+
+              parent[rightRoot] = leftRoot;
+              sizes[leftRoot] += sizes[rightRoot];
+              return true;
+          }
+
+      private:
+          std::vector<int> parent;
+          std::vector<int> sizes;
+      };

@@ -1,6 +1,6 @@
 ---
 layout: problems
-title: Eureka
+title: Problem Explorer
 description: Browse LeetCode solutions across multiple programming languages.
 permalink: /eureka/problems/
 project_slug: eureka

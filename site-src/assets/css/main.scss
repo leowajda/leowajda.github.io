@@ -6,6 +6,8 @@
 @use "tables";
 @use "code";
 @use "source";
+@use "flowchart";
+@use "templates";
 
 :root {
   --surface: #fff;
@@ -204,12 +206,8 @@ img {
 
 .site-nav__links,
 .site-nav__actions,
-.content-card__meta,
-.action-links,
 .active-filter-list,
-.problem-toolbar,
-.source-breadcrumbs ol,
-.source-breadcrumbs li {
+.problem-toolbar {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
@@ -217,42 +215,11 @@ img {
 
 .site-nav__links,
 .site-nav__actions,
-.content-card__meta,
-.action-links,
 .active-filter-list,
-.problem-toolbar,
-.source-breadcrumbs ol {
+.problem-toolbar {
   gap: 0.75rem;
 }
 
-.site-nav__brand {
-  align-items: center;
-  color: inherit;
-  display: inline-flex;
-  gap: 0.5rem;
-  text-decoration: none;
-}
-
-.site-nav__brand:hover {
-  text-decoration: underline;
-}
-
-.site-nav__context {
-  color: inherit;
-  opacity: var(--muted-opacity);
-  text-decoration: none;
-}
-
-.site-nav__context:hover {
-  text-decoration: underline;
-}
-
-.source-breadcrumbs li {
-  gap: 0.5rem;
-}
-
-.site-nav__link,
-.theme-toggle,
 .filter-button {
   align-items: center;
   background: var(--surface);
@@ -266,18 +233,56 @@ img {
   text-decoration: none;
 }
 
-.site-nav__link:hover,
-.theme-toggle:hover,
 .filter-button:hover {
   background: var(--accent-surface);
   color: var(--accent-text);
 }
 
-.icon-button {
+.icon-action {
+  appearance: none;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid currentColor;
   box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0.55rem;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+  text-decoration: none;
+}
+
+.icon-action:hover {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.icon-action--compact {
+  min-height: 2.35rem;
+  min-width: 2.35rem;
+  padding: 0.45rem;
+}
+
+.icon-action--nav {
   min-height: 3rem;
   min-width: 3rem;
   padding: 0.75rem;
+}
+
+.icon-action.is-success {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.icon-action.is-error {
+  border-style: dashed;
 }
 
 .icon {
@@ -288,7 +293,6 @@ img {
   width: 1em;
 }
 
-.site-nav__link-icon,
-.theme-toggle__icon {
+.icon-action__icon {
   font-size: 1.35rem;
 }

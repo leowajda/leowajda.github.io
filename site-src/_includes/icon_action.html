@@ -1,0 +1,6 @@
+{%- assign action = include.action | default: empty -%}
+{%- if action.kind == "link" -%}
+  {%- include icon_action_link.html href=action.href icon=action.icon label=action.label external=action.external class=action.class -%}
+{%- elsif action.kind == "button" -%}
+  {%- include icon_action_button.html icon=action.icon label=action.label class=action.class attributes=action.attributes -%}
+{%- endif -%}

@@ -1,0 +1,32 @@
+{%- assign source_schema = page.source_schema -%}
+{%- assign breadcrumbs = source_schema.breadcrumbs -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareSourceCode",
+  "name": {{ page.title | jsonify }},
+  "description": {{ include.page_description | jsonify }},
+  "url": {{ include.page_url | jsonify }},
+  "author": {{ include.person_json | strip }},
+  "codeRepository": {{ source_schema.code_repository | jsonify }},
+  "programmingLanguage": {{ source_schema.programming_language | jsonify }},
+  "codeSampleType": "full",
+  "about": {{ source_schema.about | jsonify }}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {%- for breadcrumb in breadcrumbs -%}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "name": {{ breadcrumb.name | jsonify }},
+        "item": {{ breadcrumb.item | absolute_url | jsonify }}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>

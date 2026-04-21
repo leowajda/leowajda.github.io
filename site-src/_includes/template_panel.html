@@ -1,0 +1,20 @@
+{%- assign template = include.template -%}
+{%- assign is_default = include.default | default: false -%}
+{%- assign template_id = template.template_id -%}
+{%- assign code_collection_id = template_id | append: '-code' -%}
+
+<section
+  class="template-panel"
+  id="{{ template_id }}"
+  data-template-panel
+  data-template-id="{{ template_id }}"
+  data-template-group="{{ template.group }}"
+  {% unless is_default == true or is_default == 'true' %}hidden{% endunless %}
+>
+  <div class="template-panel__code">
+    {%- include code_collection.html
+      collection=template.code_collection
+      collection_id=code_collection_id
+    -%}
+  </div>
+</section>

@@ -1,0 +1,13 @@
+problem_explorer:
+  - algorithmic_flowchart
+  - algorithmic_templates
+problem_detail:
+  - problem_explorer
+  - algorithmic_flowchart
+  - algorithmic_templates
+algorithmic_flowchart:
+  - problem_explorer
+  - algorithmic_templates
+algorithmic_templates:
+  - problem_explorer
+  - algorithmic_flowchart

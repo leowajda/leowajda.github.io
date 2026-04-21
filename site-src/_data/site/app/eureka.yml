@@ -1,0 +1,15 @@
+catalog_version: 2
+metadata_keys:
+  - name
+  - url
+  - difficulty
+  - categories
+implementation_keys:
+  - language
+  - approach
+  - file_path
+browser:
+  toolbar_label: Problem implementations
+  variant_group_label: Approach
+  variant_group_visibility: always
+  variant_presentation: icons

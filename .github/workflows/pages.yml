@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Setup Pages
         id: pages
@@ -31,6 +33,23 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
       - name: Write Pages config override
         run: |
           cat > "$RUNNER_TEMP/pages-config.yml" <<EOF
@@ -38,8 +57,17 @@ jobs:
           baseurl: ${{ steps.pages.outputs.base_path }}
           EOF
 
+      - name: Validate source catalogs
+        run: ruby script/validate_catalogs.rb
+
+      - name: Run Ruby tests
+        run: pnpm test:ruby
+
       - name: Build Jekyll site
         run: bundle exec jekyll build --source site-src --destination _site --config site-src/_config.yml,"$RUNNER_TEMP/pages-config.yml"
+
+      - name: Run mobile smoke checks
+        run: pnpm test:mobile-smoke
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

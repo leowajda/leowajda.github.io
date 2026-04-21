@@ -66,10 +66,16 @@
 }
 
 .side-panel__link {
+  appearance: none;
+  background: transparent;
+  border: 0;
   border-left: thin solid transparent;
   color: inherit;
+  cursor: pointer;
   display: block;
+  font: inherit;
   padding-left: 0.45rem;
+  text-align: left;
   text-decoration: none;
 }
 

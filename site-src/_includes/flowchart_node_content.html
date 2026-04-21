@@ -1,0 +1,73 @@
+{%- assign payload = include.payload | default: empty -%}
+{%- assign node = payload.node -%}
+{%- assign summary = payload.summary -%}
+{%- assign node_relationship = payload.node_relationship | default: empty -%}
+<div class="flowchart-inspector__template">
+  <p class="flowchart-inspector__eyebrow">{{ node.kind | capitalize }}</p>
+  <h2 aria-label="{{ node.title | replace: '$', '' }}">{{ node.title }}</h2>
+
+  {%- if summary and summary.sections and summary.sections.size > 0 -%}
+    <section class="flowchart-inspector__panel" data-flowchart-note data-flowchart-structured-summary="true">
+      <div class="flowchart-prose flowchart-prose--summary">
+        {%- for section in summary.sections -%}
+          <section class="flowchart-summary__section">
+            <p class="flowchart-summary__label">{{ section.title }}</p>
+            {%- if section.text -%}
+              {{ section.text | markdownify }}
+            {%- endif -%}
+            {%- if section.items and section.items.size > 0 -%}
+              <ul>
+                {%- for item in section.items -%}
+                  {%- capture rendered_item -%}{{ item | markdownify }}{%- endcapture -%}
+                  <li>{{ rendered_item | remove: '<p>' | remove: '</p>' | strip }}</li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </section>
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- elsif node.details_html and node.details_html != "" -%}
+    <section class="flowchart-inspector__panel" data-flowchart-note>
+      <div class="flowchart-prose">
+        {{ node.details_html }}
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- if node.references and node.references.size > 0 -%}
+    <section class="flowchart-inspector__panel" data-flowchart-references>
+      <div class="flowchart-reference-grid">
+        {%- for reference in node.references -%}
+          <article class="content-card content-card--compact flowchart-reference-card">
+            <p class="page-note">#{{ reference.frontend_id }}{% if reference.difficulty %} · {{ reference.difficulty }}{% endif %}</p>
+            <h3>
+              <a
+                class="problem-title__link"
+                href="{{ reference.url }}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {{ reference.title }}
+              </a>
+            </h3>
+          </article>
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- endif -%}
+
+  {%- assign related_topics = node_relationship.topics | default: empty -%}
+  {%- if related_topics.size > 0 -%}
+    <section class="flowchart-inspector__panel" data-flowchart-templates>
+      <div class="flowchart-reference-grid">
+        {%- for topic in related_topics -%}
+          <article class="content-card content-card--compact flowchart-reference-card">
+            <p class="page-note">Template</p>
+            <h3><a class="problem-title__link" href="{{ include.templates_url | relative_url }}#{{ topic.id }}">{{ topic.label }}</a></h3>
+          </article>
+        {%- endfor -%}
+      </div>
+    </section>
+  {%- endif -%}
+</div>

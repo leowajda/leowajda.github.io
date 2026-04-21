@@ -1,0 +1,1777 @@
+{
+  "title": "Eureka Flowchart",
+  "chart": {
+    "width": 1686,
+    "height": 7250,
+    "scale_desktop": 0.57,
+    "scale_mobile": 0.4
+  },
+  "nodes": [
+    {
+      "id": "graph",
+      "kind": "decision",
+      "label": "Is it a graph?",
+      "title": "Graph Algorithms",
+      "x": 100,
+      "y": 0,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Evaluate Division",
+          "url": "https://leetcode.com/problems/evaluate-division/",
+          "difficulty": "Medium",
+          "frontend_id": "399"
+        },
+        {
+          "title": "Detonate the Maximum Bombs",
+          "url": "https://leetcode.com/problems/detonate-the-maximum-bombs/",
+          "difficulty": "Medium",
+          "frontend_id": "2101"
+        },
+        {
+          "title": "Loud and Rich",
+          "url": "https://leetcode.com/problems/loud-and-rich/",
+          "difficulty": "Medium",
+          "frontend_id": "851"
+        }
+      ],
+      "details_html": "<p>Problems can present graph-related challenges in three distinct ways:</p><ol><li><strong>Explicit Graph Mention:</strong></li></ol><ul><li>The problem statement may directly specify that you have a graph with nodes and edges.</li></ul><ol start=\"2\"><li><strong>Matrix Representation:</strong></li></ol><ul><li>The graph might be represented as a matrix.</li><li>Indications include statements referring to adjacent cells connecting, such as being able to move left, right, up, or down from a cell.</li></ul><ol start=\"3\"><li><p><strong>Graph Construction Required:</strong></p><ul><li>Sometimes, you need to devise the graph based on the problem context.</li><li>Problems that address states and their relationships can be visualized with states as nodes and relationships as edges.</li><li>Identify both the graph type and the core task, such as shortest path or connectivity.</li></ul></li></ol>"
+    },
+    {
+      "id": "tree",
+      "kind": "decision",
+      "label": "Is it a tree?",
+      "title": "Trees",
+      "x": 500,
+      "y": 100,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Maximum Depth of Binary Tree",
+          "url": "https://leetcode.com/problems/maximum-depth-of-binary-tree/",
+          "difficulty": "Easy",
+          "frontend_id": "104"
+        },
+        {
+          "title": "Minimum Height Trees",
+          "url": "https://leetcode.com/problems/minimum-height-trees/",
+          "difficulty": "Medium",
+          "frontend_id": "310"
+        },
+        {
+          "title": "Subtree of Another Tree",
+          "url": "https://leetcode.com/problems/subtree-of-another-tree/",
+          "difficulty": "Easy",
+          "frontend_id": "572"
+        }
+      ],
+      "details_html": "<p>The simplest and most common way to determine if a problem deals with trees is if the problem directly refers to a \"tree\", \"root\" or a\n\"leaf\".</p>\n<p>We should also take note of some properties of trees. If a problem mentions a graph (not explicitly a tree),\nwe can identify some relation to trees of some properties of trees are mentioned. For example, the fact that trees\nhave <code>n - 1</code> nodes if the number of nodes in that tree is <code>n</code> or the fact that they don't have cycles.</p>"
+    },
+    {
+      "id": "tree-dfs",
+      "kind": "solution",
+      "label": "DFS",
+      "title": "DFS",
+      "x": 900,
+      "y": 200,
+      "width": 81.2188,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>When tackling tree problems, Depth First Search (DFS) often takes the spotlight due to its natural alignment\nwith tree hierarchies, space efficiency, and ease of recursion. While Breadth First Search (BFS) shines in\nscenarios like finding the shortest path in unweighted trees or level-order traversals, DFS stands out for\ndepth-related tasks, path-oriented challenges, and its adaptability to various traversal techniques.</p>"
+    },
+    {
+      "id": "directed-graph",
+      "kind": "decision",
+      "label": "Is problem related to directed acyclic graphs?",
+      "title": "Directed Acyclic Graphs",
+      "x": 500,
+      "y": 500,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Course Schedule",
+          "url": "https://leetcode.com/problems/course-schedule/",
+          "difficulty": "Medium",
+          "frontend_id": "207"
+        },
+        {
+          "title": "Network Delay Time",
+          "url": "https://leetcode.com/problems/network-delay-time/",
+          "difficulty": "Medium",
+          "frontend_id": "743"
+        },
+        {
+          "title": "All Ancestors of a Node in a Directed Acyclic Graph",
+          "url": "https://leetcode.com/problems/all-ancestors-of-a-node-in-a-directed-acyclic-graph/",
+          "difficulty": "Medium",
+          "frontend_id": "2192"
+        }
+      ],
+      "details_html": "<p>When diving into graph problems, one of the first decisions you have to make is determining\nthe type of graph you're dealing with. Among the many distinctions, one of the most fundamental is whether the\ngraph is directed or undirected.</p>\n<p>How can you determine if a problem is centered around directed graphs?</p>\n<ul>\n<li>\n<p><strong>Explicit Mentions:</strong> Start by skimming the problem statement. If words like \"directed\" or \"one-way\" are present,\nthey're clear indicators of a directed graph.</p>\n</li>\n<li>\n<p><strong>Edge Descriptions:</strong> Problems might describe scenarios where one node \"points to\" or \"leads to\" another.\nThis directional language is a classic hallmark of directed graphs.</p>\n</li>\n<li>\n<p><strong>No Mutuality in Relationships:</strong> If the relationships between nodes aren't mutual \u2013 for instance, if Node <code>A</code> is\nrelated to Node <code>B</code>, but Node <code>B</code> isn't necessarily related to Node <code>A</code> \u2013 you're likely dealing with directed edges.</p>\n</li>\n</ul>\n<h2>Recognizing Acyclic Graphs in Problems</h2>\n<p>When approaching graph problems, the structure and nature of the graph play pivotal roles. The concept of acyclicity,\nwhere a graph doesn't have any cycles, is a key structural property. Here's how you can determine if a problem\nis hinging on the acyclic nature of a graph:</p>\n<ul>\n<li><strong>Explicit Mentions:</strong> Some problems may straightforwardly state terms like \"Directed Acyclic Graph\" or \"DAG\".\nThis is a direct indicator of the acyclic nature.</li>\n<li><strong>Dependency Chains:</strong> If the problem revolves around a hierarchy or ordering of tasks, where tasks have prerequisites\nand you cannot have cyclic dependencies, it's hinting at acyclicity. Phrases like \"before\", \"after\", or \"must be\ncompleted prior to\" are cues.</li>\n<li><strong>Cycle Detection:</strong> If the problem is explicitly about detecting cycles, determining the presence or absence\nof cycles, or ensuring no cyclic dependencies, then it's inherently related to acyclicity.</li>\n</ul>"
+    },
+    {
+      "id": "directed-graph-topo",
+      "kind": "solution",
+      "label": "Topological Sort",
+      "title": "Topological Sort",
+      "x": 900,
+      "y": 600,
+      "width": 226.109,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Topological sort is a crucial algorithm for directed acyclic graphs, often abbreviated as DAGs. By definition,\na DAG is a graph characterized by its directed edges and absence of cycles, ensuring that no sequence of edges\nloops back to a repeating vertex.</p>\n<p>A topological sort offers a linear ordering of the vertices so that if there's a directed edge from vertex <code>U</code> to\nvertex <code>V</code>, <code>U</code> always precedes <code>V</code> in the order. This ensures that all \"prerequisites\" come before the\ndependent node.</p>"
+    },
+    {
+      "id": "shortest-path",
+      "kind": "decision",
+      "label": "Is the problem related to shortest paths?",
+      "title": "Identifying Shortest Path Problems",
+      "x": 500,
+      "y": 900,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Network Delay Time",
+          "url": "https://leetcode.com/problems/network-delay-time/",
+          "difficulty": "Medium",
+          "frontend_id": "743"
+        },
+        {
+          "title": "Shortest Path in Binary Matrix",
+          "url": "https://leetcode.com/problems/shortest-path-in-binary-matrix/",
+          "difficulty": "Medium",
+          "frontend_id": "1091"
+        },
+        {
+          "title": "Cheapest Flights Within K Stops",
+          "url": "https://leetcode.com/problems/cheapest-flights-within-k-stops/",
+          "difficulty": "Medium",
+          "frontend_id": "787"
+        }
+      ],
+      "details_html": "<p>In graph-related questions, determining the shortest or most optimal path between nodes is a common theme.\nHowever, not every problem explicitly states, \"find the shortest path\". Often, cues embedded in the problem's\nphrasing signal a need for a shortest path solution.</p>\n<p>Here are telltale signs:</p>\n<ul>\n<li><strong>Distance or Minimum Steps:</strong> Problems might inquire about the least number of steps, transformations, or moves\nto attain a specific objective.</li>\n<li><strong>Seeking Optimal Solutions:</strong> Some problems revolve around finding the fastest, least costly, or most efficient\nmethod to achieve an outcome within the graph's structure.</li>\n<li><strong>Constrained Traversals:</strong> Occasionally, the traversal of a graph demands set conditions, such as\navoiding obstacles or using specific paths a limited number of times.</li>\n</ul>"
+    },
+    {
+      "id": "shortest-path-weighted",
+      "kind": "decision",
+      "label": "Is the graph Weighted?",
+      "title": "Weighted Graphs",
+      "x": 900,
+      "y": 1000,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Network Delay Time",
+          "url": "https://leetcode.com/problems/network-delay-time/",
+          "difficulty": "Medium",
+          "frontend_id": "743"
+        },
+        {
+          "title": "Path with Maximum Probability",
+          "url": "https://leetcode.com/problems/path-with-maximum-probability/",
+          "difficulty": "Medium",
+          "frontend_id": "1514"
+        },
+        {
+          "title": "Minimum Cost to Reach Destination in Time",
+          "url": "https://leetcode.com/problems/minimum-cost-to-reach-destination-in-time/",
+          "difficulty": "Hard",
+          "frontend_id": "1928"
+        }
+      ],
+      "details_html": "<p>One of the prevalent categories within graph theory is the shortest path problem. The next pivotal decision is\nidentifying whether the graph is weighted or not. This distinction profoundly influences the problem-solving approach.</p>\n<p>The most immediate clue is when the problem provides a distinct weight, cost, or distance\nfor each edge or when the problem directly states the graph is weighted. An unweighted graph will have all edge weights\nbe the same, usually <code>1</code>. If the edge weights can vary based on problem constraints, the graph is most likely weighted.</p>"
+    },
+    {
+      "id": "shortest-path-dijkstra",
+      "kind": "solution",
+      "label": "Dijkstra's Algorithm",
+      "title": "Dijkstra's Algorithm",
+      "x": 1300,
+      "y": 1100,
+      "width": 265.922,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Navigating the complex realm of graph theory, we often encounter the challenge of finding the shortest path in a weighted graph.\nIn this scenario, it's crucial to consider Dijkstra's Algorithm - a powerful tool tailored for this precise problem.</p>\n<p>Dijkstra's Algorithm operates as follows: starting from a selected vertex, it determines the shortest path\nto all other vertices. If no path is available, it acknowledges the absence.</p>"
+    },
+    {
+      "id": "shortest-path-bfs",
+      "kind": "solution",
+      "label": "BFS",
+      "title": "Breadth First Search (BFS)",
+      "x": 1300,
+      "y": 1300,
+      "width": 79.625,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>When dealing with shortest path problems in unweighted graphs, where all edges have the same weight, Breadth-First Search (BFS)\nstands out as it ensures an efficient and reliable means of pinpointing the shortest path.</p>\n<p>BFS operates as follows: starting from a designated vertex, it determines the shortest path to all other vertices,\nalso marking any vertex as unreachable if no path exists to it.</p>"
+    },
+    {
+      "id": "connectivity",
+      "kind": "decision",
+      "label": "Does the problem involve connectivity",
+      "title": "Connectivity Problems",
+      "x": 500,
+      "y": 1300,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Accounts Merge",
+          "url": "https://leetcode.com/problems/accounts-merge/",
+          "difficulty": "Medium",
+          "frontend_id": "721"
+        },
+        {
+          "title": "Redundant Connection",
+          "url": "https://leetcode.com/problems/redundant-connection/",
+          "difficulty": "Medium",
+          "frontend_id": "684"
+        },
+        {
+          "title": "Number of Operations to Make Network Connected",
+          "url": "https://leetcode.com/problems/number-of-operations-to-make-network-connected/",
+          "difficulty": "Medium",
+          "frontend_id": "1319"
+        }
+      ],
+      "details_html": "<p>Connectivity in graph problems refers to scenarios where the relatedness of nodes plays a central role.\nRecognizing when a graph challenge is rooted in \"connectivity\" can guide you towards the most effective solution.\nSo, how do you discern these types of problems?</p>\n<p>Watch for these indicative signs:</p>\n<ul>\n<li><strong>Distinctive Terminology:</strong> Terms such as \"connected\", \"component\", \"island\", and \"group\" often signal that a\nproblem's focus is on connectivity.</li>\n<li><strong>Uniting or Merging</strong>: Problems discussing connecting or merging nodes, like linking towns through\nroads, usually center on connectivity.</li>\n<li><strong>Traversal Queries:</strong> Queries about traversing a structure from one point to all others, without retracing\nsteps, also point towards connectivity.</li>\n</ul>"
+    },
+    {
+      "id": "connectivity-dsu",
+      "kind": "solution",
+      "label": "Disjoint Set Union",
+      "title": "Disjoint Set Union",
+      "x": 900,
+      "y": 1400,
+      "width": 242.625,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Known alternatively as Union-Find, Disjoint Set Union (DSU) stands as a specialized data structure, purpose-built\nfor efficiently addressing connectivity queries within an undirected graph. When navigating connectivity problems,\nDSU often emerges as a top choice due to its ability in dynamically categorizing elements into separate sets\nand its ability to efficiently verify if two elements coexist within the same set.</p>\n<p>DSU operations:</p>\n<ul>\n<li>Union Operation:  Merges two distinct sets into one cohesive unit. When two nodes are from different sets,\nthe Union operation integrates them, rendering them members of an identical group.</li>\n<li>Find Operation: Pinpoints the specific set to which an element is affiliated. This task is achieved\nby following a path up to the set's \"representative\" or \"leader.\"</li>\n</ul>\n<p>While traditional methods like BFS and DFS can also cater to connectivity inquiries, DSU rises above with\nits heightened efficiency. DSU offers more efficient connectivity queries and can handle dynamic\nscenarios where edges are added in the graph.</p>"
+    },
+    {
+      "id": "graph-smallcontraints",
+      "kind": "decision",
+      "label": "Does the problem have small constraints?",
+      "title": "Identifying Brute Force DFS/Backtracking",
+      "x": 500,
+      "y": 1700,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Word Search",
+          "url": "https://leetcode.com/problems/word-search/",
+          "difficulty": "Medium",
+          "frontend_id": "79"
+        },
+        {
+          "title": "All Paths From Source to Target",
+          "url": "https://leetcode.com/problems/all-paths-from-source-to-target/",
+          "difficulty": "Medium",
+          "frontend_id": "797"
+        },
+        {
+          "title": "Couples Holding Hands",
+          "url": "https://leetcode.com/problems/couples-holding-hands/",
+          "difficulty": "Hard",
+          "frontend_id": "765"
+        }
+      ],
+      "details_html": "<p>Brute force solutions, particularly in graph problems, involve comprehensively exploring all paths or configurations\nto derive a solution. This strategy is essentially an unrefined exploration, and in some scenarios, particularly\nwith small constraints, it becomes the go-to approach.</p>\n<p>When diving into graph problems, how can you pinpoint when a brute force method is required?</p>\n<p>Look out for these key indicators:</p>\n<ol>\n<li>\n<p><strong>Vast Search Space with No Direct Optimizations</strong></p>\n<p>If the problem sets up an expansive search space and doesn't offer clear-cut optimizations, consider\nbrute force as an opening strategy.</p>\n</li>\n<li>\n<p><strong>Asks for All Possible Solutions</strong></p>\n<p>When the problem statement uses terms like \"find all possible paths\" or \"determine all configurations,\"\nit's often hinting towards an exhaustive, brute force approach as a foundation.</p>\n</li>\n<li>\n<p><strong>Small Graph Constraints</strong>:\nIf the graph's constraints are limited \u2014 for instance, if there are up to 10^2 nodes \u2014 a brute force method is\nlikely workable within computational time limits.</p>\n</li>\n</ol>\n<p>Brute force in graph problems often entails trying every possible path or configuration to obtain a solution.\nIt's a naive way of exploring all possibilities without employing any optimizations. A typical brute force\nstrategy on graphs might involve running a DFS or BFS from every node or for every possible combination of nodes.</p>"
+    },
+    {
+      "id": "graph-smallcontraints-dfs",
+      "kind": "solution",
+      "label": "DFS/backtracking",
+      "title": "DFS",
+      "x": 900,
+      "y": 1800,
+      "width": 245.203,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>In graph problems with small constraints, Depth-First Search (DFS) and backtracking shine as invaluable techniques.\nThey excel by exhaustively diving into each potential solution path until reaching a resolution or a dead-end.\nDFS systematically begins from a source node, delving deep along each branch and only backtracks when necessary.\nThis depth-driven approach is especially suited for problems where traversing numerous paths within a graph\nis essential.</p>"
+    },
+    {
+      "id": "graph-smallcontraints-bfs",
+      "kind": "solution",
+      "label": "BFS",
+      "title": "BFS",
+      "x": 900,
+      "y": 2000,
+      "width": 79.625,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>In general graph theory problems, both Breadth First Search (BFS) and Depth First Search (DFS) are fundamental\nalgorithms. BFS is especially favored for detecting shortest paths and assessing connectivity, whereas DFS excels\nin other areas but doesn't always provide the shortest path. When confronting unconventional graph problems,\nconsidering the application of BFS or DFS often illuminates a path to a solution. Despite their simplicity,\nthese algorithms address a vast array of graph-related challenges.</p>"
+    },
+    {
+      "id": "kth-smallest",
+      "kind": "decision",
+      "label": "Need to solve for $k$th smallest/largest?",
+      "title": "$k$th smallest/largest",
+      "x": 100,
+      "y": 2000,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Top K Frequent Elements",
+          "url": "https://leetcode.com/problems/top-k-frequent-elements/",
+          "difficulty": "Medium",
+          "frontend_id": "347"
+        },
+        {
+          "title": "Kth Smallest Element in a Sorted Matrix",
+          "url": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/",
+          "difficulty": "Medium",
+          "frontend_id": "378"
+        },
+        {
+          "title": "Top K Frequent Words",
+          "url": "https://leetcode.com/problems/top-k-frequent-words/",
+          "difficulty": "Medium",
+          "frontend_id": "692"
+        },
+        {
+          "title": "Find K Closest Elements",
+          "url": "https://leetcode.com/problems/find-k-closest-elements/",
+          "difficulty": "Medium",
+          "frontend_id": "658"
+        }
+      ],
+      "details_html": "<p>Does the problem specifically ask you to solve for the <strong>kth</strong> smallest/largest value of something?\nThis is pretty simple to identify in the problem statement and the phrase may also appear in the title of the problem.</p>"
+    },
+    {
+      "id": "kth-smallest-heap",
+      "kind": "solution",
+      "label": "Heap / Sortings",
+      "title": "Sorting and Heaps",
+      "x": 500,
+      "y": 2100,
+      "width": 216.219,
+      "height": 74.7969,
+      "references": [
+        {
+          "title": "Kth Largest Element in an Array",
+          "url": "https://leetcode.com/problems/kth-largest-element-in-an-array/",
+          "difficulty": "Medium",
+          "frontend_id": "215"
+        },
+        {
+          "title": "Top K Frequent Elements",
+          "url": "https://leetcode.com/problems/top-k-frequent-elements/",
+          "difficulty": "Medium",
+          "frontend_id": "347"
+        },
+        {
+          "title": "Kth Smallest Element in a Sorted Matrix",
+          "url": "https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/",
+          "difficulty": "Medium",
+          "frontend_id": "378"
+        },
+        {
+          "title": "Super Ugly Number",
+          "url": "https://leetcode.com/problems/super-ugly-number/",
+          "difficulty": "Medium",
+          "frontend_id": "313"
+        },
+        {
+          "title": "Find K Pairs with Smallest Sums",
+          "url": "https://leetcode.com/problems/find-k-pairs-with-smallest-sums/",
+          "difficulty": "Medium",
+          "frontend_id": "373"
+        }
+      ],
+      "details_html": "<p>When we're asked to find the kth smallest or largest elements, the first method that comes to mind is to use a min/max heap or sorting.</p><p>Heap is faster than sorting when it comes to finding the kth smallest or largest element because it does not require sorting the entire list. In some cases, a tree-based ordered structure may also be useful.</p>"
+    },
+    {
+      "id": "linked-list",
+      "kind": "decision",
+      "label": "Involves Linked Lists?",
+      "title": "Linked List",
+      "x": 100,
+      "y": 2400,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Merge Two Sorted Lists",
+          "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+          "difficulty": "Easy",
+          "frontend_id": "21"
+        },
+        {
+          "title": "Odd Even Linked List",
+          "url": "https://leetcode.com/problems/odd-even-linked-list/",
+          "difficulty": "Medium",
+          "frontend_id": "328"
+        },
+        {
+          "title": "Partition List",
+          "url": "https://leetcode.com/problems/partition-list/",
+          "difficulty": "Medium",
+          "frontend_id": "86"
+        },
+        {
+          "title": "Remove Duplicates from Sorted List II",
+          "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-list-ii/",
+          "difficulty": "Medium",
+          "frontend_id": "82"
+        }
+      ],
+      "details_html": "<p>Linked list problems are trivial to identify. We can just look at whether or not the problem mentioned anything about\na linked list. These problems will often require us to traverse the linked list in some way.</p>"
+    },
+    {
+      "id": "linked-list-twopointers",
+      "kind": "solution",
+      "label": "Two pointers",
+      "title": "Two pointers",
+      "x": 500,
+      "y": 2500,
+      "width": 187.109,
+      "height": 74.7969,
+      "references": [
+        {
+          "title": "Remove Nth Node From End of List",
+          "url": "https://leetcode.com/problems/remove-nth-node-from-end-of-list/",
+          "difficulty": "Medium",
+          "frontend_id": "19"
+        },
+        {
+          "title": "Middle of the Linked List",
+          "url": "https://leetcode.com/problems/middle-of-the-linked-list/",
+          "difficulty": "Easy",
+          "frontend_id": "876"
+        },
+        {
+          "title": "Palindrome Linked List",
+          "url": "https://leetcode.com/problems/palindrome-linked-list/",
+          "difficulty": "Easy",
+          "frontend_id": "234"
+        },
+        {
+          "title": "Linked List Cycle",
+          "url": "https://leetcode.com/problems/linked-list-cycle/",
+          "difficulty": "Easy",
+          "frontend_id": "141"
+        },
+        {
+          "title": "Merge Two Sorted Lists",
+          "url": "https://leetcode.com/problems/merge-two-sorted-lists/",
+          "difficulty": "Easy",
+          "frontend_id": "21"
+        },
+        {
+          "title": "Rotate List",
+          "url": "https://leetcode.com/problems/rotate-list/",
+          "difficulty": "Medium",
+          "frontend_id": "61"
+        },
+        {
+          "title": "Intersection of Two Linked Lists",
+          "url": "https://leetcode.com/problems/intersection-of-two-linked-lists/",
+          "difficulty": "Easy",
+          "frontend_id": "160"
+        }
+      ],
+      "details_html": "<p>Most linked list problems are about singly-linked list that can be solved with a simple traversal. However, some problems may require two pointers.</p>\n<p>Two pointers is a common technique used to solve linked list problems. It involves maintaining two pointers on the linked-list at different speed (tortoise and hare algorithm) and/or intervals.</p>"
+    },
+    {
+      "id": "small-constraints",
+      "kind": "decision",
+      "label": "Small constraint bounds?",
+      "title": "Small constraints",
+      "x": 100,
+      "y": 2800,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Minimum Falling Path Sum",
+          "url": "https://leetcode.com/problems/minimum-falling-path-sum/",
+          "difficulty": "Medium",
+          "frontend_id": "931"
+        },
+        {
+          "title": "N-Queens",
+          "url": "https://leetcode.com/problems/n-queens/",
+          "difficulty": "Hard",
+          "frontend_id": "51"
+        },
+        {
+          "title": "Count Square Submatrices with All Ones",
+          "url": "https://leetcode.com/problems/count-square-submatrices-with-all-ones/",
+          "difficulty": "Medium",
+          "frontend_id": "1277"
+        },
+        {
+          "title": "Unique Paths",
+          "url": "https://leetcode.com/problems/unique-paths/",
+          "difficulty": "Medium",
+          "frontend_id": "62"
+        }
+      ],
+      "details_html": "<p>To tell that a problem has small constraints, we should look at the input size or the constraint about size of input,\nwhich is generally written as <code>n</code> or <code>length</code>. We'll consider an input size small if the complexity is cubic or slower.\nGenerally, <code>size &lt;= 500</code> for cubic time.</p>\n<p>These are often combinatorial problems, such as permutations or subsets.</p>"
+    },
+    {
+      "id": "small-constraints-efficiency",
+      "kind": "decision",
+      "label": "Is brute force fast enough?",
+      "title": "Is brute force fast enough?",
+      "x": 500,
+      "y": 2900,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "N-Queens II",
+          "url": "https://leetcode.com/problems/n-queens-ii/",
+          "difficulty": "Hard",
+          "frontend_id": "52"
+        },
+        {
+          "title": "Combinations",
+          "url": "https://leetcode.com/problems/combinations/",
+          "difficulty": "Medium",
+          "frontend_id": "77"
+        },
+        {
+          "title": "Palindrome Partitioning",
+          "url": "https://leetcode.com/problems/palindrome-partitioning/",
+          "difficulty": "Medium",
+          "frontend_id": "131"
+        }
+      ],
+      "details_html": "<p>A brute force or backtracking algorithm for a counting problem will iterate through all possible answers to count the number of ways to accomplish a task.</p><p>To determine if a specific brute force algorithm will run in time, estimate the time complexity and compare it against the constraints.</p><p>A brute force algorithm will usually have an exponential or factorial time complexity. If the input constraint is really small, that may still be acceptable.</p><p>If a brute force solution is hard to justify under the constraints, the problem will often need a dynamic programming formulation instead.</p>"
+    },
+    {
+      "id": "small-constraints-bruteforce/backtracking",
+      "kind": "solution",
+      "label": "Brute force / Backtracking",
+      "title": "Brute Force/Backtracking",
+      "x": 900,
+      "y": 3000,
+      "width": 340.594,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Steps to implement backtracking</p>\n<ul>\n<li>Draw the space-state tree</li>\n<li>Traverse the tree using recursion</li>\n<li>Prune the tree using the constraints</li>\n</ul>"
+    },
+    {
+      "id": "small-constraints-dp",
+      "kind": "solution",
+      "label": "Dynamic Programming",
+      "title": "Dynamic Programming",
+      "x": 900,
+      "y": 3150,
+      "width": 300.906,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>If a counting problem isn't trivial to count and brute force is too slow, then most likely we'll use dynamic programming.\nHere are the steps the solving a counting problem with dynamic programming:</p>\n<ul>\n<li>Identify an overlapping subproblem, which will be counting the number of ways on a smaller problem</li>\n<li>Identify how to use answers from sub-problems to solve a bigger sub-problem or the main problem (i.e. transition between states)</li>\n<li>Identify the base cases and the answers to them</li>\n<li>Check for any edge cases (i.e. where the count is 0)</li>\n</ul>"
+    },
+    {
+      "id": "subarrays",
+      "kind": "decision",
+      "label": "About subarrays or substrings?",
+      "title": "Involves subarrays",
+      "x": 100,
+      "y": 3500,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Subarray Sums Divisible by K",
+          "url": "https://leetcode.com/problems/subarray-sums-divisible-by-k/",
+          "difficulty": "Medium",
+          "frontend_id": "974"
+        },
+        {
+          "title": "Longest Substring Without Repeating Characters",
+          "url": "https://leetcode.com/problems/longest-substring-without-repeating-characters/",
+          "difficulty": "Medium",
+          "frontend_id": "3"
+        },
+        {
+          "title": "Max Sum of Rectangle No Larger Than K",
+          "url": "https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/",
+          "difficulty": "Hard",
+          "frontend_id": "363"
+        },
+        {
+          "title": "Subarray Sum Equals K",
+          "url": "https://leetcode.com/problems/subarray-sum-equals-k/",
+          "difficulty": "Medium",
+          "frontend_id": "560"
+        }
+      ],
+      "details_html": "<p>The pattern in question can be easily recognized by searching for the term \"subarray\" within the problem statement.\nHowever, it's important to note that \"subarrays\" may appear in various forms, such as \"substrings\" or\n\"submatrices/rectangles.\"</p>"
+    },
+    {
+      "id": "sums",
+      "kind": "decision",
+      "label": "Deals with sums or additive",
+      "title": "Involves sums or additive",
+      "x": 100,
+      "y": 3150,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Max Sum of Rectangle No Larger Than K",
+          "url": "https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/",
+          "difficulty": "Hard",
+          "frontend_id": "363"
+        },
+        {
+          "title": "Continuous Subarray Sum",
+          "url": "https://leetcode.com/problems/continuous-subarray-sum/",
+          "difficulty": "Medium",
+          "frontend_id": "523"
+        },
+        {
+          "title": "Subarray Sum Equals K",
+          "url": "https://leetcode.com/problems/subarray-sum-equals-k/",
+          "difficulty": "Medium",
+          "frontend_id": "560"
+        }
+      ],
+      "details_html": "<p>This pattern can be identified by the term \"sum\" in the problem or any indicator that you need to take, analyze, or compare sums.</p><p>Once sum-based structure is explicit, prefix sums are often the first pattern to test because they turn repeated range-sum work into constant-time lookups after preprocessing.</p>"
+    },
+    {
+      "id": "subarrays-prefixsums",
+      "kind": "solution",
+      "label": "Prefix Sums",
+      "title": "Prefix Sums",
+      "x": 500,
+      "y": 3500,
+      "width": 174.219,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Prefix sums is a technique used to calculate the sum of elements in an array up to a specific index. We store the prefix sums in a separate array,\nwhich we use to quickly compute the sum of elements in a subarray when needed. This optimization is useful as it allows us to calculate the sum of any subarray in constant time.</p>"
+    },
+    {
+      "id": "subarrays-twopointers",
+      "kind": "solution",
+      "label": "Sliding Window",
+      "title": "Sliding Window",
+      "x": 500,
+      "y": 3800,
+      "width": 216.609,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>The sliding window technique refers to maintaining a continuous segment, or \"window,\" of elements, usually within an array or string.\nThe window will represent a subarray, which makes this technique useful to solve problems related to subarrays/substrings.\nThe sliding window can be of two types:</p>\n<ul>\n<li>Fixed-size sliding window\n<ul>\n<li>The window size remains constant throughout the process, and only the position of the window within the data structure shifts.</li>\n</ul>\n</li>\n<li>Variable-size sliding window\n<ul>\n<li>The window size expands or contracts based on the problem's constraints, along with its movement within the data structure.\nThis is implemented with two pointers, with the pointers indicating the left/right borders of the window.</li>\n</ul>\n</li>\n</ul>"
+    },
+    {
+      "id": "max/min",
+      "kind": "decision",
+      "label": "Calculating max/min of something?",
+      "title": "Max/min problems",
+      "x": 100,
+      "y": 3900,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Minimum Path Sum",
+          "url": "https://leetcode.com/problems/minimum-path-sum/",
+          "difficulty": "Medium",
+          "frontend_id": "64"
+        },
+        {
+          "title": "Maximize Sum Of Array After K Negations",
+          "url": "https://leetcode.com/problems/maximize-sum-of-array-after-k-negations/",
+          "difficulty": "Easy",
+          "frontend_id": "1005"
+        },
+        {
+          "title": "Maximum Length of Repeated Subarray",
+          "url": "https://leetcode.com/problems/maximum-length-of-repeated-subarray/",
+          "difficulty": "Medium",
+          "frontend_id": "718"
+        },
+        {
+          "title": "Capacity To Ship Packages Within D Days",
+          "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
+          "difficulty": "Medium",
+          "frontend_id": "1011"
+        },
+        {
+          "title": "Maximum Candies Allocated to K Children",
+          "url": "https://leetcode.com/problems/maximum-candies-allocated-to-k-children/",
+          "difficulty": "Medium",
+          "frontend_id": "2226"
+        }
+      ],
+      "details_html": "<p>This type of problem asks you to calculate the maximum or minimum possible answer of something.</p><p>These problems often involve maximizing or minimizing profit, cost, distance, time, or a similar quantity. Keywords such as max, min, maximize, minimize, shortest, longest, least, or greatest are strong signals.</p>"
+    },
+    {
+      "id": "max/min-monotonic",
+      "kind": "decision",
+      "label": "Monotonic condition?",
+      "title": "Monotonicity in min/max problems",
+      "x": 500,
+      "y": 4000,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Find Minimum in Rotated Sorted Array",
+          "url": "https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/",
+          "difficulty": "Medium",
+          "frontend_id": "153"
+        },
+        {
+          "title": "Max Consecutive Ones III",
+          "url": "https://leetcode.com/problems/max-consecutive-ones-iii/",
+          "difficulty": "Medium",
+          "frontend_id": "1004"
+        },
+        {
+          "title": "Koko Eating Bananas",
+          "url": "https://leetcode.com/problems/koko-eating-bananas/",
+          "difficulty": "Medium",
+          "frontend_id": "875"
+        },
+        {
+          "title": "Capacity To Ship Packages Within D Days",
+          "url": "https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/",
+          "difficulty": "Medium",
+          "frontend_id": "1011"
+        },
+        {
+          "title": "Maximum Candies Allocated to K Children",
+          "url": "https://leetcode.com/problems/maximum-candies-allocated-to-k-children/",
+          "difficulty": "Medium",
+          "frontend_id": "2226"
+        }
+      ],
+      "details_html": "<p>Monotonic means either entirely non-increasing or entirely non-decreasing. Binary search is only applicable directly on\na function that's monotonic so a good sign a problem involves binary search is if you can identify some relevant monotonic\nproperty.</p>\n<p>Frequently, when we binary search on a function, the function is simply just an array. However, this function might not directly be an array and\nyou may have to \"binary search for the answer\".</p>"
+    },
+    {
+      "id": "max/min-subproblem",
+      "kind": "decision",
+      "label": "Can be split into sub-problems?",
+      "title": "Overlapping Sub-problems",
+      "x": 500,
+      "y": 4400,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Edit Distance",
+          "url": "https://leetcode.com/problems/edit-distance/",
+          "difficulty": "Medium",
+          "frontend_id": "72"
+        },
+        {
+          "title": "Minimum Path Sum",
+          "url": "https://leetcode.com/problems/minimum-path-sum/",
+          "difficulty": "Medium",
+          "frontend_id": "64"
+        },
+        {
+          "title": "Maximal Square",
+          "url": "https://leetcode.com/problems/maximal-square/",
+          "difficulty": "Medium",
+          "frontend_id": "221"
+        },
+        {
+          "title": "Maximum Length of Repeated Subarray",
+          "url": "https://leetcode.com/problems/maximum-length-of-repeated-subarray/",
+          "difficulty": "Medium",
+          "frontend_id": "718"
+        }
+      ],
+      "details_html": "<p>The best sign that a problem can be solved using dynamic programming is the presence of overlapping subproblems, meaning the problem can be broken down into smaller yet similar problems.</p><p>If you notice that you are computing the same smaller problem multiple times, or that a recursive solution has poor time complexity, that is a strong signal for dynamic programming.</p><p>When the overall objective is a maximum or minimum, the subproblem usually also computes a maximum or minimum quantity on a smaller prefix, suffix, interval, or state.</p>"
+    },
+    {
+      "id": "max/min-greedyhuh",
+      "kind": "decision",
+      "label": "Greedily calculate answer?",
+      "title": "Greedy Algorithms",
+      "x": 500,
+      "y": 4800,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Patching Array",
+          "url": "https://leetcode.com/problems/patching-array/",
+          "difficulty": "Hard",
+          "frontend_id": "330"
+        },
+        {
+          "title": "Non-overlapping Intervals",
+          "url": "https://leetcode.com/problems/non-overlapping-intervals/",
+          "difficulty": "Medium",
+          "frontend_id": "435"
+        },
+        {
+          "title": "Minimum Number of Arrows to Burst Balloons",
+          "url": "https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/",
+          "difficulty": "Medium",
+          "frontend_id": "452"
+        },
+        {
+          "title": "Most Profit Assigning Work",
+          "url": "https://leetcode.com/problems/most-profit-assigning-work/",
+          "difficulty": "Medium",
+          "frontend_id": "826"
+        }
+      ],
+      "details_html": "<p>Greedy algorithms are problem solving techniques that solve problems which involve making a sequence of decisions.\nIn a max/min problem, you want to find the sequence of decisions that leads to the max/min value you want to solve.\nA greedy algorithm will always pick the best option at any decision point to reach the max/min value.</p>\n<p>A greedy algorithm will solve a problem if picking the best option at every decision point is always optimal to the final\nanswer. To get good intuition if some greedy algorithm is optimal, we should try testing the idea on the sample input\nor coming up with small test cases ourselves.</p>"
+    },
+    {
+      "id": "max/min-binarysearch",
+      "kind": "solution",
+      "label": "Binary Search",
+      "title": "Binary Search",
+      "x": 900,
+      "y": 4100,
+      "width": 197.359,
+      "height": 74.7969,
+      "references": [
+        {
+          "title": "Binary Search",
+          "url": "https://leetcode.com/problems/binary-search/",
+          "difficulty": "Easy",
+          "frontend_id": "704"
+        }
+      ],
+      "details_html": "<p>Binary searching on an array is pretty simple and is described here.</p>\n<p>The idea of binary searching on a monotonic function is described here.\nIf we're binary searching on a monotonic function, we should think about the following:</p>\n<ul>\n<li>\n<p>How to check if some input in the function is <code>'T'</code> or <code>'F'</code>?</p>\n</li>\n<li>\n<p>Are we trying to find the highest <code>'F'</code> or lowest <code>'T'</code>?</p>\n</li>\n<li>\n<p>What is the maximum range (i.e. interval) that we need to cover?</p>\n</li>\n</ul>"
+    },
+    {
+      "id": "max/min-dp",
+      "kind": "solution",
+      "label": "Dynamic Programming",
+      "title": "Dynamic Programming",
+      "x": 900,
+      "y": 4500,
+      "width": 300.906,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Once we've identified that a problem could be dynamic programming, we should think about the following:</p>\n<ul>\n<li>How exactly to break down the main problem into sub-problems (i.e. a recursive formula)\n<ul>\n<li>Note that your sub problem should solve for the same max/min value but on a smaller problem</li>\n</ul>\n</li>\n<li>How to use answers from sub-problems to solve a bigger sub-problem or the main problem (i.e. transition between states)</li>\n<li>The base cases and the answers to them</li>\n</ul>"
+    },
+    {
+      "id": "max/min-greedy",
+      "kind": "solution",
+      "label": "Greedy Algorithms",
+      "title": "Greedy Algorithms",
+      "x": 900,
+      "y": 4900,
+      "width": 255.703,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Once we've identified a problem could use greedy, we should come up with the greedy strategy which determines\nthe \"best\" choice we make at every decision point. Most greedy problems are different and will require a different\n\"best\" choice. To show a greedy algorithm works, we should consider\nif it's ever possible that not taking the most optimal choice at every decision point can lead to the best answer.\nWe can do this by testing the algorithm on some small test cases by hand.</p>"
+    },
+    {
+      "id": "counting",
+      "kind": "decision",
+      "label": "Asking for number of ways?",
+      "title": "Counting",
+      "x": 100,
+      "y": 4800,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Unique Paths II",
+          "url": "https://leetcode.com/problems/unique-paths-ii/",
+          "difficulty": "Medium",
+          "frontend_id": "63"
+        },
+        {
+          "title": "Combinations",
+          "url": "https://leetcode.com/problems/combinations/",
+          "difficulty": "Medium",
+          "frontend_id": "77"
+        },
+        {
+          "title": "Decode Ways",
+          "url": "https://leetcode.com/problems/decode-ways/",
+          "difficulty": "Medium",
+          "frontend_id": "91"
+        },
+        {
+          "title": "N-Queens II",
+          "url": "https://leetcode.com/problems/n-queens-ii/",
+          "difficulty": "Hard",
+          "frontend_id": "52"
+        }
+      ],
+      "details_html": "<p>In a counting problem, the statement will ask for the number of ways to accomplish a task, arrange items, or satisfy certain conditions.\nThis could be expressed as phrases such as \"how many ways,\" \"number of,\" or \"total possible ways.\"</p>"
+    },
+    {
+      "id": "counting-efficiency",
+      "kind": "decision",
+      "label": "Is brute force fast enough?",
+      "title": "Is brute force fast enough?",
+      "x": 500,
+      "y": 5100,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "N-Queens II",
+          "url": "https://leetcode.com/problems/n-queens-ii/",
+          "difficulty": "Hard",
+          "frontend_id": "52"
+        },
+        {
+          "title": "Combinations",
+          "url": "https://leetcode.com/problems/combinations/",
+          "difficulty": "Medium",
+          "frontend_id": "77"
+        },
+        {
+          "title": "Palindrome Partitioning",
+          "url": "https://leetcode.com/problems/palindrome-partitioning/",
+          "difficulty": "Medium",
+          "frontend_id": "131"
+        }
+      ],
+      "details_html": "<p>A brute force or backtracking algorithm for a counting problem will iterate through all possible answers to count the number of ways to accomplish a task.</p><p>To determine if a specific brute force algorithm will run in time, estimate the time complexity and compare it against the constraints.</p><p>A brute force algorithm will usually have an exponential or factorial time complexity. If the input constraint is really small, that may still be acceptable.</p><p>If a brute force solution is hard to justify under the constraints, the problem will often need a dynamic programming formulation instead.</p>"
+    },
+    {
+      "id": "counting-bruteforce/backtracking",
+      "kind": "solution",
+      "label": "Brute Force / Backtracking",
+      "title": "Brute Force/Backtracking",
+      "x": 900,
+      "y": 5150,
+      "width": 344.875,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Steps to implement backtracking</p>\n<ul>\n<li>Draw the space-state tree</li>\n<li>Traverse the tree using recursion</li>\n<li>Prune the tree using the constraints</li>\n</ul>"
+    },
+    {
+      "id": "counting-dp",
+      "kind": "solution",
+      "label": "Dynamic Programming",
+      "title": "Dynamic Programming",
+      "x": 900,
+      "y": 5300,
+      "width": 300.906,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>If a counting problem isn't trivial to count and brute force is too slow, then most likely we'll use dynamic programming.</p>\n<p>Here are the steps the solving a counting problem with dynamic programming:</p>\n<ul>\n<li>Identify an overlapping subproblem, which will be counting the number of ways on a smaller problem</li>\n<li>Identify how to use answers from sub-problems to solve a bigger sub-problem or the main problem (i.e. transition between states)</li>\n<li>Identify the base cases and the answers to them</li>\n<li>Check for any edge cases (i.e. where the count is 0)</li>\n</ul>"
+    },
+    {
+      "id": "sequence-count",
+      "kind": "decision",
+      "label": "Multiple sequences?",
+      "title": "How many sequences?",
+      "x": 100,
+      "y": 5300,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Longest Word in Dictionary through Deleting",
+          "url": "https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/",
+          "difficulty": "Medium",
+          "frontend_id": "524"
+        },
+        {
+          "title": "Swap Adjacent in LR String",
+          "url": "https://leetcode.com/problems/swap-adjacent-in-lr-string/",
+          "difficulty": "Medium",
+          "frontend_id": "777"
+        },
+        {
+          "title": "Longest Common Subsequence",
+          "url": "https://leetcode.com/problems/longest-common-subsequence/",
+          "difficulty": "Medium",
+          "frontend_id": "1143"
+        },
+        {
+          "title": "Merge Sorted Array",
+          "url": "https://leetcode.com/problems/merge-sorted-array/",
+          "difficulty": "Easy",
+          "frontend_id": "88"
+        }
+      ],
+      "details_html": "<p>Is the problem involve multiple sequences? Does it involve comparing/analyzing two sequences?</p>"
+    },
+    {
+      "id": "sequence-count-monotonic",
+      "kind": "decision",
+      "label": "Monotonic conditions?",
+      "title": "Monotonic Condition",
+      "x": 500,
+      "y": 5400,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Swap Adjacent in LR String",
+          "url": "https://leetcode.com/problems/swap-adjacent-in-lr-string/",
+          "difficulty": "Medium",
+          "frontend_id": "777"
+        },
+        {
+          "title": "Merge Sorted Array",
+          "url": "https://leetcode.com/problems/merge-sorted-array/",
+          "difficulty": "Easy",
+          "frontend_id": "88"
+        },
+        {
+          "title": "Interval List Intersections",
+          "url": "https://leetcode.com/problems/interval-list-intersections/",
+          "difficulty": "Medium",
+          "frontend_id": "986"
+        }
+      ],
+      "details_html": "<p>Monotonicity simply means either entirely non-increasing or entirely non-decreasing.\nIn the context of a two-pointer algorithm, the monotonic condition represents a constraint that the algorithm should follow.\nWe just need to find some property that's entirely non-increasing or entirely non-decreasing.</p>"
+    },
+    {
+      "id": "sequence-count-subproblems",
+      "kind": "decision",
+      "label": "Can split into sub-problems?",
+      "title": "Overlapping Sub-problems",
+      "x": 500,
+      "y": 5800,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Edit Distance",
+          "url": "https://leetcode.com/problems/edit-distance/",
+          "difficulty": "Medium",
+          "frontend_id": "72"
+        },
+        {
+          "title": "Distinct Subsequences",
+          "url": "https://leetcode.com/problems/distinct-subsequences/",
+          "difficulty": "Hard",
+          "frontend_id": "115"
+        },
+        {
+          "title": "Longest Common Subsequence",
+          "url": "https://leetcode.com/problems/longest-common-subsequence/",
+          "difficulty": "Medium",
+          "frontend_id": "1143"
+        },
+        {
+          "title": "Shortest Common Supersequence ",
+          "url": "https://leetcode.com/problems/shortest-common-supersequence/",
+          "difficulty": "Hard",
+          "frontend_id": "1092"
+        }
+      ],
+      "details_html": "<p>The best sign that a problem can be solved using dynamic programming is the presence of overlapping subproblems, meaning the problem can be broken down into smaller yet similar problems.\nIf you notice that you are computing the same smaller problem multiple times or the recursive solution for the problem has a slow time complexity,\nit is an indicator that the problem can be broken into overlapping sub-problems.</p>"
+    },
+    {
+      "id": "sequence-count-twopointers",
+      "kind": "solution",
+      "label": "Two pointers",
+      "title": "Two Pointers",
+      "x": 900,
+      "y": 5500,
+      "width": 187.109,
+      "height": 74.7969,
+      "references": [
+        {
+          "title": "Merge Sorted Array",
+          "url": "https://leetcode.com/problems/merge-sorted-array/",
+          "difficulty": "Easy",
+          "frontend_id": "88"
+        },
+        {
+          "title": "Longest Word in Dictionary through Deleting",
+          "url": "https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/",
+          "difficulty": "Medium",
+          "frontend_id": "524"
+        },
+        {
+          "title": "Intersection of Two Arrays II",
+          "url": "https://leetcode.com/problems/intersection-of-two-arrays-ii/",
+          "difficulty": "Easy",
+          "frontend_id": "350"
+        }
+      ],
+      "details_html": "<p>The two-pointer technique simplifies problems related to two sequential elements like arrays or linked lists. When comparing, merging, or analyzing two distinct sequences, using two pointers can significantly reduce time complexity.</p><p>In this technique, each sequence is traversed with its own pointer, and a single coordinated sweep often runs in linear time.</p>"
+    },
+    {
+      "id": "sequence-count-dp",
+      "kind": "solution",
+      "label": "Dynamic Programming",
+      "title": "Dynamic Programming",
+      "x": 900,
+      "y": 5900,
+      "width": 300.906,
+      "height": 74.7969,
+      "references": [],
+      "details_html": "<p>Using dynamic programming to solve problems related to analyzing or comparing two sequences will usually have this\nstate: <code>dp[prefix of first sequence considered][prefix of second sequence considered]</code> stores the answer to the overlapping subproblem,\nmaking the time complexity at least <code>O(NM)</code>, where <code>N</code> and <code>M</code> represent the length of the two sequences.</p>"
+    },
+    {
+      "id": "find-indices",
+      "kind": "decision",
+      "label": "Find or enumerate indices?",
+      "title": "Searching pairs of indices?",
+      "x": 100,
+      "y": 6100,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Valid Triangle Number",
+          "url": "https://leetcode.com/problems/valid-triangle-number/",
+          "difficulty": "Medium",
+          "frontend_id": "611"
+        },
+        {
+          "title": "Find K-th Smallest Pair Distance",
+          "url": "https://leetcode.com/problems/find-k-th-smallest-pair-distance/",
+          "difficulty": "Hard",
+          "frontend_id": "719"
+        },
+        {
+          "title": "Max Number of K-Sum Pairs",
+          "url": "https://leetcode.com/problems/max-number-of-k-sum-pairs/",
+          "difficulty": "Medium",
+          "frontend_id": "1679"
+        }
+      ],
+      "details_html": "<p>Does this problem involve searching/enumerating pairs of indices?\nThis can be answered by looking for specific phrases in the problem statement such as \"count pairs <code>i &lt; j</code>\" and \"find two elements\nin the array where...\".</p>"
+    },
+    {
+      "id": "find-indices-monotonic",
+      "kind": "decision",
+      "label": "Monotonic Condition?",
+      "title": "Monotonic Condition",
+      "x": 500,
+      "y": 6200,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Max Number of K-Sum Pairs",
+          "url": "https://leetcode.com/problems/max-number-of-k-sum-pairs/",
+          "difficulty": "Medium",
+          "frontend_id": "1679"
+        },
+        {
+          "title": "Boats to Save People",
+          "url": "https://leetcode.com/problems/boats-to-save-people/",
+          "difficulty": "Medium",
+          "frontend_id": "881"
+        },
+        {
+          "title": "Valid Triangle Number",
+          "url": "https://leetcode.com/problems/valid-triangle-number/",
+          "difficulty": "Medium",
+          "frontend_id": "611"
+        }
+      ],
+      "details_html": "<p>Monotonicity simply means either entirely non-increasing or entirely non-decreasing.\nIn the context of a two-pointer algorithm, the monotonic condition represents a constraint that the algorithm should follow.</p>\n<p>We just need to find some property that's entirely non-increasing or entirely non-decreasing. If there isn't any obvious property, we should\nalso consider sorting to make the array monotonic and then checking for a way to implement two pointers into the solution.</p>"
+    },
+    {
+      "id": "find-indices-twopointers",
+      "kind": "solution",
+      "label": "Two pointers",
+      "title": "Two pointers",
+      "x": 900,
+      "y": 6300,
+      "width": 187.109,
+      "height": 74.7969,
+      "references": [
+        {
+          "title": "Boats to Save People",
+          "url": "https://leetcode.com/problems/boats-to-save-people/",
+          "difficulty": "Medium",
+          "frontend_id": "881"
+        },
+        {
+          "title": "Valid Triangle Number",
+          "url": "https://leetcode.com/problems/valid-triangle-number/",
+          "difficulty": "Medium",
+          "frontend_id": "611"
+        },
+        {
+          "title": "Max Number of K-Sum Pairs",
+          "url": "https://leetcode.com/problems/max-number-of-k-sum-pairs/",
+          "difficulty": "Medium",
+          "frontend_id": "1679"
+        }
+      ],
+      "details_html": "<p>Establish the two pointers that will traverse the array. When looking for pairs of indices <code>i &lt; j</code>, one pointer refers to the first element and the other to the second.</p><p>In some problems, you may need to enumerate triplets rather than pairs. A common strategy is to fix one position and run a two-pointer pass to determine the remaining positions.</p>"
+    },
+    {
+      "id": "constant-memory",
+      "kind": "decision",
+      "label": "$O(1)$ memory required",
+      "title": "$O(1)$ memory",
+      "x": 100,
+      "y": 6500,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Linked List Cycle",
+          "url": "https://leetcode.com/problems/linked-list-cycle/",
+          "difficulty": "Easy",
+          "frontend_id": "141"
+        },
+        {
+          "title": "Intersection of Two Linked Lists",
+          "url": "https://leetcode.com/problems/intersection-of-two-linked-lists/",
+          "difficulty": "Easy",
+          "frontend_id": "160"
+        },
+        {
+          "title": "Circular Array Loop",
+          "url": "https://leetcode.com/problems/circular-array-loop/",
+          "difficulty": "Medium",
+          "frontend_id": "457"
+        },
+        {
+          "title": "Longest Mountain in Array",
+          "url": "https://leetcode.com/problems/longest-mountain-in-array/",
+          "difficulty": "Medium",
+          "frontend_id": "845"
+        }
+      ],
+      "details_html": "<p>Does the problem statement specifically ask for <code>O(1)</code> memory or ask for the memory to be optimized to <code>O(1)</code>?\nThis pattern is quite easy to spot but is quite uncommon.</p>"
+    },
+    {
+      "id": "constant-memory-monotonic",
+      "kind": "decision",
+      "label": "Involves monotonic condition?",
+      "title": "Monotonic Condition",
+      "x": 500,
+      "y": 6600,
+      "width": 200,
+      "height": 200,
+      "references": [],
+      "details_html": "<p>Monotonicity simply means either entirely non-increasing or entirely non-decreasing.\nIn the context of a two-pointer algorithm, the monotonic condition represents a constraint that the algorithm should follow.</p>\n<p>We just need to find some property that's entirely non-increasing or entirely non-decreasing. If there isn't any obvious property, we should\nalso consider sorting to make the array monotonic and then checking for a way to implement two pointers into the solution.\nNote that sorting the array won't use extra space.</p>"
+    },
+    {
+      "id": "constant-memory-twopointers",
+      "kind": "solution",
+      "label": "Two pointers",
+      "title": "Two pointers",
+      "x": 900,
+      "y": 6700,
+      "width": 187.109,
+      "height": 74.7969,
+      "references": [
+        {
+          "title": "Remove Duplicates from Sorted Array",
+          "url": "https://leetcode.com/problems/remove-duplicates-from-sorted-array/",
+          "difficulty": "Easy",
+          "frontend_id": "26"
+        },
+        {
+          "title": "Move Zeroes",
+          "url": "https://leetcode.com/problems/move-zeroes/",
+          "difficulty": "Easy",
+          "frontend_id": "283"
+        }
+      ],
+      "details_html": "<p>When implementing a generic two pointers solution, here are some things we should think about:</p>\n<ul>\n<li>What the pointers are pointing at</li>\n<li>When to move the pointers</li>\n<li>What direction the pointers are moving in</li>\n</ul>"
+    },
+    {
+      "id": "parse-symbols",
+      "kind": "decision",
+      "label": "Do you need to parse symbols?",
+      "title": "Symbol Parsing Problems",
+      "x": 100,
+      "y": 6900,
+      "width": 200,
+      "height": 200,
+      "references": [
+        {
+          "title": "Valid Parentheses",
+          "url": "https://leetcode.com/problems/valid-parentheses/",
+          "difficulty": "Easy",
+          "frontend_id": "20"
+        },
+        {
+          "title": "Basic Calculator",
+          "url": "https://leetcode.com/problems/basic-calculator/",
+          "difficulty": "Hard",
+          "frontend_id": "224"
+        }
+      ],
+      "details_html": "<p>Problems that involve parsing or evaluating expressions with symbols like parentheses, operators, or other special characters often require a stack-based approach. Look for these indicators:</p>\n<ul>\n<li>Need to match opening/closing symbols (like parentheses, brackets, braces)</li>\n<li>Need to evaluate mathematical expressions</li>\n<li>Need to validate syntax or expression correctness</li>\n<li>Need to process nested structures like an Abstract Syntax Tree</li>\n</ul>"
+    },
+    {
+      "id": "parse-symbols-stack",
+      "kind": "solution",
+      "label": "Stack",
+      "title": "Stack",
+      "x": 500,
+      "y": 7000,
+      "width": 101.031,
+      "height": 74.7969,
+      "references": [
+        {
+          "title": "Valid Parentheses",
+          "url": "https://leetcode.com/problems/valid-parentheses/",
+          "difficulty": "Easy",
+          "frontend_id": "20"
+        },
+        {
+          "title": "Basic Calculator",
+          "url": "https://leetcode.com/problems/basic-calculator/",
+          "difficulty": "Hard",
+          "frontend_id": "224"
+        },
+        {
+          "title": "Remove All Adjacent Duplicates In String",
+          "url": "https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/",
+          "difficulty": "Easy",
+          "frontend_id": "1047"
+        }
+      ],
+      "details_html": "<p>A stack is a Last-In-First-Out (LIFO) data structure that's particularly useful for parsing because:</p>\n<ul>\n<li>It naturally handles nested structures by keeping track of the most recently seen symbols</li>\n<li>The LIFO property matches how nested expressions work - the most recently opened parenthesis must be closed first</li>\n<li>It can maintain state/context as you process symbols one by one</li>\n<li>It allows you to \"backtrack\" by popping elements when you need to resolve or close a nested structure</li>\n</ul>\n<p>For example, when parsing \"(())\", the stack operations would be:</p>\n<ol>\n<li>Push '(' - stack: ['(']</li>\n<li>Push '(' - stack: ['(', '(']</li>\n<li>Pop '(' and match with ')' - stack: ['(']</li>\n<li>Pop '(' and match with ')' - stack: []\nEmpty stack at end means valid expression!</li>\n</ol>"
+    }
+  ],
+  "edges": [
+    {
+      "id": "max/min-monotonichuh",
+      "from": "max/min",
+      "to": "max/min-monotonic",
+      "label": "yes",
+      "label_x": 400,
+      "label_y": 4050,
+      "path": "M200,4104 C200,4168.951905283833 600,3931.0480947161673 600,3996"
+    },
+    {
+      "id": "max/min-binarysearch-yes",
+      "from": "max/min-monotonic",
+      "to": "max/min-binarysearch",
+      "label": "yes",
+      "label_x": 799.336,
+      "label_y": 4150,
+      "path": "M600,4204 C600,4268.951905283833 998.671875,4031.0480947161673 998.671875,4096"
+    },
+    {
+      "id": "max/min-subproblemhuh",
+      "from": "max/min-monotonic",
+      "to": "max/min-subproblem",
+      "label": "no",
+      "label_x": 600,
+      "label_y": 4300,
+      "path": "M600,4204 C600,4300 600,4300 600,4396"
+    },
+    {
+      "id": "max/min-dp-yes",
+      "from": "max/min-subproblem",
+      "to": "max/min-dp",
+      "label": "yes",
+      "label_x": 825.227,
+      "label_y": 4550,
+      "path": "M600,4604 C600,4668.951905283833 1050.453125,4431.048094716167 1050.453125,4496"
+    },
+    {
+      "id": "max/min-isgreedy",
+      "from": "max/min-subproblem",
+      "to": "max/min-greedyhuh",
+      "label": "no",
+      "label_x": 600,
+      "label_y": 4700,
+      "path": "M600,4604 C600,4700 600,4700 600,4796"
+    },
+    {
+      "id": "max/min-no",
+      "from": "max/min",
+      "to": "counting",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 4450,
+      "path": "M200,4104 C200,4450 200,4450 200,4796"
+    },
+    {
+      "id": "2-sequence-multiple-no",
+      "from": "sequence-count",
+      "to": "find-indices",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 5800,
+      "path": "M200,5504 C200,5800 200,5800 200,6096"
+    },
+    {
+      "id": "2-sequence-multiple-yes",
+      "from": "sequence-count",
+      "to": "sequence-count-monotonic",
+      "label": "yes",
+      "label_x": 400,
+      "label_y": 5450,
+      "path": "M200,5504 C200,5568.951905283833 600,5331.048094716167 600,5396"
+    },
+    {
+      "id": "2-sequence-twopointers",
+      "from": "sequence-count-monotonic",
+      "to": "sequence-count-twopointers",
+      "label": "yes",
+      "label_x": 796.773,
+      "label_y": 5550,
+      "path": "M600,5604 C600,5668.951905283833 993.546875,5431.048094716167 993.546875,5496"
+    },
+    {
+      "id": "2-sequence-subproblems",
+      "from": "sequence-count-monotonic",
+      "to": "sequence-count-subproblems",
+      "label": "no",
+      "label_x": 600,
+      "label_y": 5700,
+      "path": "M600,5604 C600,5700 600,5700 600,5796"
+    },
+    {
+      "id": "2-sequence-dp",
+      "from": "sequence-count-subproblems",
+      "to": "sequence-count-dp",
+      "label": "yes",
+      "label_x": 825.227,
+      "label_y": 5950,
+      "path": "M600,6004 C600,6068.951905283833 1050.453125,5831.048094716167 1050.453125,5896"
+    },
+    {
+      "id": "find-indices-monotonichuh",
+      "from": "find-indices",
+      "to": "find-indices-monotonic",
+      "label": "yes",
+      "label_x": 400,
+      "label_y": 6250,
+      "path": "M200,6304 C200,6368.951905283833 600,6131.048094716167 600,6196"
+    },
+    {
+      "id": "find-indices-yes",
+      "from": "find-indices-monotonic",
+      "to": "find-indices-twopointers",
+      "label": "yes",
+      "label_x": 796.773,
+      "label_y": 6350,
+      "path": "M600,6404 C600,6468.951905283833 993.546875,6231.048094716167 993.546875,6296"
+    },
+    {
+      "id": "find-indices-no",
+      "from": "find-indices",
+      "to": "constant-memory",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 6400,
+      "path": "M200,6304 C200,6400 200,6400 200,6496"
+    },
+    {
+      "id": "subarrays-yes",
+      "from": "subarrays",
+      "to": "subarrays-twopointers",
+      "label": "yes",
+      "label_x": 404.148,
+      "label_y": 3750,
+      "path": "M200,3704 C200,3750 608.296875,3750 608.296875,3796"
+    },
+    {
+      "id": "sums-yes",
+      "from": "sums",
+      "to": "subarrays-prefixsums",
+      "label": "yes",
+      "label_x": 393.555,
+      "label_y": 3425,
+      "path": "M200,3354 C200,3425 587.109375,3425 587.109375,3496"
+    },
+    {
+      "id": "sums-no",
+      "from": "sums",
+      "to": "subarrays",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 3425,
+      "path": "M200,3354 C200,3425 200,3425 200,3496"
+    },
+    {
+      "id": "subarrays-no",
+      "from": "subarrays",
+      "to": "max/min",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 3800,
+      "path": "M200,3704 C200,3800 200,3800 200,3896"
+    },
+    {
+      "id": "constant-memory-monotonichuh",
+      "from": "constant-memory",
+      "to": "constant-memory-monotonic",
+      "label": "yes",
+      "label_x": 400,
+      "label_y": 6650,
+      "path": "M200,6704 C200,6768.951905283833 600,6531.048094716167 600,6596"
+    },
+    {
+      "id": "constant-memory-twopointers-yes",
+      "from": "constant-memory-monotonic",
+      "to": "constant-memory-twopointers",
+      "label": "yes",
+      "label_x": 796.773,
+      "label_y": 6750,
+      "path": "M600,6804 C600,6868.951905283833 993.546875,6631.048094716167 993.546875,6696"
+    },
+    {
+      "id": "max/min-greedy-yes",
+      "from": "max/min-greedyhuh",
+      "to": "max/min-greedy",
+      "label": "yes",
+      "label_x": 813.922,
+      "label_y": 4950,
+      "path": "M600,5004 C600,5068.951905283833 1027.84375,4831.048094716167 1027.84375,4896"
+    },
+    {
+      "id": "counting-efficiencyhuh",
+      "from": "counting",
+      "to": "counting-efficiency",
+      "label": "yes",
+      "label_x": 400,
+      "label_y": 5050,
+      "path": "M200,5004 C200,5050 600,5050 600,5096"
+    },
+    {
+      "id": "counting-bruteforce/backtracking-yes",
+      "from": "counting-efficiency",
+      "to": "counting-bruteforce/backtracking",
+      "label": "yes",
+      "label_x": 836.219,
+      "label_y": 5225,
+      "path": "M600,5304 C600,5382.561281812354 1072.4375,5067.438718187646 1072.4375,5146"
+    },
+    {
+      "id": "counting-dp-yes",
+      "from": "counting-efficiency",
+      "to": "counting-dp",
+      "label": "no",
+      "label_x": 825.227,
+      "label_y": 5300,
+      "path": "M600,5304 C600,5321.677669529664 1050.453125,5278.322330470336 1050.453125,5296"
+    },
+    {
+      "id": "counting-no",
+      "from": "counting",
+      "to": "sequence-count",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 5150,
+      "path": "M200,5004 C200,5150 200,5150 200,5296"
+    },
+    {
+      "id": "linked-list-twopointers-yes",
+      "from": "linked-list",
+      "to": "linked-list-twopointers",
+      "label": "yes",
+      "label_x": 396.773,
+      "label_y": 2550,
+      "path": "M200,2604 C200,2668.9519052838327 593.546875,2431.0480947161673 593.546875,2496"
+    },
+    {
+      "id": "linked-list-no",
+      "from": "linked-list",
+      "to": "small-constraints",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 2700,
+      "path": "M200,2604 C200,2700 200,2700 200,2796"
+    },
+    {
+      "id": "kth-smallest-yes",
+      "from": "kth-smallest",
+      "to": "kth-smallest-heap",
+      "label": "yes",
+      "label_x": 404.055,
+      "label_y": 2150,
+      "path": "M200,2204 C200,2268.9519052838327 608.109375,2031.048094716167 608.109375,2096"
+    },
+    {
+      "id": "kth-smallest-no",
+      "from": "kth-smallest",
+      "to": "linked-list",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 2300,
+      "path": "M200,2204 C200,2300 200,2300 200,2396"
+    },
+    {
+      "id": "small-constraints-efficiencyhuh",
+      "from": "small-constraints",
+      "to": "small-constraints-efficiency",
+      "label": "yes",
+      "label_x": 400,
+      "label_y": 2950,
+      "path": "M200,3004 C200,3068.9519052838327 600,2831.0480947161673 600,2896"
+    },
+    {
+      "id": "small-constraints-bruteforce/backtracking-yes",
+      "from": "small-constraints-efficiency",
+      "to": "small-constraints-bruteforce/backtracking",
+      "label": "yes",
+      "label_x": 835.148,
+      "label_y": 3050,
+      "path": "M600,3104 C600,3168.9519052838327 1070.296875,2931.0480947161673 1070.296875,2996"
+    },
+    {
+      "id": "small-constraints-dp-yes",
+      "from": "small-constraints-efficiency",
+      "to": "small-constraints-dp",
+      "label": "no",
+      "label_x": 825.227,
+      "label_y": 3125,
+      "path": "M600,3104 C600,3125 1050.453125,3125 1050.453125,3146"
+    },
+    {
+      "id": "small-constraints-no",
+      "from": "small-constraints",
+      "to": "sums",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 3075,
+      "path": "M200,3004 C200,3075 200,3075 200,3146"
+    },
+    {
+      "id": "graph-yes",
+      "from": "graph",
+      "to": "tree",
+      "label": "yes",
+      "label_x": 400,
+      "label_y": 150,
+      "path": "M200,204 C200,268.9519052838329 600,31.0480947161671 600,96"
+    },
+    {
+      "id": "graph-no",
+      "from": "graph",
+      "to": "kth-smallest",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 1100,
+      "path": "M200,204 C200,1100 200,1100 200,1996"
+    },
+    {
+      "id": "tree-yes",
+      "from": "tree",
+      "to": "tree-dfs",
+      "label": "yes",
+      "label_x": 770.305,
+      "label_y": 250,
+      "path": "M600,304 C600,368.9519052838329 940.609375,131.0480947161671 940.609375,196"
+    },
+    {
+      "id": "tree-no",
+      "from": "tree",
+      "to": "directed-graph",
+      "label": "no",
+      "label_x": 600,
+      "label_y": 400,
+      "path": "M600,304 C600,400 600,400 600,496"
+    },
+    {
+      "id": "directed-yes",
+      "from": "directed-graph",
+      "to": "directed-graph-topo",
+      "label": "yes",
+      "label_x": 806.523,
+      "label_y": 650,
+      "path": "M600,704 C600,768.951905283833 1013.046875,531.048094716167 1013.046875,596"
+    },
+    {
+      "id": "directed-no",
+      "from": "directed-graph",
+      "to": "shortest-path",
+      "label": "no",
+      "label_x": 600,
+      "label_y": 800,
+      "path": "M600,704 C600,800 600,800 600,896"
+    },
+    {
+      "id": "shortest-path-yes",
+      "from": "shortest-path",
+      "to": "shortest-path-weighted",
+      "label": "yes",
+      "label_x": 800,
+      "label_y": 1050,
+      "path": "M600,1104 C600,1168.951905283833 1000,931.048094716167 1000,996"
+    },
+    {
+      "id": "shortest-path-no",
+      "from": "shortest-path",
+      "to": "connectivity",
+      "label": "no",
+      "label_x": 600,
+      "label_y": 1200,
+      "path": "M600,1104 C600,1200 600,1200 600,1296"
+    },
+    {
+      "id": "shortest-path-weighted-yes",
+      "from": "shortest-path-weighted",
+      "to": "shortest-path-dijkstra",
+      "label": "yes",
+      "label_x": 1216.48,
+      "label_y": 1150,
+      "path": "M1000,1204 C1000,1268.951905283833 1432.953125,1031.048094716167 1432.953125,1096"
+    },
+    {
+      "id": "shortest-path-weighted-no",
+      "from": "shortest-path-weighted",
+      "to": "shortest-path-bfs",
+      "label": "no",
+      "label_x": 1169.91,
+      "label_y": 1250,
+      "path": "M1000,1204 C1000,1250 1339.8125,1250 1339.8125,1296"
+    },
+    {
+      "id": "connectivity-yes",
+      "from": "connectivity",
+      "to": "connectivity-dsu",
+      "label": "yes",
+      "label_x": 810.656,
+      "label_y": 1450,
+      "path": "M600,1504 C600,1568.951905283833 1021.3125,1331.048094716167 1021.3125,1396"
+    },
+    {
+      "id": "connectivity-no",
+      "from": "connectivity",
+      "to": "graph-smallcontraints",
+      "label": "no",
+      "label_x": 600,
+      "label_y": 1600,
+      "path": "M600,1504 C600,1600 600,1600 600,1696"
+    },
+    {
+      "id": "graph-smallcontraints-yes",
+      "from": "graph-smallcontraints",
+      "to": "graph-smallcontraints-dfs",
+      "label": "yes",
+      "label_x": 811.297,
+      "label_y": 1850,
+      "path": "M600,1904 C600,1968.951905283833 1022.59375,1731.048094716167 1022.59375,1796"
+    },
+    {
+      "id": "graph-smallcontraints-no",
+      "from": "graph-smallcontraints",
+      "to": "graph-smallcontraints-bfs",
+      "label": "no",
+      "label_x": 769.906,
+      "label_y": 1950,
+      "path": "M600,1904 C600,1950 939.8125,1950 939.8125,1996"
+    },
+    {
+      "id": "constant-memory-no",
+      "from": "constant-memory",
+      "to": "parse-symbols",
+      "label": "no",
+      "label_x": 200,
+      "label_y": 6800,
+      "path": "M200,6704 C200,6800 200,6800 200,6896"
+    },
+    {
+      "id": "parse-symbols-yes",
+      "from": "parse-symbols",
+      "to": "parse-symbols-stack",
+      "label": "yes",
+      "label_x": 375.258,
+      "label_y": 7050,
+      "path": "M200,7104 C200,7168.951905283833 550.515625,6931.048094716167 550.515625,6996"
+    }
+  ]
+}

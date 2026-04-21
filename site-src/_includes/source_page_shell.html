@@ -1,0 +1,11 @@
+<article class="source-layout">
+  {%- include source_page_header.html header=include.header -%}
+
+  <div class="source-layout__body">
+    <aside class="source-layout__sidebar">
+      {%- include source_sidebar.html module=include.module hide_title=true -%}
+    </aside>
+
+    {{ include.body }}
+  </div>
+</article>

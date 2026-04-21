@@ -6,13 +6,14 @@
   "scripts": {
     "docs:refresh": "ln -sfn AGENTS.md README.md",
     "sync:sources": "git submodule sync --recursive && git submodule update --init --recursive --remote",
-    "check:refresh": "ruby -c script/refresh_data.rb",
-    "refresh:data": "ruby script/refresh_data.rb",
-    "generate": "ruby script/refresh_data.rb",
+    "check:validate": "ruby -c script/validate_catalogs.rb",
+    "validate:catalogs": "ruby script/validate_catalogs.rb",
     "preview": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
     "build:site": "bundle exec jekyll build --source site-src --destination _site",
     "serve": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
-    "test:site": "ruby script/refresh_data.rb && bundle exec jekyll build --source site-src --destination _site"
+    "test:ruby": "bundle exec ruby -Itest test/run.rb",
+    "test:site": "ruby script/validate_catalogs.rb && bundle exec jekyll build --source site-src --destination _site",
+    "test:mobile-smoke": "playwright test tests/mobile-smoke.spec.js --config=playwright.mobile.config.js"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1"
