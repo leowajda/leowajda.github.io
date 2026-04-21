@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Leonardo Wajda</title>
+  <desc id="desc">Algorithms, source notes, and technical writing.</desc>
+  <rect width="1200" height="630" fill="#ffffff" />
+  <rect x="36" y="36" width="1128" height="558" fill="none" stroke="#000000" stroke-width="2" />
+  <text x="88" y="178" fill="#000000" font-family="monospace" font-size="72" font-weight="700">Leonardo Wajda</text>
+  <text x="88" y="250" fill="#000000" font-family="monospace" font-size="30">Algorithms, source notes, and technical writing.</text>
+  <line x1="88" y1="312" x2="1112" y2="312" stroke="#000000" stroke-width="2" />
+  <text x="88" y="392" fill="#000000" font-family="monospace" font-size="28">Eureka</text>
+  <text x="88" y="440" fill="#000000" font-family="monospace" font-size="28">Zibaldone</text>
+  <text x="88" y="488" fill="#000000" font-family="monospace" font-size="28">Writing</text>
+  <text x="88" y="556" fill="#000000" font-family="monospace" font-size="26">leowajda.github.io</text>
+</svg>

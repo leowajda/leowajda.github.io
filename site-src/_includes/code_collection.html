@@ -1,0 +1,93 @@
+{%- assign collection = include.collection -%}
+{%- assign items = collection.items -%}
+{%- if items and items.size > 0 -%}
+  {%- assign collection_id = include.collection_id | default: '' -%}
+  {%- assign default_entry_id = collection.default_entry_id | default: items.first.entry_id -%}
+  {%- assign sync_hash = collection.sync_hash -%}
+  {%- assign toolbar_aria = collection.toolbar_aria | default: 'Code collection' -%}
+  {%- assign toolbar_groups = collection.toolbar_groups -%}
+  {%- assign entry_action_groups = collection.entry_action_groups -%}
+  {%- assign global_actions = collection.global_actions -%}
+
+  <section
+    class="code-collection"
+    {% if collection_id != '' %}id="{{ collection_id }}"{% endif %}
+    data-code-collection
+    data-code-collection-toolbar-label="{{ toolbar_aria | escape }}"
+    data-code-collection-default-entry="{{ default_entry_id | escape }}"
+    {% if sync_hash == true or sync_hash == 'true' %}data-code-collection-sync-hash="true"{% endif %}
+  >
+    <article class="code-panel code-collection__panel" data-code-block>
+      <header class="code-panel__header code-collection__header">
+        <div class="code-collection__toolbar">
+          {%- for group in toolbar_groups -%}
+            <div
+              class="{{ group.class }}"
+              role="toolbar"
+              aria-label="{{ group.aria_label }}"
+              {% if group.keep_visible %}data-code-collection-keep-visible="true"{% endif %}
+              {% if group.kind == "variant" %}data-code-collection-variant-group{% endif %}
+            >
+              {%- for control in group.controls -%}
+                <button
+                  type="button"
+                  class="code-collection__option{% if control.icon_only %} code-collection__option--icon{% endif %}"
+                  data-code-collection-{{ group.kind }}-control
+                  data-code-collection-{{ group.kind }}="{{ control.slug | escape }}"
+                  data-code-collection-target-entry="{{ control.target_entry_id | escape }}"
+                  {% if group.kind == "variant" %}data-code-collection-variant-label="{{ control.label | escape }}"{% endif %}
+                  aria-label="{{ control.label }}"
+                  title="{{ control.label }}"
+                >
+                  {%- if control.icon_only and control.icon != '' -%}
+                    {%- include icon.html name=control.icon class="code-collection__option-icon" -%}
+                  {%- else -%}
+                    {{ control.label }}
+                  {%- endif -%}
+                </button>
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <div class="code-panel__actions code-collection__actions">
+          {%- for action_group in entry_action_groups -%}
+            <div class="code-collection__entry-actions" data-code-collection-actions-for="{{ action_group.entry_id | escape }}" hidden>
+              {%- for action in action_group.actions -%}
+                {%- include icon_action.html action=action -%}
+              {%- endfor -%}
+            </div>
+          {%- endfor -%}
+          {%- for action in global_actions -%}
+            {%- include icon_action.html action=action -%}
+          {%- endfor -%}
+        </div>
+      </header>
+
+        <div class="code-panel__body code-block__content" data-code-source>
+        {%- for item in items -%}
+          <div
+            class="code-collection__item"
+            data-code-collection-item
+            data-code-collection-entry-id="{{ item.entry_id | escape }}"
+            data-code-collection-language="{{ item.language_slug | escape }}"
+            data-code-collection-variant="{{ item.variant_slug | escape }}"
+            id="{{ item.entry_id | escape }}"
+            hidden
+          >
+            {%- if item.code -%}
+              {%- capture code_block -%}
+```{{ item.code_language }}
+{{ item.code }}
+```
+              {%- endcapture -%}
+              {{ code_block | markdownify }}
+            {%- elsif item.content -%}
+              {{ item.content | markdownify }}
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    </article>
+  </section>
+{%- endif -%}

@@ -1,0 +1,35 @@
+{%- assign card_class = include.class | default: '' -%}
+{%- assign card_summary = include.summary | default: '' | strip -%}
+{%- assign card_body = include.body | default: '' | strip -%}
+{%- assign card_footer = include.footer | default: '' | strip -%}
+{%- assign heading_tag = include.heading_tag | default: 'h3' -%}
+<article class="content-card{% if card_class != '' %} {{ card_class }}{% endif %}">
+  <header class="content-card__header">
+    <div class="content-card__heading">
+      <{{ heading_tag }}>
+        {%- if include.url and include.url != '' -%}
+          <a href="{{ include.url | relative_url }}">{{ include.title }}</a>
+        {%- else -%}
+          {{ include.title }}
+        {%- endif -%}
+      </{{ heading_tag }}>
+    </div>
+    {%- if include.source_url and include.source_url != '' -%}
+      {%- include icon_action_link.html href=include.source_url icon="github" label="Source on GitHub" class="icon-action--compact" -%}
+    {%- endif -%}
+  </header>
+
+  {%- if card_summary != '' -%}
+    <p class="content-card__summary">{{ include.summary }}</p>
+  {%- endif -%}
+
+  {%- if card_body != '' -%}
+    {{ include.body }}
+  {%- endif -%}
+
+  {%- if card_footer != '' -%}
+    <footer class="content-card__footer">
+      {{ include.footer }}
+    </footer>
+  {%- endif -%}
+</article>

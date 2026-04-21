@@ -1,14 +1,40 @@
 {%- assign default_appearance = site.theme_config.appearance | default: 'auto' -%}
+{%- assign profiles = site.profiles | default: empty -%}
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#ffffff" />
+  <meta name="color-scheme" content="light dark" />
+  {%- if page.noindex -%}
+    <meta name="robots" content="noindex, nofollow" />
+  {%- endif -%}
 
   <title>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
   <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml" />
+  <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}" />
 
   {%- seo title=false -%}
   {%- feed_meta -%}
+  {%- unless page.noindex or page.layout == 'redirect' or page.layout == 'problem_embed' -%}
+    {%- assign page_url = page.url | absolute_url -%}
+    {%- assign page_description = page.description | default: site.description -%}
+    {%- assign site_same_as = site.social.links | default: empty -%}
+    {%- capture person_json -%}
+{
+  "@type": "Person",
+  "name": {{ site.author | default: site.title | jsonify }},
+  "url": {{ site.url | jsonify }},
+  "sameAs": {{ site_same_as | jsonify }}
+}
+    {%- endcapture -%}
+    {%- if page.structured_data_partial -%}
+      {%- include {{ page.structured_data_partial }} page_url=page_url page_description=page_description person_json=person_json -%}
+    {%- endif -%}
+  {%- endunless -%}
+  {%- for profile in profiles -%}
+    <link rel="me" href="{{ profile.url }}" />
+  {%- endfor -%}
 
   <script>
     (() => {

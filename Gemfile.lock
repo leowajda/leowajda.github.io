@@ -61,6 +61,7 @@ GEM
       rb-inotify (~> 0.9, >= 0.9.10)
     logger (1.7.0)
     mercenary (0.4.0)
+    minitest (5.27.0)
     pathutil (0.16.2)
       forwardable-extended (~> 2.6)
     public_suffix (7.0.5)
@@ -86,6 +87,7 @@ DEPENDENCIES
   jekyll-feed (~> 0.17)
   jekyll-seo-tag (~> 2.8)
   jekyll-sitemap (~> 1.4)
+  minitest (~> 5.25)
   webrick (~> 1.9)
 
 BUNDLED WITH

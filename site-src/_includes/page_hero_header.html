@@ -1,0 +1,33 @@
+<header class="page-header page-header--hero{% if include.class %} {{ include.class }}{% endif %}">
+  {%- if include.eyebrow and include.eyebrow != '' -%}
+    <p class="page-eyebrow">{{ include.eyebrow }}</p>
+  {%- endif -%}
+
+  <h1>{{ include.title }}</h1>
+
+  {%- if include.description and include.description != '' -%}
+    <p class="page-header__description">{{ include.description }}</p>
+  {%- endif -%}
+
+  {%- assign header_links = include.links | default: empty -%}
+  {%- if header_links and header_links.size > 0 -%}
+    <nav class="page-meta page-header__meta" aria-label="Related pages">
+      {%- for header_link in header_links -%}
+        {%- unless forloop.first -%}
+          <span class="page-meta__separator" aria-hidden="true">/</span>
+        {%- endunless -%}
+        <a class="page-meta__link" href="{{ header_link.url | relative_url }}">{{ header_link.label }}</a>
+      {%- endfor -%}
+    </nav>
+  {%- endif -%}
+
+  {%- assign header_note = include.note | default: '' | strip -%}
+  {%- if header_note != '' -%}
+    <p class="page-note page-header__note">{{ include.note }}</p>
+  {%- endif -%}
+
+  {%- assign header_extra = include.extra | default: '' | strip -%}
+  {%- if header_extra != '' -%}
+    {{ include.extra }}
+  {%- endif -%}
+</header>

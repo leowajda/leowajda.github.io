@@ -2,81 +2,28 @@
 layout: default
 ---
 
-{%- assign current_module = site.source_modules | where: "project_slug", page.project_slug | where: "language_slug", page.language_slug | where: "module_slug", page.module_slug | first -%}
-{%- assign current_document = page -%}
+{%- assign source_module = page.source_module -%}
+{%- assign source_document = page.source_document -%}
 
-{%- if current_module == nil or current_document.document_id == nil -%}
-  <p>Source document data not found.</p>
-{%- else -%}
-  <article class="source-layout">
-    <header class="page-header page-header--hero source-page-header">
-      <p class="page-eyebrow source-page-header__eyebrow">
-        {%- if current_document.project_url != "" -%}
-          <a href="{{ current_document.project_url | relative_url }}">{{ current_document.project_title }}</a>
-        {%- else -%}
-          <span>{{ current_document.project_title }}</span>
-        {%- endif -%}
-        <span>/</span>
-        <a href="{{ current_document.language_url | relative_url }}">{{ current_document.language_title }}</a>
-        <span>/</span>
-        <a href="{{ current_module.url | relative_url }}">{{ current_document.module_title }}</a>
-      </p>
-      <h1>{{ current_document.title }}</h1>
-      <div class="page-meta">
-        <span>{{ current_document.language }}</span>
-        <span>{{ current_document.format }}</span>
+{%- capture source_body -%}
+  {%- if source_document.format == "code" -%}
+    <section class="code-panel source-code-block source-layout__content" id="source-content" data-code-block>
+      <header class="code-panel__header code-panel__header--minimal">
+        <div class="code-panel__actions">
+        {%- include icon_action_button.html icon="copy" label="Copy" class="icon-action--compact" attributes='data-code-copy-button data-copy-default-label="Copy"' -%}
       </div>
-    </header>
+      </header>
+      <div class="code-panel__body code-block__content" data-code-source>{{ source_document.body | markdownify }}</div>
+    </section>
+  {%- else -%}
+    <section class="content-card source-article source-article--document source-layout__content" id="source-content">
+      {{ source_document.body | markdownify }}
+    </section>
+  {%- endif -%}
+{%- endcapture -%}
 
-    <div class="source-layout__body">
-      <aside class="source-layout__sidebar">
-        {%- include source_sidebar.html module=current_module project_title=current_document.project_title project_url=current_document.project_url language_title=current_document.language_title language_url=current_document.language_url -%}
-      </aside>
-
-      {%- if current_document.format == "code" -%}
-        <section class="content-card source-code-block source-layout__content" id="source-content" data-code-block>
-          {%- if current_document.breadcrumbs and current_document.breadcrumbs.size > 0 -%}
-            <nav class="source-breadcrumbs" aria-label="Document breadcrumbs">
-              <ol>
-                {%- for breadcrumb in current_document.breadcrumbs -%}
-                  <li>
-                    {%- if breadcrumb.url != "" -%}
-                      <a href="{{ breadcrumb.url | relative_url }}">{{ breadcrumb.label }}</a>
-                    {%- else -%}
-                      <span>{{ breadcrumb.label }}</span>
-                    {%- endif -%}
-                  </li>
-                {%- endfor -%}
-                <li><span>{{ current_document.title }}</span></li>
-              </ol>
-            </nav>
-          {%- endif -%}
-          <div class="action-links">
-            <button type="button" data-code-copy-button data-copy-default-label="copy">copy</button>
-          </div>
-          <div class="code-block__content" data-code-source>{{ content }}</div>
-        </section>
-      {%- else -%}
-        <section class="content-card source-article source-article--document source-layout__content" id="source-content">
-          {%- if current_document.breadcrumbs and current_document.breadcrumbs.size > 0 -%}
-            <nav class="source-breadcrumbs" aria-label="Document breadcrumbs">
-              <ol>
-                {%- for breadcrumb in current_document.breadcrumbs -%}
-                  <li>
-                    {%- if breadcrumb.url != "" -%}
-                      <a href="{{ breadcrumb.url | relative_url }}">{{ breadcrumb.label }}</a>
-                    {%- else -%}
-                      <span>{{ breadcrumb.label }}</span>
-                    {%- endif -%}
-                  </li>
-                {%- endfor -%}
-                <li><span>{{ current_document.title }}</span></li>
-              </ol>
-            </nav>
-          {%- endif -%}
-          {{ content }}
-        </section>
-      {%- endif -%}
-    </div>
-  </article>
-{%- endif -%}
+{%- include source_page_shell.html
+  header=page.source_header
+  module=source_module
+  body=source_body
+-%}

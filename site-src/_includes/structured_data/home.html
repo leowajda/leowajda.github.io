@@ -1,0 +1,50 @@
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": {{ site.title | jsonify }},
+  "description": {{ site.description | jsonify }},
+  "url": {{ site.url | jsonify }},
+  "author": {{ include.person_json | strip }}
+}
+</script>
+{%- assign homepage_projects = page.home_projects | default: empty -%}
+{%- if homepage_projects.size > 0 -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Projects",
+    "itemListElement": [
+      {%- for project in homepage_projects -%}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.index }},
+          "name": {{ project.title | jsonify }}{% if project.home_url != '' %},
+          "url": {{ project.home_url | absolute_url | jsonify }}{% endif %}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+{%- endif -%}
+{%- assign writing_posts = site.posts | default: empty -%}
+{%- if writing_posts.size > 0 -%}
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Writing",
+    "itemListElement": [
+      {%- for post in writing_posts -%}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.index }},
+          "name": {{ post.title | jsonify }},
+          "url": {{ post.url | absolute_url | jsonify }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+  </script>
+{%- endif -%}

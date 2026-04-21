@@ -3,7 +3,10 @@ author: Leonardo Wajda
 email: dev.leowajda@tuta.io
 url: https://leowajda.github.io
 baseurl: ""
+locale: en_US
+tagline: "Algorithms, source notes, and technical writing."
 description: "A focused personal website for algorithm solutions, source notes, and technical writing."
+logo: /assets/favicon.svg
 
 markdown: kramdown
 highlighter: rouge
@@ -14,34 +17,15 @@ sass:
 
 collections_dir: collections
 
+collections:
+  algorithmic_templates:
+    output: false
+    sort_by: order
+
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
-
-collections:
-  projects:
-    output: false
-  eureka_indexes:
-    output: false
-  eureka_languages:
-    output: true
-    permalink: /:path/
-  eureka_problems:
-    output: true
-    permalink: /:path/
-  eureka_implementations:
-    output: true
-    permalink: /:path/
-  source_languages:
-    output: true
-    permalink: /:path/
-  source_modules:
-    output: true
-    permalink: /:path/
-  source_documents:
-    output: true
-    permalink: /:path/
 
 theme_config:
   appearance: "auto"
@@ -49,45 +33,82 @@ theme_config:
   show_description: true
   lowercase_titles: false
 
+github_url: &profile_github_url https://github.com/leowajda
+linkedin_url: &profile_linkedin_url https://www.linkedin.com/in/leowajda/
+
+profiles:
+  - id: github
+    icon: github
+    label: GitHub profile
+    url: *profile_github_url
+    rel: me noopener noreferrer
+  - id: linkedin
+    icon: linkedin
+    label: LinkedIn profile
+    url: *profile_linkedin_url
+    rel: me noopener noreferrer
+
+social:
+  name: Leonardo Wajda
+  links:
+    - *profile_github_url
+    - *profile_linkedin_url
+
 defaults:
+  - scope:
+      path: ""
+    values:
+      image: /assets/social-card.svg
+  - scope:
+      path: "index.md"
+    values:
+      structured_data_partial: structured_data/home.html
+  - scope:
+      path: "eureka/problems.md"
+    values:
+      structured_data_partial: structured_data/problems.html
+  - scope:
+      path: "collections/_posts/2026-04-19-algorithmic-flowchart.md"
+    values:
+      structured_data_partial: structured_data/writing_page.html
+      project_title: Eureka
+  - scope:
+      path: "collections/_posts/2026-04-20-algorithmic-templates.md"
+    values:
+      structured_data_partial: structured_data/writing_page.html
+      project_title: Eureka
   - scope:
       path: ""
       type: posts
     values:
       layout: post
-  - scope:
-      path: ""
-      type: projects
-    values:
+      shell: wide
+      structured_data_partial: structured_data/post.html
       seo:
-        type: WebPage
+        type: Article
   - scope:
       path: ""
-      type: eureka_indexes
-    values:
-      seo:
-        type: WebPage
-  - scope:
-      path: ""
-      type: eureka_languages
+      type: eureka_language_page
     values:
       layout: problems
       shell: wide
       custom_js:
         - eureka-filters
+      structured_data_partial: structured_data/problems.html
       seo:
         type: WebPage
   - scope:
       path: ""
-      type: eureka_problems
+      type: eureka_problem_page
     values:
       layout: problem
       shell: wide
+      structured_data_partial: structured_data/problem.html
       seo:
         type: WebPage
   - scope:
       path: ""
-      type: eureka_implementations
+      type: eureka_implementation_page
     values:
       layout: problem_embed
       shell: wide
@@ -95,23 +116,24 @@ defaults:
         type: WebPage
   - scope:
       path: ""
-      type: source_languages
+      type: source_language_page
     values:
-      layout: source_language
+      layout: redirect
       shell: wide
       seo:
         type: WebPage
   - scope:
       path: ""
-      type: source_modules
+      type: source_module_page
     values:
       layout: source_module
       shell: source
+      structured_data_partial: structured_data/source_module.html
       seo:
         type: WebPage
   - scope:
       path: ""
-      type: source_documents
+      type: source_document_page
     values:
       layout: source_document
       shell: source

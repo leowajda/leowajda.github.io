@@ -7,10 +7,17 @@ vendor/bundle/
 .bundle/
 __pycache__/
 
-site/
+/site/
 _site/
+_site-test/
+_site-validation/
+_site-debug/
 .cache/
+.jekyll-cache/
+.ruff_cache/
 .playwright-cli/
+test-results/
 site-src/.jekyll-cache/
+src/dojo/*
 
 .DS_Store

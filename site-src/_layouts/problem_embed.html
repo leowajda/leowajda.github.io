@@ -2,16 +2,16 @@
 layout: default
 ---
 
-{%- assign implementation = page -%}
-{%- assign problem = site.eureka_problems | where: "project_slug", implementation.project_slug | where: "problem_slug", implementation.problem_slug | first -%}
-{%- assign implementations = site.eureka_implementations | where: "project_slug", implementation.project_slug | where: "problem_slug", implementation.problem_slug | sort: "implementation_id" -%}
+{%- assign problem = page.problem_record | default: nil -%}
+{%- assign implementations = problem.implementations | default: empty -%}
+{%- assign implementation = page.selected_implementation_record | default: nil -%}
 
 {%- if problem == nil or implementations.size == 0 -%}
   <p>Problem data not found.</p>
 {%- else -%}
   <article class="problem-embed problem-embed--centered">
     {%- if implementation != nil -%}
-      {%- include problem_viewer.html problem=problem implementations=implementations embed=true implementation_id=implementation.implementation_id -%}
+      {%- include problem_viewer.html problem=problem implementations=implementations selected_implementation=implementation embed=true -%}
     {%- else -%}
       <p>Problem implementation data not found.</p>
     {%- endif -%}

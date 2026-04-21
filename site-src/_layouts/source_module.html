@@ -2,36 +2,19 @@
 layout: default
 ---
 
-{%- assign current_module = page -%}
-{%- assign page_content = content | strip -%}
+{%- assign source_module = page.source_module -%}
+{%- assign page_content = source_module.readme_markdown | strip -%}
 
-{%- if current_module.roots == nil -%}
-  <p>Source module data not found.</p>
-{%- else -%}
-  <article class="source-layout">
-    <header class="page-header page-header--hero source-page-header">
-      <p class="page-eyebrow">
-        {%- if current_module.project_url != "" -%}
-          <a href="{{ current_module.project_url | relative_url }}">{{ current_module.project_title }}</a>
-        {%- else -%}
-          {{ current_module.project_title }}
-        {%- endif -%}
-        <span>/</span>
-        <a href="{{ current_module.language_url | relative_url }}">{{ current_module.language_title }}</a>
-      </p>
-      <h1>{{ current_module.title }}</h1>
-    </header>
+{%- capture source_body -%}
+  {%- if page_content != "" -%}
+    <section class="content-card source-article source-layout__content source-module-content">
+      {{ source_module.readme_markdown | markdownify }}
+    </section>
+  {%- endif -%}
+{%- endcapture -%}
 
-    <div class="source-layout__body">
-      <aside class="source-layout__sidebar">
-        {%- include source_sidebar.html module=current_module project_title=current_module.project_title project_url=current_module.project_url language_title=current_module.language_title language_url=current_module.language_url -%}
-      </aside>
-
-      {%- if page_content != "" -%}
-        <section class="content-card source-article source-layout__content source-module-content">
-          {{ content }}
-        </section>
-      {%- endif -%}
-    </div>
-  </article>
-{%- endif -%}
+{%- include source_page_shell.html
+  header=page.source_header
+  module=source_module
+  body=source_body
+-%}

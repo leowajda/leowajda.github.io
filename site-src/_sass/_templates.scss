@@ -1,0 +1,57 @@
+.template-library,
+.template-library__content,
+.template-library__controls,
+.template-library__group-panel,
+.template-panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.template-library__content {
+  align-content: start;
+}
+
+.template-library__groups,
+.template-library__tabs {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.template-library__group-panel {
+  border-left: thin solid var(--border);
+  margin-left: 0.5rem;
+  padding-left: 1rem;
+}
+
+.template-library__group,
+.template-library__tab {
+  align-items: center;
+  appearance: none;
+  background: var(--surface);
+  border: thin solid var(--border);
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.8rem;
+  text-decoration: none;
+}
+
+.template-library__group:hover,
+.template-library__group--active,
+.template-library__tab:hover,
+.template-library__tab--active {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.template-library__group-panel[hidden],
+.template-library__tabs[hidden],
+.template-panel[hidden] {
+  display: none;
+}

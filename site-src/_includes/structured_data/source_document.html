@@ -1,0 +1,28 @@
+{%- assign source_schema = page.source_schema -%}
+{%- assign breadcrumbs = source_schema.breadcrumbs -%}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ page.title | jsonify }},
+  "description": {{ include.page_description | jsonify }},
+  "url": {{ include.page_url | jsonify }},
+  "author": {{ include.person_json | strip }}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {%- for breadcrumb in breadcrumbs -%}
+      {
+        "@type": "ListItem",
+        "position": {{ forloop.index }},
+        "name": {{ breadcrumb.name | jsonify }},
+        "item": {{ breadcrumb.item | absolute_url | jsonify }}
+      }{% unless forloop.last %},{% endunless %}
+    {%- endfor -%}
+  ]
+}
+</script>

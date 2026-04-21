@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
+        with:
+          submodules: recursive
 
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -17,5 +19,34 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.6.5
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install Node dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browser
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Validate source catalogs
+        run: ruby script/validate_catalogs.rb
+
+      - name: Run Ruby tests
+        run: pnpm test:ruby
+
       - name: Build site
         run: bundle exec jekyll build --source site-src --destination _site
+
+      - name: Check internal links
+        run: ruby script/check_internal_links.rb
+
+      - name: Run mobile smoke checks
+        run: pnpm test:mobile-smoke

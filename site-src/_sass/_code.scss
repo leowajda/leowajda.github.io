@@ -1,5 +1,153 @@
+.code-panel,
 .code-block__content,
-.source-code-block {
+.source-code-block,
+.code-collection,
+.code-collection__toolbar,
+.code-collection__options,
+.code-collection__entry-actions {
+  min-width: 0;
+}
+
+.code-collection {
+  display: grid;
+}
+
+.code-collection {
+  gap: 0.85rem;
+}
+
+.code-collection__header,
+.code-collection__toolbar,
+.code-collection__options {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.code-collection__header {
+  align-items: center;
+}
+
+.code-collection__toolbar {
+  flex: 1 1 320px;
+}
+
+.code-collection__options--variants {
+  border-left: thin solid var(--border);
+  padding-left: 0.6rem;
+}
+
+.code-collection__option {
+  align-items: center;
+  appearance: none;
+  background: var(--surface);
+  border: thin solid var(--border);
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.8rem;
+}
+
+.code-collection__option--icon {
+  min-width: 2.5rem;
+  padding: 0.45rem;
+}
+
+.code-collection__option-icon {
+  font-size: 1.2rem;
+}
+
+.code-collection__option:hover,
+.code-collection__option.is-active {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.code-collection__option:disabled,
+.code-collection__option.is-unavailable {
+  background: var(--surface);
+  color: inherit;
+  cursor: default;
+  opacity: 0.38;
+}
+
+.code-collection__option:disabled:hover,
+.code-collection__option.is-unavailable:hover {
+  background: var(--surface);
+  color: inherit;
+}
+
+.code-collection__actions,
+.code-collection__entry-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.code-collection__entry-actions[hidden],
+.code-collection__item[hidden] {
+  display: none;
+}
+
+.code-panel {
+  background: var(--code-surface);
+  border: thin solid var(--border);
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.code-panel__header {
+  align-items: flex-start;
+  border-bottom: thin solid var(--border);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+}
+
+.code-panel__header--minimal {
+  justify-content: flex-end;
+}
+
+.code-panel__heading {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.code-panel__title {
+  font-size: 1.15rem;
+  line-height: 1.3;
+  margin: 0;
+}
+
+.code-panel__meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.code-panel__meta span:not(:last-child)::after {
+  content: "•";
+  margin-left: 0.5rem;
+  opacity: 0.45;
+}
+
+.code-panel__actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.code-panel__body {
   min-width: 0;
 }
 
@@ -9,14 +157,10 @@
 }
 
 .code-block__content .highlight,
-.code-block__content .highlighter-rouge {
+.code-block__content .highlighter-rouge,
+.code-panel__body .highlight,
+.code-panel__body .highlighter-rouge {
   margin: 0;
-}
-
-.problem-page .code-block__content .highlight,
-.problem-page .code-block__content .highlighter-rouge {
-  max-width: 100%;
-  overflow-x: hidden;
 }
 
 .highlight {
@@ -24,33 +168,26 @@
   border: thin solid var(--border);
 }
 
+.code-panel__body .highlight,
+.code-panel__body .highlighter-rouge {
+  background: transparent;
+  border: 0;
+}
+
 .highlight pre {
   margin: 0;
+  max-width: 100%;
   overflow-x: auto;
+  overflow-y: hidden;
   padding: 1rem;
-}
-
-.source-code-block .highlight,
-.source-code-block .highlighter-rouge,
-.source-code-block .code-block__content {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-.source-code-block .highlight pre {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  overflow-x: hidden;
-  white-space: pre-wrap;
+  white-space: pre;
   word-break: normal;
+  overflow-wrap: normal;
 }
 
-.problem-page .code-block__content .highlight pre {
-  max-width: 100%;
-  overflow-wrap: anywhere;
-  overflow-x: hidden;
-  white-space: pre-wrap;
-  word-break: normal;
+.code-panel__body .highlight pre,
+.code-panel__body pre {
+  -webkit-overflow-scrolling: touch;
 }
 
 .code-block__content .highlight code {

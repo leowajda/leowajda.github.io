@@ -1,0 +1,22 @@
+{%- assign href = include.href | default: '' -%}
+{%- assign is_external = include.external != false -%}
+{%- assign rel_value = include.rel | default: '' -%}
+{%- if rel_value == '' and is_external -%}
+  {%- assign rel_value = 'noopener noreferrer' -%}
+{%- elsif is_external -%}
+  {%- unless rel_value contains 'noopener' -%}
+    {%- assign rel_value = rel_value | append: ' noopener' | strip -%}
+  {%- endunless -%}
+{%- endif -%}
+{%- if href != '' -%}
+  <a
+    class="icon-action{% if include.class %} {{ include.class }}{% endif %}"
+    href="{{ href }}"
+    {% if is_external %}target="_blank"{% endif %}
+    {% if rel_value != '' %}rel="{{ rel_value }}"{% endif %}
+    aria-label="{{ include.label }}"
+    title="{{ include.label }}"
+  >
+    {%- include icon.html name=include.icon class="icon-action__icon" -%}
+  </a>
+{%- endif -%}

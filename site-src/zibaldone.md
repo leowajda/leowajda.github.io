@@ -1,6 +1,6 @@
 ---
-layout: source_project
-project_slug: zibaldone
+layout: redirect
+redirect_to: /
 permalink: /zibaldone/
 title: Zibaldone
 ---

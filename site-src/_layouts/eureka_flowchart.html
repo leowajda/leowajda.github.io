@@ -1,0 +1,16 @@
+---
+layout: default
+---
+
+<section class="flowchart-page">
+  {%- include page_hero_header.html
+    class="flowchart-page-header"
+    title=page.title
+    description=page.description
+    links=page.header_links
+  -%}
+
+  {%- include flowchart_canvas.html
+    canvas=page.flowchart_canvas
+  -%}
+</section>

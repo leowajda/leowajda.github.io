@@ -1,0 +1,21 @@
+---
+layout: null
+permalink: /site.webmanifest
+---
+{
+  "name": {{ site.title | jsonify }},
+  "short_name": "LW",
+  "description": {{ site.description | jsonify }},
+  "start_url": {{ '/' | relative_url | jsonify }},
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": {{ '/assets/favicon.svg' | relative_url | jsonify }},
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
