@@ -1,16 +1,41 @@
 - entry_id: heap-moving-best-java
   language: java
-  code: |
-    int[] maxInWindow(int[] nums, int k) {
-        int[] answer = new int[nums.length - k + 1];
-        PriorityQueue<int[]> heap = new PriorityQueue<>((a, b) -> b[0] - a[0]);
-        for (int i = 0; i < nums.length; i++) {
-            heap.offer(new int[] {nums[i], i});
-            while (heap.peek()[1] <= i - k)
-                heap.poll();
-            if (i >= k - 1)
-                answer[i - k + 1] = heap.peek()[0];
+  code: |-
+    void processWithBest(List<Event> events) {
+        PriorityQueue<State> heap = new PriorityQueue<>(this::betterFirst);
+        for (Event event : events) {
+            addCandidates(heap, event);
+            while (!heap.isEmpty() && stale(heap.peek(), event)) heap.remove();
+            useBest(heap.peek(), event);
         }
-        return answer;
     }
-
+- entry_id: heap-moving-best-python
+  language: python
+  code: |-
+    def process_with_best(events) -> None:
+        heap = []
+        for event in events:
+            add_candidates(heap, event)
+            while heap and stale(heap[0], event):
+                heappop(heap)
+            use_best(heap[0], event)
+- entry_id: heap-moving-best-scala
+  language: scala
+  code: |-
+    def processWithBest(events: Iterable[Event]): Unit =
+      val heap = scala.collection.mutable.PriorityQueue[State]()(betterFirst)
+      for event <- events do
+        addCandidates(heap, event)
+        while heap.nonEmpty && stale(heap.head, event) do heap.dequeue()
+        useBest(heap.head, event)
+- entry_id: heap-moving-best-cpp
+  language: cpp
+  code: |-
+    void processWithBest(const std::vector<Event>& events) {
+        std::priority_queue<State, std::vector<State>, BetterFirst> heap;
+        for (const Event& event : events) {
+            addCandidates(heap, event);
+            while (!heap.empty() && stale(heap.top(), event)) heap.pop();
+            useBest(heap.top(), event);
+        }
+    }

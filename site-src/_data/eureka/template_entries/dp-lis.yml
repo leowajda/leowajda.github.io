@@ -1,35 +1,48 @@
 - entry_id: dp-lis-java
   language: java
-  code: |
-    int lengthOfLIS(int[] nums) {
-        int[] tails = new int[nums.length];
+  code: |-
+    int increasingSubsequenceLength(int[] values) {
+        int[] tails = new int[values.length];
         int size = 0;
-        for (int value : nums) {
-            int i = Arrays.binarySearch(tails, 0, size, value);
-            if (i < 0)
-                i = -i - 1;
+        for (int value : values) {
+            int i = lowerBound(tails, size, value);
             tails[i] = value;
-            if (i == size)
-                size++;
+            if (i == size) size++;
         }
         return size;
     }
 - entry_id: dp-lis-python
   language: python
-  code: |
-    def length_of_lis(nums):
+  code: |-
+    def increasing_subsequence_length(values: list[int]) -> int:
         tails = []
-        for value in nums:
-            left, right = 0, len(tails)
-            while left < right:
-                mid = (left + right) // 2
-                if tails[mid] < value:
-                    left = mid + 1
-                else:
-                    right = mid
-            if left == len(tails):
+        for value in values:
+            i = lower_bound(tails, value)
+            if i == len(tails):
                 tails.append(value)
             else:
-                tails[left] = value
+                tails[i] = value
         return len(tails)
-
+- entry_id: dp-lis-scala
+  language: scala
+  code: |-
+    def increasingSubsequenceLength(values: Array[Int]): Int =
+      val tails = Array.fill(values.length)(0)
+      var size = 0
+      for value <- values do
+        val i = lowerBound(tails, size, value)
+        tails(i) = value
+        if i == size then size += 1
+      size
+- entry_id: dp-lis-cpp
+  language: cpp
+  code: |-
+    int increasingSubsequenceLength(const std::vector<int>& values) {
+        std::vector<int> tails;
+        for (int value : values) {
+            auto it = std::lower_bound(tails.begin(), tails.end(), value);
+            if (it == tails.end()) tails.push_back(value);
+            else *it = value;
+        }
+        return tails.size();
+    }

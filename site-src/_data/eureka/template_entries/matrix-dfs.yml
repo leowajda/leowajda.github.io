@@ -1,30 +1,47 @@
 - entry_id: matrix-dfs-java
   language: java
-  code: |
-    void floodFill(int[][] grid, int row, int col, int color, int old) {
-        if (row < 0 || row == grid.length || col < 0 || col == grid[0].length)
-            return;
-        if (grid[row][col] != old)
-            return;
-
-        grid[row][col] = color;
-        floodFill(grid, row + 1, col, color, old);
-        floodFill(grid, row - 1, col, color, old);
-        floodFill(grid, row, col + 1, color, old);
-        floodFill(grid, row, col - 1, color, old);
+  code: |-
+    void dfs(int[][] grid, int row, int col) {
+        if (!inside(grid, row, col) || seen(row, col)) return;
+        mark(row, col);
+        visit(row, col);
+        dfs(grid, row + 1, col);
+        dfs(grid, row - 1, col);
+        dfs(grid, row, col + 1);
+        dfs(grid, row, col - 1);
     }
 - entry_id: matrix-dfs-python
   language: python
-  code: |
-    def flood_fill(grid, row, col, color, old):
-        if row < 0 or row == len(grid) or col < 0 or col == len(grid[0]):
+  code: |-
+    def dfs(grid, row: int, col: int) -> None:
+        if not inside(grid, row, col) or seen(row, col):
             return
-        if grid[row][col] != old:
-            return
-
-        grid[row][col] = color
-        flood_fill(grid, row + 1, col, color, old)
-        flood_fill(grid, row - 1, col, color, old)
-        flood_fill(grid, row, col + 1, color, old)
-        flood_fill(grid, row, col - 1, color, old)
-
+        mark(row, col)
+        visit(row, col)
+        dfs(grid, row + 1, col)
+        dfs(grid, row - 1, col)
+        dfs(grid, row, col + 1)
+        dfs(grid, row, col - 1)
+- entry_id: matrix-dfs-scala
+  language: scala
+  code: |-
+    def dfs(grid: Array[Array[Int]], row: Int, col: Int): Unit =
+      if inside(grid, row, col) && !seen(row, col) then
+        mark(row, col)
+        visit(row, col)
+        dfs(grid, row + 1, col)
+        dfs(grid, row - 1, col)
+        dfs(grid, row, col + 1)
+        dfs(grid, row, col - 1)
+- entry_id: matrix-dfs-cpp
+  language: cpp
+  code: |-
+    void dfs(const std::vector<std::vector<int>>& grid, int row, int col) {
+        if (!inside(grid, row, col) || seen(row, col)) return;
+        mark(row, col);
+        visit(row, col);
+        dfs(grid, row + 1, col);
+        dfs(grid, row - 1, col);
+        dfs(grid, row, col + 1);
+        dfs(grid, row, col - 1);
+    }

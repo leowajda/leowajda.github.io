@@ -1,27 +1,48 @@
 - entry_id: linked-list-java
   language: java
-  code: |
-    ListNode middleNode(ListNode head) {
+  code: |-
+    ListNode findMeetingPoint(ListNode head) {
         ListNode slow = head;
         ListNode fast = head;
-
         while (fast != null && fast.next != null) {
             slow = slow.next;
             fast = fast.next.next;
+            if (slow == fast) return slow;
         }
-
-        return slow;
+        return null;
     }
 - entry_id: linked-list-python
   language: python
-  code: |
-    def middle_node(head: ListNode | None) -> ListNode | None:
-        slow = head
-        fast = head
-
+  code: |-
+    def find_meeting_point(head):
+        slow = fast = head
         while fast and fast.next:
             slow = slow.next
             fast = fast.next.next
-
-        return slow
-
+            if slow is fast:
+                return slow
+        return None
+- entry_id: linked-list-scala
+  language: scala
+  code: |-
+    def findMeetingPoint(head: ListNode): ListNode =
+      var slow = head
+      var fast = head
+      while fast != null && fast.next != null do
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast then return slow
+      null
+- entry_id: linked-list-cpp
+  language: cpp
+  code: |-
+    ListNode* findMeetingPoint(ListNode* head) {
+        ListNode* slow = head;
+        ListNode* fast = head;
+        while (fast != nullptr && fast->next != nullptr) {
+            slow = slow->next;
+            fast = fast->next->next;
+            if (slow == fast) return slow;
+        }
+        return nullptr;
+    }

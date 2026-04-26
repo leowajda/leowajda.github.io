@@ -1,31 +1,45 @@
 - entry_id: hash-table-java
   language: java
-  code: |
-    int[] twoSum(int[] nums, int target) {
-        Map<Integer, Integer> seen = new HashMap<>();
-
-        for (int index = 0; index < nums.length; index++) {
-            int complement = target - nums[index];
-            if (seen.containsKey(complement))
-                return new int[] {seen.get(complement), index};
-
-            seen.put(nums[index], index);
+  code: |-
+    Value lookupOrBuild(List<Item> items) {
+        Map<Key, Value> seen = new HashMap<>();
+        for (Item item : items) {
+            Key key = keyOf(item);
+            if (seen.containsKey(key)) return merge(seen.get(key), item);
+            seen.put(key, valueOf(item));
         }
-
-        return new int[0];
+        return emptyValue();
     }
 - entry_id: hash-table-python
   language: python
-  code: |
-    def two_sum(nums: list[int], target: int) -> list[int]:
-        seen: dict[int, int] = {}
-
-        for index, value in enumerate(nums):
-            complement = target - value
-            if complement in seen:
-                return [seen[complement], index]
-
-            seen[value] = index
-
-        return []
-
+  code: |-
+    def lookup_or_build(items):
+        seen = {}
+        for item in items:
+            key = key_of(item)
+            if key in seen:
+                return merge(seen[key], item)
+            seen[key] = value_of(item)
+        return empty_value()
+- entry_id: hash-table-scala
+  language: scala
+  code: |-
+    def lookupOrBuild(items: Iterable[Item]): Value =
+      val seen = scala.collection.mutable.Map[Key, Value]()
+      for item <- items do
+        val key = keyOf(item)
+        if seen.contains(key) then return merge(seen(key), item)
+        seen(key) = valueOf(item)
+      emptyValue()
+- entry_id: hash-table-cpp
+  language: cpp
+  code: |-
+    Value lookupOrBuild(const std::vector<Item>& items) {
+        std::unordered_map<Key, Value> seen;
+        for (const Item& item : items) {
+            Key key = keyOf(item);
+            if (seen.count(key)) return merge(seen[key], item);
+            seen[key] = valueOf(item);
+        }
+        return emptyValue();
+    }

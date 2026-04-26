@@ -1,77 +1,44 @@
 - entry_id: two-pointers-opposite-java
   language: java
-  code: |
-    int[] twoSumSorted(int[] nums, int target) {
+  code: |-
+    void scanInward(int[] values) {
         int left = 0;
-        int right = nums.length - 1;
-
+        int right = values.length - 1;
         while (left < right) {
-            int sum = nums[left] + nums[right];
-
-            if (sum == target)
-                return new int[]{left, right};
-            if (sum < target)
-                left++;
-            else
-                right--;
+            use(values[left], values[right]);
+            if (moveLeft(values[left], values[right])) left++;
+            else right--;
         }
-
-        return new int[]{-1, -1};
     }
-- entry_id: two-pointers-opposite-scala
-  language: scala
-  code: |
-    def twoSumSorted(nums: Array[Int], target: Int): (Int, Int) =
-      var left = 0
-      var right = nums.length - 1
-
-      while left < right do
-        val sum = nums(left) + nums(right)
-
-        if sum == target then
-          return (left, right)
-        else if sum < target then
-          left += 1
-        else
-          right -= 1
-
-      (-1, -1)
 - entry_id: two-pointers-opposite-python
   language: python
-  code: |
-    def two_sum_sorted(nums: list[int], target: int) -> tuple[int, int]:
-        left = 0
-        right = len(nums) - 1
-
+  code: |-
+    def scan_inward(values: list[int]) -> None:
+        left, right = 0, len(values) - 1
         while left < right:
-            current = nums[left] + nums[right]
-
-            if current == target:
-                return left, right
-            if current < target:
+            use(values[left], values[right])
+            if move_left(values[left], values[right]):
                 left += 1
             else:
                 right -= 1
-
-        return -1, -1
+- entry_id: two-pointers-opposite-scala
+  language: scala
+  code: |-
+    def scanInward(values: Array[Int]): Unit =
+      var left = 0
+      var right = values.length - 1
+      while left < right do
+        use(values(left), values(right))
+        if moveLeft(values(left), values(right)) then left += 1
+        else right -= 1
 - entry_id: two-pointers-opposite-cpp
   language: cpp
-  code: |
-    std::pair<int, int> twoSumSorted(const std::vector<int>& nums, int target) {
-        int left = 0;
-        int right = static_cast<int>(nums.size()) - 1;
-
+  code: |-
+    void scanInward(const std::vector<int>& values) {
+        int left = 0, right = static_cast<int>(values.size()) - 1;
         while (left < right) {
-            int current = nums[left] + nums[right];
-
-            if (current == target)
-                return {left, right};
-            if (current < target)
-                left++;
-            else
-                right--;
+            use(values[left], values[right]);
+            if (moveLeft(values[left], values[right])) left++;
+            else right--;
         }
-
-        return {-1, -1};
     }
-

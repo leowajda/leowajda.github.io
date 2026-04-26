@@ -1,23 +1,42 @@
 - entry_id: monotonic-queue-java
   language: java
-  code: |
-    int[] maxSlidingWindow(int[] nums, int k) {
-        int[] answer = new int[nums.length - k + 1];
-        Deque<Integer> deque = new ArrayDeque<>();
-
-        for (int right = 0; right < nums.length; right++) {
-            while (!deque.isEmpty() && deque.peekFirst() <= right - k)
-                deque.pollFirst();
-
-            while (!deque.isEmpty() && nums[deque.peekLast()] <= nums[right])
-                deque.pollLast();
-
-            deque.offerLast(right);
-
-            if (right >= k - 1)
-                answer[right - k + 1] = nums[deque.peekFirst()];
-        }
-
-        return answer;
+  code: |-
+    void pushWindow(ArrayDeque<Integer> deque, int[] values, int index) {
+        while (!deque.isEmpty() && values[deque.peekLast()] <= values[index]) deque.removeLast();
+        deque.addLast(index);
     }
 
+    void expireWindow(ArrayDeque<Integer> deque, int left) {
+        while (!deque.isEmpty() && deque.peekFirst() < left) deque.removeFirst();
+    }
+- entry_id: monotonic-queue-python
+  language: python
+  code: |-
+    def push_window(deque, values: list[int], index: int) -> None:
+        while deque and values[deque[-1]] <= values[index]:
+            deque.pop()
+        deque.append(index)
+
+    def expire_window(deque, left: int) -> None:
+        while deque and deque[0] < left:
+            deque.popleft()
+- entry_id: monotonic-queue-scala
+  language: scala
+  code: |-
+    def pushWindow(deque: scala.collection.mutable.ArrayDeque[Int], values: Array[Int], index: Int): Unit =
+      while deque.nonEmpty && values(deque.last) <= values(index) do deque.removeLast()
+      deque.append(index)
+
+    def expireWindow(deque: scala.collection.mutable.ArrayDeque[Int], left: Int): Unit =
+      while deque.nonEmpty && deque.head < left do deque.removeHead()
+- entry_id: monotonic-queue-cpp
+  language: cpp
+  code: |-
+    void pushWindow(std::deque<int>& deque, const std::vector<int>& values, int index) {
+        while (!deque.empty() && values[deque.back()] <= values[index]) deque.pop_back();
+        deque.push_back(index);
+    }
+
+    void expireWindow(std::deque<int>& deque, int left) {
+        while (!deque.empty() && deque.front() < left) deque.pop_front();
+    }

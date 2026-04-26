@@ -1,34 +1,58 @@
 - entry_id: dp-bitmask-java
   language: java
-  code: |
-    int shortestHamiltonianPath(int[][] cost) {
-        int n = cost.length;
+  code: |-
+    int bitmaskDp(int n) {
         int[][] dp = new int[1 << n][n];
-        for (int[] row : dp)
-            Arrays.fill(row, 1_000_000_000);
-        dp[1][0] = 0;
-
-        for (int mask = 1; mask < (1 << n); mask++)
-            for (int last = 0; last < n; last++)
-                if ((mask & (1 << last)) != 0)
-                    for (int next = 0; next < n; next++)
-                        if ((mask & (1 << next)) == 0)
-                            dp[mask | (1 << next)][next] = Math.min(dp[mask | (1 << next)][next], dp[mask][last] + cost[last][next]);
-
-        return Arrays.stream(dp[(1 << n) - 1]).min().orElse(-1);
+        fill(dp, INF);
+        for (int start = 0; start < n; start++) dp[1 << start][start] = base(start);
+        for (int mask = 0; mask < (1 << n); mask++) {
+            for (int last = 0; last < n; last++) if (dp[mask][last] != INF) {
+                for (int next = 0; next < n; next++) if ((mask & (1 << next)) == 0) {
+                    relax(dp, mask, last, next);
+                }
+            }
+        }
+        return answer(dp);
     }
 - entry_id: dp-bitmask-python
   language: python
-  code: |
-    def shortest_hamiltonian_path(cost):
-        n = len(cost)
-        dp = [[float("inf")] * n for _ in range(1 << n)]
-        dp[1][0] = 0
+  code: |-
+    def bitmask_dp(n: int) -> int:
+        dp = [[INF] * n for _ in range(1 << n)]
+        for start in range(n):
+            dp[1 << start][start] = base(start)
         for mask in range(1 << n):
             for last in range(n):
-                if mask & (1 << last):
-                    for nxt in range(n):
-                        if not mask & (1 << nxt):
-                            dp[mask | (1 << nxt)][nxt] = min(dp[mask | (1 << nxt)][nxt], dp[mask][last] + cost[last][nxt])
-        return min(dp[-1])
-
+                if dp[mask][last] == INF:
+                    continue
+                for nxt in range(n):
+                    if not mask & (1 << nxt):
+                        relax(dp, mask, last, nxt)
+        return answer(dp)
+- entry_id: dp-bitmask-scala
+  language: scala
+  code: |-
+    def bitmaskDp(n: Int): Int =
+      val dp = Array.fill(1 << n, n)(INF)
+      for start <- 0 until n do dp(1 << start)(start) = base(start)
+      for mask <- 0 until (1 << n) do
+        for last <- 0 until n do
+          if dp(mask)(last) != INF then
+            for next <- 0 until n do
+              if (mask & (1 << next)) == 0 then relax(dp, mask, last, next)
+      answer(dp)
+- entry_id: dp-bitmask-cpp
+  language: cpp
+  code: |-
+    int bitmaskDp(int n) {
+        std::vector<std::vector<int>> dp(1 << n, std::vector<int>(n, INF));
+        for (int start = 0; start < n; start++) dp[1 << start][start] = base(start);
+        for (int mask = 0; mask < (1 << n); mask++) {
+            for (int last = 0; last < n; last++) if (dp[mask][last] != INF) {
+                for (int next = 0; next < n; next++) if ((mask & (1 << next)) == 0) {
+                    relax(dp, mask, last, next);
+                }
+            }
+        }
+        return answer(dp);
+    }

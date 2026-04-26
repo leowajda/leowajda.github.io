@@ -1,14 +1,46 @@
 - entry_id: meeting-rooms-java
   language: java
-  code: |
-    int minRooms(int[][] meetings) {
-        Arrays.sort(meetings, (a, b) -> Integer.compare(a[0], b[0]));
-        PriorityQueue<Integer> ends = new PriorityQueue<>();
-        for (int[] meeting : meetings) {
-            if (!ends.isEmpty() && ends.peek() <= meeting[0])
-                ends.poll();
-            ends.offer(meeting[1]);
+  code: |-
+    int maxConcurrent(List<Interval> intervals) {
+        List<Event> events = eventsFrom(intervals);
+        events.sort(this::byTimeThenEndBeforeStart);
+        int active = 0;
+        int best = 0;
+        for (Event event : events) {
+            active += event.delta;
+            best = Math.max(best, active);
         }
-        return ends.size();
+        return best;
     }
-
+- entry_id: meeting-rooms-python
+  language: python
+  code: |-
+    def max_concurrent(intervals) -> int:
+        active = best = 0
+        for event in sorted(events_from(intervals), key=by_time_then_end_before_start):
+            active += event.delta
+            best = max(best, active)
+        return best
+- entry_id: meeting-rooms-scala
+  language: scala
+  code: |-
+    def maxConcurrent(intervals: Vector[Interval]): Int =
+      var active = 0
+      var best = 0
+      for event <- eventsFrom(intervals).sortBy(byTimeThenEndBeforeStart) do
+        active += event.delta
+        best = best.max(active)
+      best
+- entry_id: meeting-rooms-cpp
+  language: cpp
+  code: |-
+    int maxConcurrent(const std::vector<Interval>& intervals) {
+        auto events = eventsFrom(intervals);
+        std::sort(events.begin(), events.end(), byTimeThenEndBeforeStart);
+        int active = 0, best = 0;
+        for (const Event& event : events) {
+            active += event.delta;
+            best = std::max(best, active);
+        }
+        return best;
+    }

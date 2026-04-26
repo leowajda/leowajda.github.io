@@ -1,23 +1,43 @@
 - entry_id: tree-serialize-java
   language: java
-  code: |
+  code: |-
     void serialize(TreeNode node, List<String> out) {
         if (node == null) {
             out.add("#");
             return;
         }
-        out.add(String.valueOf(node.val));
+        out.add(String.valueOf(node.value));
         serialize(node.left, out);
         serialize(node.right, out);
     }
 - entry_id: tree-serialize-python
   language: python
-  code: |
-    def serialize(node, out):
+  code: |-
+    def serialize(node, out: list[str]) -> None:
         if not node:
             out.append("#")
             return
-        out.append(str(node.val))
+        out.append(str(node.value))
         serialize(node.left, out)
         serialize(node.right, out)
-
+- entry_id: tree-serialize-scala
+  language: scala
+  code: |-
+    def serialize(node: TreeNode, out: scala.collection.mutable.Buffer[String]): Unit =
+      if node == null then out += "#"
+      else
+        out += node.value.toString
+        serialize(node.left, out)
+        serialize(node.right, out)
+- entry_id: tree-serialize-cpp
+  language: cpp
+  code: |-
+    void serialize(TreeNode* node, std::vector<std::string>& out) {
+        if (node == nullptr) {
+            out.push_back("#");
+            return;
+        }
+        out.push_back(std::to_string(node->value));
+        serialize(node->left, out);
+        serialize(node->right, out);
+    }

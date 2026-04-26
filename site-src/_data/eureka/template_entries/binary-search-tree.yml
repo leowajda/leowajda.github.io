@@ -1,21 +1,38 @@
 - entry_id: binary-search-tree-java
   language: java
-  code: |
-    boolean contains(TreeNode root, int target) {
-        while (root != null) {
-            if (root.val == target)
-                return true;
-            root = target < root.val ? root.left : root.right;
+  code: |-
+    boolean contains(TreeNode node, int target) {
+        while (node != null) {
+            if (node.value == target) return true;
+            node = target < node.value ? node.left : node.right;
         }
         return false;
     }
 - entry_id: binary-search-tree-python
   language: python
-  code: |
-    def contains(root, target):
-        while root:
-            if root.val == target:
+  code: |-
+    def contains(node, target: int) -> bool:
+        while node:
+            if node.value == target:
                 return True
-            root = root.left if target < root.val else root.right
+            node = node.left if target < node.value else node.right
         return False
-
+- entry_id: binary-search-tree-scala
+  language: scala
+  code: |-
+    def contains(node0: TreeNode, target: Int): Boolean =
+      var node = node0
+      while node != null do
+        if node.value == target then return true
+        node = if target < node.value then node.left else node.right
+      false
+- entry_id: binary-search-tree-cpp
+  language: cpp
+  code: |-
+    bool contains(TreeNode* node, int target) {
+        while (node != nullptr) {
+            if (node->value == target) return true;
+            node = target < node->value ? node->left : node->right;
+        }
+        return false;
+    }

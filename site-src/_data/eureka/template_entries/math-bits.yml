@@ -1,6 +1,6 @@
 - entry_id: math-bits-java
   language: java
-  code: |
+  code: |-
     int gcd(int a, int b) {
         while (b != 0) {
             int next = a % b;
@@ -11,9 +11,30 @@
     }
 - entry_id: math-bits-python
   language: python
-  code: |
-    def gcd(a, b):
+  code: |-
+    def gcd(a: int, b: int) -> int:
         while b:
             a, b = b, a % b
         return abs(a)
-
+- entry_id: math-bits-scala
+  language: scala
+  code: |-
+    def gcd(a0: Int, b0: Int): Int =
+      var a = a0
+      var b = b0
+      while b != 0 do
+        val next = a % b
+        a = b
+        b = next
+      a.abs
+- entry_id: math-bits-cpp
+  language: cpp
+  code: |-
+    int gcd(int a, int b) {
+        while (b != 0) {
+            int next = a % b;
+            a = b;
+            b = next;
+        }
+        return std::abs(a);
+    }

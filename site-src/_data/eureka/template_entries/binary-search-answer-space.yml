@@ -1,56 +1,44 @@
 - entry_id: binary-search-answer-space-java
   language: java
-  code: |
-    int minCapacity(int[] weights, int days) {
-        int left = 0;
-        int right = 0;
-        for (int weight : weights) {
-            left = Math.max(left, weight);
-            right += weight;
+  code: |-
+    int firstFeasible(int low, int high) {
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (feasible(mid)) high = mid;
+            else low = mid + 1;
         }
-
-        while (left < right) {
-            int mid = left + (right - left) / 2;
-            if (canShip(weights, days, mid))
-                right = mid;
-            else
-                left = mid + 1;
-        }
-        return left;
-    }
-
-    boolean canShip(int[] weights, int days, int capacity) {
-        int usedDays = 1;
-        int load = 0;
-        for (int weight : weights) {
-            if (load + weight > capacity) {
-                usedDays++;
-                load = 0;
-            }
-            load += weight;
-        }
-        return usedDays <= days;
+        return low;
     }
 - entry_id: binary-search-answer-space-python
   language: python
-  code: |
-    def min_capacity(weights, days):
-        left, right = max(weights), sum(weights)
-        while left < right:
-            mid = (left + right) // 2
-            if can_ship(weights, days, mid):
-                right = mid
+  code: |-
+    def first_feasible(low: int, high: int) -> int:
+        while low < high:
+            mid = low + (high - low) // 2
+            if feasible(mid):
+                high = mid
             else:
-                left = mid + 1
-        return left
-
-    def can_ship(weights, days, capacity):
-        used_days = 1
-        load = 0
-        for weight in weights:
-            if load + weight > capacity:
-                used_days += 1
-                load = 0
-            load += weight
-        return used_days <= days
-
+                low = mid + 1
+        return low
+- entry_id: binary-search-answer-space-scala
+  language: scala
+  code: |-
+    def firstFeasible(low0: Int, high0: Int): Int =
+      var low = low0
+      var high = high0
+      while low < high do
+        val mid = low + (high - low) / 2
+        if feasible(mid) then high = mid
+        else low = mid + 1
+      low
+- entry_id: binary-search-answer-space-cpp
+  language: cpp
+  code: |-
+    int firstFeasible(int low, int high) {
+        while (low < high) {
+            int mid = low + (high - low) / 2;
+            if (feasible(mid)) high = mid;
+            else low = mid + 1;
+        }
+        return low;
+    }

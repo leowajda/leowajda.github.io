@@ -1,37 +1,36 @@
 - entry_id: string-pattern-java
   language: java
-  code: |
-    int[] prefixTable(String pattern) {
-        int[] prefix = new int[pattern.length()];
-        int matched = 0;
-
-        for (int index = 1; index < pattern.length(); index++) {
-            while (matched > 0 && pattern.charAt(index) != pattern.charAt(matched)) {
-                matched = prefix[matched - 1];
-            }
-
-            if (pattern.charAt(index) == pattern.charAt(matched)) {
-                matched++;
-            }
-            prefix[index] = matched;
+  code: |-
+    long[] rollingHash(String text, long base, long mod) {
+        long[] hash = new long[text.length() + 1];
+        for (int i = 0; i < text.length(); i++) {
+            hash[i + 1] = (hash[i] * base + text.charAt(i)) % mod;
         }
-
-        return prefix;
+        return hash;
     }
 - entry_id: string-pattern-python
   language: python
-  code: |
-    def prefix_table(pattern: str) -> list[int]:
-        prefix = [0] * len(pattern)
-        matched = 0
-
-        for index in range(1, len(pattern)):
-            while matched > 0 and pattern[index] != pattern[matched]:
-                matched = prefix[matched - 1]
-
-            if pattern[index] == pattern[matched]:
-                matched += 1
-            prefix[index] = matched
-
-        return prefix
-
+  code: |-
+    def rolling_hash(text: str, base: int, mod: int) -> list[int]:
+        hash_values = [0]
+        for ch in text:
+            hash_values.append((hash_values[-1] * base + ord(ch)) % mod)
+        return hash_values
+- entry_id: string-pattern-scala
+  language: scala
+  code: |-
+    def rollingHash(text: String, base: Long, mod: Long): Array[Long] =
+      val hash = Array.fill(text.length + 1)(0L)
+      for i <- text.indices do
+        hash(i + 1) = (hash(i) * base + text(i).toLong) % mod
+      hash
+- entry_id: string-pattern-cpp
+  language: cpp
+  code: |-
+    std::vector<long long> rollingHash(const std::string& text, long long base, long long mod) {
+        std::vector<long long> hash(text.size() + 1);
+        for (int i = 0; i < text.size(); i++) {
+            hash[i + 1] = (hash[i] * base + text[i]) % mod;
+        }
+        return hash;
+    }

@@ -1,36 +1,48 @@
 - entry_id: kmp-java
   language: java
-  code: |
-    int indexOf(String text, String pattern) {
-        int[] lps = longestPrefixSuffix(pattern);
-        int matched = 0;
-
-        for (int i = 0; i < text.length(); i++) {
-            while (matched > 0 && text.charAt(i) != pattern.charAt(matched))
-                matched = lps[matched - 1];
-
-            if (text.charAt(i) == pattern.charAt(matched)) {
-                matched++;
-                if (matched == pattern.length())
-                    return i - pattern.length() + 1;
-            }
+  code: |-
+    int[] prefixTable(String pattern) {
+        int[] prefix = new int[pattern.length()];
+        for (int i = 1, j = 0; i < pattern.length(); i++) {
+            while (j > 0 && pattern.charAt(i) != pattern.charAt(j)) j = prefix[j - 1];
+            if (pattern.charAt(i) == pattern.charAt(j)) j++;
+            prefix[i] = j;
         }
-
-        return -1;
+        return prefix;
     }
-
-    int[] longestPrefixSuffix(String pattern) {
-        int[] lps = new int[pattern.length()];
-        int matched = 0;
-
-        for (int i = 1; i < pattern.length(); i++) {
-            while (matched > 0 && pattern.charAt(i) != pattern.charAt(matched))
-                matched = lps[matched - 1];
-
-            if (pattern.charAt(i) == pattern.charAt(matched))
-                lps[i] = ++matched;
+- entry_id: kmp-python
+  language: python
+  code: |-
+    def prefix_table(pattern: str) -> list[int]:
+        prefix = [0] * len(pattern)
+        j = 0
+        for i in range(1, len(pattern)):
+            while j and pattern[i] != pattern[j]:
+                j = prefix[j - 1]
+            if pattern[i] == pattern[j]:
+                j += 1
+            prefix[i] = j
+        return prefix
+- entry_id: kmp-scala
+  language: scala
+  code: |-
+    def prefixTable(pattern: String): Array[Int] =
+      val prefix = Array.fill(pattern.length)(0)
+      var j = 0
+      for i <- 1 until pattern.length do
+        while j > 0 && pattern(i) != pattern(j) do j = prefix(j - 1)
+        if pattern(i) == pattern(j) then j += 1
+        prefix(i) = j
+      prefix
+- entry_id: kmp-cpp
+  language: cpp
+  code: |-
+    std::vector<int> prefixTable(const std::string& pattern) {
+        std::vector<int> prefix(pattern.size());
+        for (int i = 1, j = 0; i < pattern.size(); i++) {
+            while (j > 0 && pattern[i] != pattern[j]) j = prefix[j - 1];
+            if (pattern[i] == pattern[j]) j++;
+            prefix[i] = j;
         }
-
-        return lps;
+        return prefix;
     }
-

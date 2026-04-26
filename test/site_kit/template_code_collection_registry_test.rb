@@ -18,21 +18,24 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
 
   def test_derives_language_metadata_from_the_catalog
     template = build_context.template_library_context.templates.find { |entry| entry.template_id == 'binary-search' }
-    entry = {
-      'entry_id' => 'binary-search-python',
-      'language' => 'python',
-      'code' => 'def search(values): return 0'
-    }
+    entries = complete_entries_for('binary-search').map do |entry|
+      entry.fetch('language') == 'python' ? entry.merge('code' => 'def search(values): return 0') : entry
+    end
 
     collection = SiteKit::TemplateCodeCollectionRegistry.new(
       templates: [template],
-      entries_by_template: { template.template_id => [entry] },
+      entries_by_template: { template.template_id => entries },
       language_catalog: template_language_catalog,
       code_collection_config: build_context.app_config.code_collection
     ).record.fetch(template.template_id)
 
-    assert_equal 'python', collection.fetch('items').first.fetch('code_language')
-    assert_equal 'Python', collection.fetch('toolbar_groups').first.fetch('controls').first.fetch('label')
+    python_item = collection.fetch('items').find { |item| item.fetch('language_slug') == 'python' }
+    python_control = collection.fetch('toolbar_groups').first.fetch('controls').find do |control|
+      control.fetch('slug') == 'python'
+    end
+
+    assert_equal 'python', python_item.fetch('code_language')
+    assert_equal 'Python', python_control.fetch('label')
   end
 
   def test_rejects_unknown_template_languages
@@ -154,5 +157,15 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
 
   def template_language_catalog
     build_site.data.fetch('eureka').fetch('template_languages')
+  end
+
+  def complete_entries_for(template_id)
+    template_language_catalog.keys.map do |language|
+      {
+        'entry_id' => "#{template_id}-#{language}",
+        'language' => language,
+        'code' => "#{language}_template()"
+      }
+    end
   end
 end

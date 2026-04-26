@@ -1,61 +1,46 @@
 - entry_id: sliding-window-fixed-java
   language: java
-  code: |
-    int maxWindowSum(int[] nums, int k) {
-        int windowSum = 0;
-
-        for (int i = 0; i < k; i++) {
-            windowSum += nums[i];
+  code: |-
+    int scanFixedWindow(int[] values, int width) {
+        int window = 0;
+        for (int i = 0; i < width; i++) window += values[i];
+        int best = score(window);
+        for (int right = width; right < values.length; right++) {
+            window += values[right] - values[right - width];
+            best = combine(best, score(window));
         }
-
-        int best = windowSum;
-
-        for (int right = k; right < nums.length; right++) {
-            windowSum += nums[right] - nums[right - k];
-            best = Math.max(best, windowSum);
-        }
-
         return best;
     }
-- entry_id: sliding-window-fixed-scala
-  language: scala
-  code: |
-    def maxWindowSum(nums: Array[Int], k: Int): Int =
-      var windowSum = nums.take(k).sum
-      var best = windowSum
-
-      for right <- k until nums.length do
-        windowSum += nums(right) - nums(right - k)
-        best = math.max(best, windowSum)
-
-      best
 - entry_id: sliding-window-fixed-python
   language: python
-  code: |
-    def max_window_sum(nums: list[int], k: int) -> int:
-        window_sum = sum(nums[:k])
-        best = window_sum
-
-        for right in range(k, len(nums)):
-            window_sum += nums[right] - nums[right - k]
-            best = max(best, window_sum)
-
+  code: |-
+    def scan_fixed_window(values: list[int], width: int) -> int:
+        window = sum(values[:width])
+        best = score(window)
+        for right in range(width, len(values)):
+            window += values[right] - values[right - width]
+            best = combine(best, score(window))
         return best
+- entry_id: sliding-window-fixed-scala
+  language: scala
+  code: |-
+    def scanFixedWindow(values: Array[Int], width: Int): Int =
+      var window = values.take(width).sum
+      var best = score(window)
+      for right <- width until values.length do
+        window += values(right) - values(right - width)
+        best = combine(best, score(window))
+      best
 - entry_id: sliding-window-fixed-cpp
   language: cpp
-  code: |
-    int maxWindowSum(const std::vector<int>& nums, int k) {
-        int windowSum = 0;
-        for (int i = 0; i < k; i++)
-            windowSum += nums[i];
-
-        int best = windowSum;
-
-        for (int right = k; right < static_cast<int>(nums.size()); right++) {
-            windowSum += nums[right] - nums[right - k];
-            best = std::max(best, windowSum);
+  code: |-
+    int scanFixedWindow(const std::vector<int>& values, int width) {
+        int window = 0;
+        for (int i = 0; i < width; i++) window += values[i];
+        int best = score(window);
+        for (int right = width; right < values.size(); right++) {
+            window += values[right] - values[right - width];
+            best = combine(best, score(window));
         }
-
         return best;
     }
-

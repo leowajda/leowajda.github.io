@@ -1,24 +1,45 @@
 - entry_id: line-sweep-java
   language: java
-  code: |
-    int maxOverlap(int[][] intervals) {
-        List<int[]> events = new ArrayList<>();
-
-        for (int[] interval : intervals) {
-            events.add(new int[] {interval[0], 1});
-            events.add(new int[] {interval[1], -1});
-        }
-
-        events.sort((a, b) -> a[0] == b[0] ? Integer.compare(a[1], b[1]) : Integer.compare(a[0], b[0]));
-
+  code: |-
+    int sweep(List<Event> events) {
+        events.sort(this::eventOrder);
         int active = 0;
-        int best = 0;
-
-        for (int[] event : events) {
-            active += event[1];
-            best = Math.max(best, active);
+        int answer = initial();
+        for (Event event : events) {
+            active += event.delta;
+            answer = update(answer, event, active);
         }
-
-        return best;
+        return answer;
     }
-
+- entry_id: line-sweep-python
+  language: python
+  code: |-
+    def sweep(events) -> int:
+        active = 0
+        answer = initial()
+        for event in sorted(events, key=event_order):
+            active += event.delta
+            answer = update(answer, event, active)
+        return answer
+- entry_id: line-sweep-scala
+  language: scala
+  code: |-
+    def sweep(events: Vector[Event]): Int =
+      var active = 0
+      var answer = initial()
+      for event <- events.sortBy(eventOrder) do
+        active += event.delta
+        answer = update(answer, event, active)
+      answer
+- entry_id: line-sweep-cpp
+  language: cpp
+  code: |-
+    int sweep(std::vector<Event> events) {
+        std::sort(events.begin(), events.end(), eventOrder);
+        int active = 0, answer = initial();
+        for (const Event& event : events) {
+            active += event.delta;
+            answer = update(answer, event, active);
+        }
+        return answer;
+    }
