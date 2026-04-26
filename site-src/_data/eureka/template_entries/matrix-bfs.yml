@@ -1,161 +1,71 @@
 - entry_id: matrix-bfs-java
   language: java
-  code: |
-    int shortestPath(int[][] grid, int startRow, int startCol, int targetRow, int targetCol) {
-        int rows = grid.length;
-        int cols = grid[0].length;
-        int[][] distance = new int[rows][cols];
-        int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-
-        for (int[] row : distance)
-            Arrays.fill(row, -1);
-
+  code: |-
+    void bfs(int[][] grid, int row, int col) {
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         ArrayDeque<int[]> queue = new ArrayDeque<>();
-        queue.addLast(new int[]{startRow, startCol});
-        distance[startRow][startCol] = 0;
-
+        queue.add(new int[] {row, col});
+        mark(row, col);
         while (!queue.isEmpty()) {
-            int[] cell = queue.removeFirst();
-            int row = cell[0];
-            int col = cell[1];
-
-            if (row == targetRow && col == targetCol)
-                return distance[row][col];
-
-            for (int[] direction : directions) {
-                int nextRow = row + direction[0];
-                int nextCol = col + direction[1];
-
-                if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols)
-                    continue;
-                if (grid[nextRow][nextCol] == 1 || distance[nextRow][nextCol] != -1)
-                    continue;
-
-                distance[nextRow][nextCol] = distance[row][col] + 1;
-                queue.addLast(new int[]{nextRow, nextCol});
+            int[] cell = queue.remove();
+            visit(cell[0], cell[1]);
+            for (int[] dir : dirs) {
+                int nr = cell[0] + dir[0], nc = cell[1] + dir[1];
+                if (inside(grid, nr, nc) && unvisited(nr, nc)) {
+                    mark(nr, nc);
+                    queue.add(new int[] {nr, nc});
+                }
             }
         }
-
-        return -1;
     }
-- entry_id: matrix-bfs-scala
-  language: scala
-  code: |
-    def shortestPath(
-        grid: Array[Array[Int]],
-        startRow: Int,
-        startCol: Int,
-        targetRow: Int,
-        targetCol: Int
-    ): Int =
-      val rows = grid.length
-      val cols = grid.head.length
-      val distance = Array.fill(rows, cols)(-1)
-      val directions = List((1, 0), (-1, 0), (0, 1), (0, -1))
-      val queue = scala.collection.mutable.Queue((startRow, startCol))
-
-      distance(startRow)(startCol) = 0
-
-      while queue.nonEmpty do
-        val (row, col) = queue.dequeue()
-
-        if row == targetRow && col == targetCol then
-          return distance(row)(col)
-
-        for (deltaRow, deltaCol) <- directions do
-          val nextRow = row + deltaRow
-          val nextCol = col + deltaCol
-
-          if
-            nextRow >= 0
-            && nextRow < rows
-            && nextCol >= 0
-            && nextCol < cols
-            && grid(nextRow)(nextCol) == 0
-            && distance(nextRow)(nextCol) == -1
-          then
-            distance(nextRow)(nextCol) = distance(row)(col) + 1
-            queue.enqueue((nextRow, nextCol))
-
-      -1
 - entry_id: matrix-bfs-python
   language: python
-  code: |
-    def shortest_path(grid, start_row, start_col, target_row, target_col):
-        rows = len(grid)
-        cols = len(grid[0])
-        distance = [[-1] * cols for _ in range(rows)]
-        directions = ((1, 0), (-1, 0), (0, 1), (0, -1))
-        queue = [(start_row, start_col)]
-        head = 0
-
-        distance[start_row][start_col] = 0
-
-        while head < len(queue):
-            row, col = queue[head]
-            head += 1
-
-            if (row, col) == (target_row, target_col):
-                return distance[row][col]
-
-            for delta_row, delta_col in directions:
-                next_row = row + delta_row
-                next_col = col + delta_col
-
-                if not (0 <= next_row < rows and 0 <= next_col < cols):
-                    continue
-                if grid[next_row][next_col] == 1 or distance[next_row][next_col] != -1:
-                    continue
-
-                distance[next_row][next_col] = distance[row][col] + 1
-                queue.append((next_row, next_col))
-
-        return -1
+  code: |-
+    def bfs(grid, row: int, col: int) -> None:
+        queue = deque([(row, col)])
+        mark(row, col)
+        while queue:
+            r, c = queue.popleft()
+            visit(r, c)
+            for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nr, nc = r + dr, c + dc
+                if inside(grid, nr, nc) and unvisited(nr, nc):
+                    mark(nr, nc)
+                    queue.append((nr, nc))
+- entry_id: matrix-bfs-scala
+  language: scala
+  code: |-
+    def bfs(grid: Array[Array[Int]], row: Int, col: Int): Unit =
+      val dirs = Array((1, 0), (-1, 0), (0, 1), (0, -1))
+      val queue = scala.collection.mutable.Queue((row, col))
+      mark(row, col)
+      while queue.nonEmpty do
+        val (r, c) = queue.dequeue()
+        visit(r, c)
+        for (dr, dc) <- dirs do
+          val nr = r + dr
+          val nc = c + dc
+          if inside(grid, nr, nc) && unvisited(nr, nc) then
+            mark(nr, nc)
+            queue.enqueue((nr, nc))
 - entry_id: matrix-bfs-cpp
   language: cpp
-  code: |
-    int shortestPath(
-        const std::vector<std::vector<int>>& grid,
-        int startRow,
-        int startCol,
-        int targetRow,
-        int targetCol
-    ) {
-        int rows = static_cast<int>(grid.size());
-        int cols = static_cast<int>(grid[0].size());
-        std::vector distance(rows, std::vector<int>(cols, -1));
+  code: |-
+    void bfs(const std::vector<std::vector<int>>& grid, int row, int col) {
+        std::vector<std::pair<int, int>> dirs{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
         std::queue<std::pair<int, int>> queue;
-        constexpr std::array<std::pair<int, int>, 4> directions{{
-            {1, 0},
-            {-1, 0},
-            {0, 1},
-            {0, -1},
-        }};
-
-        queue.push({startRow, startCol});
-        distance[startRow][startCol] = 0;
-
+        queue.push({row, col});
+        mark(row, col);
         while (!queue.empty()) {
-            auto [row, col] = queue.front();
+            auto [r, c] = queue.front();
             queue.pop();
-
-            if (row == targetRow && col == targetCol)
-                return distance[row][col];
-
-            for (auto [deltaRow, deltaCol] : directions) {
-                int nextRow = row + deltaRow;
-                int nextCol = col + deltaCol;
-
-                if (nextRow < 0 || nextRow >= rows || nextCol < 0 || nextCol >= cols)
-                    continue;
-                if (grid[nextRow][nextCol] == 1 || distance[nextRow][nextCol] != -1)
-                    continue;
-
-                distance[nextRow][nextCol] = distance[row][col] + 1;
-                queue.push({nextRow, nextCol});
+            visit(r, c);
+            for (auto [dr, dc] : dirs) {
+                int nr = r + dr, nc = c + dc;
+                if (inside(grid, nr, nc) && unvisited(nr, nc)) {
+                    mark(nr, nc);
+                    queue.push({nr, nc});
+                }
             }
         }
-
-        return -1;
     }
-

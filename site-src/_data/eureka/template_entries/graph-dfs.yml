@@ -1,56 +1,37 @@
 - entry_id: graph-dfs-java
   language: java
-  code: |
-    int componentSize(int node, List<List<Integer>> graph, boolean[] seen) {
+  code: |-
+    void dfs(int node, List<List<Integer>> graph, boolean[] seen) {
         seen[node] = true;
-
-        int size = 1;
-        for (int neighbor : graph.get(node)) {
-            if (seen[neighbor])
-                continue;
-
-            size += componentSize(neighbor, graph, seen);
+        visit(node);
+        for (int next : graph.get(node)) {
+            if (!seen[next]) dfs(next, graph, seen);
         }
-
-        return size;
     }
-- entry_id: graph-dfs-scala
-  language: scala
-  code: |
-    def componentSize(node: Int, graph: List[List[Int]], seen: Array[Boolean]): Int =
-      seen(node) = true
-
-      graph(node).foldLeft(1) { (size, neighbor) =>
-        if seen(neighbor) then size
-        else size + componentSize(neighbor, graph, seen)
-      }
 - entry_id: graph-dfs-python
   language: python
-  code: |
-    def component_size(node: int, graph: list[list[int]], seen: list[bool]) -> int:
+  code: |-
+    def dfs(node: int, graph: list[list[int]], seen: list[bool]) -> None:
         seen[node] = True
-        size = 1
-
-        for neighbor in graph[node]:
-            if seen[neighbor]:
-                continue
-            size += component_size(neighbor, graph, seen)
-
-        return size
+        visit(node)
+        for nxt in graph[node]:
+            if not seen[nxt]:
+                dfs(nxt, graph, seen)
+- entry_id: graph-dfs-scala
+  language: scala
+  code: |-
+    def dfs(node: Int, graph: Vector[Vector[Int]], seen: Array[Boolean]): Unit =
+      seen(node) = true
+      visit(node)
+      for next <- graph(node) do
+        if !seen(next) then dfs(next, graph, seen)
 - entry_id: graph-dfs-cpp
   language: cpp
-  code: |
-    int componentSize(int node, const std::vector<std::vector<int>>& graph, std::vector<bool>& seen) {
+  code: |-
+    void dfs(int node, const std::vector<std::vector<int>>& graph, std::vector<bool>& seen) {
         seen[node] = true;
-
-        int size = 1;
-        for (int neighbor : graph[node]) {
-            if (seen[neighbor])
-                continue;
-
-            size += componentSize(neighbor, graph, seen);
+        visit(node);
+        for (int next : graph[node]) {
+            if (!seen[next]) dfs(next, graph, seen);
         }
-
-        return size;
     }
-

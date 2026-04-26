@@ -10,16 +10,19 @@ test("template guide opens old template hashes through redirects", async ({ page
   await expect(page).toHaveURL(/#graph%2Ftopological-sort$/)
 })
 
-test("broad pattern targets open the first concrete template in that pattern", async ({ page }) => {
+test("broad pattern targets open the concrete template group", async ({ page }) => {
   await page.goto("/writing/algorithmic-templates/#graph")
 
   const guide = page.locator(".template-library__nav")
   const graphTemplates = page.getByLabel("Graph templates")
 
   await expect(guide.getByRole("button", { name: "Graph" })).toHaveAttribute("aria-expanded", "true")
-  await expect(graphTemplates.getByRole("button", { name: "DFS" })).toHaveAttribute("aria-pressed", "true")
+  await expect(graphTemplates.getByRole("button", { name: "DFS" })).toHaveAttribute("aria-pressed", "false")
+  await expect(graphTemplates.getByRole("button", { name: "BFS" })).toHaveAttribute("aria-pressed", "false")
   await expect(page.locator('[aria-label="Tree templates"]')).toBeHidden()
   await expect(page.locator('[data-template-panel][data-guide-target="graph/dfs"]')).toBeVisible()
+  await expect(page.locator('[data-template-panel][data-guide-target="graph/bfs"]')).toBeVisible()
+  await expect(page.locator('[data-template-panel]:not([hidden])')).toHaveCount(6)
   await expect(page).toHaveURL(/#graph$/)
 })
 
@@ -31,7 +34,7 @@ test("dynamic programming pattern exposes every concrete variant", async ({ page
 
   await expect(guide.getByRole("button", { name: "Dynamic Programming" })).toHaveAttribute("aria-expanded", "true")
   await expect(page.locator('[aria-label="Graph templates"]')).toBeHidden()
-  await expect(dynamicProgrammingTemplates.getByRole("button", { name: "1D" })).toHaveAttribute("aria-pressed", "true")
+  await expect(dynamicProgrammingTemplates.getByRole("button", { name: "1D" })).toHaveAttribute("aria-pressed", "false")
   await expect(dynamicProgrammingTemplates.getByRole("button", { name: "Grid" })).toBeVisible()
   await expect(dynamicProgrammingTemplates.getByRole("button", { name: "Two sequences" })).toBeVisible()
   await expect(dynamicProgrammingTemplates.getByRole("button", { name: "Knapsack" })).toBeVisible()
@@ -39,6 +42,7 @@ test("dynamic programming pattern exposes every concrete variant", async ({ page
   await expect(dynamicProgrammingTemplates.getByRole("button", { name: "Bitmask" })).toBeVisible()
   await expect(dynamicProgrammingTemplates.getByRole("button", { name: "LIS" })).toBeVisible()
   await expect(page.locator('[data-template-panel][data-guide-target="dynamic-programming/one-dimensional"]')).toBeVisible()
+  await expect(page.locator('[data-template-panel][data-guide-pattern="dynamic-programming"]:not([hidden])')).toHaveCount(7)
 })
 
 test("search expands only matching template branches", async ({ page }) => {

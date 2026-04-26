@@ -1,62 +1,49 @@
 - entry_id: mono-stack-java
   language: java
-  code: |
-    int[] nextGreaterIndices(int[] nums) {
-        int[] nextGreater = new int[nums.length];
-        Arrays.fill(nextGreater, -1);
-
+  code: |-
+    int[] nextGreater(int[] values) {
+        int[] answer = new int[values.length];
+        Arrays.fill(answer, -1);
         ArrayDeque<Integer> stack = new ArrayDeque<>();
-
-        for (int index = 0; index < nums.length; index++) {
-            while (!stack.isEmpty() && nums[stack.peek()] < nums[index])
-                nextGreater[stack.pop()] = index;
-            stack.push(index);
+        for (int i = 0; i < values.length; i++) {
+            while (!stack.isEmpty() && values[stack.peek()] < values[i]) answer[stack.pop()] = i;
+            stack.push(i);
         }
-
-        return nextGreater;
+        return answer;
     }
-- entry_id: mono-stack-scala
-  language: scala
-  code: |
-    def nextGreaterIndices(nums: Array[Int]): Array[Int] =
-      val nextGreater = Array.fill(nums.length)(-1)
-      val stack = scala.collection.mutable.ArrayDeque.empty[Int]
-
-      for index <- nums.indices do
-        while stack.nonEmpty && nums(stack.last) < nums(index) do
-          nextGreater(stack.removeLast()) = index
-
-        stack.append(index)
-
-      nextGreater
 - entry_id: mono-stack-python
   language: python
-  code: |
-    def next_greater_indices(nums: list[int]) -> list[int]:
-        next_greater = [-1] * len(nums)
-        stack: list[int] = []
-
-        for index, value in enumerate(nums):
-            while stack and nums[stack[-1]] < value:
-                next_greater[stack.pop()] = index
-            stack.append(index)
-
-        return next_greater
+  code: |-
+    def next_greater(values: list[int]) -> list[int]:
+        answer = [-1] * len(values)
+        stack = []
+        for i, value in enumerate(values):
+            while stack and values[stack[-1]] < value:
+                answer[stack.pop()] = i
+            stack.append(i)
+        return answer
+- entry_id: mono-stack-scala
+  language: scala
+  code: |-
+    def nextGreater(values: Array[Int]): Array[Int] =
+      val answer = Array.fill(values.length)(-1)
+      val stack = scala.collection.mutable.Stack[Int]()
+      for i <- values.indices do
+        while stack.nonEmpty && values(stack.top) < values(i) do answer(stack.pop()) = i
+        stack.push(i)
+      answer
 - entry_id: mono-stack-cpp
   language: cpp
-  code: |
-    std::vector<int> nextGreaterIndices(const std::vector<int>& nums) {
-        std::vector<int> nextGreater(nums.size(), -1);
+  code: |-
+    std::vector<int> nextGreater(const std::vector<int>& values) {
+        std::vector<int> answer(values.size(), -1);
         std::vector<int> stack;
-
-        for (int index = 0; index < static_cast<int>(nums.size()); index++) {
-            while (!stack.empty() && nums[stack.back()] < nums[index]) {
-                nextGreater[stack.back()] = index;
+        for (int i = 0; i < values.size(); i++) {
+            while (!stack.empty() && values[stack.back()] < values[i]) {
+                answer[stack.back()] = i;
                 stack.pop_back();
             }
-            stack.push_back(index);
+            stack.push_back(i);
         }
-
-        return nextGreater;
+        return answer;
     }
-

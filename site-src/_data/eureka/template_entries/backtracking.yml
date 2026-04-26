@@ -1,78 +1,60 @@
 - entry_id: backtracking-java
   language: java
-  code: |
-    List<List<Integer>> subsets(int[] nums) {
-        List<List<Integer>> subsets = new ArrayList<>();
-        collectSubsets(0, nums, new ArrayList<>(), subsets);
-        return subsets;
-    }
-
-    void collectSubsets(int index, int[] nums, List<Integer> path, List<List<Integer>> subsets) {
-        subsets.add(new ArrayList<>(path));
-
-        for (int i = index; i < nums.length; i++) {
-            path.add(nums[i]);
-            collectSubsets(i + 1, nums, path, subsets);
+  code: |-
+    void search(State state, List<Choice> path, List<List<Choice>> answer) {
+        if (complete(state)) {
+            answer.add(new ArrayList<>(path));
+            return;
+        }
+        for (Choice choice : choices(state)) {
+            if (!valid(state, choice)) continue;
+            apply(state, choice);
+            path.add(choice);
+            search(state, path, answer);
             path.remove(path.size() - 1);
+            undo(state, choice);
         }
     }
-- entry_id: backtracking-scala
-  language: scala
-  code: |
-    def subsets(nums: Array[Int]): List[List[Int]] =
-      val subsets = scala.collection.mutable.ListBuffer.empty[List[Int]]
-      val path = scala.collection.mutable.ArrayBuffer.empty[Int]
-
-      def collect(index: Int): Unit =
-        subsets += path.toList
-
-        for i <- index until nums.length do
-          path += nums(i)
-          collect(i + 1)
-          path.remove(path.length - 1)
-
-      collect(0)
-      subsets.toList
 - entry_id: backtracking-python
   language: python
-  code: |
-    def subsets(nums: list[int]) -> list[list[int]]:
-        subsets: list[list[int]] = []
-        path: list[int] = []
-
-        def collect(index: int) -> None:
-            subsets.append(path.copy())
-
-            for i in range(index, len(nums)):
-                path.append(nums[i])
-                collect(i + 1)
-                path.pop()
-
-        collect(0)
-        return subsets
+  code: |-
+    def search(state, path, answer) -> None:
+        if complete(state):
+            answer.append(path.copy())
+            return
+        for choice in choices(state):
+            if not valid(state, choice):
+                continue
+            apply(state, choice)
+            path.append(choice)
+            search(state, path, answer)
+            path.pop()
+            undo(state, choice)
+- entry_id: backtracking-scala
+  language: scala
+  code: |-
+    def search(state: State, path: List[Choice], answer: scala.collection.mutable.Buffer[List[Choice]]): Unit =
+      if complete(state) then answer += path
+      else
+        for choice <- choices(state) do
+          if valid(state, choice) then
+            applyChoice(state, choice)
+            search(state, path :+ choice, answer)
+            undoChoice(state, choice)
 - entry_id: backtracking-cpp
   language: cpp
-  code: |
-    void collectSubsets(
-        int index,
-        const std::vector<int>& nums,
-        std::vector<int>& path,
-        std::vector<std::vector<int>>& subsets
-    ) {
-        subsets.push_back(path);
-
-        for (int i = index; i < static_cast<int>(nums.size()); i++) {
-            path.push_back(nums[i]);
-            collectSubsets(i + 1, nums, path, subsets);
+  code: |-
+    void search(State& state, std::vector<Choice>& path, std::vector<std::vector<Choice>>& answer) {
+        if (complete(state)) {
+            answer.push_back(path);
+            return;
+        }
+        for (const Choice& choice : choices(state)) {
+            if (!valid(state, choice)) continue;
+            apply(state, choice);
+            path.push_back(choice);
+            search(state, path, answer);
             path.pop_back();
+            undo(state, choice);
         }
     }
-
-    std::vector<std::vector<int>> subsets(const std::vector<int>& nums) {
-        std::vector<std::vector<int>> subsets;
-        std::vector<int> path;
-
-        collectSubsets(0, nums, path, subsets);
-        return subsets;
-    }
-

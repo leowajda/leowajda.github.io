@@ -1,115 +1,67 @@
 - entry_id: topological-sort-java
   language: java
-  code: |
+  code: |-
     List<Integer> topologicalOrder(List<List<Integer>> graph) {
         int[] indegree = new int[graph.size()];
-
-        for (List<Integer> neighbors : graph)
-            for (int neighbor : neighbors)
-                indegree[neighbor]++;
-
+        for (List<Integer> edges : graph) for (int next : edges) indegree[next]++;
         ArrayDeque<Integer> queue = new ArrayDeque<>();
-        for (int node = 0; node < graph.size(); node++) {
-            if (indegree[node] == 0)
-                queue.addLast(node);
-        }
-
-        List<Integer> order = new ArrayList<>(graph.size());
-
+        for (int node = 0; node < graph.size(); node++) if (indegree[node] == 0) queue.add(node);
+        List<Integer> order = new ArrayList<>();
         while (!queue.isEmpty()) {
-            int node = queue.removeFirst();
+            int node = queue.remove();
             order.add(node);
-
-            for (int neighbor : graph.get(node)) {
-                indegree[neighbor]--;
-                if (indegree[neighbor] == 0)
-                    queue.addLast(neighbor);
-            }
+            for (int next : graph.get(node)) if (--indegree[next] == 0) queue.add(next);
         }
-
-        return order.size() == graph.size() ? order : new ArrayList<>();
+        return order;
     }
+- entry_id: topological-sort-python
+  language: python
+  code: |-
+    def topological_order(graph: list[list[int]]) -> list[int]:
+        indegree = [0] * len(graph)
+        for edges in graph:
+            for nxt in edges:
+                indegree[nxt] += 1
+        queue = deque(node for node, degree in enumerate(indegree) if degree == 0)
+        order = []
+        while queue:
+            node = queue.popleft()
+            order.append(node)
+            for nxt in graph[node]:
+                indegree[nxt] -= 1
+                if indegree[nxt] == 0:
+                    queue.append(nxt)
+        return order
 - entry_id: topological-sort-scala
   language: scala
-  code: |
-    def topologicalOrder(graph: List[List[Int]]): List[Int] =
+  code: |-
+    def topologicalOrder(graph: Vector[Vector[Int]]): Vector[Int] =
       val indegree = Array.fill(graph.length)(0)
-
-      for
-        neighbors <- graph
-        neighbor <- neighbors
-      do indegree(neighbor) += 1
-
-      val queue = scala.collection.mutable.Queue.from(
-        graph.indices.filter(node => indegree(node) == 0)
-      )
-      val order = scala.collection.mutable.ListBuffer.empty[Int]
-
+      for edges <- graph; next <- edges do indegree(next) += 1
+      val queue = scala.collection.mutable.Queue[Int]()
+      for node <- graph.indices do if indegree(node) == 0 then queue.enqueue(node)
+      val order = scala.collection.mutable.Buffer[Int]()
       while queue.nonEmpty do
         val node = queue.dequeue()
         order += node
-
-        for neighbor <- graph(node) do
-          indegree(neighbor) -= 1
-          if indegree(neighbor) == 0 then queue.enqueue(neighbor)
-
-      if order.length == graph.length then order.toList else List.empty
-- entry_id: topological-sort-python
-  language: python
-  code: |
-    def topological_order(graph):
-        indegree = [0] * len(graph)
-
-        for neighbors in graph:
-            for neighbor in neighbors:
-                indegree[neighbor] += 1
-
-        queue = [node for node, degree in enumerate(indegree) if degree == 0]
-        order = []
-        head = 0
-
-        while head < len(queue):
-            node = queue[head]
-            head += 1
-            order.append(node)
-
-            for neighbor in graph[node]:
-                indegree[neighbor] -= 1
-                if indegree[neighbor] == 0:
-                    queue.append(neighbor)
-
-        return order if len(order) == len(graph) else []
+        for next <- graph(node) do
+          indegree(next) -= 1
+          if indegree(next) == 0 then queue.enqueue(next)
+      order.toVector
 - entry_id: topological-sort-cpp
   language: cpp
-  code: |
+  code: |-
     std::vector<int> topologicalOrder(const std::vector<std::vector<int>>& graph) {
-        std::vector<int> indegree(graph.size(), 0);
-
-        for (const auto& neighbors : graph)
-            for (int neighbor : neighbors)
-                indegree[neighbor]++;
-
+        std::vector<int> indegree(graph.size());
+        for (const auto& edges : graph) for (int next : edges) indegree[next]++;
         std::queue<int> queue;
-        for (int node = 0; node < static_cast<int>(graph.size()); node++) {
-            if (indegree[node] == 0)
-                queue.push(node);
-        }
-
+        for (int node = 0; node < graph.size(); node++) if (indegree[node] == 0) queue.push(node);
         std::vector<int> order;
-        order.reserve(graph.size());
-
         while (!queue.empty()) {
             int node = queue.front();
             queue.pop();
             order.push_back(node);
-
-            for (int neighbor : graph[node]) {
-                indegree[neighbor]--;
-                if (indegree[neighbor] == 0)
-                    queue.push(neighbor);
-            }
+            for (int next : graph[node]) if (--indegree[next] == 0) queue.push(next);
         }
-
-        return order.size() == graph.size() ? order : std::vector<int>{};
+        return order;
     }
-

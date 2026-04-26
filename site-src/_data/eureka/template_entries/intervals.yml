@@ -1,19 +1,46 @@
 - entry_id: intervals-java
   language: java
-  code: |
-    int[][] mergeIntervals(int[][] intervals) {
-        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
-        List<int[]> merged = new ArrayList<>();
-
-        for (int[] interval : intervals) {
-            if (merged.isEmpty() || merged.get(merged.size() - 1)[1] < interval[0])
-                merged.add(interval.clone());
-            else {
-                int[] last = merged.get(merged.size() - 1);
-                last[1] = Math.max(last[1], interval[1]);
-            }
+  code: |-
+    List<Interval> mergeIntervals(List<Interval> intervals) {
+        intervals.sort(Comparator.comparingInt(a -> a.start));
+        List<Interval> merged = new ArrayList<>();
+        for (Interval current : intervals) {
+            if (merged.isEmpty() || merged.get(merged.size() - 1).end < current.start) merged.add(current);
+            else merged.get(merged.size() - 1).end = Math.max(merged.get(merged.size() - 1).end, current.end);
         }
-
-        return merged.toArray(new int[merged.size()][]);
+        return merged;
     }
-
+- entry_id: intervals-python
+  language: python
+  code: |-
+    def merge_intervals(intervals):
+        merged = []
+        for current in sorted(intervals, key=lambda x: x.start):
+            if not merged or merged[-1].end < current.start:
+                merged.append(current)
+            else:
+                merged[-1].end = max(merged[-1].end, current.end)
+        return merged
+- entry_id: intervals-scala
+  language: scala
+  code: |-
+    def mergeIntervals(intervals: Vector[Interval]): Vector[Interval] =
+      val merged = scala.collection.mutable.Buffer[Interval]()
+      for current <- intervals.sortBy(_.start) do
+        if merged.isEmpty || merged.last.end < current.start then merged += current
+        else merged.last.end = merged.last.end.max(current.end)
+      merged.toVector
+- entry_id: intervals-cpp
+  language: cpp
+  code: |-
+    std::vector<Interval> mergeIntervals(std::vector<Interval> intervals) {
+        std::sort(intervals.begin(), intervals.end(), [](const Interval& a, const Interval& b) {
+            return a.start < b.start;
+        });
+        std::vector<Interval> merged;
+        for (Interval current : intervals) {
+            if (merged.empty() || merged.back().end < current.start) merged.push_back(current);
+            else merged.back().end = std::max(merged.back().end, current.end);
+        }
+        return merged;
+    }

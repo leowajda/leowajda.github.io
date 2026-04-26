@@ -1,89 +1,64 @@
 - entry_id: graph-bfs-java
   language: java
-  code: |
-    int[] shortestPaths(List<List<Integer>> graph, int start) {
-        int[] distance = new int[graph.size()];
-        Arrays.fill(distance, -1);
-
+  code: |-
+    int[] distances(List<List<Integer>> graph, int start) {
+        int[] dist = new int[graph.size()];
+        Arrays.fill(dist, -1);
         ArrayDeque<Integer> queue = new ArrayDeque<>();
-        queue.addLast(start);
-        distance[start] = 0;
-
+        dist[start] = 0;
+        queue.add(start);
         while (!queue.isEmpty()) {
-            int node = queue.removeFirst();
-
-            for (int neighbor : graph.get(node)) {
-                if (distance[neighbor] != -1)
-                    continue;
-
-                distance[neighbor] = distance[node] + 1;
-                queue.addLast(neighbor);
+            int node = queue.remove();
+            for (int next : graph.get(node)) if (dist[next] == -1) {
+                dist[next] = dist[node] + 1;
+                queue.add(next);
             }
         }
-
-        return distance;
+        return dist;
     }
-- entry_id: graph-bfs-scala
-  language: scala
-  code: |
-    def shortestPaths(graph: List[List[Int]], start: Int): Array[Int] =
-      val distance = Array.fill(graph.length)(-1)
-      val queue = scala.collection.mutable.Queue(start)
-      distance(start) = 0
-
-      while queue.nonEmpty do
-        val node = queue.dequeue()
-
-        for neighbor <- graph(node) do
-          if distance(neighbor) == -1 then
-            distance(neighbor) = distance(node) + 1
-            queue.enqueue(neighbor)
-
-      distance
 - entry_id: graph-bfs-python
   language: python
-  code: |
-    def shortest_paths(graph, start):
-        distance = [-1] * len(graph)
-        distance[start] = 0
-        queue = [start]
-        head = 0
-
-        while head < len(queue):
-            node = queue[head]
-            head += 1
-
-            for neighbor in graph[node]:
-                if distance[neighbor] != -1:
-                    continue
-
-                distance[neighbor] = distance[node] + 1
-                queue.append(neighbor)
-
-        return distance
+  code: |-
+    def distances(graph: list[list[int]], start: int) -> list[int]:
+        dist = [-1] * len(graph)
+        dist[start] = 0
+        queue = deque([start])
+        while queue:
+            node = queue.popleft()
+            for nxt in graph[node]:
+                if dist[nxt] == -1:
+                    dist[nxt] = dist[node] + 1
+                    queue.append(nxt)
+        return dist
+- entry_id: graph-bfs-scala
+  language: scala
+  code: |-
+    def distances(graph: Vector[Vector[Int]], start: Int): Array[Int] =
+      val dist = Array.fill(graph.length)(-1)
+      val queue = scala.collection.mutable.Queue(start)
+      dist(start) = 0
+      while queue.nonEmpty do
+        val node = queue.dequeue()
+        for next <- graph(node) do
+          if dist(next) == -1 then
+            dist(next) = dist(node) + 1
+            queue.enqueue(next)
+      dist
 - entry_id: graph-bfs-cpp
   language: cpp
-  code: |
-    std::vector<int> shortestPaths(const std::vector<std::vector<int>>& graph, int start) {
-        std::vector<int> distance(graph.size(), -1);
+  code: |-
+    std::vector<int> distances(const std::vector<std::vector<int>>& graph, int start) {
+        std::vector<int> dist(graph.size(), -1);
         std::queue<int> queue;
-
+        dist[start] = 0;
         queue.push(start);
-        distance[start] = 0;
-
         while (!queue.empty()) {
             int node = queue.front();
             queue.pop();
-
-            for (int neighbor : graph[node]) {
-                if (distance[neighbor] != -1)
-                    continue;
-
-                distance[neighbor] = distance[node] + 1;
-                queue.push(neighbor);
+            for (int next : graph[node]) if (dist[next] == -1) {
+                dist[next] = dist[node] + 1;
+                queue.push(next);
             }
         }
-
-        return distance;
+        return dist;
     }
-

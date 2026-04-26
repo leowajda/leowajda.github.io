@@ -1,35 +1,35 @@
 - entry_id: depth-first-search-java
   language: java
-  code: |
-    int maxDepth(TreeNode root) {
-        if (root == null)
-            return 0;
-
-        return 1 + Math.max(maxDepth(root.left), maxDepth(root.right));
+  code: |-
+    void dfs(TreeNode node) {
+        if (node == null) return;
+        visit(node);
+        dfs(node.left);
+        dfs(node.right);
     }
-- entry_id: depth-first-search-scala
-  language: scala
-  code: |
-    def maxDepth(root: TreeNode): Int =
-      if root == null then
-        0
-      else
-        1 + math.max(maxDepth(root.left), maxDepth(root.right))
 - entry_id: depth-first-search-python
   language: python
-  code: |
-    def max_depth(root: TreeNode | None) -> int:
-        if root is None:
-            return 0
-
-        return 1 + max(max_depth(root.left), max_depth(root.right))
+  code: |-
+    def dfs(node) -> None:
+        if not node:
+            return
+        visit(node)
+        dfs(node.left)
+        dfs(node.right)
+- entry_id: depth-first-search-scala
+  language: scala
+  code: |-
+    def dfs(node: TreeNode): Unit =
+      if node != null then
+        visit(node)
+        dfs(node.left)
+        dfs(node.right)
 - entry_id: depth-first-search-cpp
   language: cpp
-  code: |
-    int maxDepth(TreeNode* root) {
-        if (root == nullptr)
-            return 0;
-
-        return 1 + std::max(maxDepth(root->left), maxDepth(root->right));
+  code: |-
+    void dfs(TreeNode* node) {
+        if (node == nullptr) return;
+        visit(node);
+        dfs(node->left);
+        dfs(node->right);
     }
-

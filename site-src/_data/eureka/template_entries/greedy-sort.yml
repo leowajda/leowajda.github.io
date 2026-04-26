@@ -1,16 +1,39 @@
 - entry_id: greedy-sort-java
   language: java
-  code: |
-    int maxNonOverlapping(int[][] intervals) {
-        Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
-        int count = 0;
-        int end = Integer.MIN_VALUE;
-        for (int[] interval : intervals) {
-            if (interval[0] < end)
-                continue;
-            count++;
-            end = interval[1];
+  code: |-
+    int greedyAfterSort(List<Item> items) {
+        items.sort(this::priority);
+        int answer = initial();
+        for (Item item : items) {
+            if (compatible(item)) answer = take(answer, item);
         }
-        return count;
+        return answer;
     }
-
+- entry_id: greedy-sort-python
+  language: python
+  code: |-
+    def greedy_after_sort(items) -> int:
+        answer = initial()
+        for item in sorted(items, key=priority):
+            if compatible(item):
+                answer = take(answer, item)
+        return answer
+- entry_id: greedy-sort-scala
+  language: scala
+  code: |-
+    def greedyAfterSort(items: Vector[Item]): Int =
+      var answer = initial()
+      for item <- items.sortBy(priority) do
+        if compatible(item) then answer = take(answer, item)
+      answer
+- entry_id: greedy-sort-cpp
+  language: cpp
+  code: |-
+    int greedyAfterSort(std::vector<Item>& items) {
+        std::sort(items.begin(), items.end(), priority);
+        int answer = initial();
+        for (const Item& item : items) {
+            if (compatible(item)) answer = take(answer, item);
+        }
+        return answer;
+    }

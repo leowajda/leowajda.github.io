@@ -1,18 +1,50 @@
 - entry_id: interval-insert-java
   language: java
-  code: |
-    List<int[]> insertInterval(int[][] intervals, int[] next) {
-        List<int[]> result = new ArrayList<>();
+  code: |-
+    List<Interval> insertInterval(List<Interval> intervals, Interval next) {
+        List<Interval> answer = new ArrayList<>();
         int i = 0;
-        while (i < intervals.length && intervals[i][1] < next[0])
-            result.add(intervals[i++]);
-        while (i < intervals.length && intervals[i][0] <= next[1]) {
-            next[0] = Math.min(next[0], intervals[i][0]);
-            next[1] = Math.max(next[1], intervals[i++][1]);
-        }
-        result.add(next);
-        while (i < intervals.length)
-            result.add(intervals[i++]);
-        return result;
+        while (i < intervals.size() && intervals.get(i).end < next.start) answer.add(intervals.get(i++));
+        while (i < intervals.size() && intervals.get(i).start <= next.end) next = merge(next, intervals.get(i++));
+        answer.add(next);
+        while (i < intervals.size()) answer.add(intervals.get(i++));
+        return answer;
     }
-
+- entry_id: interval-insert-python
+  language: python
+  code: |-
+    def insert_interval(intervals, next_interval):
+        answer, i = [], 0
+        while i < len(intervals) and intervals[i].end < next_interval.start:
+            answer.append(intervals[i])
+            i += 1
+        while i < len(intervals) and intervals[i].start <= next_interval.end:
+            next_interval = merge(next_interval, intervals[i])
+            i += 1
+        return answer + [next_interval] + intervals[i:]
+- entry_id: interval-insert-scala
+  language: scala
+  code: |-
+    def insertInterval(intervals: Vector[Interval], next0: Interval): Vector[Interval] =
+      val answer = scala.collection.mutable.Buffer[Interval]()
+      var next = next0
+      var i = 0
+      while i < intervals.length && intervals(i).end < next.start do
+        answer += intervals(i)
+        i += 1
+      while i < intervals.length && intervals(i).start <= next.end do
+        next = merge(next, intervals(i))
+        i += 1
+      (answer :+ next).toVector ++ intervals.drop(i)
+- entry_id: interval-insert-cpp
+  language: cpp
+  code: |-
+    std::vector<Interval> insertInterval(const std::vector<Interval>& intervals, Interval next) {
+        std::vector<Interval> answer;
+        int i = 0;
+        while (i < intervals.size() && intervals[i].end < next.start) answer.push_back(intervals[i++]);
+        while (i < intervals.size() && intervals[i].start <= next.end) next = merge(next, intervals[i++]);
+        answer.push_back(next);
+        while (i < intervals.size()) answer.push_back(intervals[i++]);
+        return answer;
+    }

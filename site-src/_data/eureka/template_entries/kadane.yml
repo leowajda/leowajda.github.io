@@ -1,15 +1,42 @@
 - entry_id: kadane-java
   language: java
-  code: |
-    int maxSubarraySum(int[] nums) {
-        int bestEndingHere = nums[0];
-        int best = nums[0];
-
-        for (int i = 1; i < nums.length; i++) {
-            bestEndingHere = Math.max(nums[i], bestEndingHere + nums[i]);
-            best = Math.max(best, bestEndingHere);
+  code: |-
+    int bestSubarray(int[] values) {
+        int best = values[0];
+        int current = values[0];
+        for (int i = 1; i < values.length; i++) {
+            current = Math.max(values[i], current + values[i]);
+            best = Math.max(best, current);
         }
-
         return best;
     }
-
+- entry_id: kadane-python
+  language: python
+  code: |-
+    def best_subarray(values: list[int]) -> int:
+        best = current = values[0]
+        for value in values[1:]:
+            current = max(value, current + value)
+            best = max(best, current)
+        return best
+- entry_id: kadane-scala
+  language: scala
+  code: |-
+    def bestSubarray(values: Array[Int]): Int =
+      var current = values(0)
+      var best = values(0)
+      for value <- values.drop(1) do
+        current = value.max(current + value)
+        best = best.max(current)
+      best
+- entry_id: kadane-cpp
+  language: cpp
+  code: |-
+    int bestSubarray(const std::vector<int>& values) {
+        int current = values[0], best = values[0];
+        for (int i = 1; i < values.size(); i++) {
+            current = std::max(values[i], current + values[i]);
+            best = std::max(best, current);
+        }
+        return best;
+    }

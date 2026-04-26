@@ -61,21 +61,19 @@ const initializeTemplateLibrary = (root) => {
     })
   }
 
-  const setTemplate = (target) => {
-    let activePanel = null
+  const setTemplate = ({ target, patternId, showPattern }) => {
+    const activePanels = []
 
     templatePanels.forEach((panel) => {
-      const isActive = panel.dataset.guideTarget === target
+      const isActive = showPattern ? panel.dataset.guidePattern === patternId : panel.dataset.guideTarget === target
       panel.hidden = !isActive
       panel.classList.toggle("is-active", isActive)
       if (isActive) {
-        activePanel = panel
+        activePanels.push(panel)
       }
     })
 
-    if (activePanel) {
-      renderLanguage(activePanel, activeLanguage)
-    }
+    activePanels.forEach((panel) => renderLanguage(panel, activeLanguage))
   }
 
   const renderTarget = (rawTarget, { updateHash = true } = {}) => {
@@ -87,20 +85,23 @@ const initializeTemplateLibrary = (root) => {
 
     const control = targetRecord.element
     const patternId = control.dataset.guidePattern || target
+    const showPattern = targetRecord.type === "pattern"
     const renderableTarget = targetRecord.type === "variant" && control.dataset.guideHasTemplate === "true"
       ? target
       : control.dataset.guideDefaultTarget || target
 
     root.dataset.templateActive = target
-    root.dataset.templateRendered = renderableTarget
+    root.dataset.templateRendered = showPattern ? target : renderableTarget
     root.dataset.guidePattern = patternId
 
     setPattern(patternId)
-    setVariant(renderableTarget)
-    setTemplate(renderableTarget)
+    setVariant(showPattern ? "" : renderableTarget)
+    setTemplate({ target: renderableTarget, patternId, showPattern })
     renderSearch()
 
-    const activeControl = variantControls.find((control) => control.dataset.guideTarget === renderableTarget) || control
+    const activeControl = showPattern
+      ? control
+      : variantControls.find((control) => control.dataset.guideTarget === renderableTarget) || control
     activeControl.scrollIntoView({ block: "nearest" })
 
     if (updateHash || target !== rawTarget) {

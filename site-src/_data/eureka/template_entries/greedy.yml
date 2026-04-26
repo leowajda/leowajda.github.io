@@ -1,36 +1,37 @@
 - entry_id: greedy-java
   language: java
-  code: |
-    int eraseOverlapIntervals(int[][] intervals) {
-        Arrays.sort(intervals, (a, b) -> Integer.compare(a[1], b[1]));
-        int removed = 0;
-        int previousEnd = Integer.MIN_VALUE;
-
-        for (int[] interval : intervals) {
-            if (interval[0] < previousEnd) {
-                removed++;
-                continue;
-            }
-
-            previousEnd = interval[1];
+  code: |-
+    int greedy(List<Item> items) {
+        int answer = initial();
+        for (Item item : items) {
+            if (forced(item)) answer = take(answer, item);
         }
-
-        return removed;
+        return answer;
     }
 - entry_id: greedy-python
   language: python
-  code: |
-    def erase_overlap_intervals(intervals: list[list[int]]) -> int:
-        intervals.sort(key=lambda interval: interval[1])
-        removed = 0
-        previous_end = -10**20
-
-        for start, end in intervals:
-            if start < previous_end:
-                removed += 1
-                continue
-
-            previous_end = end
-
-        return removed
-
+  code: |-
+    def greedy(items) -> int:
+        answer = initial()
+        for item in items:
+            if forced(item):
+                answer = take(answer, item)
+        return answer
+- entry_id: greedy-scala
+  language: scala
+  code: |-
+    def greedy(items: Iterable[Item]): Int =
+      var answer = initial()
+      for item <- items do
+        if forced(item) then answer = take(answer, item)
+      answer
+- entry_id: greedy-cpp
+  language: cpp
+  code: |-
+    int greedy(const std::vector<Item>& items) {
+        int answer = initial();
+        for (const Item& item : items) {
+            if (forced(item)) answer = take(answer, item);
+        }
+        return answer;
+    }

@@ -1,33 +1,38 @@
 - entry_id: sorting-java
   language: java
-  code: |
-    int[][] mergeIntervals(int[][] intervals) {
-        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
-        List<int[]> merged = new ArrayList<>();
-
-        for (int[] interval : intervals) {
-            if (merged.isEmpty() || merged.get(merged.size() - 1)[1] < interval[0]) {
-                merged.add(interval);
-            } else {
-                int[] last = merged.get(merged.size() - 1);
-                last[1] = Math.max(last[1], interval[1]);
-            }
+  code: |-
+    int sortAndScan(List<Item> items) {
+        items.sort(this::order);
+        int answer = initial();
+        for (Item item : items) {
+            answer = consume(answer, item);
         }
-
-        return merged.toArray(new int[merged.size()][]);
+        return answer;
     }
 - entry_id: sorting-python
   language: python
-  code: |
-    def merge_intervals(intervals: list[list[int]]) -> list[list[int]]:
-        intervals.sort(key=lambda interval: interval[0])
-        merged: list[list[int]] = []
-
-        for start, end in intervals:
-            if not merged or merged[-1][1] < start:
-                merged.append([start, end])
-            else:
-                merged[-1][1] = max(merged[-1][1], end)
-
-        return merged
-
+  code: |-
+    def sort_and_scan(items) -> int:
+        answer = initial()
+        for item in sorted(items, key=order):
+            answer = consume(answer, item)
+        return answer
+- entry_id: sorting-scala
+  language: scala
+  code: |-
+    def sortAndScan(items: Vector[Item]): Int =
+      var answer = initial()
+      for item <- items.sortBy(order) do
+        answer = consume(answer, item)
+      answer
+- entry_id: sorting-cpp
+  language: cpp
+  code: |-
+    int sortAndScan(std::vector<Item>& items) {
+        std::sort(items.begin(), items.end(), order);
+        int answer = initial();
+        for (const Item& item : items) {
+            answer = consume(answer, item);
+        }
+        return answer;
+    }

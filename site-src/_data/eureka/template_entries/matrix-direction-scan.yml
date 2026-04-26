@@ -1,26 +1,50 @@
 - entry_id: matrix-direction-scan-java
   language: java
-  code: |
-    int countNeighbors(int[][] grid, int row, int col) {
-        int count = 0;
+  code: |-
+    void scanDirections(int[][] grid, int row, int col) {
         int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
-
         for (int[] dir : dirs) {
             int r = row + dir[0];
             int c = col + dir[1];
-            if (0 <= r && r < grid.length && 0 <= c && c < grid[0].length)
-                count += grid[r][c];
+            while (inside(grid, r, c)) {
+                visit(r, c);
+                r += dir[0];
+                c += dir[1];
+            }
         }
-        return count;
     }
 - entry_id: matrix-direction-scan-python
   language: python
-  code: |
-    def count_neighbors(grid, row, col):
-        count = 0
+  code: |-
+    def scan_directions(grid, row: int, col: int) -> None:
         for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
             r, c = row + dr, col + dc
-            if 0 <= r < len(grid) and 0 <= c < len(grid[0]):
-                count += grid[r][c]
-        return count
-
+            while inside(grid, r, c):
+                visit(r, c)
+                r += dr
+                c += dc
+- entry_id: matrix-direction-scan-scala
+  language: scala
+  code: |-
+    def scanDirections(grid: Array[Array[Int]], row: Int, col: Int): Unit =
+      for (dr, dc) <- Array((1, 0), (-1, 0), (0, 1), (0, -1)) do
+        var r = row + dr
+        var c = col + dc
+        while inside(grid, r, c) do
+          visit(r, c)
+          r += dr
+          c += dc
+- entry_id: matrix-direction-scan-cpp
+  language: cpp
+  code: |-
+    void scanDirections(const std::vector<std::vector<int>>& grid, int row, int col) {
+        std::vector<std::pair<int, int>> dirs{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (auto [dr, dc] : dirs) {
+            int r = row + dr, c = col + dc;
+            while (inside(grid, r, c)) {
+                visit(r, c);
+                r += dr;
+                c += dc;
+            }
+        }
+    }

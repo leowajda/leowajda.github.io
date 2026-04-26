@@ -1,21 +1,42 @@
 - entry_id: dp-knapsack-java
   language: java
-  code: |
-    int knapsack(int[] weights, int[] values, int capacity) {
+  code: |-
+    int knapsackDp(int[] weight, int[] value, int capacity) {
         int[] dp = new int[capacity + 1];
-        for (int i = 0; i < weights.length; i++) {
-            for (int cap = capacity; cap >= weights[i]; cap--)
-                dp[cap] = Math.max(dp[cap], dp[cap - weights[i]] + values[i]);
+        for (int item = 0; item < weight.length; item++) {
+            for (int cap = capacity; cap >= weight[item]; cap--) {
+                dp[cap] = Math.max(dp[cap], dp[cap - weight[item]] + value[item]);
+            }
         }
         return dp[capacity];
     }
 - entry_id: dp-knapsack-python
   language: python
-  code: |
-    def knapsack(weights, values, capacity):
+  code: |-
+    def knapsack_dp(weight: list[int], value: list[int], capacity: int) -> int:
         dp = [0] * (capacity + 1)
-        for weight, value in zip(weights, values):
-            for cap in range(capacity, weight - 1, -1):
-                dp[cap] = max(dp[cap], dp[cap - weight] + value)
+        for w, v in zip(weight, value):
+            for cap in range(capacity, w - 1, -1):
+                dp[cap] = max(dp[cap], dp[cap - w] + v)
         return dp[capacity]
-
+- entry_id: dp-knapsack-scala
+  language: scala
+  code: |-
+    def knapsackDp(weight: Array[Int], value: Array[Int], capacity: Int): Int =
+      val dp = Array.fill(capacity + 1)(0)
+      for item <- weight.indices do
+        for cap <- capacity to weight(item) by -1 do
+          dp(cap) = dp(cap).max(dp(cap - weight(item)) + value(item))
+      dp(capacity)
+- entry_id: dp-knapsack-cpp
+  language: cpp
+  code: |-
+    int knapsackDp(const std::vector<int>& weight, const std::vector<int>& value, int capacity) {
+        std::vector<int> dp(capacity + 1);
+        for (int item = 0; item < weight.size(); item++) {
+            for (int cap = capacity; cap >= weight[item]; cap--) {
+                dp[cap] = std::max(dp[cap], dp[cap - weight[item]] + value[item]);
+            }
+        }
+        return dp[capacity];
+    }

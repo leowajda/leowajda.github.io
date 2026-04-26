@@ -44,6 +44,7 @@ module SiteKit
       entries = entries_for(template)
       validate_unique_entry_ids!(template.template_id, entries)
       validate_unique_language_variants!(template.template_id, entries)
+      validate_language_coverage!(template.template_id, entries)
 
       CodeCollectionModel.build(
         entries: entries,
@@ -138,6 +139,18 @@ module SiteKit
       return if duplicate_pairs.empty?
 
       raise "Template '#{template_id}' language and variant pairs must be unique: #{duplicate_pairs.join(', ')}"
+    end
+
+    def validate_language_coverage!(template_id, entries)
+      languages = entries.map { |entry| entry.fetch('language') }
+      missing_languages = language_catalog.keys - languages
+      extra_languages = languages - language_catalog.keys
+      return if missing_languages.empty? && extra_languages.empty?
+
+      messages = []
+      messages << "missing #{missing_languages.join(', ')}" if missing_languages.any?
+      messages << "unknown #{extra_languages.join(', ')}" if extra_languages.any?
+      raise "Template '#{template_id}' must define every supported language: #{messages.join('; ')}"
     end
   end
 end

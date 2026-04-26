@@ -1,73 +1,54 @@
 - entry_id: sliding-window-shortest-java
   language: java
-  code: |
-    int minWindowLength(int target, int[] nums) {
-        int best = Integer.MAX_VALUE;
-        int sum = 0;
-
-        for (int left = 0, right = 0; right < nums.length; right++) {
-            sum += nums[right];
-
-            while (sum >= target) {
+  code: |-
+    int shortestWindow(int[] values) {
+        int best = values.length + 1;
+        for (int left = 0, right = 0; right < values.length; right++) {
+            add(values[right]);
+            while (valid()) {
                 best = Math.min(best, right - left + 1);
-                sum -= nums[left++];
+                remove(values[left++]);
             }
         }
-
-        return best == Integer.MAX_VALUE ? 0 : best;
+        return best == values.length + 1 ? 0 : best;
     }
-- entry_id: sliding-window-shortest-scala
-  language: scala
-  code: |
-    def minWindowLength(target: Int, nums: Array[Int]): Int =
-      var left = 0
-      var sum = 0
-      var best = Int.MaxValue
-
-      for right <- nums.indices do
-        sum += nums(right)
-
-        while sum >= target do
-          best = math.min(best, right - left + 1)
-          sum -= nums(left)
-          left += 1
-
-      if best == Int.MaxValue then 0 else best
 - entry_id: sliding-window-shortest-python
   language: python
-  code: |
-    def min_window_length(target: int, nums: list[int]) -> int:
+  code: |-
+    def shortest_window(values: list[int]) -> int:
         left = 0
-        total = 0
-        best = len(nums) + 1
-
-        for right, value in enumerate(nums):
-            total += value
-
-            while total >= target:
+        best = len(values) + 1
+        for right, value in enumerate(values):
+            add(value)
+            while valid():
                 best = min(best, right - left + 1)
-                total -= nums[left]
+                remove(values[left])
                 left += 1
-
-        return 0 if best == len(nums) + 1 else best
+        return 0 if best == len(values) + 1 else best
+- entry_id: sliding-window-shortest-scala
+  language: scala
+  code: |-
+    def shortestWindow(values: Array[Int]): Int =
+      var left = 0
+      var best = values.length + 1
+      for right <- values.indices do
+        add(values(right))
+        while valid() do
+          best = best.min(right - left + 1)
+          remove(values(left))
+          left += 1
+      if best == values.length + 1 then 0 else best
 - entry_id: sliding-window-shortest-cpp
   language: cpp
-  code: |
-    int minWindowLength(int target, const std::vector<int>& nums) {
-        int left = 0;
-        int sum = 0;
-        int best = static_cast<int>(nums.size()) + 1;
-
-        for (int right = 0; right < static_cast<int>(nums.size()); right++) {
-            sum += nums[right];
-
-            while (sum >= target) {
+  code: |-
+    int shortestWindow(const std::vector<int>& values) {
+        int left = 0, best = static_cast<int>(values.size()) + 1;
+        for (int right = 0; right < values.size(); right++) {
+            add(values[right]);
+            while (valid()) {
                 best = std::min(best, right - left + 1);
-                sum -= nums[left];
-                left++;
+                remove(values[left++]);
             }
         }
-
-        return best == static_cast<int>(nums.size()) + 1 ? 0 : best;
+        return best == values.size() + 1 ? 0 : best;
     }
-

@@ -1,19 +1,41 @@
 - entry_id: stack-java
   language: java
-  code: |
-    boolean isBalanced(String s) {
-        Deque<Character> stack = new ArrayDeque<>();
-
-        for (char ch : s.toCharArray()) {
-            if (ch == '(')
-                stack.push(ch);
-            else if (ch == ')') {
-                if (stack.isEmpty())
-                    return false;
-                stack.pop();
+  code: |-
+    void parse(List<Token> tokens) {
+        ArrayDeque<Token> stack = new ArrayDeque<>();
+        for (Token token : tokens) {
+            if (opens(token)) stack.push(token);
+            else resolve(stack.pop(), token);
+        }
+    }
+- entry_id: stack-python
+  language: python
+  code: |-
+    def parse(tokens) -> None:
+        stack = []
+        for token in tokens:
+            if opens(token):
+                stack.append(token)
+            else:
+                resolve(stack.pop(), token)
+- entry_id: stack-scala
+  language: scala
+  code: |-
+    def parse(tokens: Iterable[Token]): Unit =
+      val stack = scala.collection.mutable.Stack[Token]()
+      for token <- tokens do
+        if opens(token) then stack.push(token)
+        else resolve(stack.pop(), token)
+- entry_id: stack-cpp
+  language: cpp
+  code: |-
+    void parse(const std::vector<Token>& tokens) {
+        std::vector<Token> stack;
+        for (const Token& token : tokens) {
+            if (opens(token)) stack.push_back(token);
+            else {
+                resolve(stack.back(), token);
+                stack.pop_back();
             }
         }
-
-        return stack.isEmpty();
     }
-

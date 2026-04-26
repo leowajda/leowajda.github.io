@@ -1,16 +1,44 @@
 - entry_id: line-sweep-active-set-java
   language: java
-  code: |
-    int maxActive(int[][] intervals) {
-        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
-        PriorityQueue<Integer> active = new PriorityQueue<>();
-        int best = 0;
-        for (int[] interval : intervals) {
-            while (!active.isEmpty() && active.peek() <= interval[0])
-                active.poll();
-            active.offer(interval[1]);
-            best = Math.max(best, active.size());
+  code: |-
+    void sweepWithActiveSet(List<Event> events) {
+        events.sort(this::eventOrder);
+        TreeSet<Item> active = new TreeSet<>(this::itemOrder);
+        for (Event event : events) {
+            if (event.starts) active.add(event.item);
+            else active.remove(event.item);
+            use(active, event);
         }
-        return best;
     }
-
+- entry_id: line-sweep-active-set-python
+  language: python
+  code: |-
+    def sweep_with_active_set(events) -> None:
+        active = OrderedSet()
+        for event in sorted(events, key=event_order):
+            if event.starts:
+                active.add(event.item)
+            else:
+                active.remove(event.item)
+            use(active, event)
+- entry_id: line-sweep-active-set-scala
+  language: scala
+  code: |-
+    def sweepWithActiveSet(events: Vector[Event]): Unit =
+      val active = scala.collection.mutable.TreeSet[Item]()(itemOrder)
+      for event <- events.sortBy(eventOrder) do
+        if event.starts then active += event.item
+        else active -= event.item
+        use(active, event)
+- entry_id: line-sweep-active-set-cpp
+  language: cpp
+  code: |-
+    void sweepWithActiveSet(std::vector<Event> events) {
+        std::sort(events.begin(), events.end(), eventOrder);
+        std::set<Item, ItemOrder> active;
+        for (const Event& event : events) {
+            if (event.starts) active.insert(event.item);
+            else active.erase(event.item);
+            use(active, event);
+        }
+    }

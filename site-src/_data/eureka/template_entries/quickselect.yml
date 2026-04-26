@@ -1,42 +1,53 @@
 - entry_id: quickselect-java
   language: java
-  code: |
-    int kthSmallest(int[] nums, int k) {
+  code: |-
+    int select(int[] values, int k) {
         int left = 0;
-        int right = nums.length - 1;
-        int target = k - 1;
-
+        int right = values.length - 1;
         while (left <= right) {
-            int pivotIndex = partition(nums, left, right);
-
-            if (pivotIndex == target)
-                return nums[pivotIndex];
-
-            if (pivotIndex < target)
-                left = pivotIndex + 1;
-            else
-                right = pivotIndex - 1;
+            int pivot = partition(values, left, right);
+            if (pivot == k) return values[pivot];
+            if (pivot < k) left = pivot + 1;
+            else right = pivot - 1;
         }
-
         return -1;
     }
-
-    int partition(int[] nums, int left, int right) {
-        int pivot = nums[right];
-        int store = left;
-
-        for (int i = left; i < right; i++) {
-            if (nums[i] <= pivot)
-                swap(nums, store++, i);
+- entry_id: quickselect-python
+  language: python
+  code: |-
+    def select(values: list[int], k: int) -> int:
+        left, right = 0, len(values) - 1
+        while left <= right:
+            pivot = partition(values, left, right)
+            if pivot == k:
+                return values[pivot]
+            if pivot < k:
+                left = pivot + 1
+            else:
+                right = pivot - 1
+        return -1
+- entry_id: quickselect-scala
+  language: scala
+  code: |-
+    def select(values: Array[Int], k: Int): Int =
+      var left = 0
+      var right = values.length - 1
+      while left <= right do
+        val pivot = partition(values, left, right)
+        if pivot == k then return values(pivot)
+        if pivot < k then left = pivot + 1
+        else right = pivot - 1
+      -1
+- entry_id: quickselect-cpp
+  language: cpp
+  code: |-
+    int select(std::vector<int>& values, int k) {
+        int left = 0, right = static_cast<int>(values.size()) - 1;
+        while (left <= right) {
+            int pivot = partition(values, left, right);
+            if (pivot == k) return values[pivot];
+            if (pivot < k) left = pivot + 1;
+            else right = pivot - 1;
         }
-
-        swap(nums, store, right);
-        return store;
+        return -1;
     }
-
-    void swap(int[] nums, int i, int j) {
-        int temp = nums[i];
-        nums[i] = nums[j];
-        nums[j] = temp;
-    }
-

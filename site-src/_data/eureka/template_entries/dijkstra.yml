@@ -1,53 +1,70 @@
 - entry_id: dijkstra-java
   language: java
-  code: |
-    int[] shortestPaths(List<int[]>[] graph, int source) {
-        int[] distance = new int[graph.length];
-        Arrays.fill(distance, Integer.MAX_VALUE);
-        distance[source] = 0;
-
-        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
-        queue.offer(new int[] {source, 0});
-
-        while (!queue.isEmpty()) {
-            int[] entry = queue.poll();
-            int node = entry[0];
-            int cost = entry[1];
-
-            if (cost != distance[node])
-                continue;
-
-            for (int[] edge : graph[node]) {
-                int neighbor = edge[0];
-                int weight = edge[1];
-                int nextCost = cost + weight;
-
-                if (nextCost < distance[neighbor]) {
-                    distance[neighbor] = nextCost;
-                    queue.offer(new int[] {neighbor, nextCost});
-                }
+  code: |-
+    int[] dijkstra(List<List<Edge>> graph, int source) {
+        int[] dist = new int[graph.size()];
+        Arrays.fill(dist, INF);
+        PriorityQueue<int[]> heap = new PriorityQueue<>(Comparator.comparingInt(a -> a[1]));
+        dist[source] = 0;
+        heap.add(new int[] {source, 0});
+        while (!heap.isEmpty()) {
+            int[] state = heap.remove();
+            if (state[1] != dist[state[0]]) continue;
+            for (Edge edge : graph.get(state[0])) if (state[1] + edge.weight < dist[edge.to]) {
+                dist[edge.to] = state[1] + edge.weight;
+                heap.add(new int[] {edge.to, dist[edge.to]});
             }
         }
-
-        return distance;
+        return dist;
     }
 - entry_id: dijkstra-python
   language: python
-  code: |
-    def shortest_paths(graph: list[list[tuple[int, int]]], source: int) -> list[int]:
-        distance = [float("inf")] * len(graph)
-        distance[source] = 0
+  code: |-
+    def dijkstra(graph, source: int) -> list[int]:
+        dist = [INF] * len(graph)
+        dist[source] = 0
         heap = [(0, source)]
-
         while heap:
-            cost, node = heapq.heappop(heap)
-            if cost != distance[node]:
+            cost, node = heappop(heap)
+            if cost != dist[node]:
                 continue
-
-            for neighbor, weight in graph[node]:
-                next_cost = cost + weight
-                if next_cost < distance[neighbor]:
-                    distance[neighbor] = next_cost
-                    heapq.heappush(heap, (next_cost, neighbor))
-
-        return distance
+            for nxt, weight in graph[node]:
+                if cost + weight < dist[nxt]:
+                    dist[nxt] = cost + weight
+                    heappush(heap, (dist[nxt], nxt))
+        return dist
+- entry_id: dijkstra-scala
+  language: scala
+  code: |-
+    def dijkstra(graph: Vector[Vector[Edge]], source: Int): Array[Int] =
+      val dist = Array.fill(graph.length)(INF)
+      val heap = scala.collection.mutable.PriorityQueue[(Int, Int)]()(Ordering.by(-_._1))
+      dist(source) = 0
+      heap.enqueue((0, source))
+      while heap.nonEmpty do
+        val (cost, node) = heap.dequeue()
+        if cost == dist(node) then
+          for edge <- graph(node) do
+            if cost + edge.weight < dist(edge.to) then
+              dist(edge.to) = cost + edge.weight
+              heap.enqueue((dist(edge.to), edge.to))
+      dist
+- entry_id: dijkstra-cpp
+  language: cpp
+  code: |-
+    std::vector<int> dijkstra(const std::vector<std::vector<Edge>>& graph, int source) {
+        std::vector<int> dist(graph.size(), INF);
+        std::priority_queue<State, std::vector<State>, std::greater<State>> heap;
+        dist[source] = 0;
+        heap.push({0, source});
+        while (!heap.empty()) {
+            auto [cost, node] = heap.top();
+            heap.pop();
+            if (cost != dist[node]) continue;
+            for (const Edge& edge : graph[node]) if (cost + edge.weight < dist[edge.to]) {
+                dist[edge.to] = cost + edge.weight;
+                heap.push({dist[edge.to], edge.to});
+            }
+        }
+        return dist;
+    }

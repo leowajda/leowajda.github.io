@@ -1,36 +1,42 @@
 - entry_id: dp-grid-java
   language: java
-  code: |
-    int minPathSum(int[][] grid) {
-        int rows = grid.length;
-        int cols = grid[0].length;
+  code: |-
+    int gridDp(int rows, int cols) {
         int[][] dp = new int[rows][cols];
-
         for (int r = 0; r < rows; r++) {
             for (int c = 0; c < cols; c++) {
-                int best = r == 0 && c == 0 ? 0 : Integer.MAX_VALUE;
-                if (r > 0)
-                    best = Math.min(best, dp[r - 1][c]);
-                if (c > 0)
-                    best = Math.min(best, dp[r][c - 1]);
-                dp[r][c] = best + grid[r][c];
+                dp[r][c] = transition(r, c, dp);
             }
         }
         return dp[rows - 1][cols - 1];
     }
 - entry_id: dp-grid-python
   language: python
-  code: |
-    def min_path_sum(grid):
-        rows, cols = len(grid), len(grid[0])
+  code: |-
+    def grid_dp(rows: int, cols: int) -> int:
         dp = [[0] * cols for _ in range(rows)]
         for r in range(rows):
             for c in range(cols):
-                best = 0 if r == 0 and c == 0 else float("inf")
-                if r:
-                    best = min(best, dp[r - 1][c])
-                if c:
-                    best = min(best, dp[r][c - 1])
-                dp[r][c] = best + grid[r][c]
-        return dp[-1][-1]
-
+                dp[r][c] = transition(r, c, dp)
+        return dp[rows - 1][cols - 1]
+- entry_id: dp-grid-scala
+  language: scala
+  code: |-
+    def gridDp(rows: Int, cols: Int): Int =
+      val dp = Array.fill(rows, cols)(0)
+      for r <- 0 until rows do
+        for c <- 0 until cols do
+          dp(r)(c) = transition(r, c, dp)
+      dp(rows - 1)(cols - 1)
+- entry_id: dp-grid-cpp
+  language: cpp
+  code: |-
+    int gridDp(int rows, int cols) {
+        std::vector<std::vector<int>> dp(rows, std::vector<int>(cols));
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                dp[r][c] = transition(r, c, dp);
+            }
+        }
+        return dp[rows - 1][cols - 1];
+    }

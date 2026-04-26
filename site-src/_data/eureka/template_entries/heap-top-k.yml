@@ -1,26 +1,42 @@
 - entry_id: heap-top-k-java
   language: java
-  code: |
-    List<Integer> topK(int[] nums, int k) {
-        PriorityQueue<Integer> heap = new PriorityQueue<>();
-
-        for (int value : nums) {
-            heap.offer(value);
-            if (heap.size() > k)
-                heap.poll();
+  code: |-
+    List<Item> topK(List<Item> items, int k) {
+        PriorityQueue<Item> heap = new PriorityQueue<>(Comparator.comparingInt(this::score));
+        for (Item item : items) {
+            heap.add(item);
+            if (heap.size() > k) heap.remove();
         }
-
         return new ArrayList<>(heap);
     }
 - entry_id: heap-top-k-python
   language: python
-  code: |
-    def top_k(nums: list[int], k: int) -> list[int]:
-        heap: list[int] = []
-
-        for value in nums:
-            heapq.heappush(heap, value)
+  code: |-
+    def top_k(items, k: int) -> list:
+        heap = []
+        for item in items:
+            heappush(heap, (score(item), item))
             if len(heap) > k:
-                heapq.heappop(heap)
-
-        return heap
+                heappop(heap)
+        return [item for _, item in heap]
+- entry_id: heap-top-k-scala
+  language: scala
+  code: |-
+    def topK(items: Iterable[Item], k: Int): Vector[Item] =
+      val heap = scala.collection.mutable.PriorityQueue[Item]()(Ordering.by(-score(_)))
+      for item <- items do
+        heap.enqueue(item)
+        if heap.size > k then heap.dequeue()
+      heap.toVector
+- entry_id: heap-top-k-cpp
+  language: cpp
+  code: |-
+    std::vector<Item> topK(const std::vector<Item>& items, int k) {
+        auto worse = [](const Item& a, const Item& b) { return score(a) > score(b); };
+        std::priority_queue<Item, std::vector<Item>, decltype(worse)> heap(worse);
+        for (const Item& item : items) {
+            heap.push(item);
+            if (heap.size() > k) heap.pop();
+        }
+        return drain(heap);
+    }
