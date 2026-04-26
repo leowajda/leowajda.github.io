@@ -1,0 +1,15 @@
+- entry_id: kadane-java
+  language: java
+  code: |
+    int maxSubarraySum(int[] nums) {
+        int bestEndingHere = nums[0];
+        int best = nums[0];
+
+        for (int i = 1; i < nums.length; i++) {
+            bestEndingHere = Math.max(nums[i], bestEndingHere + nums[i]);
+            best = Math.max(best, bestEndingHere);
+        }
+
+        return best;
+    }
+

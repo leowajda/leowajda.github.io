@@ -42,11 +42,20 @@ module SiteKit
     end
 
     def ensure_array_of_strings(value, context)
-      unless value.is_a?(Array) && value.all? { |item| item.is_a?(String) }
-        raise "#{context} must be an array of strings"
-      end
+      raise "#{context} must be an array of strings" unless value.is_a?(Array) && value.all?(String)
 
       value
+    end
+
+    def duplicates(values)
+      values.group_by(&:itself).select { |_, entries| entries.size > 1 }.keys.sort
+    end
+
+    def ensure_unique!(values, context)
+      duplicate_values = duplicates(values)
+      return if duplicate_values.empty?
+
+      raise "#{context}: #{duplicate_values.join(', ')}"
     end
   end
 end

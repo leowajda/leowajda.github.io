@@ -10,8 +10,11 @@
 - Syntax-check the source validation script: `ruby -c script/validate_catalogs.rb`
 - Validate source catalogs and generated registries: `ruby script/validate_catalogs.rb`
 - Build the site: `bundle exec jekyll build --source site-src --destination _site`
+- Check JavaScript syntax: `pnpm check:js`
 - Run Ruby tests: `pnpm test:ruby`
-- Validate catalogs, then build: `make test`
+- Run rendered-page functional tests: `pnpm test:functional`
+- Run the full Make validation target: `make test`
+- Run full local validation: `pnpm test:full`
 - Preview the rendered site: `bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730`
 
 ## Preview
@@ -34,6 +37,15 @@
 - Open a browser session with `playwright-cli open http://127.0.0.1:4173`.
 - Reuse an existing session with `playwright-cli list` and `playwright-cli -s=<session> ...`.
 - Preferred commands are `snapshot`, `screenshot`, `console`, `network`, `click`, `hover`, and `eval`.
+- Debug rendered pages, not raw Liquid templates. Prefer role/name locators for behavior and data attributes only for structural invariants.
+- Use Playwright Test for problem explorer, template guide, flowchart, and responsive behavior. Keep Ruby tests focused on pure Ruby builders, repositories, and validators.
+
+## Validation Matrix
+- Ruby, scripts, or data registry changes: `pnpm lint:ruby && pnpm test:ruby && pnpm validate:catalogs`.
+- Jekyll layouts, includes, Sass, JavaScript, or generated page data changes: `pnpm check:js && pnpm test:site && pnpm check:links`.
+- Problem explorer, template guide, flowchart, or browser interaction changes: `pnpm test:functional`.
+- Before handoff after code changes: run `pnpm test:full`, or state exactly why it could not run.
+- Do not rely on Ruby tests alone for rendered page behavior.
 
 ## Rules
 - Keep site work Jekyll-first. Prefer layouts, includes, Liquid, `site.data`, and front matter over client-side assembly.

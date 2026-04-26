@@ -11,11 +11,15 @@
     "preview": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
     "build:site": "bundle exec jekyll build --source site-src --destination _site",
     "serve": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
+    "lint:ruby": "bundle exec rubocop",
+    "check:js": "find site-src/assets/js -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check",
     "test:ruby": "bundle exec ruby -Itest test/run.rb",
     "check:links": "ruby script/check_internal_links.rb",
     "test:site": "ruby script/validate_catalogs.rb && bundle exec jekyll build --source site-src --destination _site",
-    "test:full": "ruby -c script/validate_catalogs.rb && ruby script/validate_catalogs.rb && bundle exec ruby -Itest test/run.rb && bundle exec jekyll build --source site-src --destination _site && ruby script/check_internal_links.rb && playwright test tests/mobile-smoke.spec.js --config=playwright.mobile.config.js",
-    "test:mobile-smoke": "playwright test tests/mobile-smoke.spec.js --config=playwright.mobile.config.js"
+    "test:functional": "pnpm build:site && pnpm test:functional:built",
+    "test:functional:built": "playwright test --config=playwright.config.mjs",
+    "test:ci": "pnpm test:full",
+    "test:full": "pnpm check:validate && pnpm lint:ruby && pnpm check:js && pnpm validate:catalogs && pnpm test:ruby && pnpm build:site && pnpm check:links && pnpm test:functional:built"
   },
   "devDependencies": {
     "@playwright/test": "^1.59.1"

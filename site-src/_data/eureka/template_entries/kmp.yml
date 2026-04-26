@@ -1,0 +1,36 @@
+- entry_id: kmp-java
+  language: java
+  code: |
+    int indexOf(String text, String pattern) {
+        int[] lps = longestPrefixSuffix(pattern);
+        int matched = 0;
+
+        for (int i = 0; i < text.length(); i++) {
+            while (matched > 0 && text.charAt(i) != pattern.charAt(matched))
+                matched = lps[matched - 1];
+
+            if (text.charAt(i) == pattern.charAt(matched)) {
+                matched++;
+                if (matched == pattern.length())
+                    return i - pattern.length() + 1;
+            }
+        }
+
+        return -1;
+    }
+
+    int[] longestPrefixSuffix(String pattern) {
+        int[] lps = new int[pattern.length()];
+        int matched = 0;
+
+        for (int i = 1; i < pattern.length(); i++) {
+            while (matched > 0 && pattern.charAt(i) != pattern.charAt(matched))
+                matched = lps[matched - 1];
+
+            if (pattern.charAt(i) == pattern.charAt(matched))
+                lps[i] = ++matched;
+        }
+
+        return lps;
+    }
+

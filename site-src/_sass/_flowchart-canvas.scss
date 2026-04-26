@@ -1,0 +1,298 @@
+.flowchart-page,
+.flowchart-page-header,
+.flowchart-workspace,
+.flowchart-canvas-shell,
+.flowchart-inspector,
+.flowchart-inspector__content,
+.flowchart-inspector__template,
+.flowchart-inspector__tabs,
+.flowchart-path,
+.flowchart-path__sequence,
+.flowchart-prose,
+.flowchart-reference-grid,
+.flowchart-reference-card {
+  display: grid;
+}
+
+.flowchart-page {
+  gap: 1rem;
+  min-width: 0;
+}
+
+.flowchart-page-header {
+  gap: 0.2rem;
+  margin-bottom: 0;
+}
+
+.flowchart-page-header h1,
+.flowchart-inspector h2,
+.flowchart-reference-card h3 {
+  margin: 0;
+}
+
+.flowchart-inspector h2 {
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.flowchart-workspace {
+  --flowchart-scale: 1;
+  --flowchart-grid-major: rgb(0 0 0 / 12%);
+  --flowchart-grid-minor: rgb(0 0 0 / 6%);
+  align-items: start;
+  gap: 1.5rem;
+  min-width: 0;
+}
+
+.flowchart-canvas-shell {
+  gap: 0;
+  min-width: 0;
+  overflow: visible;
+  padding: 0.75rem;
+  position: relative;
+}
+
+.flowchart-canvas__viewport {
+  cursor: default;
+  height: auto;
+  min-width: 0;
+  overflow: visible;
+  padding: 0;
+  scroll-behavior: auto;
+  user-select: none;
+}
+
+.flowchart-canvas__scaled {
+  min-height: 0;
+  position: relative;
+}
+
+.flowchart-workspace.is-pannable .flowchart-canvas__viewport {
+  cursor: grab;
+  -ms-overflow-style: none;
+  height: clamp(42rem, 82svh, 68rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  touch-action: none;
+}
+
+.flowchart-workspace.is-pannable .flowchart-canvas__viewport::-webkit-scrollbar {
+  display: none;
+}
+
+.flowchart-canvas__surface {
+  background:
+    linear-gradient(var(--surface), var(--surface)) padding-box,
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 39px,
+      var(--flowchart-grid-minor) 39px,
+      var(--flowchart-grid-minor) 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 39px,
+      var(--flowchart-grid-minor) 39px,
+      var(--flowchart-grid-minor) 40px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 199px,
+      var(--flowchart-grid-major) 199px,
+      var(--flowchart-grid-major) 200px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 199px,
+      var(--flowchart-grid-major) 199px,
+      var(--flowchart-grid-major) 200px
+    );
+  box-sizing: border-box;
+  height: var(--flowchart-height);
+  position: relative;
+  transform: scale(var(--flowchart-scale));
+  transform-origin: top left;
+  width: var(--flowchart-width);
+}
+
+.flowchart-canvas__edges {
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.flowchart-edge {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 4;
+  transition:
+    opacity 160ms ease,
+    stroke-width 160ms ease;
+}
+
+.flowchart-edge__label {
+  fill: var(--text);
+  font-family: monospace;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  paint-order: stroke fill;
+  stroke: var(--surface);
+  stroke-linejoin: round;
+  stroke-width: 10px;
+  text-transform: uppercase;
+  transition: opacity 160ms ease;
+}
+
+.flowchart-edge-group {
+  transition: opacity 160ms ease;
+}
+
+.flowchart-node {
+  align-items: center;
+  border: thin solid var(--border);
+  box-sizing: border-box;
+  cursor: pointer;
+  display: inline-grid;
+  justify-items: center;
+  line-height: 1.25;
+  padding: 0.7rem;
+  position: absolute;
+  text-align: center;
+  transition:
+    background 160ms ease,
+    color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+  z-index: 1;
+}
+
+.flowchart-node:hover,
+.flowchart-node:focus-visible,
+.flowchart-node.is-previewed,
+.flowchart-node.is-selected {
+  transform: translate(-4px, -4px);
+}
+
+.flowchart-node.is-previewed,
+.flowchart-node.is-selected {
+  z-index: 2;
+}
+
+.flowchart-node.is-previewed {
+  box-shadow: 4px 4px 0 var(--surface-muted);
+}
+
+.flowchart-node.is-selected {
+  box-shadow: 6px 6px 0 var(--border);
+}
+
+.flowchart-node--decision {
+  background: var(--surface);
+  border-radius: 999px;
+  font-size: 1.05rem;
+  font-weight: bold;
+}
+
+.flowchart-node--solution {
+  background: var(--accent-surface);
+  border-radius: 999px;
+  color: var(--accent-text);
+  font-size: 0.95rem;
+  font-weight: bold;
+}
+
+.flowchart-node__label {
+  display: block;
+  line-height: 1.15;
+  max-inline-size: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+  text-wrap: balance;
+  white-space: normal;
+  width: 100%;
+}
+
+.flowchart-workspace.has-route .flowchart-node.is-path:not(.is-previewed):not(.is-selected) {
+  box-shadow: 3px 3px 0 var(--surface-muted);
+}
+
+.flowchart-workspace.has-route .flowchart-node.is-dimmed {
+  opacity: 0.48;
+}
+
+.flowchart-workspace.has-route .flowchart-node.is-dimmed.is-selected {
+  opacity: 1;
+}
+
+.flowchart-workspace.has-route .flowchart-edge-group.is-path .flowchart-edge {
+  stroke-width: 6;
+}
+
+.flowchart-workspace.has-route .flowchart-edge-group.is-dimmed .flowchart-edge {
+  opacity: 0.34;
+}
+
+.flowchart-workspace.has-route .flowchart-edge-group.is-dimmed .flowchart-edge__label {
+  opacity: 0.4;
+}
+
+.flowchart-workspace.is-dragging .flowchart-canvas__viewport,
+.flowchart-workspace.is-dragging .flowchart-node {
+  cursor: grabbing;
+}
+
+.flowchart-sidebar {
+  min-width: 0;
+}
+
+html[a="dark"] .flowchart-workspace {
+  --flowchart-grid-major: rgb(255 255 255 / 12%);
+  --flowchart-grid-minor: rgb(255 255 255 / 6%);
+}
+
+@media (prefers-color-scheme: dark) {
+  html[a="auto"] .flowchart-workspace {
+    --flowchart-grid-major: rgb(255 255 255 / 12%);
+    --flowchart-grid-minor: rgb(255 255 255 / 6%);
+  }
+}
+
+@media (min-width: 960px) {
+  .flowchart-workspace {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 24rem);
+  }
+
+  .flowchart-sidebar {
+    align-self: start;
+    min-height: 1px;
+    position: sticky;
+    top: 1.5rem;
+  }
+}
+
+@media (max-width: 820px) {
+  .flowchart-canvas-shell {
+    padding: 0.5rem;
+  }
+
+  .flowchart-workspace.is-pannable .flowchart-canvas__viewport {
+    height: clamp(30rem, 68svh, 42rem);
+  }
+
+  .flowchart-node.is-previewed,
+  .flowchart-node.is-selected,
+  .flowchart-node:hover,
+  .flowchart-node:focus-visible {
+    transform: translate(-2px, -2px);
+  }
+}

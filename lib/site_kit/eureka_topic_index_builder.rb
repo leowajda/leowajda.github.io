@@ -4,54 +4,71 @@ module SiteKit
   EurekaTopicIndex = Data.define(:topics, :categories, :flowchart_nodes, :templates)
 
   class EurekaTopicIndexBuilder
-    def initialize(templates:, flowchart_titles:)
+    def initialize(topics:, templates:, flowchart_titles:)
+      @topics = topics
       @templates = templates
       @flowchart_titles = flowchart_titles
     end
 
     def build
-      topics = {}
+      topic_records = {}
       categories = {}
       flowchart_nodes = {}
+      template_index = templates.to_h { |template| [template.template_id, template] }
 
-      templates.each do |template|
-        topic = topic_record(template)
-        topics[template.template_id] = topic
+      topics.each do |topic|
+        topic_records[topic.id] = topic_record(topic)
+        category_labels(topic).each { |category| add_topic_reference(categories, category, topic.id) }
 
-        template.eureka_categories.each do |category|
-          add_topic_reference(categories, category, template.template_id)
+        next unless topic.template?
+
+        template_index.fetch(topic.template_id) do
+          raise "Algorithmic topic '#{topic.id}' references missing template '#{topic.template_id}'"
         end
-
-        template.flowchart_nodes.each do |node_id|
-          add_topic_reference(flowchart_nodes, node_id, template.template_id)
-        end
+        topic.flowchart_nodes.each { |node_id| add_topic_reference(flowchart_nodes, node_id, topic.id) }
       end
 
       EurekaTopicIndex.new(
-        topics: topics,
-        categories: finalize_index(categories, topics),
-        flowchart_nodes: finalize_index(flowchart_nodes, topics),
-        templates: topics.transform_values { |topic| compact_topic_reference(topic) }
+        topics: topic_records,
+        categories: finalize_category_index(categories, topic_records),
+        flowchart_nodes: finalize_flowchart_index(flowchart_nodes, topic_records),
+        templates: template_records(topic_records)
       )
     end
 
     private
 
-    attr_reader :templates, :flowchart_titles
+    attr_reader :topics, :templates, :flowchart_titles
 
-    def topic_record(template)
+    def topic_presenter
+      @topic_presenter ||= AlgorithmicTopicPresenter.new
+    end
+
+    def topic_record(topic)
       {
-        "id" => template.template_id,
-        "label" => template.title,
-        "description" => template.description,
-        "template_id" => template.template_id,
-        "group_id" => template.group_id,
-        "group_title" => template.group_title,
-        "category_labels" => template.eureka_categories,
-        "flowchart_nodes" => template.flowchart_nodes.map do |node_id|
-          { "id" => node_id, "title" => flowchart_titles.fetch(node_id, node_id) }
+        'id' => topic.id,
+        'label' => topic.label,
+        'description' => topic.description,
+        'template_id' => topic.template_id,
+        'kind' => topic.kind,
+        'order' => topic.order,
+        'priority' => topic.priority,
+        'category_labels' => category_labels(topic),
+        'problem_rules' => topic.problem_rules,
+        'flowchart_nodes' => topic.flowchart_nodes.map do |node_id|
+          { 'id' => node_id, 'title' => flowchart_titles.fetch(node_id, node_id) }
         end
       }
+    end
+
+    def category_labels(topic)
+      @category_labels ||= {}
+      @category_labels[topic.id] ||= begin
+        rule_labels = topic.problem_rules.flat_map do |rule|
+          rule.fetch('all', []) + rule.fetch('any', [])
+        end
+        (topic.aliases + rule_labels).uniq
+      end
     end
 
     def add_topic_reference(index, key, topic_id)
@@ -59,23 +76,46 @@ module SiteKit
       index[key] |= [topic_id]
     end
 
-    def finalize_index(index, topics)
+    def finalize_category_index(index, topics)
       index.transform_values do |topic_ids|
+        sorted_topic_ids = sort_topic_ids(topic_ids, topics)
         {
-          "topic_ids" => topic_ids,
-          "topics" => topic_ids.map { |topic_id| compact_topic_reference(topics.fetch(topic_id)) }
+          'topic_ids' => sorted_topic_ids,
+          'topics' => sorted_topic_ids.map { |topic_id| topic_presenter.topic_reference(topics.fetch(topic_id)) },
+          'template_ids' => sorted_topic_ids.filter_map do |topic_id|
+            topic_presenter.present_template_id(topics.fetch(topic_id))
+          end
         }
       end
     end
 
-    def compact_topic_reference(topic)
-      {
-        "id" => topic.fetch("id"),
-        "label" => topic.fetch("label"),
-        "description" => topic.fetch("description"),
-        "group_id" => topic.fetch("group_id"),
-        "group_title" => topic.fetch("group_title")
-      }
+    def finalize_flowchart_index(index, topics)
+      index.transform_values do |topic_ids|
+        sorted_topic_ids = sort_topic_ids(topic_ids, topics)
+        {
+          'topic_ids' => sorted_topic_ids,
+          'topics' => sorted_topic_ids.filter_map do |topic_id|
+            topic_presenter.template_reference(topics.fetch(topic_id))
+          end,
+          'template_ids' => sorted_topic_ids.filter_map do |topic_id|
+            topic_presenter.present_template_id(topics.fetch(topic_id))
+          end
+        }
+      end
+    end
+
+    def sort_topic_ids(topic_ids, topics)
+      topic_ids.sort_by do |topic_id|
+        topic = topics.fetch(topic_id)
+        [topic.fetch('priority'), topic.fetch('order'), topic.fetch('label').downcase]
+      end
+    end
+
+    def template_records(topics)
+      topics
+        .values
+        .filter_map { |topic| topic_presenter.template_reference(topic) }
+        .to_h { |topic| [topic.fetch('id'), topic] }
     end
   end
 end

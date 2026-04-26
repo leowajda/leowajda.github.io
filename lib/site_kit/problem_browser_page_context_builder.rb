@@ -8,17 +8,17 @@ module SiteKit
     end
 
     def attach(document)
-      browser = eureka_browsers.fetch(document.data.fetch("project_slug"))
-      active_language = active_language_record(browser, document.data["language_filter"])
+      browser = eureka_browsers.fetch(document.data.fetch('project_slug'))
+      active_language = active_language_record(browser, document.data['language_filter'])
 
-      document.data["browser_record"] = browser
-      document.data["active_language_record"] = active_language if active_language
-      document.data["header_links"] = page_link_resolver.links_for("problem_explorer")
-      document.data["problem_filter_panel"] = ProblemFilterPanelBuilder.new(
+      document.data['browser_record'] = browser
+      document.data['active_language_record'] = active_language if active_language
+      document.data['header_links'] = page_link_resolver.links_for('problem_explorer')
+      document.data['problem_filter_panel'] = ProblemFilterPanelBuilder.new(
         browser: browser,
         active_language: active_language
       ).build
-      document.data["problem_table"] = ProblemTableBuilder.new(
+      document.data['problem_table'] = ProblemTableBuilder.new(
         browser: browser,
         active_language: active_language
       ).build
@@ -31,7 +31,7 @@ module SiteKit
     def active_language_record(browser, language_filter)
       return nil if language_filter.to_s.empty?
 
-      browser.fetch("languages").find { |language| language.fetch("slug") == language_filter }
+      browser.fetch('languages').find { |language| language.fetch('slug') == language_filter }
     end
   end
 end

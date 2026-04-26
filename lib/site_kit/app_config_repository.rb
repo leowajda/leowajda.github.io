@@ -27,11 +27,13 @@ module SiteKit
   AppConfig = Data.define(:eureka, :source_notes, :code_collection)
 
   class AppConfigRepository
+    TEXT_FILE_FORMATS = %w[code markdown].freeze
+
     EUREKA_SCHEMA = {
       catalog_version: :integer,
       metadata_keys: :string_array,
       implementation_keys: :string_array,
-      browser: ->(value, context, repository) {
+      browser: lambda { |value, context, repository|
         repository.__send__(
           :build_data_record,
           AppEurekaBrowserConfig,
@@ -57,14 +59,14 @@ module SiteKit
     }.freeze
 
     def initialize(data_record)
-      @data_record = Helpers.ensure_hash(data_record, "site data.site.app")
+      @data_record = Helpers.ensure_hash(data_record, 'site data.site.app')
     end
 
     def load
       config = AppConfig.new(
-        eureka: section_record(AppEurekaConfig, "eureka", EUREKA_SCHEMA),
-        source_notes: section_record(AppSourceNotesConfig, "source_notes", SOURCE_NOTES_SCHEMA),
-        code_collection: section_record(AppCodeCollectionConfig, "code_collection", CODE_COLLECTION_SCHEMA)
+        eureka: section_record(AppEurekaConfig, 'eureka', EUREKA_SCHEMA),
+        source_notes: section_record(AppSourceNotesConfig, 'source_notes', SOURCE_NOTES_SCHEMA),
+        code_collection: section_record(AppCodeCollectionConfig, 'code_collection', CODE_COLLECTION_SCHEMA)
       )
       validate_text_file_metadata!(config.source_notes.text_file_metadata)
       config
@@ -122,15 +124,15 @@ module SiteKit
 
     def validate_text_file_metadata!(metadata)
       metadata.each do |extension, record|
-        raise "source_notes.text_file_metadata key '#{extension}' must start with ." unless extension.start_with?(".")
+        raise "source_notes.text_file_metadata key '#{extension}' must start with ." unless extension.start_with?('.')
 
-        format = record.fetch("format")
-        unless %w[code markdown].include?(format)
+        format = record.fetch('format')
+        unless TEXT_FILE_FORMATS.include?(format)
           raise "source_notes.text_file_metadata.#{extension}.format must be code or markdown"
         end
 
-        syntax = record.fetch("syntax")
-        if format == "code" && syntax.empty?
+        syntax = record.fetch('syntax')
+        if format == 'code' && syntax.empty?
           raise "source_notes.text_file_metadata.#{extension}.syntax must not be empty for code files"
         end
       end

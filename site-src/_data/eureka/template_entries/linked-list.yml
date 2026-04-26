@@ -1,0 +1,27 @@
+- entry_id: linked-list-java
+  language: java
+  code: |
+    ListNode middleNode(ListNode head) {
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        return slow;
+    }
+- entry_id: linked-list-python
+  language: python
+  code: |
+    def middle_node(head: ListNode | None) -> ListNode | None:
+        slow = head
+        fast = head
+
+        while fast and fast.next:
+            slow = slow.next
+            fast = fast.next.next
+
+        return slow
+

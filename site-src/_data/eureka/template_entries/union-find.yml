@@ -1,0 +1,129 @@
+- entry_id: union-find-java
+  language: java
+  code: |
+    class UnionFind {
+        private final int[] parent;
+        private final int[] size;
+
+        UnionFind(int size) {
+            parent = new int[size];
+            this.size = new int[size];
+
+            for (int node = 0; node < size; node++) {
+                parent[node] = node;
+                this.size[node] = 1;
+            }
+        }
+
+        int find(int node) {
+            if (parent[node] != node) {
+                parent[node] = find(parent[node]);
+            }
+            return parent[node];
+        }
+
+        boolean unite(int left, int right) {
+            int leftRoot = find(left);
+            int rightRoot = find(right);
+
+            if (leftRoot == rightRoot)
+                return false;
+            if (size[leftRoot] < size[rightRoot]) {
+                int swap = leftRoot;
+                leftRoot = rightRoot;
+                rightRoot = swap;
+            }
+
+            parent[rightRoot] = leftRoot;
+            size[leftRoot] += size[rightRoot];
+            return true;
+        }
+    }
+- entry_id: union-find-scala
+  language: scala
+  code: |
+    final class UnionFind(size: Int):
+      private val parent = Array.tabulate(size)(identity)
+      private val sizes = Array.fill(size)(1)
+
+      def find(node: Int): Int =
+        if parent(node) == node then
+          node
+        else
+          parent(node) = find(parent(node))
+          parent(node)
+
+      def unite(left: Int, right: Int): Boolean =
+        var leftRoot = find(left)
+        var rightRoot = find(right)
+
+        if leftRoot == rightRoot then
+          false
+        else
+          if sizes(leftRoot) < sizes(rightRoot) then
+            val swap = leftRoot
+            leftRoot = rightRoot
+            rightRoot = swap
+
+          parent(rightRoot) = leftRoot
+          sizes(leftRoot) += sizes(rightRoot)
+          true
+- entry_id: union-find-python
+  language: python
+  code: |
+    class UnionFind:
+        def __init__(self, size: int) -> None:
+            self.parent = list(range(size))
+            self.sizes = [1] * size
+
+        def find(self, node: int) -> int:
+            if self.parent[node] != node:
+                self.parent[node] = self.find(self.parent[node])
+            return self.parent[node]
+
+        def unite(self, left: int, right: int) -> bool:
+            left_root = self.find(left)
+            right_root = self.find(right)
+
+            if left_root == right_root:
+                return False
+            if self.sizes[left_root] < self.sizes[right_root]:
+                left_root, right_root = right_root, left_root
+
+            self.parent[right_root] = left_root
+            self.sizes[left_root] += self.sizes[right_root]
+            return True
+- entry_id: union-find-cpp
+  language: cpp
+  code: |
+    class UnionFind {
+    public:
+        explicit UnionFind(int size) : parent(size), sizes(size, 1) {
+            std::iota(parent.begin(), parent.end(), 0);
+        }
+
+        int find(int node) {
+            if (parent[node] != node)
+                parent[node] = find(parent[node]);
+            return parent[node];
+        }
+
+        bool unite(int left, int right) {
+            int leftRoot = find(left);
+            int rightRoot = find(right);
+
+            if (leftRoot == rightRoot)
+                return false;
+            if (sizes[leftRoot] < sizes[rightRoot])
+                std::swap(leftRoot, rightRoot);
+
+            parent[rightRoot] = leftRoot;
+            sizes[leftRoot] += sizes[rightRoot];
+            return true;
+        }
+
+    private:
+        std::vector<int> parent;
+        std::vector<int> sizes;
+    };
+

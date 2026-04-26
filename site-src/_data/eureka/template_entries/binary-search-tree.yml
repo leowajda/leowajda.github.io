@@ -1,0 +1,21 @@
+- entry_id: binary-search-tree-java
+  language: java
+  code: |
+    boolean contains(TreeNode root, int target) {
+        while (root != null) {
+            if (root.val == target)
+                return true;
+            root = target < root.val ? root.left : root.right;
+        }
+        return false;
+    }
+- entry_id: binary-search-tree-python
+  language: python
+  code: |
+    def contains(root, target):
+        while root:
+            if root.val == target:
+                return True
+            root = root.left if target < root.val else root.right
+        return False
+

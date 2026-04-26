@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module SiteKit
-  class PageDefinition < Data.define(:dir, :page_type, :data, :content)
-    def self.build(dir:, page_type:, data:, content: "")
+  PageDefinition = Data.define(:dir, :page_type, :data, :content) do
+    def self.build(dir:, page_type:, data:, content: '')
       new(dir: dir, page_type: page_type, data: data, content: content)
     end
 

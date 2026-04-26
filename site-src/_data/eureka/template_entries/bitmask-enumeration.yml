@@ -1,0 +1,26 @@
+- entry_id: bitmask-enumeration-java
+  language: java
+  code: |
+    List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        for (int mask = 0; mask < (1 << nums.length); mask++) {
+            List<Integer> subset = new ArrayList<>();
+            for (int bit = 0; bit < nums.length; bit++)
+                if ((mask & (1 << bit)) != 0)
+                    subset.add(nums[bit]);
+            result.add(subset);
+        }
+        return result;
+    }
+- entry_id: bitmask-enumeration-python
+  language: python
+  code: |
+    def subsets(nums):
+        result = []
+        for mask in range(1 << len(nums)):
+            subset = []
+            for bit, value in enumerate(nums):
+                if mask & (1 << bit):
+                    subset.append(value)
+            result.append(subset)
+        return result

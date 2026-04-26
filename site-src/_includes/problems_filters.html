@@ -46,15 +46,14 @@
           {%- endfor -%}
         </div>
       {%- when "categories" -%}
-        <div class="filter-options filter-options--stacked" data-category-options>
+        <div class="filter-options filter-options--stacked">
           {%- for item in section.items -%}
-            <label class="filter-option filter-option--stacked" data-category-option data-category-label="{{ item.label | downcase }}">
+            <label class="filter-option filter-option--stacked">
               <input type="checkbox" name="category" value="{{ item.value }}">
               <span>{{ item.label }}</span>
             </label>
           {%- endfor -%}
         </div>
-        <p class="filter-empty" data-category-empty hidden>No categories match.</p>
       {%- endcase -%}
     {%- endcapture -%}
     {%- assign section_class = "filter-group" -%}

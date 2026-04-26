@@ -17,6 +17,7 @@ _site-debug/
 .ruff_cache/
 .playwright-cli/
 test-results/
+tmp/
 site-src/.jekyll-cache/
 src/dojo/*
 

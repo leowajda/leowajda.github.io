@@ -1,0 +1,24 @@
+{%- assign problem = include.problem -%}
+{%- assign problem_topics = include.problem_topics | default: empty -%}
+{%- assign categories = problem_topics.categories | default: empty -%}
+{%- assign template_references = problem_topics.template_references | default: problem.template_references | default: empty -%}
+
+<section class="content-card content-card--compact">
+  <p class="section-eyebrow">Categories</p>
+  <ul class="tag-list">
+    {%- if categories.size == 0 -%}
+      {%- for category in problem.categories -%}
+        <li><span class="tag">{{ category }}</span></li>
+      {%- endfor -%}
+    {%- else -%}
+      {%- for category in categories -%}
+        <li><span class="tag">{{ category.label }}</span></li>
+      {%- endfor -%}
+    {%- endif -%}
+  </ul>
+
+  {%- if template_references.size > 0 -%}
+    <p class="section-eyebrow">Templates</p>
+    {%- include template_reference_links.html references=template_references -%}
+  {%- endif -%}
+</section>

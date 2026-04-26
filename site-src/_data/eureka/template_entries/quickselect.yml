@@ -1,0 +1,42 @@
+- entry_id: quickselect-java
+  language: java
+  code: |
+    int kthSmallest(int[] nums, int k) {
+        int left = 0;
+        int right = nums.length - 1;
+        int target = k - 1;
+
+        while (left <= right) {
+            int pivotIndex = partition(nums, left, right);
+
+            if (pivotIndex == target)
+                return nums[pivotIndex];
+
+            if (pivotIndex < target)
+                left = pivotIndex + 1;
+            else
+                right = pivotIndex - 1;
+        }
+
+        return -1;
+    }
+
+    int partition(int[] nums, int left, int right) {
+        int pivot = nums[right];
+        int store = left;
+
+        for (int i = left; i < right; i++) {
+            if (nums[i] <= pivot)
+                swap(nums, store++, i);
+        }
+
+        swap(nums, store, right);
+        return store;
+    }
+
+    void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+

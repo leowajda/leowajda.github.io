@@ -1,0 +1,16 @@
+{%- assign entry_action_groups = include.entry_action_groups | default: empty -%}
+{%- assign global_actions = include.global_actions | default: empty -%}
+{%- if entry_action_groups.size > 0 or global_actions.size > 0 -%}
+  <div class="code-panel__actions code-collection__actions">
+    {%- for action_group in entry_action_groups -%}
+      <div class="code-collection__entry-actions" data-code-collection-actions-for="{{ action_group.entry_id | escape }}"{% unless action_group.active %} hidden{% endunless %}>
+        {%- for action in action_group.actions -%}
+          {%- include icon_action.html action=action -%}
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+    {%- for action in global_actions -%}
+      {%- include icon_action.html action=action -%}
+    {%- endfor -%}
+  </div>
+{%- endif -%}

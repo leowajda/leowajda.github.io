@@ -1,0 +1,30 @@
+- entry_id: matrix-dfs-java
+  language: java
+  code: |
+    void floodFill(int[][] grid, int row, int col, int color, int old) {
+        if (row < 0 || row == grid.length || col < 0 || col == grid[0].length)
+            return;
+        if (grid[row][col] != old)
+            return;
+
+        grid[row][col] = color;
+        floodFill(grid, row + 1, col, color, old);
+        floodFill(grid, row - 1, col, color, old);
+        floodFill(grid, row, col + 1, color, old);
+        floodFill(grid, row, col - 1, color, old);
+    }
+- entry_id: matrix-dfs-python
+  language: python
+  code: |
+    def flood_fill(grid, row, col, color, old):
+        if row < 0 or row == len(grid) or col < 0 or col == len(grid[0]):
+            return
+        if grid[row][col] != old:
+            return
+
+        grid[row][col] = color
+        flood_fill(grid, row + 1, col, color, old)
+        flood_fill(grid, row - 1, col, color, old)
+        flood_fill(grid, row, col + 1, color, old)
+        flood_fill(grid, row, col - 1, color, old)
+

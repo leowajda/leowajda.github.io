@@ -1,0 +1,19 @@
+- entry_id: stack-java
+  language: java
+  code: |
+    boolean isBalanced(String s) {
+        Deque<Character> stack = new ArrayDeque<>();
+
+        for (char ch : s.toCharArray()) {
+            if (ch == '(')
+                stack.push(ch);
+            else if (ch == ')') {
+                if (stack.isEmpty())
+                    return false;
+                stack.pop();
+            }
+        }
+
+        return stack.isEmpty();
+    }
+

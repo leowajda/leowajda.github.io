@@ -16,15 +16,15 @@ module SiteKit
       raw_content = Helpers.read_text(file_path)
 
       {
-        "project_slug" => language_context.fetch("project_slug"),
-        "language_slug" => language_context.fetch("language_slug"),
-        "module_slug" => module_definition.slug,
-        "title" => file_path.basename.to_s,
-        "url" => "#{language_context.fetch('language_url')}#{module_definition.slug}/#{route_path}/",
-        "route_url" => "#{language_context.fetch('language_url')}#{module_definition.slug}/#{route_path}/",
-        "tree_path" => tree_path,
-        "format" => metadata.fetch("format"),
-        "body" => formatted_body(raw_content, metadata, file_path)
+        'project_slug' => language_context.fetch('project_slug'),
+        'language_slug' => language_context.fetch('language_slug'),
+        'module_slug' => module_definition.slug,
+        'title' => file_path.basename.to_s,
+        'url' => "#{language_context.fetch('language_url')}#{module_definition.slug}/#{route_path}/",
+        'route_url' => "#{language_context.fetch('language_url')}#{module_definition.slug}/#{route_path}/",
+        'tree_path' => tree_path,
+        'format' => metadata.fetch('format'),
+        'body' => formatted_body(raw_content, metadata, file_path)
       }
     end
 
@@ -33,9 +33,12 @@ module SiteKit
     attr_reader :app_config, :source_url_base, :source_root
 
     def formatted_body(raw_content, metadata, file_path)
-      return Helpers.rewrite_markdown_images(raw_content, file_path.dirname, source_url_base, source_root: source_root) if metadata.fetch("format") == "markdown"
+      if metadata.fetch('format') == 'markdown'
+        return Helpers.rewrite_markdown_images(raw_content, file_path.dirname, source_url_base,
+                                               source_root: source_root)
+      end
 
-      syntax = metadata.fetch("syntax")
+      syntax = metadata.fetch('syntax')
       "~~~#{syntax}\n#{raw_content.rstrip}\n~~~\n"
     end
   end

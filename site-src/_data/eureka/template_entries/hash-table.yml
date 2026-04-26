@@ -1,0 +1,31 @@
+- entry_id: hash-table-java
+  language: java
+  code: |
+    int[] twoSum(int[] nums, int target) {
+        Map<Integer, Integer> seen = new HashMap<>();
+
+        for (int index = 0; index < nums.length; index++) {
+            int complement = target - nums[index];
+            if (seen.containsKey(complement))
+                return new int[] {seen.get(complement), index};
+
+            seen.put(nums[index], index);
+        }
+
+        return new int[0];
+    }
+- entry_id: hash-table-python
+  language: python
+  code: |
+    def two_sum(nums: list[int], target: int) -> list[int]:
+        seen: dict[int, int] = {}
+
+        for index, value in enumerate(nums):
+            complement = target - value
+            if complement in seen:
+                return [seen[complement], index]
+
+            seen[value] = index
+
+        return []
+

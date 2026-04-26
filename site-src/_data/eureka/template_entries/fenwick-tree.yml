@@ -1,0 +1,29 @@
+- entry_id: fenwick-tree-java
+  language: java
+  code: |
+    class FenwickTree {
+        private final int[] tree;
+
+        FenwickTree(int size) {
+            tree = new int[size + 1];
+        }
+
+        void add(int index, int delta) {
+            for (int i = index + 1; i < tree.length; i += i & -i) {
+                tree[i] += delta;
+            }
+        }
+
+        int prefixSum(int index) {
+            int sum = 0;
+            for (int i = index + 1; i > 0; i -= i & -i) {
+                sum += tree[i];
+            }
+            return sum;
+        }
+
+        int rangeSum(int left, int right) {
+            return prefixSum(right) - (left == 0 ? 0 : prefixSum(left - 1));
+        }
+    }
+

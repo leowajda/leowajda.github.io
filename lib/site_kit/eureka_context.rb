@@ -2,10 +2,13 @@
 
 module SiteKit
   class EurekaContext
-    def initialize(manifests:, app_config:, algorithmic_templates:, flowchart_data:, page_link_resolver:)
+    def initialize(manifests:, app_config:, algorithmic_topics:, algorithmic_templates:, template_guide:,
+                   flowchart_data:, page_link_resolver:)
       @manifests = manifests
       @app_config = app_config
+      @algorithmic_topics = algorithmic_topics
       @algorithmic_templates = algorithmic_templates
+      @template_guide = template_guide
       @flowchart_data = flowchart_data
       @page_link_resolver = page_link_resolver
     end
@@ -17,7 +20,9 @@ module SiteKit
           EurekaProject.new(
             manifest: manifest,
             app_config: app_config,
+            algorithmic_topics: algorithmic_topics,
             algorithmic_templates: algorithmic_templates,
+            template_guide: template_guide,
             flowchart_data: flowchart_data,
             page_link_resolver: page_link_resolver
           )
@@ -45,6 +50,7 @@ module SiteKit
 
     private
 
-    attr_reader :manifests, :app_config, :algorithmic_templates, :flowchart_data, :page_link_resolver
+    attr_reader :manifests, :app_config, :algorithmic_topics, :algorithmic_templates, :template_guide, :flowchart_data,
+                :page_link_resolver
   end
 end

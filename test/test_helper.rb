@@ -1,29 +1,31 @@
 # frozen_string_literal: true
 
-require "bundler/setup"
-require "fileutils"
-require "minitest/autorun"
-require "tmpdir"
-require "jekyll"
+require 'bundler/setup'
+require 'fileutils'
+require 'minitest/autorun'
+require 'tmpdir'
+require 'jekyll'
 
-require_relative "../lib/site_kit"
+require_relative '../lib/site_kit'
 
 class SiteKitTestCase < Minitest::Test
   def teardown
     super
-    FileUtils.remove_entry(@tmp_destination, true) if defined?(@tmp_destination) && @tmp_destination && Dir.exist?(@tmp_destination)
+    return unless defined?(@tmp_destination) && @tmp_destination && Dir.exist?(@tmp_destination)
+
+    FileUtils.remove_entry(@tmp_destination, true)
   end
 
   private
 
   def build_site
     @build_site ||= begin
-      @tmp_destination = Dir.mktmpdir("site-kit-test-")
+      @tmp_destination = Dir.mktmpdir('site-kit-test-')
       site = Jekyll::Site.new(
         Jekyll.configuration(
-          "source" => SiteKit::Helpers.site_source,
-          "destination" => @tmp_destination,
-          "quiet" => true
+          'source' => SiteKit::Helpers.site_source,
+          'destination' => @tmp_destination,
+          'quiet' => true
         )
       )
       site.read

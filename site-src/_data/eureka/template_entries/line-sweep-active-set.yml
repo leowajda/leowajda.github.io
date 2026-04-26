@@ -1,0 +1,16 @@
+- entry_id: line-sweep-active-set-java
+  language: java
+  code: |
+    int maxActive(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> Integer.compare(a[0], b[0]));
+        PriorityQueue<Integer> active = new PriorityQueue<>();
+        int best = 0;
+        for (int[] interval : intervals) {
+            while (!active.isEmpty() && active.peek() <= interval[0])
+                active.poll();
+            active.offer(interval[1]);
+            best = Math.max(best, active.size());
+        }
+        return best;
+    }
+

@@ -1,0 +1,35 @@
+- entry_id: dp-lis-java
+  language: java
+  code: |
+    int lengthOfLIS(int[] nums) {
+        int[] tails = new int[nums.length];
+        int size = 0;
+        for (int value : nums) {
+            int i = Arrays.binarySearch(tails, 0, size, value);
+            if (i < 0)
+                i = -i - 1;
+            tails[i] = value;
+            if (i == size)
+                size++;
+        }
+        return size;
+    }
+- entry_id: dp-lis-python
+  language: python
+  code: |
+    def length_of_lis(nums):
+        tails = []
+        for value in nums:
+            left, right = 0, len(tails)
+            while left < right:
+                mid = (left + right) // 2
+                if tails[mid] < value:
+                    left = mid + 1
+                else:
+                    right = mid
+            if left == len(tails):
+                tails.append(value)
+            else:
+                tails[left] = value
+        return len(tails)
+

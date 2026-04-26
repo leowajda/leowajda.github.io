@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "time"
-require "yaml"
+require 'time'
+require 'yaml'
 
 module SiteKit
   module IoHelpers
@@ -9,22 +9,22 @@ module SiteKit
 
     def read_text(path)
       File.read(path)
-    rescue StandardError => error
-      raise "Unable to read '#{path}': #{error.message}"
+    rescue StandardError => e
+      raise "Unable to read '#{path}': #{e.message}"
     end
 
     def maybe_read_text(path)
-      File.exist?(path) ? read_text(path) : ""
+      File.exist?(path) ? read_text(path) : ''
     end
 
     def parse_yaml(raw, context)
       validate_yaml_mapping_keys!(raw, context)
       YAML.safe_load(raw, permitted_classes: [Time], aliases: false) || {}
-    rescue StandardError => error
-      raise "#{context}: #{error.message}"
+    rescue StandardError => e
+      raise "#{context}: #{e.message}"
     end
 
-    def validate_yaml_mapping_keys!(raw, context)
+    def validate_yaml_mapping_keys!(raw, _context)
       document = Psych.parse_stream(raw)
       Array(document.children).each { |node| validate_yaml_node_keys!(node) }
     end

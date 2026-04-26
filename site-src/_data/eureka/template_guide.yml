@@ -1,0 +1,463 @@
+default_target: binary-search/boundary
+patterns:
+  - id: binary-search
+    label: Binary Search
+    order: 1
+    description: Find a boundary in sorted or monotonic state.
+    problem_rules:
+      - any: [Binary Search]
+    variants:
+      - id: boundary
+        label: Boundary
+        template: binary-search
+        aliases: [Binary Search]
+        problem_rules:
+          - any: [Binary Search]
+        flowchart_nodes: [max/min-binarysearch]
+      - id: rotated-peak
+        label: Rotated / peak
+        template: binary-search-rotated
+        aliases: [Binary Search]
+      - id: answer-space
+        label: Answer space
+        template: binary-search-answer-space
+        aliases: [Binary Search]
+
+  - id: array-sequence
+    label: Array / Sequence
+    order: 2
+    description: Move across ordered values while preserving range or cursor state.
+    variants:
+      - id: two-pointers-inward
+        label: Two pointers inward
+        template: two-pointers-opposite
+        aliases: [Two Pointers]
+        problem_rules:
+          - all: [Two Pointers]
+            none: [Linked List]
+        flowchart_nodes: [find-indices-twopointers, constant-memory-twopointers]
+      - id: two-pointers-forward
+        label: Two pointers forward
+        template: two-pointers-same
+        aliases: [Two Pointers]
+        problem_rules:
+          - all: [Two Pointers]
+            none: [Linked List]
+        flowchart_nodes: [sequence-count-twopointers]
+      - id: sliding-window-fixed
+        label: Sliding window fixed
+        template: sliding-window-fixed
+        aliases: [Sliding Window]
+        problem_rules:
+          - any: [Sliding Window]
+        flowchart_nodes: [subarrays-twopointers]
+      - id: sliding-window-longest
+        label: Sliding window longest
+        template: sliding-window-longest
+        aliases: [Sliding Window]
+        problem_rules:
+          - any: [Sliding Window]
+        flowchart_nodes: [subarrays-twopointers, sequence-count-twopointers]
+      - id: sliding-window-shortest
+        label: Sliding window shortest
+        template: sliding-window-shortest
+        aliases: [Sliding Window]
+        problem_rules:
+          - any: [Sliding Window]
+        flowchart_nodes: [subarrays-twopointers]
+      - id: prefix-sum
+        label: Prefix sum
+        template: prefix-sum
+        aliases: [Prefix Sum]
+        problem_rules:
+          - any: [Prefix Sum]
+        flowchart_nodes: [subarrays-prefixsums]
+      - id: difference-array
+        label: Difference array
+        template: difference-array
+      - id: kadane
+        label: Kadane
+        template: kadane
+
+  - id: tree
+    label: Tree
+    order: 3
+    description: Work through parent-child structure without losing subtree context.
+    problem_rules:
+      - any: [Tree, Binary Tree, Binary Search Tree]
+    variants:
+      - id: dfs
+        label: DFS
+        template: depth-first-search
+        aliases: [Depth-First Search]
+        problem_rules:
+          - all: [Depth-First Search, Tree]
+          - all: [Depth-First Search, Binary Tree]
+          - all: [Depth-First Search, Binary Search Tree]
+        flowchart_nodes: [tree-dfs]
+      - id: bfs
+        label: BFS
+        template: breadth-first-search
+        aliases: [Breadth-First Search]
+        problem_rules:
+          - all: [Breadth-First Search, Tree]
+          - all: [Breadth-First Search, Binary Tree]
+      - id: bst
+        label: BST
+        template: binary-search-tree
+        aliases: [Binary Search Tree]
+        problem_rules:
+          - any: [Binary Search Tree]
+      - id: build-serialize
+        label: Build / serialize
+        template: tree-serialize
+        aliases: [Design]
+
+  - id: graph
+    label: Graph
+    order: 4
+    description: Traverse, order, or connect arbitrary nodes and edges.
+    problem_rules:
+      - any: [Graph Theory, Topological Sort, Union-Find]
+    variants:
+      - id: dfs
+        label: DFS
+        template: graph-dfs
+        aliases: [Depth-First Search]
+        problem_rules:
+          - all: [Depth-First Search, Graph Theory]
+            none: [Tree, Binary Tree, Matrix]
+        flowchart_nodes: [graph-smallcontraints-dfs]
+      - id: bfs
+        label: BFS
+        template: graph-bfs
+        aliases: [Breadth-First Search]
+        problem_rules:
+          - all: [Breadth-First Search, Graph Theory]
+            none: [Tree, Binary Tree, Matrix]
+          - all: [Breadth-First Search, Hash Table]
+            none: [Tree, Binary Tree, Matrix]
+        flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+      - id: topological-sort
+        label: Topological sort
+        template: topological-sort
+        aliases: [Topological Sort]
+        problem_rules:
+          - any: [Topological Sort]
+        flowchart_nodes: [directed-graph-topo]
+      - id: union-find
+        label: Union find
+        template: union-find
+        aliases: [Union-Find]
+        problem_rules:
+          - any: [Union-Find]
+        flowchart_nodes: [connectivity-dsu]
+      - id: dijkstra
+        label: Dijkstra
+        template: dijkstra
+        flowchart_nodes: [shortest-path-dijkstra]
+      - id: mst
+        label: Minimum spanning tree
+        template: mst
+
+  - id: grid
+    label: Grid
+    order: 5
+    description: Treat coordinates as state with explicit neighbor movement.
+    problem_rules:
+      - any: [Matrix]
+    variants:
+      - id: bfs
+        label: BFS
+        template: matrix-bfs
+        aliases: [Breadth-First Search]
+        problem_rules:
+          - all: [Breadth-First Search, Matrix]
+        flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+      - id: dfs
+        label: DFS
+        template: matrix-dfs
+        aliases: [Depth-First Search]
+        problem_rules:
+          - all: [Depth-First Search, Matrix]
+      - id: direction-scan
+        label: Direction scan
+        template: matrix-direction-scan
+
+  - id: backtracking
+    label: Backtracking
+    order: 6
+    description: Choose, recurse, undo.
+    problem_rules:
+      - any: [Backtracking]
+    variants:
+      - id: choose-undo
+        label: Choose / undo
+        template: backtracking
+        aliases: [Backtracking]
+        problem_rules:
+          - any: [Backtracking]
+        flowchart_nodes: [small-constraints-bruteforce/backtracking]
+      - id: aggregate
+        label: Aggregate
+        template: backtracking-aggregation
+        problem_rules:
+          - all: [Backtracking, Memoization]
+        flowchart_nodes: [counting-bruteforce/backtracking]
+
+  - id: dynamic-programming
+    label: Dynamic Programming
+    order: 7
+    description: Reuse overlapping subproblems.
+    problem_rules:
+      - any: [Dynamic Programming, Memoization]
+    variants:
+      - id: one-dimensional
+        label: 1D
+        template: dynamic-programming
+        aliases: [Dynamic Programming, Memoization]
+        flowchart_nodes: [small-constraints-dp, max/min-dp, counting-dp, sequence-count-dp]
+      - id: grid
+        label: Grid
+        template: dp-grid
+        aliases: [Dynamic Programming]
+      - id: two-sequences
+        label: Two sequences
+        template: dp-two-sequences
+        aliases: [Dynamic Programming]
+      - id: knapsack
+        label: Knapsack
+        template: dp-knapsack
+        aliases: [Dynamic Programming]
+      - id: interval
+        label: Interval
+        template: dp-interval
+        aliases: [Dynamic Programming]
+      - id: bitmask
+        label: Bitmask
+        template: dp-bitmask
+        aliases: [Dynamic Programming]
+      - id: lis
+        label: LIS
+        template: dp-lis
+        aliases: [Dynamic Programming, Binary Search]
+
+  - id: heap
+    label: Heap
+    order: 8
+    description: Keep the next best candidate cheap to retrieve.
+    problem_rules:
+      - any: [Heap (Priority Queue)]
+    variants:
+      - id: top-k
+        label: Top k
+        template: heap-top-k
+        aliases: [Heap (Priority Queue)]
+        problem_rules:
+          - any: [Heap (Priority Queue)]
+        flowchart_nodes: [kth-smallest-heap]
+      - id: moving-best
+        label: Moving best
+        template: heap-moving-best
+      - id: two-heaps
+        label: Two heaps
+        template: two-heaps
+        aliases: [Heap (Priority Queue), Data Stream]
+
+  - id: stack
+    label: Stack
+    order: 9
+    description: Hold unresolved state in last-in-first-out order.
+    problem_rules:
+      - any: [Stack]
+    variants:
+      - id: parse
+        label: Parse
+        template: stack
+        flowchart_nodes: [parse-symbols-stack]
+      - id: monotonic-stack
+        label: Monotonic stack
+        template: mono-stack
+      - id: monotonic-queue
+        label: Monotonic queue
+        template: monotonic-queue
+
+  - id: hashing
+    label: Hashing
+    order: 10
+    description: Store facts by key.
+    problem_rules:
+      - any: [Hash Table, Counting]
+    variants:
+      - id: lookup
+        label: Lookup
+        template: hash-table
+        aliases: [Hash Table]
+        problem_rules:
+          - any: [Hash Table]
+      - id: frequency
+        label: Frequency
+        template: hash-frequency
+        aliases: [Hash Table, Counting]
+        problem_rules:
+          - any: [Counting]
+      - id: seen-state
+        label: Seen state
+        template: hash-seen-state
+
+  - id: sorting-selection
+    label: Sorting / Selection
+    order: 11
+    description: Reorder values or isolate a rank.
+    problem_rules:
+      - any: [Sorting, Merge Sort, Quickselect]
+    variants:
+      - id: sort-scan
+        label: Sort and scan
+        template: sorting
+        aliases: [Sorting]
+        problem_rules:
+          - any: [Sorting, Merge Sort]
+      - id: quickselect
+        label: Quickselect
+        template: quickselect
+        aliases: [Quickselect]
+        problem_rules:
+          - any: [Quickselect]
+
+  - id: intervals
+    label: Intervals
+    order: 12
+    description: Compare ranges by endpoints.
+    variants:
+      - id: merge
+        label: Merge
+        template: intervals
+      - id: insert
+        label: Insert
+        template: interval-insert
+      - id: meeting-rooms
+        label: Meeting rooms
+        template: meeting-rooms
+
+  - id: line-sweep
+    label: Line Sweep
+    order: 13
+    description: Turn starts and ends into ordered events.
+    variants:
+      - id: events
+        label: Events
+        template: line-sweep
+      - id: active-set
+        label: Active set
+        template: line-sweep-active-set
+
+  - id: range-queries
+    label: Range Queries
+    order: 14
+    description: Answer or update ranges without scanning them.
+    variants:
+      - id: segment-tree
+        label: Segment tree
+        template: segment-tree
+      - id: fenwick-tree
+        label: Fenwick tree
+        template: fenwick-tree
+
+  - id: trie
+    label: Trie
+    order: 15
+    description: Share prefixes explicitly.
+    problem_rules:
+      - any: [Trie]
+    variants:
+      - id: prefix-lookup
+        label: Prefix lookup
+        template: trie
+        aliases: [Trie]
+        problem_rules:
+          - any: [Trie]
+
+  - id: linked-list
+    label: Linked List
+    order: 16
+    description: Preserve references while moving through nodes.
+    problem_rules:
+      - any: [Linked List]
+    variants:
+      - id: fast-slow
+        label: Fast / slow
+        template: linked-list
+        aliases: [Linked List, Two Pointers]
+        problem_rules:
+          - all: [Linked List, Two Pointers]
+        flowchart_nodes: [linked-list-twopointers]
+      - id: rewire
+        label: Reverse / rewire
+        template: linked-list-rewire
+      - id: merge
+        label: Merge
+        template: linked-list-merge
+
+  - id: string-matching
+    label: String Matching
+    order: 17
+    description: Compare text by explicit match state.
+    problem_rules:
+      - any: [String Matching, Hash Function]
+    variants:
+      - id: kmp
+        label: KMP
+        template: kmp
+        aliases: [String Matching]
+        problem_rules:
+          - any: [String Matching]
+      - id: rolling-hash
+        label: Rolling hash
+        template: string-pattern
+        aliases: [Hash Function]
+        problem_rules:
+          - any: [Hash Function]
+
+  - id: greedy
+    label: Greedy
+    order: 18
+    description: Commit to a locally forced choice.
+    problem_rules:
+      - any: [Greedy]
+    variants:
+      - id: local-choice
+        label: Local choice
+        template: greedy
+        aliases: [Greedy]
+        problem_rules:
+          - any: [Greedy]
+        flowchart_nodes: [max/min-greedy]
+      - id: sort-first
+        label: Sort first
+        template: greedy-sort
+      - id: heap-assisted
+        label: Heap-assisted
+        template: greedy-heap
+
+  - id: math-bits
+    label: Math / Bits
+    order: 19
+    description: Use arithmetic structure directly.
+    problem_rules:
+      - any: [Math, Bit Manipulation, Combinatorics, Geometry, Game Theory]
+    variants:
+      - id: gcd
+        label: GCD
+        template: math-bits
+      - id: sieve
+        label: Sieve
+        template: sieve
+      - id: combinatorics
+        label: Combinatorics
+        template: combinatorics
+        aliases: [Combinatorics]
+      - id: bitmask
+        label: Bitmask enumeration
+        template: bitmask-enumeration
+        aliases: [Bit Manipulation]

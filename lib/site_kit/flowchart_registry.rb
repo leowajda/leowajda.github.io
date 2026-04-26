@@ -8,7 +8,7 @@ module SiteKit
 
     def record
       @record ||= {
-        "incoming_edges_by_target" => incoming_edges_by_target
+        'incoming_edges_by_target' => incoming_edges_by_target
       }
     end
 
@@ -17,11 +17,11 @@ module SiteKit
     attr_reader :flowchart_data
 
     def incoming_edges_by_target
-      Helpers.ensure_array(flowchart_data["edges"], "Flowchart data.edges").each_with_object({}) do |edge_entry, result|
-        edge = Helpers.ensure_hash(edge_entry, "Flowchart edge")
-        target = Helpers.ensure_string(edge.fetch("to"), "Flowchart edge.to")
-        Helpers.ensure_string(edge.fetch("from"), "Flowchart edge.from")
-        Helpers.ensure_string(edge.fetch("path"), "Flowchart edge.path")
+      Helpers.ensure_array(flowchart_data['edges'], 'Flowchart data.edges').each_with_object({}) do |edge_entry, result|
+        edge = Helpers.ensure_hash(edge_entry, 'Flowchart edge')
+        target = Helpers.ensure_string(edge.fetch('to'), 'Flowchart edge.to')
+        Helpers.ensure_string(edge.fetch('from'), 'Flowchart edge.from')
+        Helpers.ensure_string(edge.fetch('path'), 'Flowchart edge.path')
         raise "Flowchart edge targets must be unique: #{target}" if result.key?(target)
 
         result[target] = edge

@@ -1,0 +1,31 @@
+- entry_id: hash-seen-state-java
+  language: java
+  code: |
+    boolean isHappy(int n) {
+        Set<Integer> seen = new HashSet<>();
+        while (n != 1 && seen.add(n)) {
+            int next = 0;
+            while (n > 0) {
+                int digit = n % 10;
+                next += digit * digit;
+                n /= 10;
+            }
+            n = next;
+        }
+        return n == 1;
+    }
+- entry_id: hash-seen-state-python
+  language: python
+  code: |
+    def is_happy(n):
+        seen = set()
+        while n != 1 and n not in seen:
+            seen.add(n)
+            next_n = 0
+            while n:
+                digit = n % 10
+                next_n += digit * digit
+                n //= 10
+            n = next_n
+        return n == 1
+

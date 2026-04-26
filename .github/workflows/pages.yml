@@ -57,8 +57,17 @@ jobs:
           baseurl: ${{ steps.pages.outputs.base_path }}
           EOF
 
+      - name: Syntax-check source validation
+        run: pnpm check:validate
+
+      - name: Lint Ruby
+        run: pnpm lint:ruby
+
+      - name: Check JavaScript syntax
+        run: pnpm check:js
+
       - name: Validate source catalogs
-        run: ruby script/validate_catalogs.rb
+        run: pnpm validate:catalogs
 
       - name: Run Ruby tests
         run: pnpm test:ruby
@@ -69,8 +78,8 @@ jobs:
       - name: Check internal links
         run: pnpm check:links
 
-      - name: Run mobile smoke checks
-        run: pnpm test:mobile-smoke
+      - name: Run functional browser checks
+        run: pnpm test:functional:built
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

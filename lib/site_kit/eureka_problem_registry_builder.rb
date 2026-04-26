@@ -41,14 +41,14 @@ module SiteKit
     def build_problem_objects
       source_catalog.problems.map do |problem_slug, entry|
         raw_problem = Helpers.ensure_hash(entry, "Problem '#{problem_slug}'")
-        problem_title = Helpers.ensure_string(raw_problem.fetch("name"), "Problem '#{problem_slug}'.name")
-        problem_source_url = Helpers.ensure_string(raw_problem.fetch("url"), "Problem '#{problem_slug}'.url")
+        problem_title = Helpers.ensure_string(raw_problem.fetch('name'), "Problem '#{problem_slug}'.name")
+        problem_source_url = Helpers.ensure_string(raw_problem.fetch('url'), "Problem '#{problem_slug}'.url")
 
         implementations = implementation_loader.load(
           problem_slug: problem_slug,
           problem_title: problem_title,
           problem_source_url: problem_source_url,
-          raw_implementations: raw_problem.fetch("implementations")
+          raw_implementations: raw_problem.fetch('implementations')
         )
         raise "Problem '#{problem_slug}' has no implementations" if implementations.empty?
 

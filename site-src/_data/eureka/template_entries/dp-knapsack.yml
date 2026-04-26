@@ -1,0 +1,21 @@
+- entry_id: dp-knapsack-java
+  language: java
+  code: |
+    int knapsack(int[] weights, int[] values, int capacity) {
+        int[] dp = new int[capacity + 1];
+        for (int i = 0; i < weights.length; i++) {
+            for (int cap = capacity; cap >= weights[i]; cap--)
+                dp[cap] = Math.max(dp[cap], dp[cap - weights[i]] + values[i]);
+        }
+        return dp[capacity];
+    }
+- entry_id: dp-knapsack-python
+  language: python
+  code: |
+    def knapsack(weights, values, capacity):
+        dp = [0] * (capacity + 1)
+        for weight, value in zip(weights, values):
+            for cap in range(capacity, weight - 1, -1):
+                dp[cap] = max(dp[cap], dp[cap - weight] + value)
+        return dp[capacity]
+

@@ -1,0 +1,14 @@
+- entry_id: sieve-java
+  language: java
+  code: |
+    boolean[] primesUpTo(int n) {
+        boolean[] prime = new boolean[n + 1];
+        Arrays.fill(prime, true);
+        prime[0] = prime[1] = false;
+        for (int p = 2; p * p <= n; p++)
+            if (prime[p])
+                for (int x = p * p; x <= n; x += p)
+                    prime[x] = false;
+        return prime;
+    }
+

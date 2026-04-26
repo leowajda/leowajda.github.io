@@ -1,0 +1,29 @@
+- entry_id: dynamic-programming-java
+  language: java
+  code: |
+    int minCostClimbingStairs(int[] cost) {
+        int twoBack = 0;
+        int oneBack = 0;
+
+        for (int step = 2; step <= cost.length; step++) {
+            int current = Math.min(oneBack + cost[step - 1], twoBack + cost[step - 2]);
+            twoBack = oneBack;
+            oneBack = current;
+        }
+
+        return oneBack;
+    }
+- entry_id: dynamic-programming-python
+  language: python
+  code: |
+    def min_cost_climbing_stairs(cost: list[int]) -> int:
+        two_back = 0
+        one_back = 0
+
+        for step in range(2, len(cost) + 1):
+            current = min(one_back + cost[step - 1], two_back + cost[step - 2])
+            two_back = one_back
+            one_back = current
+
+        return one_back
+

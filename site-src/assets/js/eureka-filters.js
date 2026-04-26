@@ -47,8 +47,6 @@ const initializeProblemFilters = () => {
   const searchInput = form.querySelector('input[name="search"]')
   const languageInputs = Array.from(form.querySelectorAll('input[name="language"]'))
   const languageCells = Array.from(table.querySelectorAll("[data-language-column]"))
-  const categoryOptions = Array.from(form.querySelectorAll("[data-category-option]"))
-  const categoryEmpty = form.querySelector("[data-category-empty]")
   const defaultLanguage = table.dataset.languageFilter || ""
   const rows = Array.from(table.querySelectorAll("[data-problem-row]")).map(readProblemRow)
 
@@ -78,23 +76,6 @@ const initializeProblemFilters = () => {
       const columnLanguage = cell.dataset.languageColumn || ""
       cell.hidden = selectedLanguages.length > 0 && !selectedLanguages.includes(columnLanguage)
     })
-  }
-
-  const renderCategoryOptions = () => {
-    if (categoryOptions.length === 0) {
-      return
-    }
-
-    let visibleCount = 0
-
-    categoryOptions.forEach((option) => {
-      option.hidden = false
-      visibleCount += 1
-    })
-
-    if (categoryEmpty) {
-      categoryEmpty.hidden = visibleCount !== 0
-    }
   }
 
   const renderActiveFilters = (state) => {
@@ -144,7 +125,6 @@ const initializeProblemFilters = () => {
   }
 
   const render = () => {
-    renderCategoryOptions()
     const selectedLanguages = readSelectedLanguages()
     renderLanguageColumns(selectedLanguages)
 

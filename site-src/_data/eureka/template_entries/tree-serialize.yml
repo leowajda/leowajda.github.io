@@ -1,0 +1,23 @@
+- entry_id: tree-serialize-java
+  language: java
+  code: |
+    void serialize(TreeNode node, List<String> out) {
+        if (node == null) {
+            out.add("#");
+            return;
+        }
+        out.add(String.valueOf(node.val));
+        serialize(node.left, out);
+        serialize(node.right, out);
+    }
+- entry_id: tree-serialize-python
+  language: python
+  code: |
+    def serialize(node, out):
+        if not node:
+            out.append("#")
+            return
+        out.append(str(node.val))
+        serialize(node.left, out)
+        serialize(node.right, out)
+

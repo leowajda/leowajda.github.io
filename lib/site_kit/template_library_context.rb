@@ -2,17 +2,26 @@
 
 module SiteKit
   class TemplateLibraryContext
-    def initialize(documents:, groups:, entries_by_template:, code_collection_config:)
-      @documents = documents
-      @group_records = groups
+    def initialize(topics:, template_guide:, flowchart_data:, entries_by_template:, language_catalog:,
+                   code_collection_config:)
+      @topic_records = topics
+      @template_guide_data = template_guide
+      @flowchart_data = flowchart_data
       @entries_by_template = entries_by_template
+      @language_catalog = language_catalog
       @code_collection_config = code_collection_config
+    end
+
+    def topics
+      @topics ||= AlgorithmicTopicRepository.new(
+        topics: topic_records,
+        flowchart_data: flowchart_data
+      ).load
     end
 
     def templates
       @templates ||= AlgorithmicTemplateRepository.new(
-        documents: documents,
-        groups: group_records
+        topics: topics
       ).load
     end
 
@@ -20,23 +29,23 @@ module SiteKit
       @code_collections ||= TemplateCodeCollectionRegistry.new(
         templates: templates,
         entries_by_template: entries_by_template,
+        language_catalog: language_catalog,
         code_collection_config: code_collection_config
       ).record
     end
 
-    def library
-      @library ||= AlgorithmicTemplateGroupBuilder.new(
+    def guide
+      @guide ||= TemplateGuideRepository.new(
+        data: template_guide_data,
         templates: templates,
-        code_collections: code_collections
+        code_collections: code_collections,
+        flowchart_data: flowchart_data
       ).build
-    end
-
-    def groups
-      library.groups
     end
 
     private
 
-    attr_reader :documents, :group_records, :entries_by_template, :code_collection_config
+    attr_reader :topic_records, :template_guide_data, :flowchart_data, :entries_by_template, :language_catalog,
+                :code_collection_config
   end
 end

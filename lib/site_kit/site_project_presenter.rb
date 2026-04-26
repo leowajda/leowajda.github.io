@@ -13,14 +13,14 @@ module SiteKit
   ) do
     def to_h
       {
-        "slug" => slug,
-        "kind" => kind,
-        "title" => title,
-        "description" => description,
-        "source_url" => source_url,
-        "homepage_order" => homepage_order,
-        "home_url" => home_url,
-        "home_groups" => home_groups
+        'slug' => slug,
+        'kind' => kind,
+        'title' => title,
+        'description' => description,
+        'source_url' => source_url,
+        'homepage_order' => homepage_order,
+        'home_url' => home_url,
+        'home_groups' => home_groups
       }
     end
   end
@@ -56,9 +56,12 @@ module SiteKit
 
     def project_home_url(manifest)
       return manifest.entry_url unless manifest.entry_url.empty?
-      return source_registries.fetch(manifest.slug).fetch("project_home_url", "") if manifest.kind == SOURCE_NOTES_PROJECT_KIND && source_registries.key?(manifest.slug)
+      if manifest.kind == SOURCE_NOTES_PROJECT_KIND && source_registries.key?(manifest.slug)
+        return source_registries.fetch(manifest.slug).fetch('project_home_url',
+                                                            '')
+      end
 
-      ""
+      ''
     end
 
     def homepage_groups(manifest)
@@ -66,14 +69,14 @@ module SiteKit
 
       source_registries
         .fetch(manifest.slug)
-        .fetch("languages", [])
+        .fetch('languages', [])
         .map do |language|
           {
-            "language_title" => language.fetch("language_title"),
-            "modules" => language.fetch("modules").map do |module_record|
+            'language_title' => language.fetch('language_title'),
+            'modules' => language.fetch('modules').map do |module_record|
               {
-                "title" => module_record.fetch("title"),
-                "url" => module_record.fetch("url")
+                'title' => module_record.fetch('title'),
+                'url' => module_record.fetch('url')
               }
             end
           }

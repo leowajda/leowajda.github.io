@@ -2,10 +2,17 @@
 layout: default
 ---
 
-{%- assign template_groups = page.template_groups | default: empty -%}
-{%- assign default_template_id = page.default_template | default: 'binary-search' -%}
+{%- assign guide = page.template_guide | default: empty -%}
+{%- assign patterns = guide.patterns | default: empty -%}
+{%- assign template_panels = guide.template_panels | default: empty -%}
+{%- assign default_target = page.default_template_target | default: guide.default_target | default: 'binary-search/boundary' -%}
 
-<article class="template-library" data-template-library data-template-default="{{ default_template_id }}" data-template-default-language="java">
+<article
+  class="template-library"
+  data-template-library
+  data-template-default="{{ default_target }}"
+  data-template-default-language="java"
+>
   {%- include page_hero_header.html
     class="template-library__header"
     title=page.title
@@ -14,68 +21,82 @@ layout: default
   -%}
 
   <section class="template-library__content">
-    <div class="template-library__controls">
-      <nav class="template-library__groups" aria-label="Template families">
-        {%- for group in template_groups -%}
-          {%- assign first_group_template = group.templates | first -%}
-          {%- assign group_is_default = false -%}
-          {%- for template in group.templates -%}
-            {%- if template.template_id == default_template_id -%}
-              {%- assign group_is_default = true -%}
-            {%- endif -%}
-          {%- endfor -%}
-          <button
-            type="button"
-            class="control-button template-library__group{% if group_is_default %} template-library__group--active{% endif %}"
-            data-template-group-control
-            data-template-group="{{ group.id }}"
-            data-template-target="{{ first_group_template.template_id }}"
-            aria-pressed="{{ group_is_default }}"
+    <aside class="template-library__nav" aria-label="Template patterns">
+      <div class="template-library__search">
+        <label class="section-eyebrow" for="template-guide-search">Patterns</label>
+        <input id="template-guide-search" type="search" placeholder="Search patterns" data-template-search autocomplete="off">
+      </div>
+      <nav class="template-library__outline">
+        {%- for pattern in patterns -%}
+          <div
+            class="template-library__branch"
+            data-guide-branch
+            data-guide-pattern="{{ pattern.id }}"
           >
-            {{ group.title }}
-          </button>
+            <button
+              type="button"
+              class="template-library__pattern{% if pattern.active %} is-active{% endif %}"
+              data-guide-pattern-control
+              data-guide-target="{{ pattern.target }}"
+              data-guide-default-target="{{ pattern.default_target }}"
+              data-guide-pattern="{{ pattern.id }}"
+              data-guide-search-text="{{ pattern.search_text }}"
+              aria-expanded="{{ pattern.active }}"
+            >
+              {{ pattern.label }}
+            </button>
+            <div
+              class="template-library__children"
+              aria-label="{{ pattern.label }} templates"
+              {% unless pattern.active %}hidden{% endunless %}
+            >
+              {%- for variant in pattern.variants -%}
+                <button
+                  type="button"
+                  class="template-library__variant{% if variant.active %} is-active{% endif %}"
+                  data-guide-variant-control
+                  data-guide-target="{{ variant.target }}"
+                  data-guide-default-target="{{ pattern.default_target }}"
+                  data-guide-pattern="{{ pattern.id }}"
+                  data-guide-variant="{{ variant.id }}"
+                  data-guide-has-template="{{ variant.has_template }}"
+                  data-guide-search-text="{{ variant.search_text }}"
+                  aria-pressed="{{ variant.active }}"
+                  {% unless variant.has_template %}hidden aria-hidden="true" tabindex="-1"{% endunless %}
+                >
+                  {{ variant.label }}
+                </button>
+              {%- endfor -%}
+            </div>
+          </div>
         {%- endfor -%}
       </nav>
+    </aside>
 
-      {%- for group in template_groups -%}
-        {%- assign group_is_default = false -%}
-        {%- for template in group.templates -%}
-          {%- if template.template_id == default_template_id -%}
-            {%- assign group_is_default = true -%}
-          {%- endif -%}
+    <section class="template-library__code" aria-live="polite">
+      <div class="template-library__anchors" aria-hidden="true">
+        {%- for pattern in patterns -%}
+          <span id="{{ pattern.target }}"></span>
+          {%- for variant in pattern.variants -%}
+            {%- unless variant.has_template -%}
+              <span id="{{ variant.target }}"></span>
+            {%- endunless -%}
+          {%- endfor -%}
         {%- endfor -%}
-        <section class="template-library__group-panel" data-template-group-tabs="{{ group.id }}"{% unless group_is_default %} hidden{% endunless %}>
-          <nav class="template-library__tabs" aria-label="{{ group.title }} templates">
-            {%- for template in group.templates -%}
-              {%- assign template_is_default = false -%}
-              {%- if template.template_id == default_template_id -%}
-                {%- assign template_is_default = true -%}
-              {%- endif -%}
-              <button
-                type="button"
-                class="control-button template-library__tab{% if template_is_default %} template-library__tab--active{% endif %}"
-                data-template-nav
-                data-template-group="{{ group.id }}"
-                data-template-target="{{ template.template_id }}"
-                aria-pressed="{{ template_is_default }}"
-              >
-                {{ template.title }}
-              </button>
-            {%- endfor -%}
-          </nav>
-        </section>
-      {%- endfor -%}
-    </div>
+      </div>
 
-    {%- for group in template_groups -%}
-      {%- for template in group.templates -%}
-        {%- assign template_id = template.template_id -%}
-        {%- assign is_default = false -%}
-        {%- if template_id == default_template_id -%}
-          {%- assign is_default = true -%}
-        {%- endif -%}
-        {%- include template_panel.html template=template default=is_default -%}
-{%- endfor -%}
-    {%- endfor -%}
+      {%- for template in template_panels -%}
+        {%- include template_panel.html template=template -%}
+      {%- endfor -%}
+    </section>
   </section>
+
+  {%- for redirect in guide.redirects -%}
+    <span
+      hidden
+      data-template-redirect
+      data-template-redirect-source="{{ redirect[0] }}"
+      data-template-redirect-target="{{ redirect[1] }}"
+    ></span>
+  {%- endfor -%}
 </article>

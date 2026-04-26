@@ -1,0 +1,36 @@
+- entry_id: dp-grid-java
+  language: java
+  code: |
+    int minPathSum(int[][] grid) {
+        int rows = grid.length;
+        int cols = grid[0].length;
+        int[][] dp = new int[rows][cols];
+
+        for (int r = 0; r < rows; r++) {
+            for (int c = 0; c < cols; c++) {
+                int best = r == 0 && c == 0 ? 0 : Integer.MAX_VALUE;
+                if (r > 0)
+                    best = Math.min(best, dp[r - 1][c]);
+                if (c > 0)
+                    best = Math.min(best, dp[r][c - 1]);
+                dp[r][c] = best + grid[r][c];
+            }
+        }
+        return dp[rows - 1][cols - 1];
+    }
+- entry_id: dp-grid-python
+  language: python
+  code: |
+    def min_path_sum(grid):
+        rows, cols = len(grid), len(grid[0])
+        dp = [[0] * cols for _ in range(rows)]
+        for r in range(rows):
+            for c in range(cols):
+                best = 0 if r == 0 and c == 0 else float("inf")
+                if r:
+                    best = min(best, dp[r - 1][c])
+                if c:
+                    best = min(best, dp[r][c - 1])
+                dp[r][c] = best + grid[r][c]
+        return dp[-1][-1]
+

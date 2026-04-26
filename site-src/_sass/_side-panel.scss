@@ -155,6 +155,10 @@
   min-width: 0;
 }
 
+.filter-option__count {
+  opacity: var(--muted-opacity);
+}
+
 .filter-option input {
   margin: 0.2rem 0 0;
 }

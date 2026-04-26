@@ -1,0 +1,61 @@
+- entry_id: sliding-window-fixed-java
+  language: java
+  code: |
+    int maxWindowSum(int[] nums, int k) {
+        int windowSum = 0;
+
+        for (int i = 0; i < k; i++) {
+            windowSum += nums[i];
+        }
+
+        int best = windowSum;
+
+        for (int right = k; right < nums.length; right++) {
+            windowSum += nums[right] - nums[right - k];
+            best = Math.max(best, windowSum);
+        }
+
+        return best;
+    }
+- entry_id: sliding-window-fixed-scala
+  language: scala
+  code: |
+    def maxWindowSum(nums: Array[Int], k: Int): Int =
+      var windowSum = nums.take(k).sum
+      var best = windowSum
+
+      for right <- k until nums.length do
+        windowSum += nums(right) - nums(right - k)
+        best = math.max(best, windowSum)
+
+      best
+- entry_id: sliding-window-fixed-python
+  language: python
+  code: |
+    def max_window_sum(nums: list[int], k: int) -> int:
+        window_sum = sum(nums[:k])
+        best = window_sum
+
+        for right in range(k, len(nums)):
+            window_sum += nums[right] - nums[right - k]
+            best = max(best, window_sum)
+
+        return best
+- entry_id: sliding-window-fixed-cpp
+  language: cpp
+  code: |
+    int maxWindowSum(const std::vector<int>& nums, int k) {
+        int windowSum = 0;
+        for (int i = 0; i < k; i++)
+            windowSum += nums[i];
+
+        int best = windowSum;
+
+        for (int right = k; right < static_cast<int>(nums.size()); right++) {
+            windowSum += nums[right] - nums[right - k];
+            best = std::max(best, windowSum);
+        }
+
+        return best;
+    }
+

@@ -1,27 +1,31 @@
 # frozen_string_literal: true
 
-require_relative "../test_helper"
+require_relative '../test_helper'
 
 class SiteKitAlgorithmicTemplateRepositoryTest < SiteKitTestCase
-  def test_loads_templates_from_the_collection
-    template = build_context.template_library_context.templates.find { |entry| entry.template_id == "binary-search" }
+  def test_loads_templates_from_algorithmic_topics
+    template = build_context.template_library_context.templates.find { |entry| entry.template_id == 'binary-search' }
 
     assert template
-    assert_equal "Binary Search", template.title
-    assert_equal "Search And Window", template.group_title
-    assert_equal ["Binary Search"], template.eureka_categories
+    assert_equal 'Binary Search', template.title
+    assert_equal ['Binary Search'], template.aliases
   end
 
-  def test_rejects_duplicate_template_group_ids
-    groups = [
-      { "id" => "search", "title" => "Search", "order" => 1 },
-      { "id" => "search", "title" => "Search Again", "order" => 2 }
+  def test_rejects_duplicate_topic_ids
+    topics = [
+      { 'id' => 'binary-search', 'label' => 'Binary Search', 'kind' => 'algorithm', 'order' => 1,
+        'description' => 'Search sorted data.', 'aliases' => [] },
+      { 'id' => 'binary-search', 'label' => 'Boundary Search', 'kind' => 'algorithm', 'order' => 2,
+        'description' => 'Find a boundary.', 'aliases' => [] }
     ]
 
     error = assert_raises(RuntimeError) do
-      SiteKit::AlgorithmicTemplateRepository.new(documents: [], groups:).load
+      SiteKit::AlgorithmicTopicRepository.new(
+        topics: topics,
+        flowchart_data: { 'nodes' => [] }
+      ).load
     end
 
-    assert_match(/Template group ids must be unique: search/, error.message)
+    assert_match(/Algorithmic topic ids must be unique: binary-search/, error.message)
   end
 end

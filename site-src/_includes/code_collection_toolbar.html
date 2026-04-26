@@ -1,0 +1,33 @@
+{%- assign toolbar_groups = include.toolbar_groups | default: empty -%}
+{%- if toolbar_groups.size > 0 -%}
+  <div class="code-collection__toolbar">
+    {%- for group in toolbar_groups -%}
+      <div
+        class="{{ group.class }}"
+        role="toolbar"
+        aria-label="{{ group.aria_label }}"
+        {% if group.keep_visible %}data-code-collection-keep-visible="true"{% endif %}
+        {% if group.kind == "variant" %}data-code-collection-variant-group{% endif %}
+      >
+        {%- for control in group.controls -%}
+          <button
+            type="button"
+            class="control-button code-collection__option{% if control.icon_only %} control-button--icon code-collection__option--icon{% endif %}{% if control.active %} is-active{% endif %}"
+            data-code-collection-{{ group.kind }}-control
+            data-code-collection-{{ group.kind }}="{{ control.slug | escape }}"
+            {% if group.kind == "variant" %}data-code-collection-variant-label="{{ control.label | escape }}"{% endif %}
+            aria-pressed="{{ control.active }}"
+            aria-label="{{ control.label }}"
+            title="{{ control.label }}"
+          >
+            {%- if control.icon_only and control.icon != '' -%}
+              {%- include icon.html name=control.icon class="code-collection__option-icon" -%}
+            {%- else -%}
+              {{ control.label }}
+            {%- endif -%}
+          </button>
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+  </div>
+{%- endif -%}

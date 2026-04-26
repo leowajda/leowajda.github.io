@@ -1,0 +1,18 @@
+- entry_id: hash-frequency-java
+  language: java
+  code: |
+    Map<Integer, Integer> frequencies(int[] nums) {
+        Map<Integer, Integer> counts = new HashMap<>();
+        for (int value : nums)
+            counts.put(value, counts.getOrDefault(value, 0) + 1);
+        return counts;
+    }
+- entry_id: hash-frequency-python
+  language: python
+  code: |
+    def frequencies(nums):
+        counts = {}
+        for value in nums:
+            counts[value] = counts.get(value, 0) + 1
+        return counts
+

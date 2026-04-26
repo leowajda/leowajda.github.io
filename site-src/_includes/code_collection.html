@@ -2,26 +2,10 @@
 {%- assign items = collection.items -%}
 {%- if items and items.size > 0 -%}
   {%- assign collection_id = include.collection_id | default: '' -%}
+  {%- assign entry_dom_prefix = include.entry_dom_prefix | default: '' -%}
   {%- assign default_entry_id = collection.default_entry_id | default: items.first.entry_id -%}
-  {%- assign default_language_slug = '' -%}
-  {%- assign default_variant_slug = '' -%}
-  {%- for item in items -%}
-    {%- if item.entry_id == default_entry_id -%}
-      {%- assign default_language_slug = item.language_slug -%}
-      {%- assign default_variant_slug = item.variant_slug -%}
-    {%- endif -%}
-  {%- endfor -%}
-  {%- if default_language_slug == '' -%}
-    {%- assign default_language_slug = items.first.language_slug -%}
-  {%- endif -%}
-  {%- if default_variant_slug == '' -%}
-    {%- assign default_variant_slug = items.first.variant_slug -%}
-  {%- endif -%}
   {%- assign sync_hash = collection.sync_hash -%}
   {%- assign toolbar_aria = collection.toolbar_aria | default: 'Code collection' -%}
-  {%- assign toolbar_groups = collection.toolbar_groups -%}
-  {%- assign entry_action_groups = collection.entry_action_groups -%}
-  {%- assign global_actions = collection.global_actions -%}
 
   <section
     class="code-collection"
@@ -33,88 +17,16 @@
   >
     <article class="code-panel code-collection__panel" data-code-block>
       <header class="code-panel__header code-collection__header">
-        <div class="code-collection__toolbar">
-          {%- for group in toolbar_groups -%}
-            <div
-              class="{{ group.class }}"
-              role="toolbar"
-              aria-label="{{ group.aria_label }}"
-              {% if group.keep_visible %}data-code-collection-keep-visible="true"{% endif %}
-              {% if group.kind == "variant" %}data-code-collection-variant-group{% endif %}
-            >
-              {%- for control in group.controls -%}
-                {%- assign control_active = false -%}
-                {%- if group.kind == "language" and control.slug == default_language_slug -%}
-                  {%- assign control_active = true -%}
-                {%- elsif group.kind == "variant" and control.slug == default_variant_slug -%}
-                  {%- assign control_active = true -%}
-                {%- endif -%}
-                <button
-                  type="button"
-                  class="control-button code-collection__option{% if control.icon_only %} control-button--icon code-collection__option--icon{% endif %}{% if control_active %} is-active{% endif %}"
-                  data-code-collection-{{ group.kind }}-control
-                  data-code-collection-{{ group.kind }}="{{ control.slug | escape }}"
-                  data-code-collection-target-entry="{{ control.target_entry_id | escape }}"
-                  {% if group.kind == "variant" %}data-code-collection-variant-label="{{ control.label | escape }}"{% endif %}
-                  aria-pressed="{{ control_active }}"
-                  aria-label="{{ control.label }}"
-                  title="{{ control.label }}"
-                >
-                  {%- if control.icon_only and control.icon != '' -%}
-                    {%- include icon.html name=control.icon class="code-collection__option-icon" -%}
-                  {%- else -%}
-                    {{ control.label }}
-                  {%- endif -%}
-                </button>
-              {%- endfor -%}
-            </div>
-          {%- endfor -%}
-        </div>
-
-        <div class="code-panel__actions code-collection__actions">
-          {%- for action_group in entry_action_groups -%}
-            {%- assign action_group_hidden = true -%}
-            {%- if action_group.entry_id == default_entry_id -%}
-              {%- assign action_group_hidden = false -%}
-            {%- endif -%}
-            <div class="code-collection__entry-actions" data-code-collection-actions-for="{{ action_group.entry_id | escape }}"{% if action_group_hidden %} hidden{% endif %}>
-              {%- for action in action_group.actions -%}
-                {%- include icon_action.html action=action -%}
-              {%- endfor -%}
-            </div>
-          {%- endfor -%}
-          {%- for action in global_actions -%}
-            {%- include icon_action.html action=action -%}
-          {%- endfor -%}
-        </div>
+        {%- include code_collection_toolbar.html toolbar_groups=collection.toolbar_groups -%}
+        {%- include code_collection_actions.html
+          entry_action_groups=collection.entry_action_groups
+          global_actions=collection.global_actions
+        -%}
       </header>
 
-        <div class="code-panel__body code-block__content" data-code-source>
+      <div class="code-panel__body code-block__content" data-code-source>
         {%- for item in items -%}
-          {%- assign item_hidden = true -%}
-          {%- if item.entry_id == default_entry_id -%}
-            {%- assign item_hidden = false -%}
-          {%- endif -%}
-          <div
-            class="code-collection__item"
-            data-code-collection-item
-            data-code-collection-entry-id="{{ item.entry_id | escape }}"
-            data-code-collection-language="{{ item.language_slug | escape }}"
-            data-code-collection-variant="{{ item.variant_slug | escape }}"
-            id="{{ item.entry_id | escape }}"
-            {% if item_hidden %}hidden{% endif %}
-          >
-            {%- if item.code -%}
-              {%- capture code_block -%}
-```{{ item.code_language }}
-{{ item.code }}
-```
-              {%- endcapture -%}
-              {{ code_block | markdownify }}
-            {%- elsif item.content -%}
-              {{ item.content | markdownify }}
-            {%- endif -%}
-          </div>
+          {%- include code_collection_item.html item=item entry_dom_prefix=entry_dom_prefix -%}
         {%- endfor -%}
       </div>
     </article>

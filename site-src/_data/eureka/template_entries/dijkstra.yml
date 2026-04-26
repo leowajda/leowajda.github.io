@@ -1,0 +1,53 @@
+- entry_id: dijkstra-java
+  language: java
+  code: |
+    int[] shortestPaths(List<int[]>[] graph, int source) {
+        int[] distance = new int[graph.length];
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[source] = 0;
+
+        PriorityQueue<int[]> queue = new PriorityQueue<>((a, b) -> Integer.compare(a[1], b[1]));
+        queue.offer(new int[] {source, 0});
+
+        while (!queue.isEmpty()) {
+            int[] entry = queue.poll();
+            int node = entry[0];
+            int cost = entry[1];
+
+            if (cost != distance[node])
+                continue;
+
+            for (int[] edge : graph[node]) {
+                int neighbor = edge[0];
+                int weight = edge[1];
+                int nextCost = cost + weight;
+
+                if (nextCost < distance[neighbor]) {
+                    distance[neighbor] = nextCost;
+                    queue.offer(new int[] {neighbor, nextCost});
+                }
+            }
+        }
+
+        return distance;
+    }
+- entry_id: dijkstra-python
+  language: python
+  code: |
+    def shortest_paths(graph: list[list[tuple[int, int]]], source: int) -> list[int]:
+        distance = [float("inf")] * len(graph)
+        distance[source] = 0
+        heap = [(0, source)]
+
+        while heap:
+            cost, node = heapq.heappop(heap)
+            if cost != distance[node]:
+                continue
+
+            for neighbor, weight in graph[node]:
+                next_cost = cost + weight
+                if next_cost < distance[neighbor]:
+                    distance[neighbor] = next_cost
+                    heapq.heappush(heap, (next_cost, neighbor))
+
+        return distance

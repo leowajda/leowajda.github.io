@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-require "jekyll"
+require 'jekyll'
 
 module SiteKit
   class GeneratedPage < Jekyll::PageWithoutAFile
-    def initialize(site:, dir:, page_type:, data:, content: "")
-      normalized_dir = dir.sub(%r{\A/}, "").sub(%r{/\z}, "")
-      source_name = content.to_s.strip.empty? ? "index.html" : "index.md"
+    def initialize(site:, dir:, page_type:, data:, content: '')
+      normalized_dir = dir.delete_prefix('/').delete_suffix('/')
+      source_name = content.to_s.strip.empty? ? 'index.html' : 'index.md'
       super(site, site.source, normalized_dir, source_name)
 
       @page_type = page_type

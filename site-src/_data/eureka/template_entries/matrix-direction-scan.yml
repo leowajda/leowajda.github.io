@@ -1,0 +1,26 @@
+- entry_id: matrix-direction-scan-java
+  language: java
+  code: |
+    int countNeighbors(int[][] grid, int row, int col) {
+        int count = 0;
+        int[][] dirs = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+
+        for (int[] dir : dirs) {
+            int r = row + dir[0];
+            int c = col + dir[1];
+            if (0 <= r && r < grid.length && 0 <= c && c < grid[0].length)
+                count += grid[r][c];
+        }
+        return count;
+    }
+- entry_id: matrix-direction-scan-python
+  language: python
+  code: |
+    def count_neighbors(grid, row, col):
+        count = 0
+        for dr, dc in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            r, c = row + dr, col + dc
+            if 0 <= r < len(grid) and 0 <= c < len(grid[0]):
+                count += grid[r][c]
+        return count
+

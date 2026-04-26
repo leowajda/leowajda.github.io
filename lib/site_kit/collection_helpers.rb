@@ -5,8 +5,8 @@ module SiteKit
     extend self
 
     def index_by(values)
-      values.each_with_object({}) do |value, result|
-        result[yield(value)] = value
+      values.to_h do |value|
+        [yield(value), value]
       end
     end
   end

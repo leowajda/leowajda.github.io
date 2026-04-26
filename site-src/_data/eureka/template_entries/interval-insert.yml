@@ -1,0 +1,18 @@
+- entry_id: interval-insert-java
+  language: java
+  code: |
+    List<int[]> insertInterval(int[][] intervals, int[] next) {
+        List<int[]> result = new ArrayList<>();
+        int i = 0;
+        while (i < intervals.length && intervals[i][1] < next[0])
+            result.add(intervals[i++]);
+        while (i < intervals.length && intervals[i][0] <= next[1]) {
+            next[0] = Math.min(next[0], intervals[i][0]);
+            next[1] = Math.max(next[1], intervals[i++][1]);
+        }
+        result.add(next);
+        while (i < intervals.length)
+            result.add(intervals[i++]);
+        return result;
+    }
+

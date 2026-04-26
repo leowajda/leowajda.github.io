@@ -1,0 +1,114 @@
+- entry_id: breadth-first-search-java
+  language: java
+  code: |
+    List<List<Integer>> levelOrder(TreeNode root) {
+        if (root == null)
+            return new ArrayList<>();
+
+        List<List<Integer>> levels = new ArrayList<>();
+        ArrayDeque<TreeNode> queue = new ArrayDeque<>();
+        queue.addLast(root);
+
+        while (!queue.isEmpty()) {
+            int levelSize = queue.size();
+            List<Integer> level = new ArrayList<>(levelSize);
+
+            for (int i = 0; i < levelSize; i++) {
+                TreeNode node = queue.removeFirst();
+                level.add(node.val);
+
+                if (node.left != null)
+                    queue.addLast(node.left);
+                if (node.right != null)
+                    queue.addLast(node.right);
+            }
+
+            levels.add(level);
+        }
+
+        return levels;
+    }
+- entry_id: breadth-first-search-scala
+  language: scala
+  code: |
+    def levelOrder(root: TreeNode): List[List[Int]] =
+      if root == null then
+        List.empty
+      else
+        val levels = scala.collection.mutable.ListBuffer.empty[List[Int]]
+        val queue = scala.collection.mutable.Queue(root)
+
+        while queue.nonEmpty do
+          val levelSize = queue.size
+          val level = scala.collection.mutable.ListBuffer.empty[Int]
+
+          for _ <- 0 until levelSize do
+            val node = queue.dequeue()
+            level += node.val
+            if node.left != null then queue.enqueue(node.left)
+            if node.right != null then queue.enqueue(node.right)
+
+          levels += level.toList
+
+        levels.toList
+- entry_id: breadth-first-search-python
+  language: python
+  code: |
+    def level_order(root):
+        if not root:
+            return []
+
+        levels = []
+        queue = [root]
+        head = 0
+
+        while head < len(queue):
+            level = []
+            level_end = len(queue)
+
+            while head < level_end:
+                node = queue[head]
+                head += 1
+                level.append(node.val)
+                if node.left:
+                    queue.append(node.left)
+                if node.right:
+                    queue.append(node.right)
+
+            levels.append(level)
+
+        return levels
+- entry_id: breadth-first-search-cpp
+  language: cpp
+  code: |
+    std::vector<std::vector<int>> levelOrder(TreeNode* root) {
+        if (root == nullptr)
+            return {};
+
+        std::vector<std::vector<int>> levels;
+        std::queue<TreeNode*> queue;
+        queue.push(root);
+
+        while (!queue.empty()) {
+            int levelSize = static_cast<int>(queue.size());
+            std::vector<int> level;
+            level.reserve(levelSize);
+
+            for (int i = 0; i < levelSize; i++) {
+                TreeNode* node = queue.front();
+                queue.pop();
+
+                level.push_back(node->val);
+
+                if (node->left != nullptr)
+                    queue.push(node->left);
+                if (node->right != nullptr)
+                    queue.push(node->right);
+            }
+
+            levels.push_back(std::move(level));
+        }
+
+        return levels;
+    }
+

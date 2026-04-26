@@ -1,0 +1,19 @@
+- entry_id: math-bits-java
+  language: java
+  code: |
+    int gcd(int a, int b) {
+        while (b != 0) {
+            int next = a % b;
+            a = b;
+            b = next;
+        }
+        return Math.abs(a);
+    }
+- entry_id: math-bits-python
+  language: python
+  code: |
+    def gcd(a, b):
+        while b:
+            a, b = b, a % b
+        return abs(a)
+

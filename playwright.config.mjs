@@ -1,29 +1,38 @@
-import { defineConfig } from "@playwright/test"
+import { defineConfig, devices } from "@playwright/test"
 
 const previewUrl = "http://127.0.0.1:4173"
 
 export default defineConfig({
-  testDir: "tests/e2e",
+  testDir: "tests/functional",
   use: {
-    baseURL: previewUrl
+    baseURL: previewUrl,
+    colorScheme: "light",
+    trace: "on-first-retry"
   },
   webServer: {
-    command: "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
+    command: "python3 -m http.server 4173 --bind 127.0.0.1 --directory _site",
     url: previewUrl,
-    reuseExistingServer: true,
-    stdout: "pipe",
-    stderr: "pipe",
+    reuseExistingServer: !process.env.CI,
     timeout: 120000
   },
   expect: {
     timeout: 10000
   },
-  reporter: "list",
+  reporter: process.env.CI ? [["github"], ["list"]] : "list",
   projects: [
     {
-      name: "chromium",
+      name: "desktop-chromium",
       use: {
+        ...devices["Desktop Chrome"],
         browserName: "chromium"
+      }
+    },
+    {
+      name: "mobile-chromium",
+      use: {
+        ...devices["Pixel 5"],
+        browserName: "chromium",
+        viewport: { width: 390, height: 844 }
       }
     }
   ],

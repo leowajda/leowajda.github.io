@@ -2,7 +2,13 @@ name: Validate Site
 
 on:
   pull_request:
+  push:
+    branches: [master]
   workflow_dispatch:
+
+concurrency:
+  group: validate-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate:
@@ -37,4 +43,4 @@ jobs:
         run: pnpm exec playwright install --with-deps chromium
 
       - name: Run full validation
-        run: pnpm test:full
+        run: pnpm test:ci

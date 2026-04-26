@@ -39,24 +39,24 @@ module SiteKit
 
     def to_summary_hash
       {
-        "problem_slug" => problem_slug,
-        "problem_title" => problem_title,
-        "problem_source_url" => problem_source_url,
-        "implementation_id" => implementation_id,
-        "entry_id" => implementation_id,
-        "language" => language,
-        "language_label" => language_label,
-        "approach" => approach,
-        "approach_label" => approach_label,
-        "variant" => approach,
-        "variant_label" => approach_label,
-        "title" => title,
-        "description" => description,
-        "source_url" => source_url,
-        "code" => code,
-        "code_language" => code_language,
-        "detail_url" => detail_url,
-        "embed_url" => embed_url
+        'problem_slug' => problem_slug,
+        'problem_title' => problem_title,
+        'problem_source_url' => problem_source_url,
+        'implementation_id' => implementation_id,
+        'entry_id' => implementation_id,
+        'language' => language,
+        'language_label' => language_label,
+        'approach' => approach,
+        'approach_label' => approach_label,
+        'variant' => approach,
+        'variant_label' => approach_label,
+        'title' => title,
+        'description' => description,
+        'source_url' => source_url,
+        'code' => code,
+        'code_language' => code_language,
+        'detail_url' => detail_url,
+        'embed_url' => embed_url
       }
     end
   end

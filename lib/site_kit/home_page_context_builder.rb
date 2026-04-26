@@ -7,7 +7,7 @@ module SiteKit
     end
 
     def attach(document)
-      document.data["home_projects"] = site_projects
+      document.data['home_projects'] = site_projects
     end
 
     private

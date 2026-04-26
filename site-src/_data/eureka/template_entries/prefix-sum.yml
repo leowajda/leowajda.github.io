@@ -1,0 +1,60 @@
+- entry_id: prefix-sum-java
+  language: java
+  code: |
+    class PrefixSum {
+        private final int[] prefix;
+
+        PrefixSum(int[] nums) {
+            prefix = new int[nums.length + 1];
+
+            for (int i = 0; i < nums.length; i++) {
+                prefix[i + 1] = prefix[i] + nums[i];
+            }
+        }
+
+        int rangeSum(int left, int right) {
+            return prefix[right + 1] - prefix[left];
+        }
+    }
+- entry_id: prefix-sum-scala
+  language: scala
+  code: |
+    final class PrefixSum(nums: Array[Int]):
+      private val prefix =
+        nums.foldLeft(List(0)) { (values, value) =>
+          (values.head + value) :: values
+        }.reverse.toArray
+
+      def rangeSum(left: Int, right: Int): Int =
+        prefix(right + 1) - prefix(left)
+- entry_id: prefix-sum-python
+  language: python
+  code: |
+    class PrefixSum:
+        def __init__(self, nums: list[int]) -> None:
+            self.prefix = [0]
+
+            for value in nums:
+                self.prefix.append(self.prefix[-1] + value)
+
+        def range_sum(self, left: int, right: int) -> int:
+            return self.prefix[right + 1] - self.prefix[left]
+- entry_id: prefix-sum-cpp
+  language: cpp
+  code: |
+    class PrefixSum {
+    public:
+        explicit PrefixSum(const std::vector<int>& nums) : prefix(nums.size() + 1, 0) {
+            for (int i = 0; i < static_cast<int>(nums.size()); i++) {
+                prefix[i + 1] = prefix[i] + nums[i];
+            }
+        }
+
+        int rangeSum(int left, int right) const {
+            return prefix[right + 1] - prefix[left];
+        }
+
+    private:
+        std::vector<int> prefix;
+    };
+

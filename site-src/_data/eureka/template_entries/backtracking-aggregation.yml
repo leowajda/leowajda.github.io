@@ -1,0 +1,81 @@
+- entry_id: backtracking-aggregation-java
+  language: java
+  code: |
+    int countCombinations(int[] nums, int target) {
+        return countCombinations(0, target, nums);
+    }
+
+    int countCombinations(int index, int remaining, int[] nums) {
+        if (remaining == 0) {
+            return 1;
+        }
+
+        int combinations = 0;
+
+        for (int i = index; i < nums.length; i++) {
+            if (nums[i] > remaining) {
+                continue;
+            }
+
+            combinations += countCombinations(i, remaining - nums[i], nums);
+        }
+
+        return combinations;
+    }
+- entry_id: backtracking-aggregation-scala
+  language: scala
+  code: |
+    def countCombinations(nums: Array[Int], target: Int): Int =
+      def countFrom(index: Int, remaining: Int): Int =
+        if remaining == 0 then
+          1
+        else
+          (index until nums.length).foldLeft(0) { (count, i) =>
+            if nums(i) > remaining then count
+            else count + countFrom(i, remaining - nums(i))
+          }
+
+      countFrom(0, target)
+- entry_id: backtracking-aggregation-python
+  language: python
+  code: |
+    def count_combinations(nums: list[int], target: int) -> int:
+        def count_from(index: int, remaining: int) -> int:
+            if remaining == 0:
+                return 1
+
+            combinations = 0
+
+            for i in range(index, len(nums)):
+                if nums[i] > remaining:
+                    continue
+                combinations += count_from(i, remaining - nums[i])
+
+            return combinations
+
+        return count_from(0, target)
+- entry_id: backtracking-aggregation-cpp
+  language: cpp
+  code: |
+    int countCombinations(int index, int remaining, const std::vector<int>& nums) {
+        if (remaining == 0) {
+            return 1;
+        }
+
+        int combinations = 0;
+
+        for (int i = index; i < static_cast<int>(nums.size()); i++) {
+            if (nums[i] > remaining) {
+                continue;
+            }
+
+            combinations += countCombinations(i, remaining - nums[i], nums);
+        }
+
+        return combinations;
+    }
+
+    int countCombinations(const std::vector<int>& nums, int target) {
+        return countCombinations(0, target, nums);
+    }
+

@@ -1,0 +1,71 @@
+- entry_id: two-pointers-same-java
+  language: java
+  code: |
+    int removeDuplicates(int[] nums) {
+        if (nums.length == 0)
+            return 0;
+
+        int write = 1;
+
+        for (int read = 1; read < nums.length; read++) {
+            if (nums[read] == nums[write - 1])
+                continue;
+
+            nums[write] = nums[read];
+            write++;
+        }
+
+        return write;
+    }
+- entry_id: two-pointers-same-scala
+  language: scala
+  code: |
+    def removeDuplicates(nums: Array[Int]): Int =
+      if nums.isEmpty then
+        0
+      else
+        var write = 1
+
+        for read <- 1 until nums.length do
+          if nums(read) != nums(write - 1) then
+            nums(write) = nums(read)
+            write += 1
+
+        write
+- entry_id: two-pointers-same-python
+  language: python
+  code: |
+    def remove_duplicates(nums: list[int]) -> int:
+        if not nums:
+            return 0
+
+        write = 1
+
+        for read in range(1, len(nums)):
+            if nums[read] == nums[write - 1]:
+                continue
+
+            nums[write] = nums[read]
+            write += 1
+
+        return write
+- entry_id: two-pointers-same-cpp
+  language: cpp
+  code: |
+    int removeDuplicates(std::vector<int>& nums) {
+        if (nums.empty())
+            return 0;
+
+        int write = 1;
+
+        for (int read = 1; read < static_cast<int>(nums.size()); read++) {
+            if (nums[read] == nums[write - 1])
+                continue;
+
+            nums[write] = nums[read];
+            write++;
+        }
+
+        return write;
+    }
+

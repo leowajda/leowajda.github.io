@@ -1,0 +1,16 @@
+- entry_id: greedy-heap-java
+  language: java
+  code: |
+    int scheduleCourse(int[][] courses) {
+        Arrays.sort(courses, (a, b) -> Integer.compare(a[1], b[1]));
+        PriorityQueue<Integer> durations = new PriorityQueue<>((a, b) -> b - a);
+        int time = 0;
+        for (int[] course : courses) {
+            time += course[0];
+            durations.offer(course[0]);
+            if (time > course[1])
+                time -= durations.poll();
+        }
+        return durations.size();
+    }
+

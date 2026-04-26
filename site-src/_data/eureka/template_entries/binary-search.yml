@@ -1,0 +1,60 @@
+- entry_id: binary-search-java
+  language: java
+  code: |
+    int lowerBound(int[] nums, int target) {
+        int left = 0;
+        int right = nums.length;
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] >= target)
+                right = mid;
+            else
+                left = mid + 1;
+        }
+        return left;
+    }
+- entry_id: binary-search-scala
+  language: scala
+  code: |
+    def lowerBound(nums: Array[Int], target: Int): Int =
+      var left = 0
+      var right = nums.length
+
+      while left < right do
+        val mid = left + (right - left) / 2
+        if nums(mid) >= target then
+          right = mid
+        else
+          left = mid + 1
+
+      left
+- entry_id: binary-search-python
+  language: python
+  code: |
+    def lower_bound(nums, target):
+        left, right = 0, len(nums)
+        while left < right:
+            mid = left + (right - left) // 2
+            if nums[mid] >= target:
+                right = mid
+            else:
+                left = mid + 1
+        return left
+- entry_id: binary-search-cpp
+  language: cpp
+  code: |
+    int lowerBound(const std::vector<int>& nums, int target) {
+        int left = 0;
+        int right = static_cast<int>(nums.size());
+
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (nums[mid] >= target)
+                right = mid;
+            else
+                left = mid + 1;
+        }
+        return left;
+    }
+

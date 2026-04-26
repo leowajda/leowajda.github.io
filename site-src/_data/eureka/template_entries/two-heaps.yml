@@ -1,0 +1,24 @@
+- entry_id: two-heaps-java
+  language: java
+  code: |
+    PriorityQueue<Integer> low = new PriorityQueue<>((a, b) -> b - a);
+    PriorityQueue<Integer> high = new PriorityQueue<>();
+
+    void add(int value) {
+        if (low.isEmpty() || value <= low.peek())
+            low.offer(value);
+        else
+            high.offer(value);
+
+        if (low.size() > high.size() + 1)
+            high.offer(low.poll());
+        if (high.size() > low.size())
+            low.offer(high.poll());
+    }
+
+    double median() {
+        if (low.size() == high.size())
+            return (low.peek() + high.peek()) / 2.0;
+        return low.peek();
+    }
+

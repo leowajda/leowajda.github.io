@@ -30,9 +30,9 @@ module SiteKit
         .map do |entries|
           first = entries.first
           {
-            "slug" => first.language,
-            "label" => first.language_label,
-            "count" => entries.size
+            'slug' => first.language,
+            'label' => first.language_label,
+            'count' => entries.size
           }
         end
     end
@@ -41,31 +41,39 @@ module SiteKit
       implementation_entries = self.implementation_entries
 
       {
-        "problem_slug" => slug,
-        "title" => title,
-        "url" => url,
-        "problem_source_url" => problem_source_url,
-        "difficulty" => difficulty,
-        "difficulty_slug" => difficulty_slug,
-        "categories" => categories,
-        "languages" => language_records,
-        "implementations" => implementation_entries,
-        "implementations_by_language" => implementation_entries.group_by { |entry| entry.fetch("language") },
-        "code_collection" => CodeCollectionModel.build(
-          entries: implementation_entries,
-          default_entry_id: implementation_entries.first&.fetch("entry_id"),
-          toolbar_aria: app_config.eureka.browser.toolbar_label,
-          variant_catalog: app_config.code_collection.implementation_modes,
-          variant_group_label: app_config.eureka.browser.variant_group_label,
-          variant_group_visibility: app_config.eureka.browser.variant_group_visibility,
-          variant_presentation: app_config.eureka.browser.variant_presentation,
-          variant_icon_map: app_config.code_collection.variant_icons,
-          sync_hash: true,
-          problem_source_url: problem_source_url
-        ),
-        "implementation_count" => implementations.size,
-        "search_title" => title.downcase
+        'problem_slug' => slug,
+        'title' => title,
+        'url' => url,
+        'problem_source_url' => problem_source_url,
+        'difficulty' => difficulty,
+        'difficulty_slug' => difficulty_slug,
+        'categories' => categories,
+        'languages' => language_records,
+        'implementations' => implementation_entries,
+        'implementations_by_language' => implementations_by_language(implementation_entries),
+        'code_collection' => code_collection(implementation_entries),
+        'implementation_count' => implementations.size,
+        'search_title' => title.downcase
       }
+    end
+
+    def implementations_by_language(implementation_entries)
+      implementation_entries.group_by { |entry| entry.fetch('language') }
+    end
+
+    def code_collection(implementation_entries)
+      CodeCollectionModel.build(
+        entries: implementation_entries,
+        default_entry_id: implementation_entries.first&.fetch('entry_id'),
+        toolbar_aria: app_config.eureka.browser.toolbar_label,
+        variant_catalog: app_config.code_collection.implementation_modes,
+        variant_group_label: app_config.eureka.browser.variant_group_label,
+        variant_group_visibility: app_config.eureka.browser.variant_group_visibility,
+        variant_presentation: app_config.eureka.browser.variant_presentation,
+        variant_icon_map: app_config.code_collection.variant_icons,
+        sync_hash: true,
+        problem_source_url: problem_source_url
+      )
     end
   end
 end

@@ -27,26 +27,20 @@ module SiteKit
 
     def validate_page_definitions!(page_definitions)
       page_definitions.each do |page_definition|
-        unless page_definition.is_a?(PageDefinition)
-          raise "Generated pages must be PageDefinition records"
-        end
+        raise 'Generated pages must be PageDefinition records' unless page_definition.is_a?(PageDefinition)
 
         route = normalized_route(page_definition.dir)
-        raise "Generated page route must not be empty" if route.empty?
+        raise 'Generated page route must not be empty' if route.empty?
       end
 
-      duplicate_routes = duplicates(page_definitions.map { |page_definition| normalized_route(page_definition.dir) })
-      return if duplicate_routes.empty?
-
-      raise "Generated page routes must be unique: #{duplicate_routes.join(', ')}"
+      Helpers.ensure_unique!(
+        page_definitions.map { |page_definition| normalized_route(page_definition.dir) },
+        'Generated page routes must be unique'
+      )
     end
 
     def normalized_route(route)
       "/#{route.to_s.sub(%r{\A/+}, '').sub(%r{/+\z}, '')}/"
-    end
-
-    def duplicates(values)
-      values.group_by(&:itself).select { |_, entries| entries.size > 1 }.keys.sort
     end
   end
 end

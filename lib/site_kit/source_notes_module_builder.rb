@@ -21,26 +21,26 @@ module SiteKit
       documents = build_documents(module_definition, absolute_path, language_context)
 
       {
-        "project_slug" => language_context.fetch("project_slug"),
-        "project_title" => language_context.fetch("project_title"),
-        "project_url" => language_context.fetch("project_url"),
-        "project_source_url" => language_context.fetch("project_source_url"),
-        "language_slug" => language_context.fetch("language_slug"),
-        "language_title" => language_context.fetch("language_title"),
-        "language_url" => language_context.fetch("language_url"),
-        "slug" => module_definition.slug,
-        "module_slug" => module_definition.slug,
-        "title" => module_definition.title,
-        "source_url" => tree_source_url(module_definition.path),
-        "url" => "#{language_context.fetch('language_url')}#{module_definition.slug}/",
-        "readme_markdown" => Helpers.rewrite_markdown_images(
-          Helpers.maybe_read_text(absolute_path.join("README.md")),
+        'project_slug' => language_context.fetch('project_slug'),
+        'project_title' => language_context.fetch('project_title'),
+        'project_url' => language_context.fetch('project_url'),
+        'project_source_url' => language_context.fetch('project_source_url'),
+        'language_slug' => language_context.fetch('language_slug'),
+        'language_title' => language_context.fetch('language_title'),
+        'language_url' => language_context.fetch('language_url'),
+        'slug' => module_definition.slug,
+        'module_slug' => module_definition.slug,
+        'title' => module_definition.title,
+        'source_url' => tree_source_url(module_definition.path),
+        'url' => "#{language_context.fetch('language_url')}#{module_definition.slug}/",
+        'readme_markdown' => Helpers.rewrite_markdown_images(
+          Helpers.maybe_read_text(absolute_path.join('README.md')),
           absolute_path,
           source_url_base,
           source_root: repo_root
         ),
-        "documents" => documents,
-        "roots" => build_roots(module_definition, documents)
+        'documents' => documents,
+        'roots' => build_roots(module_definition, documents)
       }
     end
 
@@ -55,10 +55,13 @@ module SiteKit
 
     attr_reader :app_config, :manifest, :source_url_base, :repo_root, :document_builder
 
-    def build_documents(module_definition, absolute_path, language_context)
+    def build_documents(module_definition, _absolute_path, language_context)
       documents = module_definition.source_roots.flat_map do |root_label|
-        absolute_root = source_path(File.join(module_definition.path, root_label), "Module '#{module_definition.slug}' root '#{root_label}'")
-        raise "Module '#{module_definition.slug}' root '#{root_label}' is missing at '#{absolute_root}'" unless absolute_root.directory?
+        absolute_root = source_path(File.join(module_definition.path, root_label),
+                                    "Module '#{module_definition.slug}' root '#{root_label}'")
+        unless absolute_root.directory?
+          raise "Module '#{module_definition.slug}' root '#{root_label}' is missing at '#{absolute_root}'"
+        end
 
         walk_text_files(absolute_root).map do |file_path|
           document_builder.build(
@@ -89,33 +92,32 @@ module SiteKit
     end
 
     def ignored_directory?(name)
-      name.start_with?(".") || app_config.source_notes.ignored_directories.include?(name)
+      name.start_with?('.') || app_config.source_notes.ignored_directories.include?(name)
     end
 
     def build_roots(module_definition, documents)
       module_definition.source_roots.map do |root_label|
         prefix = "#{root_label}/"
         entries = documents
-          .select { |document| document.fetch("tree_path").start_with?(prefix) }
-          .map { |document| { relative_path: document.fetch("tree_path").delete_prefix(prefix), url: document.fetch("url") } }
+                  .select { |document| document.fetch('tree_path').start_with?(prefix) }
+                  .map do |document|
+          { relative_path: document.fetch('tree_path').delete_prefix(prefix),
+            url: document.fetch('url') }
+        end
 
         {
-          "label" => root_label,
-          "tree_path" => prefix,
-          "nodes" => SourceTreeBuilder.build(root_label: root_label, entries: entries)
+          'label' => root_label,
+          'tree_path' => prefix,
+          'nodes' => SourceTreeBuilder.build(root_label: root_label, entries: entries)
         }
       end
     end
 
     def validate_unique_document_routes!(module_definition, documents)
-      duplicate_routes = documents
-        .map { |document| document.fetch("route_url") }
-        .group_by(&:itself)
-        .select { |_, routes| routes.size > 1 }
-        .keys
-      return if duplicate_routes.empty?
-
-      raise "Module '#{module_definition.slug}' document routes must be unique: #{duplicate_routes.join(', ')}"
+      Helpers.ensure_unique!(
+        documents.map { |document| document.fetch('route_url') },
+        "Module '#{module_definition.slug}' document routes must be unique"
+      )
     end
 
     def source_path(relative_path, context)

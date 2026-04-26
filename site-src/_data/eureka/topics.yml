@@ -1,0 +1,605 @@
+- id: array
+  label: Array
+  kind: structure
+  order: 1
+  description: Sequence problems where index order and range boundaries carry the state.
+  aliases: [Array]
+
+- id: prefix-sum
+  label: Prefix Sum
+  kind: algorithm
+  order: 2
+  template: prefix-sum
+  description: Convert range totals into differences between cumulative checkpoints.
+  aliases: [Prefix Sum]
+  flowchart_nodes: [subarrays-prefixsums]
+
+- id: sliding-window-fixed
+  label: Sliding Window Fixed Size
+  kind: algorithm
+  order: 3
+  template: sliding-window-fixed
+  description: Move a range of exactly `k` elements while updating the answer incrementally.
+  aliases: [Sliding Window]
+  flowchart_nodes: [subarrays-twopointers]
+
+- id: sliding-window-longest
+  label: Sliding Window Flexible Longest
+  kind: algorithm
+  order: 4
+  template: sliding-window-longest
+  description: Grow a valid range and shrink only when the invariant breaks.
+  aliases: [Sliding Window]
+  flowchart_nodes: [subarrays-twopointers, sequence-count-twopointers]
+
+- id: sliding-window-shortest
+  label: Sliding Window Flexible Shortest
+  kind: algorithm
+  order: 5
+  template: sliding-window-shortest
+  description: Grow until valid, then shrink while the answer can still improve.
+  aliases: [Sliding Window]
+  flowchart_nodes: [subarrays-twopointers]
+
+- id: two-pointers-opposite
+  label: Two Pointers Opposite Direction
+  kind: algorithm
+  order: 6
+  template: two-pointers-opposite
+  description: Start at both ends and discard the side that cannot improve the result.
+  aliases: [Two Pointers]
+  flowchart_nodes: [find-indices-twopointers, constant-memory-twopointers]
+
+- id: two-pointers-same
+  label: Two Pointers Same Direction
+  kind: algorithm
+  order: 7
+  template: two-pointers-same
+  description: Move forward pointers over one sequence while preserving a range invariant.
+  aliases: [Two Pointers]
+  flowchart_nodes: [sequence-count-twopointers]
+
+- id: binary-search
+  label: Binary Search
+  kind: algorithm
+  order: 1
+  template: binary-search
+  description: Halve a sorted or monotonic search space until the boundary is found.
+  aliases: [Binary Search]
+  flowchart_nodes: [max/min-binarysearch]
+
+- id: binary-search-rotated
+  label: Binary Search Rotated Or Peak
+  kind: algorithm
+  order: 2
+  template: binary-search-rotated
+  description: Compare one side at a time to keep the sorted half or discard it.
+  aliases: []
+
+- id: binary-search-answer-space
+  label: Binary Search Answer Space
+  kind: algorithm
+  order: 3
+  template: binary-search-answer-space
+  description: Binary search the answer and use a feasibility check to move the boundary.
+  aliases: []
+
+- id: backtracking
+  label: Backtracking
+  kind: algorithm
+  order: 2
+  template: backtracking
+  description: Explore candidate states one branch at a time and undo each choice.
+  aliases: [Backtracking]
+  flowchart_nodes: [small-constraints-bruteforce/backtracking]
+
+- id: backtracking-aggregation
+  label: Backtracking With Aggregation
+  kind: algorithm
+  order: 3
+  template: backtracking-aggregation
+  description: Traverse a search tree while accumulating a count, score, or best answer.
+  aliases: []
+  problem_rules:
+    - all: [Backtracking, Memoization]
+  flowchart_nodes: [counting-bruteforce/backtracking]
+
+- id: tree-bfs
+  label: BFS On Tree
+  kind: algorithm
+  order: 1
+  template: breadth-first-search
+  description: Visit tree nodes level by level with a queue.
+  aliases: [Breadth-First Search]
+  problem_rules:
+    - all: [Breadth-First Search, Tree]
+    - all: [Breadth-First Search, Binary Tree]
+
+- id: tree-dfs
+  label: DFS On Tree
+  kind: algorithm
+  order: 2
+  template: depth-first-search
+  description: Visit a subtree completely before moving to the next branch.
+  aliases: [Depth-First Search, Tree, Binary Tree, Binary Search Tree]
+  problem_rules:
+    - all: [Depth-First Search, Tree]
+    - all: [Depth-First Search, Binary Tree]
+    - all: [Depth-First Search, Binary Search Tree]
+  flowchart_nodes: [tree-dfs]
+
+- id: binary-search-tree
+  label: Binary Search Tree
+  kind: structure
+  order: 3
+  template: binary-search-tree
+  description: Use ordered child relationships to discard one subtree at a time.
+  aliases: [Binary Search Tree]
+  problem_rules:
+    - any: [Binary Search Tree]
+
+- id: tree-serialize
+  label: Tree Build And Serialize
+  kind: algorithm
+  order: 4
+  template: tree-serialize
+  description: Preserve null markers so a tree can be rebuilt without ambiguity.
+  aliases: [Design]
+
+- id: graph-bfs
+  label: BFS On Graphs
+  kind: algorithm
+  order: 4
+  template: graph-bfs
+  description: Expand graph or state-space frontiers by distance from the start.
+  aliases: [Breadth-First Search, Graph Theory]
+  problem_rules:
+    - all: [Breadth-First Search, Graph Theory]
+    - all: [Breadth-First Search, Hash Table]
+      none: [Tree, Binary Tree, Matrix]
+    - all: [Breadth-First Search, Dynamic Programming]
+      none: [Tree, Binary Tree, Matrix]
+  flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+
+- id: graph-dfs
+  label: DFS On Graphs
+  kind: algorithm
+  order: 5
+  template: graph-dfs
+  description: Follow one graph path until it ends, then backtrack to the next edge.
+  aliases: [Depth-First Search, Graph Theory]
+  problem_rules:
+    - all: [Depth-First Search, Graph Theory]
+  flowchart_nodes: [graph-smallcontraints-dfs]
+
+- id: matrix-bfs
+  label: BFS On A Matrix
+  kind: algorithm
+  order: 6
+  template: matrix-bfs
+  description: Treat grid cells as graph nodes and expand outward in waves.
+  aliases: [Matrix, Breadth-First Search]
+  problem_rules:
+    - all: [Breadth-First Search, Matrix]
+  flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+
+- id: matrix-dfs
+  label: DFS On A Matrix
+  kind: algorithm
+  order: 7
+  template: matrix-dfs
+  description: Mark each reachable cell before following its neighbors.
+  aliases: [Matrix, Depth-First Search]
+  problem_rules:
+    - all: [Depth-First Search, Matrix]
+
+- id: matrix-direction-scan
+  label: Matrix Direction Scan
+  kind: algorithm
+  order: 8
+  template: matrix-direction-scan
+  description: Walk a fixed set of neighbor directions from each cell.
+  aliases: []
+
+- id: topological-sort
+  label: Topological Sort
+  kind: algorithm
+  order: 8
+  template: topological-sort
+  description: Order directed graph nodes so each dependency appears first.
+  aliases: [Topological Sort]
+  flowchart_nodes: [directed-graph-topo]
+
+- id: union-find
+  label: Union Find
+  kind: algorithm
+  order: 9
+  template: union-find
+  description: Track components by representative parent pointers.
+  aliases: [Union-Find]
+  flowchart_nodes: [connectivity-dsu]
+
+- id: dijkstra
+  label: Dijkstra
+  kind: algorithm
+  order: 10
+  template: dijkstra
+  description: Settle weighted graph distances in increasing cost order.
+  aliases: []
+  problem_rules: []
+  flowchart_nodes: [shortest-path-dijkstra]
+
+- id: dynamic-programming
+  label: Dynamic Programming
+  kind: algorithm
+  order: 1
+  template: dynamic-programming
+  description: Reuse overlapping subproblem results instead of recomputing states.
+  aliases: [Dynamic Programming, Memoization]
+  flowchart_nodes: [small-constraints-dp, max/min-dp, counting-dp, sequence-count-dp]
+
+- id: dp-grid
+  label: Dynamic Programming On Grid
+  kind: algorithm
+  order: 2
+  template: dp-grid
+  description: Fill each cell from neighboring subproblems.
+  aliases: []
+
+- id: dp-two-sequences
+  label: Dynamic Programming On Two Sequences
+  kind: algorithm
+  order: 3
+  template: dp-two-sequences
+  description: Track prefixes of two sequences in a two-dimensional table.
+  aliases: []
+
+- id: dp-knapsack
+  label: Knapsack Dynamic Programming
+  kind: algorithm
+  order: 4
+  template: dp-knapsack
+  description: Decide whether each item improves each capacity state.
+  aliases: []
+
+- id: dp-interval
+  label: Interval Dynamic Programming
+  kind: algorithm
+  order: 5
+  template: dp-interval
+  description: Solve shorter intervals before combining them into larger ones.
+  aliases: []
+
+- id: dp-bitmask
+  label: Bitmask Dynamic Programming
+  kind: algorithm
+  order: 6
+  template: dp-bitmask
+  description: Store one state per subset mask.
+  aliases: []
+
+- id: dp-lis
+  label: Longest Increasing Subsequence
+  kind: algorithm
+  order: 7
+  template: dp-lis
+  description: Keep the smallest possible tail for each increasing length.
+  aliases: []
+
+- id: greedy
+  label: Greedy
+  kind: algorithm
+  order: 2
+  template: greedy
+  description: Make the locally forced choice once an invariant proves it cannot hurt.
+  aliases: [Greedy]
+  flowchart_nodes: [max/min-greedy]
+
+- id: heap-top-k
+  label: Heap And Top K
+  kind: algorithm
+  order: 1
+  template: heap-top-k
+  description: Keep only the most relevant candidates in a priority queue.
+  aliases: [Heap (Priority Queue), Quickselect]
+  flowchart_nodes: [kth-smallest-heap]
+
+- id: heap-moving-best
+  label: Heap Moving Best
+  kind: algorithm
+  order: 2
+  template: heap-moving-best
+  description: Pop stale heap entries until the top describes the current state.
+  aliases: []
+
+- id: two-heaps
+  label: Two Heaps
+  kind: algorithm
+  order: 3
+  template: two-heaps
+  description: Balance low and high halves so the middle stays cheap to read.
+  aliases: [Data Stream]
+
+- id: sorting
+  label: Sorting
+  kind: algorithm
+  order: 2
+  template: sorting
+  description: Reorder values to expose adjacency, rank, or merge structure.
+  aliases: [Sorting, Merge Sort]
+
+- id: monotonic-stack
+  label: Monotonic Stack
+  kind: algorithm
+  order: 3
+  template: mono-stack
+  description: Maintain a sorted stack so each value resolves pending elements once.
+  aliases: [Stack]
+
+- id: hash-table
+  label: Hash Table
+  kind: structure
+  order: 1
+  template: hash-table
+  description: Store facts by key for constant-time lookup, counting, or membership.
+  aliases: [Hash Table]
+
+- id: hash-frequency
+  label: Hash Frequency
+  kind: algorithm
+  order: 2
+  template: hash-frequency
+  description: Count how often each key appears.
+  aliases: [Counting]
+
+- id: hash-seen-state
+  label: Hash Seen State
+  kind: algorithm
+  order: 3
+  template: hash-seen-state
+  description: Record states that have already been visited.
+  aliases: []
+
+- id: string
+  label: String
+  kind: structure
+  order: 2
+  description: Character sequence problems where order, frequency, or parsing carries state.
+  aliases: [String]
+
+- id: string-pattern
+  label: String Pattern
+  kind: algorithm
+  order: 3
+  template: string-pattern
+  description: Compare strings by prefix, rolling hash, or explicit match state.
+  aliases: [String Matching, Hash Function]
+
+- id: trie
+  label: Trie
+  kind: structure
+  order: 4
+  template: trie
+  description: Store strings by prefix so shared prefixes are represented once.
+  aliases: [Trie]
+
+- id: linked-list
+  label: Linked List
+  kind: structure
+  order: 1
+  template: linked-list
+  description: Move through pointer-linked nodes while preserving references that can be lost.
+  aliases: [Linked List]
+  flowchart_nodes: [linked-list-twopointers]
+
+- id: linked-list-rewire
+  label: Linked List Reverse Or Rewire
+  kind: algorithm
+  order: 2
+  template: linked-list-rewire
+  description: Change next pointers without losing the remaining list.
+  aliases: []
+
+- id: linked-list-merge
+  label: Linked List Merge
+  kind: algorithm
+  order: 3
+  template: linked-list-merge
+  description: Attach the smaller front node until one list is exhausted.
+  aliases: []
+
+- id: math
+  label: Math
+  kind: technique
+  order: 2
+  description: Problems whose state is constrained by arithmetic, geometry, or combinatorics.
+  aliases: [Math, Combinatorics, Geometry, Bit Manipulation, Game Theory]
+
+- id: math-bits
+  label: Math And Bits
+  kind: algorithm
+  order: 51
+  template: math-bits
+  description: Reduce arithmetic state with divisibility, remainders, or bit masks.
+  aliases: [Math, Bit Manipulation, Combinatorics]
+
+- id: sieve
+  label: Sieve
+  kind: algorithm
+  order: 52
+  template: sieve
+  description: Mark composite numbers from each prime.
+  aliases: []
+
+- id: combinatorics
+  label: Combinatorics
+  kind: algorithm
+  order: 53
+  template: combinatorics
+  description: Build counting values from smaller counting values.
+  aliases: []
+
+- id: bitmask-enumeration
+  label: Bitmask Enumeration
+  kind: algorithm
+  order: 54
+  template: bitmask-enumeration
+  description: Use bits to represent which elements are selected.
+  aliases: []
+
+- id: divide-and-conquer
+  label: Divide And Conquer
+  kind: technique
+  order: 3
+  description: Split the input, solve smaller pieces, and combine the results.
+  aliases: [Divide and Conquer]
+
+- id: design
+  label: Design
+  kind: technique
+  order: 4
+  description: Problems centered on an API, stream, or long-lived data structure.
+  aliases: [Design, Data Stream]
+
+- id: recursion
+  label: Recursion
+  kind: technique
+  order: 5
+  description: Express a problem as the current decision plus the same problem on smaller state.
+  aliases: [Recursion]
+
+- id: counting
+  label: Counting
+  kind: technique
+  order: 6
+  description: Track frequencies or totals as the primary state.
+  aliases: [Counting]
+
+- id: difference-array
+  label: Difference Array
+  kind: algorithm
+  order: 40
+  template: difference-array
+  description: Mark range deltas and recover final values with one prefix pass.
+  aliases: []
+
+- id: kadane
+  label: Kadane
+  kind: algorithm
+  order: 41
+  template: kadane
+  description: Keep the best subarray ending here and the best answer seen so far.
+  aliases: []
+
+- id: quickselect
+  label: Quickselect
+  kind: algorithm
+  order: 42
+  template: quickselect
+  description: Partition around a pivot until the target rank is fixed.
+  aliases: [Quickselect]
+
+- id: stack
+  label: Stack
+  kind: structure
+  order: 43
+  template: stack
+  description: Keep unresolved items in last-in-first-out order.
+  aliases: [Stack]
+  flowchart_nodes: [parse-symbols-stack]
+
+- id: monotonic-queue
+  label: Monotonic Queue
+  kind: structure
+  order: 44
+  template: monotonic-queue
+  description: Keep candidates in deque order so the front is always optimal.
+  aliases: []
+
+- id: intervals
+  label: Intervals
+  kind: algorithm
+  order: 45
+  template: intervals
+  description: Sort ranges by endpoint and merge, insert, or count overlaps.
+  aliases: []
+
+- id: interval-insert
+  label: Insert Interval
+  kind: algorithm
+  order: 46
+  template: interval-insert
+  description: Copy intervals before, merge the overlap, then copy the rest.
+  aliases: []
+
+- id: meeting-rooms
+  label: Meeting Rooms
+  kind: algorithm
+  order: 47
+  template: meeting-rooms
+  description: Track simultaneous active intervals.
+  aliases: []
+
+- id: line-sweep
+  label: Line Sweep
+  kind: algorithm
+  order: 46
+  template: line-sweep
+  description: Convert starts and ends into ordered events.
+  aliases: []
+
+- id: line-sweep-active-set
+  label: Line Sweep Active Set
+  kind: algorithm
+  order: 48
+  template: line-sweep-active-set
+  description: Keep active events while sweeping positions in order.
+  aliases: []
+
+- id: segment-tree
+  label: Segment Tree
+  kind: structure
+  order: 47
+  template: segment-tree
+  description: Store aggregate values over ranges in a balanced tree.
+  aliases: []
+
+- id: fenwick-tree
+  label: Fenwick Tree
+  kind: structure
+  order: 48
+  template: fenwick-tree
+  description: Store prefix aggregates with logarithmic updates.
+  aliases: []
+
+- id: kmp
+  label: KMP
+  kind: algorithm
+  order: 49
+  template: kmp
+  description: Reuse matched prefix length after a mismatch.
+  aliases: [String Matching]
+
+- id: mst
+  label: Minimum Spanning Tree
+  kind: algorithm
+  order: 50
+  template: mst
+  description: Connect every node with minimum total edge cost.
+  aliases: []
+
+- id: greedy-sort
+  label: Greedy Sort First
+  kind: algorithm
+  order: 55
+  template: greedy-sort
+  description: Sort by the decision key before taking local choices.
+  aliases: []
+
+- id: greedy-heap
+  label: Greedy With Heap
+  kind: algorithm
+  order: 56
+  template: greedy-heap
+  description: Use a heap to revise the most expensive local choice.
+  aliases: []

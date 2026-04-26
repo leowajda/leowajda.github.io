@@ -1,0 +1,28 @@
+- entry_id: difference-array-java
+  language: java
+  code: |
+    int[] applyRangeAdds(int n, int[][] updates) {
+        int[] diff = new int[n + 1];
+
+        for (int[] update : updates) {
+            int left = update[0];
+            int right = update[1];
+            int delta = update[2];
+
+            diff[left] += delta;
+            if (right + 1 < n) {
+                diff[right + 1] -= delta;
+            }
+        }
+
+        int[] values = new int[n];
+        int running = 0;
+
+        for (int i = 0; i < n; i++) {
+            running += diff[i];
+            values[i] = running;
+        }
+
+        return values;
+    }
+

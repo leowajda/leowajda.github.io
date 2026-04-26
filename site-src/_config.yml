@@ -17,11 +17,6 @@ sass:
 
 collections_dir: collections
 
-collections:
-  algorithmic_templates:
-    output: false
-    sort_by: order
-
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

@@ -9,7 +9,7 @@ module SiteKit
 
     def build
       {
-        "sections" => [search_section, *language_sections, difficulty_section, category_section].compact
+        'sections' => [search_section, *language_sections, difficulty_section, category_section].compact
       }
     end
 
@@ -19,11 +19,11 @@ module SiteKit
 
     def search_section
       section(
-        kind: "search",
-        title: "Search",
-        class: "side-panel__section--search",
-        title_tag: "label",
-        title_for: "problem-search"
+        kind: 'search',
+        title: 'Search',
+        class: 'side-panel__section--search',
+        title_tag: 'label',
+        title_for: 'problem-search'
       )
     end
 
@@ -35,26 +35,26 @@ module SiteKit
 
     def scope_section
       section(
-        kind: "scope",
-        title: "Scope",
-        label: active_language.fetch("label"),
-        url: browser.fetch("browser_url"),
-        link_label: "Show all languages"
+        kind: 'scope',
+        title: 'Scope',
+        label: active_language.fetch('label'),
+        url: browser.fetch('browser_url'),
+        link_label: 'Show all languages'
       )
     end
 
     def route_section
       section(
-        kind: "links",
-        title: "Routes",
-        aria_label: "Eureka views",
+        kind: 'links',
+        title: 'Routes',
+        aria_label: 'Eureka views',
         links: [
-          link_item(label: "All languages", url: browser.fetch("browser_url"))
-        ] + browser.fetch("languages").map do |language|
+          link_item(label: 'All languages', url: browser.fetch('browser_url'))
+        ] + browser.fetch('languages').map do |language|
           link_item(
-            label: language.fetch("label"),
-            url: language.fetch("url"),
-            active: active_language.fetch("slug") == language.fetch("slug")
+            label: language.fetch('label'),
+            url: language.fetch('url'),
+            active: active_language.fetch('slug') == language.fetch('slug')
           )
         end
       )
@@ -62,13 +62,13 @@ module SiteKit
 
     def difficulty_section
       section(
-        kind: "radios",
-        title: "Difficulty",
-        aria_label: "Difficulty",
-        input_name: "difficulty",
+        kind: 'radios',
+        title: 'Difficulty',
+        aria_label: 'Difficulty',
+        input_name: 'difficulty',
         items: [
-          choice_item(value: "", label: "All difficulties", checked: true)
-        ] + browser.fetch("filters").fetch("difficulties").map do |difficulty|
+          choice_item(value: '', label: 'All difficulties', checked: true)
+        ] + browser.fetch('filters').fetch('difficulties').map do |difficulty|
           choice_item(value: difficulty, label: difficulty)
         end
       )
@@ -76,9 +76,9 @@ module SiteKit
 
     def category_section
       section(
-        kind: "categories",
-        title: "Categories",
-        items: browser.fetch("filters").fetch("categories").map do |category|
+        kind: 'categories',
+        title: 'Categories',
+        items: browser.fetch('filters').fetch('categories').map do |category|
           choice_item(value: category, label: category)
         end
       )
@@ -86,19 +86,19 @@ module SiteKit
 
     def languages_section
       section(
-        kind: "checkboxes",
-        title: "Languages",
-        aria_label: "Languages",
-        items: browser.fetch("filters").fetch("languages").map do |language|
+        kind: 'checkboxes',
+        title: 'Languages',
+        aria_label: 'Languages',
+        items: browser.fetch('filters').fetch('languages').map do |language|
           choice_item(
-            value: language.fetch("slug"),
-            label: language.fetch("label"),
+            value: language.fetch('slug'),
+            label: language.fetch('label'),
             checked: true,
-            class_name: "filter-option filter-option--stacked filter-option--language"
+            class_name: 'filter-option filter-option--stacked filter-option--language'
           )
         end,
-        wrapper_class: "filter-options filter-options--stacked filter-options--languages",
-        input_name: "language"
+        wrapper_class: 'filter-options filter-options--stacked filter-options--languages',
+        input_name: 'language'
       )
     end
 
@@ -110,8 +110,8 @@ module SiteKit
       record(label:, url:, active:)
     end
 
-    def choice_item(value:, label:, checked: nil, class_name: nil)
-      record(value:, label:, checked:, class: class_name)
+    def choice_item(value:, label:, checked: nil, class_name: nil, count: nil)
+      record(value:, label:, checked:, class: class_name, count:)
     end
 
     def record(**attributes)

@@ -1,19 +1,31 @@
 import { getHashValue, onReady, replaceHashValue } from "./dom.js"
 
-const initializeTemplateLibrary = (root) => {
-  const panels = Array.from(root.querySelectorAll("[data-template-panel]"))
-  const groupControls = Array.from(root.querySelectorAll("[data-template-group-control]"))
-  const groupTabs = Array.from(root.querySelectorAll("[data-template-group-tabs]"))
-  const navLinks = Array.from(root.querySelectorAll("[data-template-nav]"))
-  const panelMap = new Map(panels.map((panel) => [panel.dataset.templateId || "", panel]))
-  const lastTemplateByGroup = new Map()
+const collectRedirects = (root) =>
+  new Map(
+    Array.from(root.querySelectorAll("[data-template-redirect]"))
+      .map((entry) => [entry.dataset.templateRedirectSource || "", entry.dataset.templateRedirectTarget || ""])
+      .filter(([source, target]) => source && target)
+  )
 
-  if (panels.length === 0) {
+const initializeTemplateLibrary = (root) => {
+  const branches = Array.from(root.querySelectorAll("[data-guide-branch]"))
+  const patternControls = Array.from(root.querySelectorAll("[data-guide-pattern-control]"))
+  const variantControls = Array.from(root.querySelectorAll("[data-guide-variant-control]"))
+  const templatePanels = Array.from(root.querySelectorAll("[data-template-panel]"))
+  const searchInput = root.querySelector("[data-template-search]")
+  const redirects = collectRedirects(root)
+  const targetMap = new Map([
+    ...patternControls.map((control) => [control.dataset.guideTarget || "", { type: "pattern", element: control }]),
+    ...variantControls.map((control) => [control.dataset.guideTarget || "", { type: "variant", element: control }])
+  ].filter(([target]) => target))
+  const normalizeTarget = (target) => (targetMap.has(target) ? target : redirects.get(target) || target)
+
+  if (patternControls.length === 0) {
     return
   }
 
   let activeLanguage = root.dataset.templateDefaultLanguage || "java"
-  const defaultTemplateId = root.dataset.templateDefault || panels[0].dataset.templateId || ""
+  const defaultTarget = normalizeTarget(root.dataset.templateDefault || patternControls[0].dataset.guideTarget || "")
 
   const renderLanguage = (panel, nextLanguage) => {
     const controls = Array.from(panel.querySelectorAll("[data-code-collection-language-control]"))
@@ -27,58 +39,107 @@ const initializeTemplateLibrary = (root) => {
     }
   }
 
-  const renderTemplate = (templateId, { updateHash = true } = {}) => {
-    const nextPanel = panelMap.get(templateId) || panelMap.get(defaultTemplateId) || panels[0]
-    const nextTemplateId = nextPanel.dataset.templateId || defaultTemplateId
-    const nextGroupId = nextPanel.dataset.templateGroup || ""
-
-    panels.forEach((panel) => {
-      const isActive = panel === nextPanel
-      panel.hidden = !isActive
-      panel.classList.toggle("is-active", isActive)
+  const setPattern = (patternId) => {
+    patternControls.forEach((control) => {
+      const isActive = control.dataset.guidePattern === patternId
+      control.classList.toggle("is-active", isActive)
+      control.setAttribute("aria-expanded", isActive ? "true" : "false")
     })
 
-    root.dataset.templateActive = nextTemplateId
-    root.dataset.templateGroup = nextGroupId
-    lastTemplateByGroup.set(nextGroupId, nextTemplateId)
+    branches.forEach((branch) => {
+      const isActive = branch.dataset.guidePattern === patternId
+      branch.classList.toggle("is-active", isActive)
+      branch.querySelector(".template-library__children")?.toggleAttribute("hidden", !isActive)
+    })
+  }
 
-    groupControls.forEach((control) => {
-      const isActive = control.dataset.templateGroup === nextGroupId
-      control.classList.toggle("template-library__group--active", isActive)
+  const setVariant = (target) => {
+    variantControls.forEach((control) => {
+      const isActive = control.dataset.guideTarget === target
+      control.classList.toggle("is-active", isActive)
       control.setAttribute("aria-pressed", isActive ? "true" : "false")
     })
+  }
 
-    groupTabs.forEach((groupTab) => {
-      groupTab.hidden = groupTab.dataset.templateGroupTabs !== nextGroupId
+  const setTemplate = (target) => {
+    let activePanel = null
+
+    templatePanels.forEach((panel) => {
+      const isActive = panel.dataset.guideTarget === target
+      panel.hidden = !isActive
+      panel.classList.toggle("is-active", isActive)
+      if (isActive) {
+        activePanel = panel
+      }
     })
 
-    navLinks.forEach((link) => {
-      const isActive = link.dataset.templateTarget === nextTemplateId
-      link.classList.toggle("template-library__tab--active", isActive && link.classList.contains("template-library__tab"))
-      link.setAttribute("aria-pressed", isActive ? "true" : "false")
-    })
-
-    renderLanguage(nextPanel, activeLanguage)
-
-    if (updateHash) {
-      replaceHashValue(nextTemplateId)
+    if (activePanel) {
+      renderLanguage(activePanel, activeLanguage)
     }
   }
 
-  const attachTemplateLink = (link) => {
-    link.addEventListener("click", (event) => {
-      event.preventDefault()
-      renderTemplate(link.dataset.templateTarget || "")
+  const renderTarget = (rawTarget, { updateHash = true } = {}) => {
+    const target = normalizeTarget(rawTarget)
+    const targetRecord = targetMap.get(target) || targetMap.get(defaultTarget)
+    if (!targetRecord) {
+      return
+    }
+
+    const control = targetRecord.element
+    const patternId = control.dataset.guidePattern || target
+    const renderableTarget = targetRecord.type === "variant" && control.dataset.guideHasTemplate === "true"
+      ? target
+      : control.dataset.guideDefaultTarget || target
+
+    root.dataset.templateActive = target
+    root.dataset.templateRendered = renderableTarget
+    root.dataset.guidePattern = patternId
+
+    setPattern(patternId)
+    setVariant(renderableTarget)
+    setTemplate(renderableTarget)
+    renderSearch()
+
+    const activeControl = variantControls.find((control) => control.dataset.guideTarget === renderableTarget) || control
+    activeControl.scrollIntoView({ block: "nearest" })
+
+    if (updateHash || target !== rawTarget) {
+      replaceHashValue(target)
+    }
+  }
+
+  const renderSearch = () => {
+    const query = (searchInput?.value || "").trim().toLowerCase()
+
+    branches.forEach((branch) => {
+      const pattern = branch.querySelector("[data-guide-pattern-control]")
+      const children = branch.querySelector(".template-library__children")
+      const variants = Array.from(branch.querySelectorAll("[data-guide-variant-control]"))
+      const patternMatches = !query || (pattern?.dataset.guideSearchText || "").includes(query)
+      let visibleVariantCount = 0
+
+      variants.forEach((control) => {
+        const hasTemplate = control.dataset.guideHasTemplate === "true"
+        const matches = !query || patternMatches || (control.dataset.guideSearchText || "").includes(query)
+        control.hidden = !hasTemplate || !matches
+        if (hasTemplate && matches) {
+          visibleVariantCount += 1
+        }
+      })
+
+      branch.hidden = Boolean(query) && !patternMatches && visibleVariantCount === 0
+      if (children) {
+        children.hidden = Boolean(query) ? visibleVariantCount === 0 : !branch.classList.contains("is-active")
+      }
     })
   }
 
-  navLinks.forEach(attachTemplateLink)
-  groupControls.forEach((control) => {
-    control.addEventListener("click", () => {
-      const groupId = control.dataset.templateGroup || ""
-      const target = lastTemplateByGroup.get(groupId) || control.dataset.templateTarget || defaultTemplateId
-      renderTemplate(target)
-    })
+  patternControls.forEach((control) => {
+    control.addEventListener("click", () => renderTarget(control.dataset.guideTarget || ""))
+  })
+
+  variantControls.forEach((control) => {
+    control.addEventListener("click", () => renderTarget(control.dataset.guideTarget || ""))
   })
 
   root.addEventListener("click", (event) => {
@@ -90,15 +151,18 @@ const initializeTemplateLibrary = (root) => {
     activeLanguage = control.dataset.codeCollectionLanguage || activeLanguage
   })
 
+  searchInput?.addEventListener("input", renderSearch)
+
   window.addEventListener("hashchange", () => {
-    const nextTemplateId = getHashValue()
-    if (nextTemplateId) {
-      renderTemplate(nextTemplateId, { updateHash: false })
+    const nextTarget = getHashValue()
+    if (nextTarget) {
+      renderTarget(nextTarget, { updateHash: false })
     }
   })
 
-  const initialTemplateId = getHashValue() || defaultTemplateId
-  renderTemplate(initialTemplateId, { updateHash: !getHashValue() })
+  renderSearch()
+  const hashTarget = getHashValue()
+  renderTarget(hashTarget || defaultTarget, { updateHash: !hashTarget })
 }
 
 onReady(() => {

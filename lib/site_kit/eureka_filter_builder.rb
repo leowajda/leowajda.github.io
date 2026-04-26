@@ -9,9 +9,9 @@ module SiteKit
 
     def build
       {
-        "difficulties" => problem_records.map { |problem| problem.fetch("difficulty") }.uniq,
-        "categories" => problem_records.flat_map { |problem| problem.fetch("categories") }.uniq,
-        "languages" => language_page_records.map { |language| language.slice("slug", "label", "url") }
+        'difficulties' => problem_records.map { |problem| problem.fetch('difficulty') }.uniq,
+        'categories' => problem_records.flat_map { |problem| problem.fetch('categories') }.uniq,
+        'languages' => language_page_records.map { |language| language.slice('slug', 'label', 'url') }
       }
     end
 

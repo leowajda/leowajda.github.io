@@ -9,10 +9,10 @@ module SiteKit
 
     def build
       {
-        "mode" => active_language ? "single-language" : "matrix",
-        "language_filter" => active_language&.fetch("slug", "") || "",
-        "columns" => visible_languages,
-        "rows" => visible_rows
+        'mode' => active_language ? 'single-language' : 'matrix',
+        'language_filter' => active_language&.fetch('slug', '') || '',
+        'columns' => visible_languages,
+        'rows' => visible_rows
       }
     end
 
@@ -25,24 +25,24 @@ module SiteKit
     end
 
     def visible_rows
-      browser.fetch("problems").filter_map do |problem|
+      browser.fetch('problems').filter_map do |problem|
         next if active_language && !problem_visible_for_language?(problem)
 
         {
-          "problem_slug" => problem.fetch("problem_slug"),
-          "search_title" => problem.fetch("search_title"),
-          "difficulty" => problem.fetch("difficulty"),
-          "difficulty_slug" => problem.fetch("difficulty_slug"),
-          "categories" => problem.fetch("categories"),
-          "categories_joined" => problem.fetch("categories").join("|"),
-          "languages_joined" => problem.fetch("languages").map { |language| language.fetch("slug") }.join("|"),
-          "title" => problem.fetch("title"),
-          "url" => problem.fetch("url"),
-          "cells" => visible_languages.map do |language|
+          'problem_slug' => problem.fetch('problem_slug'),
+          'search_title' => problem.fetch('search_title'),
+          'difficulty' => problem.fetch('difficulty'),
+          'difficulty_slug' => problem.fetch('difficulty_slug'),
+          'categories' => problem.fetch('categories'),
+          'categories_joined' => problem.fetch('categories').join('|'),
+          'languages_joined' => problem.fetch('languages').map { |language| language.fetch('slug') }.join('|'),
+          'title' => problem.fetch('title'),
+          'url' => problem.fetch('url'),
+          'cells' => visible_languages.map do |language|
             {
-              "language_slug" => language.fetch("slug"),
-              "language_label" => language.fetch("label"),
-              "implementations" => problem.fetch("implementations_by_language", {}).fetch(language.fetch("slug"), [])
+              'language_slug' => language.fetch('slug'),
+              'language_label' => language.fetch('label'),
+              'implementations' => problem.fetch('implementations_by_language', {}).fetch(language.fetch('slug'), [])
             }
           end
         }
@@ -50,14 +50,14 @@ module SiteKit
     end
 
     def problem_visible_for_language?(problem)
-      problem.fetch("languages").any? { |language| language.fetch("slug") == active_language.fetch("slug") }
+      problem.fetch('languages').any? { |language| language.fetch('slug') == active_language.fetch('slug') }
     end
 
     def visible_languages_record
-      languages = browser.fetch("filters").fetch("languages")
+      languages = browser.fetch('filters').fetch('languages')
       return languages unless active_language
 
-      languages.select { |language| language.fetch("slug") == active_language.fetch("slug") }
+      languages.select { |language| language.fetch('slug') == active_language.fetch('slug') }
     end
   end
 end

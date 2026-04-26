@@ -1,0 +1,13 @@
+- entry_id: combinatorics-java
+  language: java
+  code: |
+    long[][] combinations(int n) {
+        long[][] choose = new long[n + 1][n + 1];
+        for (int i = 0; i <= n; i++) {
+            choose[i][0] = choose[i][i] = 1;
+            for (int k = 1; k < i; k++)
+                choose[i][k] = choose[i - 1][k - 1] + choose[i - 1][k];
+        }
+        return choose;
+    }
+

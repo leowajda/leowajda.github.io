@@ -24,28 +24,7 @@ layout: default
       extra=header_extra
     -%}
 
-    <section class="content-card content-card--compact">
-      <p class="section-eyebrow">Categories</p>
-      <ul class="tag-list">
-        {%- assign categories = problem_topics.categories | default: empty -%}
-        {%- if categories.size == 0 -%}
-          {%- for category in problem.categories -%}
-            <li><span class="tag">{{ category }}</span></li>
-          {%- endfor -%}
-        {%- else -%}
-        {%- for category in categories -%}
-          <li>
-            {%- if category.template_url and category.template_url != '' -%}
-              <a class="tag tag--link" href="{{ category.template_url | relative_url }}">{{ category.label }}</a>
-            {%- else -%}
-              <span class="tag">{{ category.label }}</span>
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
-        {%- endif -%}
-      </ul>
-    </section>
-
+    {%- include problem_taxonomy.html problem=problem problem_topics=problem_topics -%}
     {%- include problem_viewer.html problem=problem implementations=implementations embed=false -%}
   </article>
 {%- endif -%}

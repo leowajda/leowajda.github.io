@@ -1,0 +1,27 @@
+{%- assign item = include.item -%}
+{%- assign entry_dom_prefix = include.entry_dom_prefix | default: '' -%}
+{%- assign item_dom_id = item.entry_id -%}
+{%- if entry_dom_prefix != '' -%}
+  {%- assign item_dom_id = entry_dom_prefix | append: '-' | append: item.entry_id -%}
+{%- endif -%}
+
+<div
+  class="code-collection__item"
+  data-code-collection-item
+  data-code-collection-entry-id="{{ item.entry_id | escape }}"
+  data-code-collection-language="{{ item.language_slug | escape }}"
+  data-code-collection-variant="{{ item.variant_slug | escape }}"
+  id="{{ item_dom_id | escape }}"
+  {% unless item.active %}hidden{% endunless %}
+>
+  {%- if item.code -%}
+    {%- capture code_block -%}
+```{{ item.code_language }}
+{{ item.code }}
+```
+    {%- endcapture -%}
+    {{ code_block | markdownify }}
+  {%- elsif item.content -%}
+    {{ item.content | markdownify }}
+  {%- endif -%}
+</div>

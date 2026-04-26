@@ -1,0 +1,24 @@
+- entry_id: line-sweep-java
+  language: java
+  code: |
+    int maxOverlap(int[][] intervals) {
+        List<int[]> events = new ArrayList<>();
+
+        for (int[] interval : intervals) {
+            events.add(new int[] {interval[0], 1});
+            events.add(new int[] {interval[1], -1});
+        }
+
+        events.sort((a, b) -> a[0] == b[0] ? Integer.compare(a[1], b[1]) : Integer.compare(a[0], b[0]));
+
+        int active = 0;
+        int best = 0;
+
+        for (int[] event : events) {
+            active += event[1];
+            best = Math.max(best, active);
+        }
+
+        return best;
+    }
+

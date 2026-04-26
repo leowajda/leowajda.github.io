@@ -2,7 +2,7 @@
 
 module SiteKit
   class BuildContext
-    CACHE_KEY = "__site_kit_build_context"
+    CACHE_KEY = '__site_kit_build_context'
 
     def self.for(site)
       site.config[CACHE_KEY] ||= new(site)
@@ -17,13 +17,13 @@ module SiteKit
     end
 
     def app_config
-      @app_config ||= AppConfigRepository.new(site.data.fetch("site").fetch("app")).load
+      @app_config ||= AppConfigRepository.new(site.data.fetch('site').fetch('app')).load
     end
 
     def page_link_resolver
       @page_link_resolver ||= PageLinkResolver.new(
-        site_pages: site.data.fetch("site").fetch("pages"),
-        page_links: site.data.fetch("site").fetch("page_links")
+        site_pages: site.data.fetch('site').fetch('pages'),
+        page_links: site.data.fetch('site').fetch('page_links')
       )
     end
 
@@ -38,8 +38,10 @@ module SiteKit
       @eureka_context ||= EurekaContext.new(
         manifests: project_registry.for_kind(EUREKA_PROJECT_KIND),
         app_config: app_config,
+        algorithmic_topics: template_library_context.topics,
         algorithmic_templates: template_library_context.templates,
-        flowchart_data: eureka_data.fetch("flowchart", {}),
+        template_guide: template_library_context.guide,
+        flowchart_data: eureka_data.fetch('flowchart', {}),
         page_link_resolver: page_link_resolver
       )
     end
@@ -53,9 +55,11 @@ module SiteKit
 
     def template_library_context
       @template_library_context ||= TemplateLibraryContext.new(
-        documents: site.collections.fetch(ALGORITHMIC_TEMPLATE_COLLECTION).docs,
-        groups: eureka_data.fetch("template_groups", []),
-        entries_by_template: eureka_data.fetch("template_entries", {}),
+        topics: eureka_data.fetch('topics', []),
+        template_guide: eureka_data.fetch('template_guide', {}),
+        flowchart_data: eureka_data.fetch('flowchart', {}),
+        entries_by_template: eureka_data.fetch('template_entries', {}),
+        language_catalog: eureka_data.fetch('template_languages', {}),
         code_collection_config: app_config.code_collection
       )
     end
@@ -64,13 +68,17 @@ module SiteKit
       generated_page_registry.pages
     end
 
+    def validate!
+      BuildValidator.new(context: self).validate!
+    end
+
     private
 
     attr_reader :site
 
     def project_registry
       @project_registry ||= ProjectRegistry.new(
-        records: site.data["projects"],
+        records: site.data['projects'],
         repo_root: Helpers.repo_root
       ).record
     end
