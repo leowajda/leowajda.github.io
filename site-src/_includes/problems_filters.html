@@ -16,7 +16,7 @@
           {%- endfor -%}
         </nav>
       {%- when "search" -%}
-        <div class="filter-search">
+        <div class="side-panel__search filter-search">
           <input id="problem-search" name="search" type="search" placeholder="Search problems" autocomplete="off">
           <button class="control-button control-button--icon filter-button filter-button--icon" type="reset" aria-label="Reset filters" title="Reset filters">
             {%- include icon.html name="reset" -%}
@@ -26,7 +26,13 @@
         <div class="{{ section.wrapper_class }}" role="group" aria-label="{{ section.aria_label }}">
           {%- for item in section.items -%}
             <label class="{{ item.class | default: 'filter-option filter-option--stacked' }}">
-              <input type="checkbox" name="{{ section.input_name }}" value="{{ item.value }}"{% if item.checked %} checked{% endif %}>
+              <input
+                type="checkbox"
+                name="{{ section.input_name }}"
+                value="{{ item.value }}"
+                data-search-filter-value="{{ item.search_value | default: item.label }}"
+                {% if item.checked %}checked{% endif %}
+              >
               <span>{{ item.label }}</span>
             </label>
           {%- endfor -%}
@@ -72,7 +78,7 @@
 
 {%- include side_panel.html
   tag="form"
-  class="filters"
+  class="filters side-panel--sticky side-panel--scrollable"
   attributes='aria-label="Problem filters" data-problem-filters'
   body=panel_body
 -%}

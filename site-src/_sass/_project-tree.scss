@@ -1,0 +1,45 @@
+.project-tree,
+.project-tree__children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.project-tree {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.project-tree__group,
+.project-tree__children {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.project-tree__label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0;
+  opacity: var(--muted-opacity);
+  text-transform: uppercase;
+}
+
+.project-tree__children {
+  border-left: thin solid var(--border);
+  margin-left: 0.35rem;
+  padding-left: 0.85rem;
+}
+
+.project-tree__item {
+  margin: 0;
+}
+
+.project-tree__entry {
+  color: inherit;
+  text-decoration: none;
+}
+
+.project-tree__entry:hover {
+  text-decoration: underline;
+}

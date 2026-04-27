@@ -53,7 +53,8 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
 
     assert_equal(['binary-search/boundary'],
                  binary_search.fetch('template_references').map { |reference| reference.fetch('target') })
-    assert_equal(%w[label target url], binary_search.fetch('template_references').first.keys.sort)
+    assert_equal(%w[kind label label_parts pattern_label target url variant_label],
+                 binary_search.fetch('template_references').first.keys.sort)
     assert binary_search.dig('code_collection', 'entry_action_groups').first.fetch('active')
     assert_empty menu_actions
     refute binary_search.fetch('template_references').first.key?('action_label')

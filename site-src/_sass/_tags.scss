@@ -1,0 +1,74 @@
+.tag-list {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tag {
+  border: thin solid var(--border);
+  display: inline-flex;
+  margin: 0;
+  max-width: 100%;
+  padding: 0.15rem 0.5rem;
+  text-align: left;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.tag--link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.tag--link:hover {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.template-reference-label {
+  align-items: stretch;
+  gap: 0;
+  padding: 0;
+}
+
+.template-reference-label__parent,
+.template-reference-label__child {
+  display: inline-flex;
+  padding: 0.15rem 0.5rem;
+}
+
+.template-reference-label__parent {
+  border-right: thin solid var(--border);
+}
+
+.template-reference-link:hover .template-reference-label__parent {
+  border-right-color: currentColor;
+}
+
+.template-reference-inline {
+  align-items: baseline;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding: 0;
+}
+
+.template-reference-inline .template-reference-label__parent,
+.template-reference-inline .template-reference-label__child {
+  padding: 0;
+}
+
+.template-reference-inline .template-reference-label__parent {
+  border-right: 0;
+  font-weight: 400;
+}
+
+.template-reference-inline .template-reference-label__child {
+  border-left: thin solid var(--border);
+  padding-left: 0.45rem;
+}

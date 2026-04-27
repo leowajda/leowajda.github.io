@@ -25,11 +25,10 @@
           class="problem-row"
           data-problem-row
           data-problem-slug="{{ row.problem_slug }}"
-          data-search-title="{{ row.search_title | escape }}"
-          data-difficulty="{{ row.difficulty }}"
-          data-difficulty-slug="{{ row.difficulty_slug }}"
-          data-categories="{{ row.categories_joined }}"
-          data-languages="{{ row.languages_joined }}"
+          data-search-url="{{ row.url | relative_url }}"
+          data-difficulty="{{ row.difficulty | escape }}"
+          data-categories="{{ row.categories | jsonify | escape }}"
+          data-languages="{{ row.language_slugs | jsonify | escape }}"
         >
           <td class="problem-title-cell">
             <div class="problem-title">
@@ -64,4 +63,5 @@
     </tbody>
     </table>
   </div>
+  <p class="problem-table-empty" data-problem-empty hidden>No problems match the current search.</p>
 </section>

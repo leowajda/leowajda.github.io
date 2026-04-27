@@ -30,12 +30,10 @@ module SiteKit
 
         {
           'problem_slug' => problem.fetch('problem_slug'),
-          'search_title' => problem.fetch('search_title'),
           'difficulty' => problem.fetch('difficulty'),
           'difficulty_slug' => problem.fetch('difficulty_slug'),
           'categories' => problem.fetch('categories'),
-          'categories_joined' => problem.fetch('categories').join('|'),
-          'languages_joined' => problem.fetch('languages').map { |language| language.fetch('slug') }.join('|'),
+          'language_slugs' => problem.fetch('languages').map { |language| language.fetch('slug') },
           'title' => problem.fetch('title'),
           'url' => problem.fetch('url'),
           'cells' => visible_languages.map do |language|

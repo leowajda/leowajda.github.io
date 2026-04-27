@@ -7,7 +7,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     guide = build_context.template_library_context.guide
     pattern_labels = guide.fetch('patterns').map { |pattern| pattern.fetch('label') }
 
-    assert_includes pattern_labels, 'Array / Sequence'
+    assert_includes pattern_labels, 'Sequence'
     assert_includes pattern_labels, 'Graph'
     refute_includes pattern_labels, 'Traversal'
     refute_includes pattern_labels, 'State'
@@ -54,7 +54,8 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
 
     references = resolver.references_for_categories(['Array', 'Binary Search'])
 
-    assert_equal [%w[label target]], references.map { |reference| reference.keys.sort }.uniq
+    assert_equal [%w[kind label label_parts pattern_label target variant_label]],
+                 references.map { |reference| reference.keys.sort }.uniq
   end
 
   def test_multi_pattern_problem_matching_preserves_all_relevant_references
@@ -86,7 +87,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
         data: data,
         templates: build_context.template_library_context.templates,
         code_collections: build_context.template_library_context.code_collections,
-        flowchart_data: build_site.data.fetch('eureka').fetch('flowchart')
+        flowchart_data: build_context.flowchart_data
       ).build
     end
 
@@ -99,18 +100,18 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
                     .find { |pattern| pattern.fetch('id') == 'graph' }
                     .fetch('variants')
                     .find { |variant| variant.fetch('id') == 'bfs' }
-    graph_bfs['flowchart_nodes'] = ['shortest-path-bfs']
+    graph_bfs['flowchart_nodes'] = ['graph-smallcontraints-graph-bfs']
 
     error = assert_raises(RuntimeError) do
       SiteKit::TemplateGuideRepository.new(
         data: data,
         templates: build_context.template_library_context.templates,
         code_collections: build_context.template_library_context.code_collections,
-        flowchart_data: build_site.data.fetch('eureka').fetch('flowchart')
+        flowchart_data: build_context.flowchart_data
       ).build
     end
 
-    assert_match(/Template guide flowchart nodes for 'graph-bfs' must match algorithmic topics/, error.message)
+    assert_match(/Template guide must cover every flowchart solution node: shortest-path-graph-bfs/, error.message)
   end
 
   def test_rejects_unknown_flowchart_solution_references
@@ -126,7 +127,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
         data: data,
         templates: build_context.template_library_context.templates,
         code_collections: build_context.template_library_context.code_collections,
-        flowchart_data: build_site.data.fetch('eureka').fetch('flowchart')
+        flowchart_data: build_context.flowchart_data
       ).build
     end
 
@@ -142,7 +143,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
         data: data,
         templates: build_context.template_library_context.templates,
         code_collections: build_context.template_library_context.code_collections,
-        flowchart_data: build_site.data.fetch('eureka').fetch('flowchart')
+        flowchart_data: build_context.flowchart_data
       ).build
     end
 
@@ -162,7 +163,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
         data: data,
         templates: build_context.template_library_context.templates,
         code_collections: build_context.template_library_context.code_collections,
-        flowchart_data: build_site.data.fetch('eureka').fetch('flowchart')
+        flowchart_data: build_context.flowchart_data
       ).build
     end
 
@@ -175,14 +176,8 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     stack_targets = guide.dig('flowchart_nodes', 'parse-symbols-stack').map { |entry| entry.fetch('target') }
 
     assert_equal ['stack/parse'], stack_targets
-    assert_includes guide.dig('flowchart_nodes', 'shortest-path-bfs').map { |entry| entry.fetch('target') }, 'graph/bfs'
-    assert_includes guide.dig('flowchart_nodes', 'shortest-path-bfs').map { |entry| entry.fetch('target') }, 'grid/bfs'
-  end
-
-  def test_guide_variants_do_not_expose_stale_navigation_flags
-    guide = build_context.template_library_context.guide
-    variants = guide.fetch('patterns').flat_map { |pattern| pattern.fetch('variants') }
-
-    refute(variants.any? { |variant| variant.key?('navigation_visible') })
+    assert_equal(['dynamic-programming'], guide.dig('flowchart_nodes', 'counting-dp').map { |entry| entry.fetch('target') })
+    assert_equal(['graph/bfs'], guide.dig('flowchart_nodes', 'shortest-path-graph-bfs').map { |entry| entry.fetch('target') })
+    assert_equal(['grid/bfs'], guide.dig('flowchart_nodes', 'shortest-path-grid-bfs').map { |entry| entry.fetch('target') })
   end
 end

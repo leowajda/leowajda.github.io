@@ -52,8 +52,7 @@ module SiteKit
         'implementations' => implementation_entries,
         'implementations_by_language' => implementations_by_language(implementation_entries),
         'code_collection' => code_collection(implementation_entries),
-        'implementation_count' => implementations.size,
-        'search_title' => title.downcase
+        'implementation_count' => implementations.size
       }
     end
 

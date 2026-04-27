@@ -1,0 +1,59 @@
+.content-card {
+  border: thin solid var(--border);
+  box-sizing: border-box;
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.content-card__header,
+.content-card__footer {
+  align-items: flex-start;
+  display: flex;
+  gap: 0.75rem;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.content-card__heading {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.content-card__summary {
+  margin: 0;
+  max-width: none;
+}
+
+.content-card__footer {
+  align-items: center;
+}
+
+.content-card__footer .page-note {
+  margin: 0;
+}
+
+.content-card--compact {
+  gap: 0.45rem;
+}
+
+.content-card--flush {
+  gap: 0;
+  padding: 0;
+}
+
+.content-card h2,
+.content-card h3,
+.content-card h4 {
+  margin: 0;
+}
+
+.home-card {
+  gap: 0.85rem;
+}
+
+.home-card .content-card__summary,
+.home-card .page-note {
+  max-width: none;
+}

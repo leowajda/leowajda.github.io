@@ -15,6 +15,9 @@
   <header class="template-panel__header">
     <p class="section-eyebrow">{{ template.pattern_label }}</p>
     <h2>{{ template.variant_label }}</h2>
+    {%- if template.signal and template.signal != '' -%}
+      <p class="template-panel__signal">{{ template.signal }}</p>
+    {%- endif -%}
   </header>
   <div class="template-panel__code">
     {%- include code_collection.html

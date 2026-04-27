@@ -1,4 +1,6 @@
 import { getHashValue, onReady, replaceHashValue } from "./dom.js"
+import { loadPagefindRecords } from "./pagefind-client.js"
+import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery } from "./search-query.js"
 
 const collectRedirects = (root) =>
   new Map(
@@ -14,6 +16,8 @@ const initializeTemplateLibrary = (root) => {
   const templatePanels = Array.from(root.querySelectorAll("[data-template-panel]"))
   const patternPanels = Array.from(root.querySelectorAll("[data-template-pattern-panel]"))
   const searchInput = root.querySelector("[data-template-search]")
+  const searchResults = root.querySelector("[data-template-search-results]")
+  const outline = root.querySelector("[data-template-outline]")
   const redirects = collectRedirects(root)
   const targetMap = new Map([
     ...patternControls.map((control) => [control.dataset.guideTarget || "", { type: "pattern", element: control }]),
@@ -26,6 +30,7 @@ const initializeTemplateLibrary = (root) => {
   }
 
   let activeLanguage = root.dataset.templateDefaultLanguage || "java"
+  const searchSequence = createSequenceGuard()
   const defaultTarget = normalizeTarget(root.dataset.templateDefault || patternControls[0].dataset.guideTarget || "")
 
   const renderLanguage = (panel, nextLanguage) => {
@@ -44,6 +49,7 @@ const initializeTemplateLibrary = (root) => {
     patternControls.forEach((control) => {
       const isActive = control.dataset.guidePattern === patternId
       control.classList.toggle("is-active", isActive)
+      control.classList.toggle("side-panel__link--active", isActive)
       control.setAttribute("aria-expanded", isActive ? "true" : "false")
     })
 
@@ -58,6 +64,7 @@ const initializeTemplateLibrary = (root) => {
     variantControls.forEach((control) => {
       const isActive = control.dataset.guideTarget === target
       control.classList.toggle("is-active", isActive)
+      control.classList.toggle("side-panel__link--active", isActive)
       control.setAttribute("aria-pressed", isActive ? "true" : "false")
     })
   }
@@ -120,44 +127,99 @@ const initializeTemplateLibrary = (root) => {
     }
   }
 
-  const renderSearch = () => {
-    const query = (searchInput?.value || "").trim().toLowerCase()
+  const renderDefaultNavigation = () => {
+    outline?.toggleAttribute("hidden", false)
+    if (searchResults) {
+      searchResults.hidden = true
+      searchResults.replaceChildren()
+    }
 
     branches.forEach((branch) => {
-      const pattern = branch.querySelector("[data-guide-pattern-control]")
-      const children = branch.querySelector(".template-library__children")
-      const variants = Array.from(branch.querySelectorAll("[data-guide-variant-control]"))
-      const patternMatches = !query || (pattern?.dataset.guideSearchText || "").includes(query)
-      let visibleVariantCount = 0
-
-      variants.forEach((control) => {
-        const hasTemplate = control.dataset.guideHasTemplate === "true"
-        const matches = !query || patternMatches || (control.dataset.guideSearchText || "").includes(query)
-        control.hidden = !hasTemplate || !matches
-        if (hasTemplate && matches) {
-          visibleVariantCount += 1
-        }
+      branch.hidden = false
+      branch.querySelector(".template-library__children")?.toggleAttribute("hidden", !branch.classList.contains("is-active"))
+      branch.querySelectorAll("[data-guide-variant-control]").forEach((control) => {
+        control.hidden = control.dataset.guideHasTemplate !== "true"
       })
-
-      branch.hidden = Boolean(query) && !patternMatches && visibleVariantCount === 0
-      if (children) {
-        children.hidden = Boolean(query) ? visibleVariantCount === 0 : !branch.classList.contains("is-active")
-      }
     })
   }
 
-  patternControls.forEach((control) => {
-    control.addEventListener("click", () => renderTarget(control.dataset.guideTarget || ""))
-  })
+  const templateResult = (data) => {
+    const link = document.createElement("a")
+    link.className = "template-library__search-result"
+    link.href = data.url
+    link.dataset.guideChoiceTarget = data.meta?.target || ""
 
-  variantControls.forEach((control) => {
-    control.addEventListener("click", () => renderTarget(control.dataset.guideTarget || ""))
-  })
+    const label = document.createElement("span")
+    label.className = "template-library__search-result-label"
+    label.textContent = data.meta?.title || data.url
+    link.append(label)
+
+    if (data.meta?.summary) {
+      const summary = document.createElement("span")
+      summary.className = "template-library__search-result-summary"
+      summary.textContent = data.meta.summary
+      link.append(summary)
+    }
+
+    return link
+  }
+
+  const renderTemplateResults = async (query, currentSequence) => {
+    if (!searchResults) {
+      return
+    }
+
+    outline?.toggleAttribute("hidden", true)
+    searchResults.hidden = false
+    searchResults.textContent = "Searching."
+
+    let records
+    try {
+      records = await loadPagefindRecords(query, { filters: { kind: "Template" }, limit: 10 })
+      if (!searchSequence.matches(currentSequence)) {
+        return
+      }
+    } catch (error) {
+      if (searchSequence.matches(currentSequence)) {
+        searchResults.textContent = "Template search is unavailable."
+      }
+      console.error(error)
+      return
+    }
+
+    if (records.length === 0) {
+      searchResults.textContent = "No templates match."
+      return
+    }
+
+    searchResults.replaceChildren(...records.map(templateResult))
+  }
+
+  const renderSearch = () => {
+    const query = normalizeSearchQuery(searchInput?.value).toLowerCase()
+    const currentSequence = searchSequence.next()
+
+    if (!query || !meaningfulSearchQuery(query)) {
+      renderDefaultNavigation()
+      return
+    }
+
+    renderTemplateResults(query, currentSequence)
+  }
 
   root.addEventListener("click", (event) => {
+    const guideControl = event.target.closest("[data-guide-pattern-control], [data-guide-variant-control]")
+    if (guideControl) {
+      renderTarget(guideControl.dataset.guideTarget || "")
+      return
+    }
+
     const choice = event.target.closest("[data-guide-choice-target]")
     if (choice) {
       event.preventDefault()
+      if (searchResults?.contains(choice) && searchInput) {
+        searchInput.value = ""
+      }
       renderTarget(choice.dataset.guideChoiceTarget || "")
       return
     }

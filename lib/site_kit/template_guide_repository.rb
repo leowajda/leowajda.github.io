@@ -46,6 +46,10 @@ module SiteKit
           ),
           'order' => Helpers.ensure_integer(pattern['order'], "Template guide pattern #{pattern_id}.order"),
           'target' => pattern_id,
+          'flowchart_nodes' => Helpers.ensure_array_of_strings(
+            pattern.fetch('flowchart_nodes', []),
+            "Template guide pattern #{pattern_id}.flowchart_nodes"
+          ),
           'problem_rules' => ProblemRules.normalize(
             pattern.fetch('problem_rules', []),
             "Template guide pattern #{pattern_id}.problem_rules"

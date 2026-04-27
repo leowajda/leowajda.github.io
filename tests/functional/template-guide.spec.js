@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test"
+import { templatePanel } from "./helpers.js"
 
 test("template guide opens old template hashes through redirects", async ({ page }) => {
   await page.goto("/writing/algorithmic-templates/#topological-sort")
@@ -6,7 +7,7 @@ test("template guide opens old template hashes through redirects", async ({ page
   await expect(page.getByRole("heading", { name: "Algorithmic Templates" })).toBeVisible()
   await expect(page.getByRole("button", { name: "Graph" })).toHaveAttribute("aria-expanded", "true")
   await expect(page.getByRole("button", { name: "Topological sort" })).toHaveAttribute("aria-pressed", "true")
-  await expect(page.locator('[data-template-panel][data-guide-target="graph/topological-sort"]')).toBeVisible()
+  await expect(templatePanel(page, "graph/topological-sort")).toBeVisible()
   await expect(page).toHaveURL(/#graph%2Ftopological-sort$/)
 })
 
@@ -54,28 +55,44 @@ test("pattern chooser opens one concrete code panel", async ({ page }) => {
 
   await page.locator('[data-template-pattern-panel][data-guide-pattern="graph"]').getByRole("link", { name: /BFS/ }).click()
 
-  await expect(page.locator('[data-template-panel][data-guide-target="graph/bfs"]')).toBeVisible()
+  await expect(templatePanel(page, "graph/bfs")).toBeVisible()
   await expect(page.locator('[data-template-pattern-panel]:not([hidden])')).toHaveCount(0)
   await expect(page.locator("[data-template-panel]:not([hidden])")).toHaveCount(1)
   await expect(page.getByLabel("Graph templates").getByRole("button", { name: "BFS" })).toHaveAttribute("aria-pressed", "true")
   await expect(page).toHaveURL(/#graph%2Fbfs$/)
 })
 
-test("search expands only matching template branches", async ({ page }) => {
+test("template search uses Pagefind results without expanding the outline", async ({ page }) => {
   await page.goto("/writing/algorithmic-templates/#binary-search")
 
-  await page.getByRole("searchbox", { name: "Patterns" }).fill("lis")
+  const searchbox = page.getByRole("searchbox", { name: "Patterns" })
+  await searchbox.fill("lis")
 
-  await expect(page.locator('[aria-label="Dynamic Programming templates"]')).toBeVisible()
-  await expect(page.getByLabel("Dynamic Programming templates").getByRole("button", { name: "LIS" })).toBeVisible()
+  const results = page.locator("[data-template-search-results]")
+  const lisResult = results.getByRole("link", { name: /Dynamic Programming LIS/ })
+
+  await expect(page.locator("[data-template-outline]")).toBeHidden()
+  await expect(lisResult).toBeVisible()
   await expect(page.locator('[aria-label="Graph templates"]')).toBeHidden()
+
+  await lisResult.click()
+
+  await expect(searchbox).toHaveValue("")
+  await expect(page.locator("[data-template-outline]")).toBeVisible()
+  const panel = templatePanel(page, "dynamic-programming/lis")
+  await expect(panel).toBeVisible()
+  await expect(panel.getByText("Keep the smallest possible tail for each increasing length.")).toBeVisible()
+  await expect(page.getByLabel("Dynamic Programming templates").getByRole("button", { name: "LIS" })).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  )
 })
 
 test("variant selection reveals the matching code panel", async ({ page }) => {
   await page.goto("/writing/algorithmic-templates/#stack")
   await page.locator(".template-library__nav").getByRole("button", { name: "Parse" }).click()
 
-  await expect(page.locator('[data-template-panel][data-guide-target="stack/parse"]')).toBeVisible()
+  await expect(templatePanel(page, "stack/parse")).toBeVisible()
   await expect(page.getByRole("toolbar", { name: "Language" })).toBeVisible()
 })
 
@@ -95,7 +112,7 @@ test("every concrete template variant opens one matching code panel", async ({ p
     await page.locator(`[data-guide-pattern-control][data-guide-pattern="${pattern}"]`).click()
     await page.locator(`[data-guide-variant-control][data-guide-target="${target}"]`).click()
 
-    await expect(page.locator(`[data-template-panel][data-guide-target="${target}"]`)).toBeVisible()
+    await expect(templatePanel(page, target)).toBeVisible()
     await expect(page.locator("[data-template-panel]:not([hidden])")).toHaveCount(1)
     await expect(page.locator(`[data-guide-variant-control][data-guide-target="${target}"]`)).toHaveAttribute(
       "aria-pressed",

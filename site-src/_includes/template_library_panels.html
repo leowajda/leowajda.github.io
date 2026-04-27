@@ -1,0 +1,21 @@
+{%- assign patterns = include.patterns | default: empty -%}
+{%- assign template_panels = include.template_panels | default: empty -%}
+<section class="template-library__code" aria-live="polite">
+  <div class="template-library__anchors" aria-hidden="true">
+    {%- for pattern in patterns -%}
+      <span id="{{ pattern.target }}"></span>
+      {%- for variant in pattern.variants -%}
+        {%- unless variant.has_template -%}
+          <span id="{{ variant.target }}"></span>
+        {%- endunless -%}
+      {%- endfor -%}
+    {%- endfor -%}
+  </div>
+
+  {%- for template in template_panels -%}
+    {%- include template_panel.html template=template -%}
+  {%- endfor -%}
+  {%- for pattern in patterns -%}
+    {%- include template_pattern_panel.html pattern=pattern -%}
+  {%- endfor -%}
+</section>

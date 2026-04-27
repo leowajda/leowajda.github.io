@@ -59,4 +59,10 @@ class SiteKitHelpersTest < SiteKitTestCase
   def test_slugify_collapses_and_trims_separators
     assert_equal 'hello-world', SiteKit::Helpers.slugify(' Hello,   World! ')
   end
+
+  def test_record_helpers_compact_string_keys
+    record = SiteKit::RecordHelpers.compact_string_keys(label: 'Graph', count: 2, empty: nil)
+
+    assert_equal({ 'label' => 'Graph', 'count' => 2 }, record)
+  end
 end

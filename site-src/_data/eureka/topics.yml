@@ -21,7 +21,7 @@
   template: sliding-window-fixed
   description: Move a range of exactly `k` elements while updating the answer incrementally.
   aliases: [Sliding Window]
-  flowchart_nodes: [subarrays-twopointers]
+  flowchart_nodes: [subarrays-window-fixed]
 
 - id: sliding-window-longest
   label: Sliding Window Flexible Longest
@@ -30,7 +30,7 @@
   template: sliding-window-longest
   description: Grow a valid range and shrink only when the invariant breaks.
   aliases: [Sliding Window]
-  flowchart_nodes: [subarrays-twopointers, sequence-count-twopointers]
+  flowchart_nodes: [subarrays-window-longest]
 
 - id: sliding-window-shortest
   label: Sliding Window Flexible Shortest
@@ -39,7 +39,7 @@
   template: sliding-window-shortest
   description: Grow until valid, then shrink while the answer can still improve.
   aliases: [Sliding Window]
-  flowchart_nodes: [subarrays-twopointers]
+  flowchart_nodes: [subarrays-window-shortest]
 
 - id: two-pointers-opposite
   label: Two Pointers Opposite Direction
@@ -159,7 +159,7 @@
       none: [Tree, Binary Tree, Matrix]
     - all: [Breadth-First Search, Dynamic Programming]
       none: [Tree, Binary Tree, Matrix]
-  flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+  flowchart_nodes: [shortest-path-graph-bfs, graph-smallcontraints-graph-bfs]
 
 - id: graph-dfs
   label: DFS On Graphs
@@ -181,7 +181,7 @@
   aliases: [Matrix, Breadth-First Search]
   problem_rules:
     - all: [Breadth-First Search, Matrix]
-  flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+  flowchart_nodes: [shortest-path-grid-bfs, graph-smallcontraints-grid-bfs]
 
 - id: matrix-dfs
   label: DFS On A Matrix
@@ -302,7 +302,7 @@
   template: heap-top-k
   description: Keep only the most relevant candidates in a priority queue.
   aliases: [Heap (Priority Queue), Quickselect]
-  flowchart_nodes: [kth-smallest-heap]
+  flowchart_nodes: [kth-smallest-top-k-heap]
 
 - id: heap-moving-best
   label: Heap Moving Best
@@ -327,6 +327,7 @@
   template: sorting
   description: Reorder values to expose adjacency, rank, or merge structure.
   aliases: [Sorting, Merge Sort]
+  flowchart_nodes: [kth-smallest-sort-scan]
 
 - id: monotonic-stack
   label: Monotonic Stack
@@ -498,6 +499,7 @@
   template: quickselect
   description: Partition around a pivot until the target rank is fixed.
   aliases: [Quickselect]
+  flowchart_nodes: [kth-smallest-quickselect]
 
 - id: stack
   label: Stack

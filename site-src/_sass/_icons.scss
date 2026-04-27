@@ -1,0 +1,65 @@
+.icon-sprite {
+  height: 0;
+  overflow: hidden;
+  position: absolute;
+  width: 0;
+}
+
+.icon-action {
+  appearance: none;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid currentColor;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  justify-content: center;
+  line-height: 1;
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0.55rem;
+  text-decoration: none;
+  transition:
+    background-color 120ms ease,
+    color 120ms ease;
+}
+
+.icon-action:hover {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.icon-action--compact {
+  min-height: 2.35rem;
+  min-width: 2.35rem;
+  padding: 0.45rem;
+}
+
+.icon-action--nav {
+  min-height: 3rem;
+  min-width: 3rem;
+  padding: 0.75rem;
+}
+
+.icon-action.is-success {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.icon-action.is-error {
+  border-style: dashed;
+}
+
+.icon {
+  display: inline-block;
+  fill: currentColor;
+  flex-shrink: 0;
+  height: 1em;
+  width: 1em;
+}
+
+.icon-action__icon {
+  font-size: 1.35rem;
+}

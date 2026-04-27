@@ -10,11 +10,10 @@
     <meta name="robots" content="noindex, nofollow" />
   {%- endif -%}
 
-  <title>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
   <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml" />
   <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}" />
 
-  {%- seo title=false -%}
+  {%- seo -%}
   {%- feed_meta -%}
   {%- unless page.noindex or page.layout == 'redirect' or page.layout == 'problem_embed' -%}
     {%- assign page_url = page.url | absolute_url -%}

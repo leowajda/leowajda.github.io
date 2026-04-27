@@ -21,15 +21,7 @@ class SiteKitTestCase < Minitest::Test
   def build_site
     @build_site ||= begin
       @tmp_destination = Dir.mktmpdir('site-kit-test-')
-      site = Jekyll::Site.new(
-        Jekyll.configuration(
-          'source' => SiteKit::Helpers.site_source,
-          'destination' => @tmp_destination,
-          'quiet' => true
-        )
-      )
-      site.read
-      site
+      SiteKit::JekyllSiteLoader.new(destination: @tmp_destination).read
     end
   end
 

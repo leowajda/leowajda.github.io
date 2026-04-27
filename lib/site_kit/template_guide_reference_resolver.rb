@@ -2,7 +2,7 @@
 
 module SiteKit
   class TemplateGuideReferenceResolver
-    PUBLIC_REFERENCE_KEYS = %w[target label].freeze
+    PUBLIC_REFERENCE_KEYS = %w[target label label_parts kind pattern_label variant_label].freeze
 
     def initialize(guide:)
       @guide = guide
@@ -100,6 +100,7 @@ module SiteKit
         'pattern_id' => pattern.fetch('id'),
         'pattern_label' => pattern.fetch('label'),
         'label' => pattern.fetch('label'),
+        'label_parts' => TemplateReferenceLabel.parts(pattern:),
         'target' => pattern.fetch('target'),
         'default_target' => pattern.fetch('default_target'),
         'pattern_order' => pattern.fetch('order'),

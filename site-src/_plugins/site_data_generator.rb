@@ -32,7 +32,7 @@ module SiteKit
           eureka_browsers: context.eureka_context.browsers,
           eureka_topics: context.eureka_context.topics,
           flowcharts: context.eureka_context.flowcharts,
-          flowchart_record: eureka_data.fetch('flowchart'),
+          flowchart_record: context.flowchart_data,
           flowchart_summaries: eureka_data.fetch('flowchart_summaries', {}),
           page_link_resolver: page_link_resolver
         ),

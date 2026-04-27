@@ -8,5 +8,4 @@ permalink: /writing/algorithmic-templates/
 project_slug: eureka
 custom_js:
   - template-library
-default_template: binary-search
 ---

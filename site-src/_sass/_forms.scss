@@ -1,0 +1,22 @@
+fieldset {
+  border: thin solid var(--border);
+  margin: 0;
+  min-width: 0;
+  padding: 1rem;
+}
+
+legend {
+  padding: 0 0.25rem;
+}
+
+input,
+button,
+textarea,
+select {
+  color: inherit;
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}

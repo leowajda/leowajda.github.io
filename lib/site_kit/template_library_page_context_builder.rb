@@ -34,7 +34,6 @@ module SiteKit
       template_guide.fetch('patterns').map do |pattern|
         pattern.merge(
           'active' => pattern_active?(pattern, default_target, rendered_target),
-          'search_text' => pattern_search_text(pattern),
           'variants' => variant_records(pattern, rendered_target)
         )
       end
@@ -43,8 +42,7 @@ module SiteKit
     def variant_records(pattern, rendered_target)
       pattern.fetch('variants').map do |variant|
         variant.merge(
-          'active' => variant.fetch('target') == rendered_target,
-          'search_text' => variant_search_text(pattern, variant)
+          'active' => variant.fetch('target') == rendered_target
         )
       end
     end
@@ -68,19 +66,6 @@ module SiteKit
     def pattern_active?(pattern, default_target, rendered_target)
       pattern.fetch('target') == default_target ||
         pattern.fetch('variants').any? { |variant| variant.fetch('target') == rendered_target }
-    end
-
-    def pattern_search_text(pattern)
-      [pattern.fetch('label'), pattern.fetch('description')].join(' ').downcase
-    end
-
-    def variant_search_text(pattern, variant)
-      [
-        pattern.fetch('label'),
-        variant.fetch('label'),
-        variant.fetch('signal', ''),
-        *variant.fetch('aliases', [])
-      ].join(' ').downcase
     end
   end
 end

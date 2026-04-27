@@ -9,17 +9,22 @@
 - Sync the `README.md` symlink to `AGENTS.md`: `pnpm docs:refresh`
 - Syntax-check the source validation script: `ruby -c script/validate_catalogs.rb`
 - Validate source catalogs and generated registries: `ruby script/validate_catalogs.rb`
-- Build the site: `bundle exec jekyll build --source site-src --destination _site`
+- Build the site: `pnpm build:indexed-site`
+- Build only the Jekyll HTML: `bundle exec jekyll build --source site-src --destination _site`
+- Build Pagefind search records: `pnpm build:search-records`
+- Build the Pagefind index from `_site`: `pnpm build:pagefind`
+- Verify the Pagefind runtime assets and record count: `pnpm check:pagefind`
+- Verify rendered SEO metadata and sitemap/noindex alignment: `pnpm check:seo`
 - Check JavaScript syntax: `pnpm check:js`
 - Run Ruby tests: `pnpm test:ruby`
 - Run rendered-page functional tests: `pnpm test:functional`
 - Run the full Make validation target: `make test`
 - Run full local validation: `pnpm test:full`
-- Preview the rendered site: `bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730`
+- Preview the rendered indexed site: `pnpm preview`
 
 ## Preview
 - Base URL: `http://127.0.0.1:4173`
-- `pnpm preview` and `make serve` render the committed `site-src` tree directly.
+- `pnpm preview` and `make serve` build the committed `site-src` tree, generate the Pagefind index, then serve `_site`.
 - `ruby script/validate_catalogs.rb` is separate from preview and build. It validates source catalogs and generated registries without writing files.
 - Debug rendered pages, not raw templates.
 
@@ -42,10 +47,11 @@
 
 ## Validation Matrix
 - Ruby, scripts, or data registry changes: `pnpm lint:ruby && pnpm test:ruby && pnpm validate:catalogs`.
-- Jekyll layouts, includes, Sass, JavaScript, or generated page data changes: `pnpm check:js && pnpm test:site && pnpm check:links`.
+- Jekyll layouts, includes, Sass, JavaScript, search, SEO, or generated page data changes: `pnpm check:js && pnpm test:site && pnpm check:links`.
 - Problem explorer, template guide, flowchart, or browser interaction changes: `pnpm test:functional`.
 - Before handoff after code changes: run `pnpm test:full`, or state exactly why it could not run.
 - Do not rely on Ruby tests alone for rendered page behavior.
+- Search is a global Pagefind-backed overlay. Do not add bespoke DOM text matching or faceted search pages; add searchable data through Ruby search records and rebuild with `pnpm build:indexed-site`.
 
 ## Rules
 - Keep site work Jekyll-first. Prefer layouts, includes, Liquid, `site.data`, and front matter over client-side assembly.

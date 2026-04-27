@@ -66,9 +66,14 @@
   </article>
 
   <aside class="flowchart-sidebar">
-    <section class="content-card flowchart-inspector" data-flowchart-inspector hidden>
+    {%- capture inspector_body -%}
       <div class="flowchart-inspector__content" data-flowchart-inspector-content></div>
-    </section>
+    {%- endcapture -%}
+    {%- include side_panel.html
+      class="side-panel--scrollable flowchart-inspector"
+      attributes="data-flowchart-inspector hidden"
+      body=inspector_body
+    -%}
   </aside>
 
   <div hidden>

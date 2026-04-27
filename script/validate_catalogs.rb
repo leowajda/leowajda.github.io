@@ -3,7 +3,6 @@
 
 require 'bundler/setup'
 require 'jekyll'
-require 'tmpdir'
 require_relative '../lib/site_kit'
 
 module SiteKit
@@ -17,16 +16,7 @@ module SiteKit
     end
 
     def run
-      with_destination do |destination|
-        site = Jekyll::Site.new(
-          Jekyll.configuration(
-            'source' => source,
-            'destination' => destination,
-            'quiet' => true
-          )
-        )
-        site.read
-
+      JekyllSiteLoader.new(source:, destination:).read do |site|
         BuildContext.for(site).validate!
       end
 
@@ -36,12 +26,6 @@ module SiteKit
     private
 
     attr_reader :source, :destination
-
-    def with_destination(&)
-      return yield(destination) if destination
-
-      Dir.mktmpdir('site-kit-validation-', &)
-    end
   end
 end
 

@@ -15,7 +15,7 @@ patterns:
           - any: [Binary Search]
         flowchart_nodes: [max/min-binarysearch]
       - id: rotated-peak
-        label: Rotated / peak
+        label: Rotated peak
         template: binary-search-rotated
         aliases: [Binary Search]
       - id: answer-space
@@ -24,7 +24,7 @@ patterns:
         aliases: [Binary Search]
 
   - id: array-sequence
-    label: Array / Sequence
+    label: Sequence
     order: 2
     description: Move across ordered values while preserving range or cursor state.
     variants:
@@ -50,21 +50,21 @@ patterns:
         aliases: [Sliding Window]
         problem_rules:
           - any: [Sliding Window]
-        flowchart_nodes: [subarrays-twopointers]
+        flowchart_nodes: [subarrays-window-fixed]
       - id: sliding-window-longest
         label: Sliding window longest
         template: sliding-window-longest
         aliases: [Sliding Window]
         problem_rules:
           - any: [Sliding Window]
-        flowchart_nodes: [subarrays-twopointers, sequence-count-twopointers]
+        flowchart_nodes: [subarrays-window-longest]
       - id: sliding-window-shortest
         label: Sliding window shortest
         template: sliding-window-shortest
         aliases: [Sliding Window]
         problem_rules:
           - any: [Sliding Window]
-        flowchart_nodes: [subarrays-twopointers]
+        flowchart_nodes: [subarrays-window-shortest]
       - id: prefix-sum
         label: Prefix sum
         template: prefix-sum
@@ -109,7 +109,7 @@ patterns:
         problem_rules:
           - any: [Binary Search Tree]
       - id: build-serialize
-        label: Build / serialize
+        label: Build and serialize
         template: tree-serialize
         aliases: [Design]
 
@@ -137,7 +137,7 @@ patterns:
             none: [Tree, Binary Tree, Matrix]
           - all: [Breadth-First Search, Hash Table]
             none: [Tree, Binary Tree, Matrix]
-        flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+        flowchart_nodes: [shortest-path-graph-bfs, graph-smallcontraints-graph-bfs]
       - id: topological-sort
         label: Topological sort
         template: topological-sort
@@ -173,7 +173,7 @@ patterns:
         aliases: [Breadth-First Search]
         problem_rules:
           - all: [Breadth-First Search, Matrix]
-        flowchart_nodes: [shortest-path-bfs, graph-smallcontraints-bfs]
+        flowchart_nodes: [shortest-path-grid-bfs, graph-smallcontraints-grid-bfs]
       - id: dfs
         label: DFS
         template: matrix-dfs
@@ -192,7 +192,7 @@ patterns:
       - any: [Backtracking]
     variants:
       - id: choose-undo
-        label: Choose / undo
+        label: Choose and undo
         template: backtracking
         aliases: [Backtracking]
         problem_rules:
@@ -209,6 +209,7 @@ patterns:
     label: Dynamic Programming
     order: 7
     description: Reuse overlapping subproblems.
+    flowchart_nodes: [small-constraints-dp, max/min-dp, counting-dp, sequence-count-dp]
     problem_rules:
       - any: [Dynamic Programming, Memoization]
     variants:
@@ -216,7 +217,6 @@ patterns:
         label: 1D
         template: dynamic-programming
         aliases: [Dynamic Programming, Memoization]
-        flowchart_nodes: [small-constraints-dp, max/min-dp, counting-dp, sequence-count-dp]
       - id: grid
         label: Grid
         template: dp-grid
@@ -255,7 +255,7 @@ patterns:
         aliases: [Heap (Priority Queue)]
         problem_rules:
           - any: [Heap (Priority Queue)]
-        flowchart_nodes: [kth-smallest-heap]
+        flowchart_nodes: [kth-smallest-top-k-heap]
       - id: moving-best
         label: Moving best
         template: heap-moving-best
@@ -306,7 +306,7 @@ patterns:
         template: hash-seen-state
 
   - id: sorting-selection
-    label: Sorting / Selection
+    label: Sorting and Selection
     order: 11
     description: Reorder values or isolate a rank.
     problem_rules:
@@ -318,12 +318,14 @@ patterns:
         aliases: [Sorting]
         problem_rules:
           - any: [Sorting, Merge Sort]
+        flowchart_nodes: [kth-smallest-sort-scan]
       - id: quickselect
         label: Quickselect
         template: quickselect
         aliases: [Quickselect]
         problem_rules:
           - any: [Quickselect]
+        flowchart_nodes: [kth-smallest-quickselect]
 
   - id: intervals
     label: Intervals
@@ -386,14 +388,14 @@ patterns:
       - any: [Linked List]
     variants:
       - id: fast-slow
-        label: Fast / slow
+        label: Fast and slow
         template: linked-list
         aliases: [Linked List, Two Pointers]
         problem_rules:
           - all: [Linked List, Two Pointers]
         flowchart_nodes: [linked-list-twopointers]
       - id: rewire
-        label: Reverse / rewire
+        label: Reverse and rewire
         template: linked-list-rewire
       - id: merge
         label: Merge
@@ -441,7 +443,7 @@ patterns:
         template: greedy-heap
 
   - id: math-bits
-    label: Math / Bits
+    label: Math and Bits
     order: 19
     description: Use arithmetic structure directly.
     problem_rules:

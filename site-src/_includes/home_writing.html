@@ -1,0 +1,21 @@
+{% assign posts = include.posts | default: empty %}
+{% if posts.size > 0 %}
+  <div class="content-stack">
+    {% for post in posts limit: 6 %}
+      {% capture post_footer %}
+        <p class="page-note">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%Y-%m-%d" }}</time>
+        </p>
+      {% endcapture %}
+      {% include content_link_card.html
+        class="home-card"
+        title=post.title
+        url=post.url
+        summary=post.description
+        footer=post_footer
+      %}
+    {% endfor %}
+  </div>
+{% else %}
+  <p>No writing published yet.</p>
+{% endif %}

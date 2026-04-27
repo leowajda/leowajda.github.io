@@ -1,4 +1,4 @@
-.PHONY: validate-catalogs check check-js lint-ruby build check-links serve test-ruby test test-functional test-full clean
+.PHONY: validate-catalogs check check-js lint-ruby build build-indexed check-seo check-links serve test-ruby test test-functional test-full clean
 
 validate-catalogs:
 	pnpm validate:catalogs
@@ -15,11 +15,17 @@ lint-ruby:
 build:
 	pnpm build:site
 
+build-indexed:
+	pnpm build:indexed-site
+
 check-links:
 	pnpm check:links
 
+check-seo:
+	pnpm check:seo
+
 serve:
-	bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730
+	pnpm preview
 
 test-ruby:
 	pnpm test:ruby
@@ -27,7 +33,7 @@ test-ruby:
 test:
 	pnpm test:full
 
-test-functional: build
+test-functional: build-indexed
 	pnpm test:functional:built
 
 test-full:

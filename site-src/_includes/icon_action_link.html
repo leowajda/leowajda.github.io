@@ -16,6 +16,7 @@
     {% if rel_value != '' %}rel="{{ rel_value }}"{% endif %}
     aria-label="{{ include.label }}"
     title="{{ include.label }}"
+    {% if include.attributes %}{{ include.attributes }}{% endif %}
   >
     {%- include icon.html name=include.icon class="icon-action__icon" -%}
   </a>

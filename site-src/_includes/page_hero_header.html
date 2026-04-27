@@ -11,14 +11,7 @@
 
   {%- assign header_links = include.links | default: empty -%}
   {%- if header_links and header_links.size > 0 -%}
-    <nav class="page-meta page-header__meta" aria-label="Related pages">
-      {%- for header_link in header_links -%}
-        {%- unless forloop.first -%}
-          <span class="page-meta__separator" aria-hidden="true">/</span>
-        {%- endunless -%}
-        <a class="page-meta__link" href="{{ header_link.url | relative_url }}">{{ header_link.label }}</a>
-      {%- endfor -%}
-    </nav>
+    {%- include context_links.html links=header_links class="page-header__links" label="Related pages" -%}
   {%- endif -%}
 
   {%- assign header_note = include.note | default: '' | strip -%}

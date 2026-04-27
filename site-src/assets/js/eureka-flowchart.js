@@ -1,12 +1,19 @@
 import { getHashValue, onReady, replaceHashValue } from "./dom.js"
 import { parseNumber, queryNodeButton, queryTemplate } from "./eureka-flowchart-dom.js"
 import { decorateInspector, renderMathIn } from "./eureka-flowchart-inspector.js"
+import { attachFlowchartPan } from "./eureka-flowchart-pan.js"
 import { activeRouteId, buildNodeMetaMap, buildRoute, createFlowchartState } from "./eureka-flowchart-state.js"
 import { createFlowchartViewport } from "./eureka-flowchart-viewport.js"
 
 const replaceHash = (nodeId) => {
   replaceHashValue(nodeId)
 }
+
+const closestElement = (target, selector) =>
+  target instanceof Element ? target.closest(selector) : null
+
+const containsRelatedTarget = (element, relatedTarget) =>
+  relatedTarget instanceof Node && element.contains(relatedTarget)
 
 const initializeFlowchart = (root) => {
   const viewport = root.querySelector("[data-flowchart-viewport]")
@@ -167,100 +174,21 @@ const initializeFlowchart = (root) => {
     renderNodeState()
   }
 
-  const endDrag = () => {
-    root.classList.remove("is-dragging")
-    if (state.isDragging) {
-      state.suppressClick = true
-      window.setTimeout(() => {
-        state.suppressClick = false
-      }, 0)
+  const renderStableSelection = () => {
+    if (state.selectedId) {
+      renderInspector(state.selectedId)
+    } else {
+      hideInspector()
     }
-
-    if (state.pointerId !== null && viewport.hasPointerCapture?.(state.pointerId)) {
-      viewport.releasePointerCapture(state.pointerId)
-    }
-
-    state.pointerDown = false
-    state.pointerId = null
-    state.isDragging = false
   }
 
-  viewport.addEventListener("pointerdown", (event) => {
-    if (!viewportController.canPan()) {
-      return
-    }
-
-    if (event.button !== 0) {
-      return
-    }
-
-    if (event.target instanceof Element && event.target.closest("[data-flowchart-node]")) {
-      return
-    }
-
-    state.pointerDown = true
-    state.pointerId = event.pointerId
-    state.dragStartX = event.clientX
-    state.dragStartY = event.clientY
-    state.dragStartLeft = viewport.scrollLeft
-    state.dragStartTop = viewport.scrollTop
-    state.isDragging = false
-    viewport.setPointerCapture?.(event.pointerId)
-  })
-
-  viewport.addEventListener("pointermove", (event) => {
-    if (!state.pointerDown || event.pointerId !== state.pointerId) {
-      return
-    }
-
-    const deltaX = event.clientX - state.dragStartX
-    const deltaY = event.clientY - state.dragStartY
-
-    if (!state.isDragging && (Math.abs(deltaX) > 6 || Math.abs(deltaY) > 6)) {
-      state.isDragging = true
-      root.classList.add("is-dragging")
-      state.previewId = null
-      if (state.selectedId) {
-        renderInspector(state.selectedId)
-      } else {
-        hideInspector()
-      }
-      renderNodeState()
-    }
-
-    if (!state.isDragging) {
-      return
-    }
-
-    viewport.scrollLeft = state.dragStartLeft - deltaX
-    viewport.scrollTop = state.dragStartTop - deltaY
-    event.preventDefault()
-  })
-
-  const handlePointerFinish = (event) => {
-    if (!state.pointerDown || event.pointerId !== state.pointerId) {
-      return
-    }
-
-    endDrag()
-  }
-
-  viewport.addEventListener("pointerup", handlePointerFinish)
-  viewport.addEventListener("pointercancel", handlePointerFinish)
-  viewport.addEventListener("lostpointercapture", () => {
-    if (!state.pointerDown) {
-      return
-    }
-
-    endDrag()
-  })
-
-  window.addEventListener("blur", () => {
-    if (!state.pointerDown) {
-      return
-    }
-
-    endDrag()
+  attachFlowchartPan({
+    root,
+    viewport,
+    viewportController,
+    state,
+    renderStableSelection,
+    renderNodeState
   })
 
   viewport.addEventListener("click", (event) => {
@@ -278,32 +206,44 @@ const initializeFlowchart = (root) => {
     clearSelection()
   }, true)
 
-  nodeButtons.forEach((button) => {
-    const nodeId = button.dataset.flowchartNodeId || ""
+  viewport.addEventListener("click", (event) => {
+    const button = closestElement(event.target, "[data-flowchart-node]")
+    if (!button || state.suppressClick) {
+      return
+    }
 
-    button.addEventListener("click", () => {
-      if (state.suppressClick) {
-        return
-      }
+    commitSelection(button.dataset.flowchartNodeId || "")
+  })
 
-      commitSelection(nodeId)
-    })
+  viewport.addEventListener("focusin", (event) => {
+    const button = closestElement(event.target, "[data-flowchart-node]")
+    if (button) {
+      previewNode(button.dataset.flowchartNodeId || "")
+    }
+  })
 
-    button.addEventListener("focus", () => {
-      previewNode(nodeId)
-    })
-
-    button.addEventListener("blur", () => {
+  viewport.addEventListener("focusout", (event) => {
+    if (closestElement(event.target, "[data-flowchart-node]")) {
       clearPreview()
-    })
+    }
+  })
 
-    button.addEventListener("pointerenter", () => {
-      previewNode(nodeId)
-    })
+  viewport.addEventListener("pointerover", (event) => {
+    const button = closestElement(event.target, "[data-flowchart-node]")
+    if (!button || containsRelatedTarget(button, event.relatedTarget)) {
+      return
+    }
 
-    button.addEventListener("pointerleave", () => {
-      clearPreview()
-    })
+    previewNode(button.dataset.flowchartNodeId || "")
+  })
+
+  viewport.addEventListener("pointerout", (event) => {
+    const button = closestElement(event.target, "[data-flowchart-node]")
+    if (!button || containsRelatedTarget(button, event.relatedTarget)) {
+      return
+    }
+
+    clearPreview()
   })
 
   window.addEventListener("hashchange", () => {

@@ -21,85 +21,9 @@ layout: default
   -%}
 
   <section class="template-library__content">
-    <aside class="template-library__nav" aria-label="Template patterns">
-      <div class="template-library__search">
-        <label class="section-eyebrow" for="template-guide-search">Patterns</label>
-        <input id="template-guide-search" type="search" placeholder="Search patterns" data-template-search autocomplete="off">
-      </div>
-      <nav class="template-library__outline">
-        {%- for pattern in patterns -%}
-          <div
-            class="template-library__branch"
-            data-guide-branch
-            data-guide-pattern="{{ pattern.id }}"
-          >
-            <button
-              type="button"
-              class="template-library__pattern{% if pattern.active %} is-active{% endif %}"
-              data-guide-pattern-control
-              data-guide-target="{{ pattern.target }}"
-              data-guide-default-target="{{ pattern.default_target }}"
-              data-guide-pattern="{{ pattern.id }}"
-              data-guide-search-text="{{ pattern.search_text }}"
-              aria-expanded="{{ pattern.active }}"
-            >
-              {{ pattern.label }}
-            </button>
-            <div
-              class="template-library__children"
-              aria-label="{{ pattern.label }} templates"
-              {% unless pattern.active %}hidden{% endunless %}
-            >
-              {%- for variant in pattern.variants -%}
-                <button
-                  type="button"
-                  class="template-library__variant{% if variant.active %} is-active{% endif %}"
-                  data-guide-variant-control
-                  data-guide-target="{{ variant.target }}"
-                  data-guide-default-target="{{ pattern.default_target }}"
-                  data-guide-pattern="{{ pattern.id }}"
-                  data-guide-variant="{{ variant.id }}"
-                  data-guide-has-template="{{ variant.has_template }}"
-                  data-guide-search-text="{{ variant.search_text }}"
-                  aria-pressed="{{ variant.active }}"
-                  {% unless variant.has_template %}hidden aria-hidden="true" tabindex="-1"{% endunless %}
-                >
-                  {{ variant.label }}
-                </button>
-              {%- endfor -%}
-            </div>
-          </div>
-        {%- endfor -%}
-      </nav>
-    </aside>
-
-    <section class="template-library__code" aria-live="polite">
-      <div class="template-library__anchors" aria-hidden="true">
-        {%- for pattern in patterns -%}
-          <span id="{{ pattern.target }}"></span>
-          {%- for variant in pattern.variants -%}
-            {%- unless variant.has_template -%}
-              <span id="{{ variant.target }}"></span>
-            {%- endunless -%}
-          {%- endfor -%}
-        {%- endfor -%}
-      </div>
-
-      {%- for template in template_panels -%}
-        {%- include template_panel.html template=template -%}
-      {%- endfor -%}
-      {%- for pattern in patterns -%}
-        {%- include template_pattern_panel.html pattern=pattern -%}
-      {%- endfor -%}
-    </section>
+    {%- include template_library_navigation.html patterns=patterns -%}
+    {%- include template_library_panels.html patterns=patterns template_panels=template_panels -%}
   </section>
 
-  {%- for redirect in guide.redirects -%}
-    <span
-      hidden
-      data-template-redirect
-      data-template-redirect-source="{{ redirect[0] }}"
-      data-template-redirect-target="{{ redirect[1] }}"
-    ></span>
-  {%- endfor -%}
+  {%- include template_library_redirects.html redirects=guide.redirects -%}
 </article>

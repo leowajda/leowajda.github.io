@@ -1,0 +1,41 @@
+.control-button {
+  appearance: none;
+  align-items: center;
+  background: var(--surface);
+  border: thin solid var(--border);
+  color: inherit;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  gap: 0.5rem;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.8rem;
+  text-decoration: none;
+}
+
+.control-button--icon {
+  min-width: 2.5rem;
+  padding: 0.45rem;
+}
+
+.control-button:hover,
+.control-button.is-active,
+.control-button[aria-pressed="true"] {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.control-button:disabled,
+.control-button.is-unavailable {
+  background: var(--surface);
+  color: inherit;
+  cursor: default;
+  opacity: 0.38;
+}
+
+.control-button:disabled:hover,
+.control-button.is-unavailable:hover {
+  background: var(--surface);
+  color: inherit;
+}

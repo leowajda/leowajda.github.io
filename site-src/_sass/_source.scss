@@ -42,18 +42,6 @@
   white-space: normal;
 }
 
-.source-tree__link {
-  border-left: thin solid transparent;
-  overflow-wrap: anywhere;
-  padding-left: 0.35rem;
-  white-space: normal;
-}
-
-.source-tree__link--active {
-  border-left-color: currentColor;
-  font-weight: bold;
-}
-
 .source-article > :first-child {
   margin-top: 0;
 }

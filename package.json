@@ -8,20 +8,26 @@
     "sync:sources": "git submodule sync --recursive && git submodule update --init --recursive --remote",
     "check:validate": "ruby -c script/validate_catalogs.rb",
     "validate:catalogs": "ruby script/validate_catalogs.rb",
-    "preview": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
+    "preview": "pnpm build:indexed-site && python3 -m http.server 4173 --bind 127.0.0.1 --directory _site",
     "build:site": "bundle exec jekyll build --source site-src --destination _site",
-    "serve": "bundle exec jekyll serve --source site-src --destination _site --host 127.0.0.1 --port 4173 --livereload --livereload-port 35730",
+    "build:search-records": "ruby script/build_search_records.rb",
+    "build:pagefind": "node script/build_pagefind_index.mjs",
+    "check:pagefind": "node script/check_pagefind_index.mjs",
+    "build:indexed-site": "pnpm build:site && pnpm build:search-records && pnpm build:pagefind && pnpm check:pagefind",
+    "serve": "pnpm preview",
     "lint:ruby": "bundle exec rubocop",
-    "check:js": "find site-src/assets/js -name '*.js' -print0 | sort -z | xargs -0 -n1 node --check",
+    "check:seo": "ruby script/check_seo.rb",
+    "check:js": "find site-src/assets/js script tests/functional \\( -name '*.js' -o -name '*.mjs' \\) -print0 | sort -z | xargs -0 -n1 node --check",
     "test:ruby": "bundle exec ruby -Itest test/run.rb",
     "check:links": "ruby script/check_internal_links.rb",
-    "test:site": "ruby script/validate_catalogs.rb && bundle exec jekyll build --source site-src --destination _site",
-    "test:functional": "pnpm build:site && pnpm test:functional:built",
+    "test:site": "ruby script/validate_catalogs.rb && pnpm build:indexed-site && pnpm check:seo",
+    "test:functional": "pnpm build:indexed-site && pnpm test:functional:built",
     "test:functional:built": "playwright test --config=playwright.config.mjs",
     "test:ci": "pnpm test:full",
-    "test:full": "pnpm check:validate && pnpm lint:ruby && pnpm check:js && pnpm validate:catalogs && pnpm test:ruby && pnpm build:site && pnpm check:links && pnpm test:functional:built"
+    "test:full": "pnpm check:validate && pnpm lint:ruby && pnpm check:js && pnpm validate:catalogs && pnpm test:ruby && pnpm build:indexed-site && pnpm check:seo && pnpm check:links && pnpm test:functional:built"
   },
   "devDependencies": {
-    "@playwright/test": "^1.59.1"
+    "@playwright/test": "^1.59.1",
+    "pagefind": "1.5.2"
   }
 }

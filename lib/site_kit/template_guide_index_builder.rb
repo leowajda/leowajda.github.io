@@ -34,6 +34,7 @@ module SiteKit
             'pattern_label' => pattern.fetch('label'),
             'variant_id' => variant.fetch('id'),
             'variant_label' => variant.fetch('label'),
+            'signal' => variant.fetch('signal', ''),
             'target' => variant.fetch('target')
           )
         end
@@ -76,6 +77,10 @@ module SiteKit
     def flowchart_nodes
       entries = Hash.new { |hash, key| hash[key] = [] }
       patterns.each do |pattern|
+        pattern.fetch('flowchart_nodes', []).each do |node_id|
+          entries[node_id] << entrypoint_record(pattern)
+        end
+
         pattern.fetch('variants').each do |variant|
           variant.fetch('flowchart_nodes').each do |node_id|
             entries[node_id] << entrypoint_record(pattern, variant)
@@ -95,6 +100,7 @@ module SiteKit
         'pattern_id' => pattern.fetch('id'),
         'pattern_label' => pattern.fetch('label'),
         'label' => pattern.fetch('label'),
+        'label_parts' => TemplateReferenceLabel.parts(pattern:),
         'target' => pattern.fetch('target'),
         'default_target' => pattern.fetch('default_target'),
         'pattern_order' => pattern.fetch('order'),
@@ -105,7 +111,8 @@ module SiteKit
       record.merge(
         'variant_id' => variant.fetch('id'),
         'variant_label' => variant.fetch('label'),
-        'label' => "#{pattern.fetch('label')} / #{variant.fetch('label')}",
+        'label' => TemplateReferenceLabel.call(pattern:, variant:),
+        'label_parts' => TemplateReferenceLabel.parts(pattern:, variant:),
         'target' => variant.fetch('target'),
         'template_id' => variant.fetch('template_id'),
         'has_template' => variant.fetch('has_template'),

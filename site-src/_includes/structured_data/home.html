@@ -1,13 +1,3 @@
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": {{ site.title | jsonify }},
-  "description": {{ site.description | jsonify }},
-  "url": {{ site.url | jsonify }},
-  "author": {{ include.person_json | strip }}
-}
-</script>
 {%- assign homepage_projects = page.home_projects | default: empty -%}
 {%- if homepage_projects.size > 0 -%}
   <script type="application/ld+json">

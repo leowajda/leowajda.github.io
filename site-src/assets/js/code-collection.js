@@ -121,20 +121,21 @@ const initializeCodeCollection = (collection) => {
     items
   })
 
-  languageControls.forEach((control) => {
-    control.addEventListener("click", () => {
-      const language = control.dataset.codeCollectionLanguage || ""
+  collection.addEventListener("click", (event) => {
+    const languageControl = event.target.closest("[data-code-collection-language-control]")
+    if (languageControl) {
+      const language = languageControl.dataset.codeCollectionLanguage || ""
       const currentActive = items.find((item) => !item.hidden) || items[0]
       render(resolveItem("", language, currentActive?.dataset.codeCollectionVariant || ""))
-    })
-  })
+      return
+    }
 
-  variantControls.forEach((control) => {
-    control.addEventListener("click", () => {
-      const variant = control.dataset.codeCollectionVariant || ""
+    const variantControl = event.target.closest("[data-code-collection-variant-control]")
+    if (variantControl) {
+      const variant = variantControl.dataset.codeCollectionVariant || ""
       const currentActive = items.find((item) => !item.hidden) || items[0]
       render(resolveItem("", currentActive?.dataset.codeCollectionLanguage || "", variant))
-    })
+    }
   })
 
   render(resolveItem(syncHash ? getHashValue() : "", "", ""))

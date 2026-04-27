@@ -93,6 +93,7 @@ module SiteKit
           choice_item(
             value: language.fetch('slug'),
             label: language.fetch('label'),
+            search_value: language.fetch('label'),
             checked: true,
             class_name: 'filter-option filter-option--stacked filter-option--language'
           )
@@ -110,16 +111,12 @@ module SiteKit
       record(label:, url:, active:)
     end
 
-    def choice_item(value:, label:, checked: nil, class_name: nil, count: nil)
-      record(value:, label:, checked:, class: class_name, count:)
+    def choice_item(value:, label:, checked: nil, class_name: nil, count: nil, search_value: nil)
+      record(value:, label:, checked:, class: class_name, count:, search_value:)
     end
 
     def record(**attributes)
-      attributes.each_with_object({}) do |(key, value), result|
-        next if value.nil?
-
-        result[key.to_s] = value
-      end
+      RecordHelpers.compact_string_keys(**attributes)
     end
   end
 end

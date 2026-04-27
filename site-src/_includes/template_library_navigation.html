@@ -1,0 +1,57 @@
+{%- assign patterns = include.patterns | default: empty -%}
+{%- capture template_nav_body -%}
+  <div class="side-panel__search">
+    <label class="section-eyebrow" for="template-guide-search">Patterns</label>
+    <input id="template-guide-search" type="search" placeholder="Search patterns" data-template-search autocomplete="off">
+  </div>
+  <div class="template-library__search-results" data-template-search-results hidden></div>
+  <nav class="template-library__outline" data-template-outline>
+    {%- for pattern in patterns -%}
+      <div
+        class="template-library__branch"
+        data-guide-branch
+        data-guide-pattern="{{ pattern.id }}"
+      >
+        <button
+          type="button"
+          class="side-panel__link template-library__pattern{% if pattern.active %} side-panel__link--active is-active{% endif %}"
+          data-guide-pattern-control
+          data-guide-target="{{ pattern.target }}"
+          data-guide-default-target="{{ pattern.default_target }}"
+          data-guide-pattern="{{ pattern.id }}"
+          aria-expanded="{{ pattern.active }}"
+        >
+          {{ pattern.label }}
+        </button>
+        <div
+          class="template-library__children"
+          aria-label="{{ pattern.label }} templates"
+          {% unless pattern.active %}hidden{% endunless %}
+        >
+          {%- for variant in pattern.variants -%}
+            <button
+              type="button"
+              class="side-panel__link template-library__variant{% if variant.active %} side-panel__link--active is-active{% endif %}"
+              data-guide-variant-control
+              data-guide-target="{{ variant.target }}"
+              data-guide-default-target="{{ pattern.default_target }}"
+              data-guide-pattern="{{ pattern.id }}"
+              data-guide-variant="{{ variant.id }}"
+              data-guide-has-template="{{ variant.has_template }}"
+              aria-pressed="{{ variant.active }}"
+              {% unless variant.has_template %}hidden aria-hidden="true" tabindex="-1"{% endunless %}
+            >
+              {{ variant.label }}
+            </button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endfor -%}
+  </nav>
+{%- endcapture -%}
+{%- include side_panel.html
+  tag="aside"
+  class="template-library__nav side-panel--sticky side-panel--scrollable"
+  attributes='aria-label="Template patterns"'
+  body=template_nav_body
+-%}

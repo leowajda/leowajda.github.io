@@ -40,7 +40,7 @@ const createRouteStep = ({ step, answer, current = false, onSelectRouteNode }) =
   if (current) {
     block.classList.add("is-current")
   }
-  if (!answer) {
+  if (step.kind === "decision" && !answer) {
     block.classList.add("flowchart-path__step--pending")
   }
 
@@ -82,13 +82,11 @@ export const createRoutePanel = (route, onSelectRouteNode) => {
     }))
   })
 
-  if (finalStep.kind === "decision") {
-    list.append(createRouteStep({
-      step: finalStep,
-      current: true,
-      onSelectRouteNode
-    }))
-  }
+  list.append(createRouteStep({
+    step: finalStep,
+    current: true,
+    onSelectRouteNode
+  }))
 
   if (list.children.length === 0) {
     return null

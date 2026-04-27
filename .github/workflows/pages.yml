@@ -75,6 +75,18 @@ jobs:
       - name: Build Jekyll site
         run: bundle exec jekyll build --source site-src --destination _site --config site-src/_config.yml,"$RUNNER_TEMP/pages-config.yml"
 
+      - name: Build search records
+        run: pnpm build:search-records
+
+      - name: Build Pagefind index
+        run: pnpm build:pagefind
+
+      - name: Check Pagefind index
+        run: pnpm check:pagefind
+
+      - name: Check SEO metadata
+        run: pnpm check:seo
+
       - name: Check internal links
         run: pnpm check:links
 

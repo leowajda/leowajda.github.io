@@ -1,0 +1,9 @@
+{%- assign redirects = include.redirects | default: empty -%}
+{%- for redirect in redirects -%}
+  <span
+    hidden
+    data-template-redirect
+    data-template-redirect-source="{{ redirect[0] }}"
+    data-template-redirect-target="{{ redirect[1] }}"
+  ></span>
+{%- endfor -%}

@@ -10,8 +10,8 @@
         {%- assign href = reference.url | default: '' -%}
         {%- if href != '' -%}
           <li>
-            <a class="tag tag--link" href="{{ href | relative_url }}">
-              {{ reference.label }}
+            <a class="tag tag--link template-reference-link template-reference-label" href="{{ href | relative_url }}">
+              {%- include template_reference_label.html reference=reference -%}
             </a>
           </li>
         {%- endif -%}

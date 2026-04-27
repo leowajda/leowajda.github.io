@@ -1,0 +1,27 @@
+.context-links__items {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.context-links__item {
+  margin: 0;
+}
+
+.context-links__link {
+  border: thin solid var(--border);
+  color: inherit;
+  display: inline-flex;
+  padding: 0.15rem 0.5rem;
+  text-decoration: none;
+}
+
+.context-links__link:hover,
+.context-links__link:focus-visible {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}

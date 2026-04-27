@@ -9,7 +9,12 @@
     {%- when 'wide' -%}
       {%- assign shell_class = shell_class | append: ' w--wide' -%}
   {%- endcase -%}
-  <body class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}">
+  <body
+    class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}"
+    data-pagefind-bundle="{{ '/pagefind/pagefind.js' | relative_url }}"
+    data-pagefind-base-url="{{ '/' | relative_url }}"
+    {% if page.search_auto_open %}data-search-auto-open{% endif %}
+  >
     {%- include icon-sprite.html -%}
     <main class="page-content" aria-label="Content">
       <div class="{{ shell_class }}">
@@ -21,6 +26,8 @@
     {%- if site.goat_counter and jekyll.environment == 'production' -%}
       {%- include goat_counter.html -%}
     {%- endif -%}
+
+    {%- include search_overlay.html -%}
 
     {%- if page.needs_math -%}
       <script src="{{ '/assets/vendor/katex/katex.min.js' | relative_url }}"></script>

@@ -4,10 +4,10 @@ test("problem code exposes derived template links beside the selected implementa
   await page.goto("/eureka/problems/binary-search/")
 
   const taxonomy = page.locator(".content-card").filter({ hasText: "Categories" }).first()
-  const guideLink = taxonomy.getByRole("link", { name: "Binary Search / Boundary" })
+  const guideLink = taxonomy.getByRole("link", { name: "Binary Search Boundary" })
 
   await expect(guideLink).toHaveAttribute("href", /\/writing\/algorithmic-templates\/#binary-search\/boundary$/)
-  await expect(page.locator(".code-panel").getByRole("link", { name: "Binary Search / Boundary" })).toHaveCount(0)
+  await expect(page.locator(".code-panel").getByRole("link", { name: "Binary Search Boundary" })).toHaveCount(0)
   await expect(page.getByRole("button", { name: "Templates" })).toHaveCount(0)
 })
 
@@ -16,7 +16,7 @@ test("multi-template problems expose every derived template as visible links", a
 
   const taxonomy = page.locator(".content-card").filter({ hasText: "Categories" }).first()
 
-  await expect(taxonomy.getByRole("link", { name: "Grid / BFS" })).toHaveAttribute(
+  await expect(taxonomy.getByRole("link", { name: "Grid BFS" })).toHaveAttribute(
     "href",
     /\/writing\/algorithmic-templates\/#grid\/bfs$/
   )
@@ -24,7 +24,7 @@ test("multi-template problems expose every derived template as visible links", a
     "href",
     /\/writing\/algorithmic-templates\/#dynamic-programming$/
   )
-  await expect(page.locator(".code-panel").getByRole("link", { name: "Grid / BFS" })).toHaveCount(0)
+  await expect(page.locator(".code-panel").getByRole("link", { name: "Grid BFS" })).toHaveCount(0)
   await expect(page.getByRole("button", { name: "Templates" })).toHaveCount(0)
 })
 

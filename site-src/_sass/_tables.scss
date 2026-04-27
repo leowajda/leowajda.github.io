@@ -32,6 +32,12 @@
   overflow: hidden;
 }
 
+.problem-table-empty {
+  border-top: thin solid var(--border);
+  margin: 0;
+  padding: 1rem;
+}
+
 .table-wrap {
   overflow-x: auto;
 }
@@ -121,39 +127,19 @@
 }
 
 .problem-title__meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.45rem;
 }
 
-.tag-list {
-  align-items: flex-start;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  justify-content: flex-start;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.tag {
-  border: thin solid var(--border);
-  display: inline-flex;
-  margin: 0;
-  max-width: 100%;
-  padding: 0.15rem 0.5rem;
-  text-align: left;
-  white-space: normal;
-  word-break: break-word;
-}
-
-.tag--link {
+.problem-title__link {
   color: inherit;
   text-decoration: none;
 }
 
-.tag--link:hover {
-  background: var(--accent-surface);
-  color: var(--accent-text);
+.problem-title__link:hover {
+  text-decoration: underline;
 }
 
 .difficulty-badge {

@@ -1,9 +1,6 @@
-import {
-  createProblemTableState,
-  matchesProblemRow,
-  reduceProblemTableState
-} from "./eureka-problem-table-state.js"
 import { onReady } from "./dom.js"
+import { loadPagefindRecords, pagefindFilter } from "./pagefind-client.js"
+import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery, normalizedPath } from "./search-query.js"
 
 const queryCheckedRadio = (form, name) =>
   form.querySelector(`input[name="${name}"]:checked`)?.value ?? ""
@@ -28,13 +25,40 @@ const setCheckboxValue = (form, name, value, checked) => {
   }
 }
 
+const parseListMetadata = (value) => {
+  try {
+    const parsed = JSON.parse(value || "[]")
+    return Array.isArray(parsed) ? parsed.filter(Boolean) : []
+  } catch {
+    return []
+  }
+}
+
 const readProblemRow = (element) => ({
   element,
-  searchTitle: (element.dataset.searchTitle || "").toLowerCase(),
+  url: normalizedPath(element.dataset.searchUrl || ""),
   difficulty: element.dataset.difficulty || "",
-  languages: element.dataset.languages ? element.dataset.languages.split("|").filter(Boolean) : [],
-  categories: element.dataset.categories ? element.dataset.categories.split("|").filter(Boolean) : []
+  categories: parseListMetadata(element.dataset.categories),
+  languages: parseListMetadata(element.dataset.languages)
 })
+
+const languageSearchValue = (input) =>
+  input.dataset.searchFilterValue || input.value
+
+const activeSearch = (state) =>
+  state.queryActive
+  || state.difficulty
+  || state.categories.length > 0
+  || state.languageFilterActive
+
+const searchFilters = () => ({
+  kind: ["Problem"]
+})
+
+const searchResultUrls = async (query, filters) => {
+  const records = await loadPagefindRecords(query, { filters: pagefindFilter(filters) })
+  return new Set(records.map((record) => normalizedPath(record.url)))
+}
 
 const initializeProblemFilters = () => {
   const form = document.querySelector("[data-problem-filters]")
@@ -44,18 +68,19 @@ const initializeProblemFilters = () => {
   }
 
   const activeFilterList = document.querySelector("[data-active-filter-list]")
+  const emptyState = document.querySelector("[data-problem-empty]")
   const searchInput = form.querySelector('input[name="search"]')
   const languageInputs = Array.from(form.querySelectorAll('input[name="language"]'))
   const languageCells = Array.from(table.querySelectorAll("[data-language-column]"))
-  const defaultLanguage = table.dataset.languageFilter || ""
   const rows = Array.from(table.querySelectorAll("[data-problem-row]")).map(readProblemRow)
+  const sequence = createSequenceGuard()
 
   const readSelectedLanguages = () => {
     if (languageInputs.length === 0) {
       return []
     }
 
-    const selected = languageInputs.filter((input) => input.checked).map((input) => input.value)
+    const selected = languageInputs.filter((input) => input.checked)
     if (selected.length > 0) {
       return selected
     }
@@ -63,7 +88,7 @@ const initializeProblemFilters = () => {
     languageInputs.forEach((input) => {
       input.checked = true
     })
-    return languageInputs.map((input) => input.value)
+    return languageInputs
   }
 
   const renderLanguageColumns = (selectedLanguages) => {
@@ -71,11 +96,31 @@ const initializeProblemFilters = () => {
       return
     }
 
-    table.style.setProperty("--visible-language-count", String(Math.max(selectedLanguages.length, 1)))
+    const selectedSlugs = selectedLanguages.map((input) => input.value)
+    table.style.setProperty("--visible-language-count", String(Math.max(selectedSlugs.length, 1)))
     languageCells.forEach((cell) => {
       const columnLanguage = cell.dataset.languageColumn || ""
-      cell.hidden = selectedLanguages.length > 0 && !selectedLanguages.includes(columnLanguage)
+      cell.hidden = selectedSlugs.length > 0 && !selectedSlugs.includes(columnLanguage)
     })
+  }
+
+  const readState = () => {
+    const selectedLanguages = readSelectedLanguages()
+    const selectedLanguageSlugs = selectedLanguages.map((input) => input.value)
+    const selectedLanguageLabels = selectedLanguages.map(languageSearchValue)
+    const languageFilterActive = languageInputs.length > 0 && selectedLanguages.length < languageInputs.length
+    const query = normalizeSearchQuery(searchInput?.value)
+
+    return {
+      query,
+      queryActive: meaningfulSearchQuery(query),
+      difficulty: queryCheckedRadio(form, "difficulty"),
+      categories: queryCheckedValues(form, "category"),
+      selectedLanguages,
+      selectedLanguageSlugs,
+      selectedLanguageLabels,
+      languageFilterActive
+    }
   }
 
   const renderActiveFilters = (state) => {
@@ -84,10 +129,9 @@ const initializeProblemFilters = () => {
     }
 
     const filters = []
-    const trimmedSearch = searchInput?.value.trim() ?? ""
 
-    if (trimmedSearch) {
-      filters.push({ kind: "search", value: trimmedSearch, label: `Search: ${trimmedSearch}` })
+    if (state.queryActive) {
+      filters.push({ kind: "search", value: state.query, label: `Search: ${state.query}` })
     }
 
     if (state.difficulty) {
@@ -96,6 +140,12 @@ const initializeProblemFilters = () => {
 
     for (const category of state.categories) {
       filters.push({ kind: "category", value: category, label: `Category: ${category}` })
+    }
+
+    if (state.languageFilterActive) {
+      state.selectedLanguages.forEach((input) => {
+        filters.push({ kind: "language", value: input.value, label: `Language: ${languageSearchValue(input)}` })
+      })
     }
 
     activeFilterList.replaceChildren()
@@ -124,30 +174,68 @@ const initializeProblemFilters = () => {
     activeFilterList.hidden = false
   }
 
-  const render = () => {
-    const selectedLanguages = readSelectedLanguages()
-    renderLanguageColumns(selectedLanguages)
-
-    let state = createProblemTableState(defaultLanguage)
-
-    if (searchInput) {
-      state = reduceProblemTableState(state, { type: "search", value: searchInput.value })
-    }
-
-    state = reduceProblemTableState(state, { type: "difficulty", value: queryCheckedRadio(form, "difficulty") })
-
-    for (const category of queryCheckedValues(form, "category")) {
-      state = reduceProblemTableState(state, { type: "category", value: category })
-    }
-
+  const renderRows = (visibleUrls = null) => {
+    let visibleCount = 0
     rows.forEach((row) => {
-      const matchesLanguage = selectedLanguages.length === 0
-        || row.languages.some((language) => selectedLanguages.includes(language))
-      const matches = matchesProblemRow(state, row) && matchesLanguage
-      row.element.hidden = !matches
+      const visible = !visibleUrls || visibleUrls.has(row.url)
+      row.element.hidden = !visible
+      if (visible) {
+        visibleCount += 1
+      }
     })
 
+    if (emptyState) {
+      emptyState.hidden = visibleCount > 0
+    }
+  }
+
+  const rowMatchesLocalFilters = (row, state) => {
+    const difficultyMatches = !state.difficulty || row.difficulty === state.difficulty
+    const categoryMatches = state.categories.length === 0
+      || state.categories.some((category) => row.categories.includes(category))
+    const languageMatches = !state.languageFilterActive
+      || state.selectedLanguageSlugs.some((language) => row.languages.includes(language))
+
+    return difficultyMatches && categoryMatches && languageMatches
+  }
+
+  const localFilterUrls = (state) =>
+    new Set(
+      rows
+        .filter((row) => rowMatchesLocalFilters(row, state))
+        .map((row) => row.url)
+    )
+
+  const intersectUrls = (left, right) =>
+    new Set(Array.from(left).filter((url) => right.has(url)))
+
+  const render = async () => {
+    const state = readState()
+    renderLanguageColumns(state.selectedLanguages)
     renderActiveFilters(state)
+
+    const currentSequence = sequence.next()
+
+    if (!activeSearch(state)) {
+      renderRows()
+      return
+    }
+
+    const localUrls = localFilterUrls(state)
+    if (!state.queryActive) {
+      renderRows(localUrls)
+      return
+    }
+
+    const visibleUrls = intersectUrls(
+      localUrls,
+      await searchResultUrls(state.query, searchFilters())
+    )
+    if (!sequence.matches(currentSequence)) {
+      return
+    }
+
+    renderRows(visibleUrls)
   }
 
   if (activeFilterList) {
@@ -171,6 +259,9 @@ const initializeProblemFilters = () => {
         case "category":
           setCheckboxValue(form, "category", filterValue, false)
           break
+        case "language":
+          setCheckboxValue(form, "language", filterValue, false)
+          break
         case "clear":
           form.reset()
           break
@@ -182,8 +273,12 @@ const initializeProblemFilters = () => {
     })
   }
 
-  form.addEventListener("input", render)
-  form.addEventListener("change", render)
+  form.addEventListener("input", () => {
+    render()
+  })
+  form.addEventListener("change", () => {
+    render()
+  })
   form.addEventListener("reset", () => {
     window.setTimeout(render, 0)
   })

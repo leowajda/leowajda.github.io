@@ -63,7 +63,11 @@
         {%- for entrypoint in guide_entrypoints -%}
           <article class="content-card content-card--compact flowchart-reference-card">
             <p class="page-note">Template guide</p>
-            <h3><a class="problem-title__link" href="{{ include.templates_url | relative_url }}#{{ entrypoint.target }}">{{ entrypoint.label }}</a></h3>
+            <h3>
+              <a class="problem-title__link template-reference-inline template-reference-label" href="{{ include.templates_url | relative_url }}#{{ entrypoint.target }}">
+                {%- include template_reference_label.html reference=entrypoint -%}
+              </a>
+            </h3>
           </article>
         {%- endfor -%}
       </div>

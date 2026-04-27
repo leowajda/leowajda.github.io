@@ -89,14 +89,34 @@ shortest-path-dijkstra:
 shortest-path-bfs:
   sections:
     - title: "What It Is"
-      text: "BFS explores the graph level by level from the start state."
+      text: "Unweighted shortest-path BFS splits by how the state is represented."
     - title: "When To Use It"
       items:
         - "All edges have the same cost."
         - "**Minimum steps** or moves."
         - "The first time you reach a state should already be optimal."
     - title: "Why It Helps"
-      text: "Finds shortest distances in an **unweighted graph** with a simple queue traversal."
+      text: "Choose graph BFS for adjacency state and grid BFS for coordinate state."
+shortest-path-graph-bfs:
+  sections:
+    - title: "What It Is"
+      text: "Graph BFS expands an explicit graph or state-space frontier one distance layer at a time."
+    - title: "When To Use It"
+      items:
+        - "The graph is unweighted."
+        - "Neighbors come from adjacency lists, generated states, or hash-set transitions."
+    - title: "Why It Helps"
+      text: "The first visit to a state gives the shortest number of transitions."
+shortest-path-grid-bfs:
+  sections:
+    - title: "What It Is"
+      text: "Grid BFS treats cells as states and neighbor moves as equal-cost edges."
+    - title: "When To Use It"
+      items:
+        - "The input is a matrix or board."
+        - "Moves are directional and have equal cost."
+    - title: "Why It Helps"
+      text: "Layer order gives the shortest number of moves across coordinates."
 connectivity:
   sections:
     - title: "What This Means"
@@ -133,25 +153,45 @@ graph-smallcontraints:
 graph-smallcontraints-dfs:
   sections:
     - title: "What It Is"
-      text: "DFS and **backtracking** explore candidate graph paths or states one branch at a time."
+      text: "Graph DFS explores one reachable path or component before returning to the next edge."
     - title: "When To Use It"
       items:
         - "The graph is small enough to try many possibilities."
         - "The task asks for all valid paths or configurations."
         - "Path-specific state must be carried and undone on return."
     - title: "Why It Helps"
-      text: "Straightforward exhaustive search with natural places to prune."
+      text: "Simple recursive or stack-based traversal for small graph state spaces."
 graph-smallcontraints-bfs:
   sections:
     - title: "What It Is"
-      text: "BFS explores reachable states in widening layers from a start node or start set."
+      text: "Small unweighted state-space BFS splits by whether states are graph nodes or grid cells."
     - title: "When To Use It"
       items:
         - "The search space is small and you want a broad, systematic exploration."
         - "Connectivity or minimum-step behavior matters."
         - "State transitions are easier to reason about level by level than recursively."
     - title: "Why It Helps"
-      text: "Complete layer-by-layer exploration, especially useful for shortest unweighted transitions."
+      text: "Choose graph BFS for arbitrary states and grid BFS for coordinate states."
+graph-smallcontraints-graph-bfs:
+  sections:
+    - title: "What It Is"
+      text: "Graph BFS explores a small unweighted graph or generated state space by distance layer."
+    - title: "When To Use It"
+      items:
+        - "States are arbitrary nodes, strings, masks, or tuples."
+        - "Each transition has the same cost."
+    - title: "Why It Helps"
+      text: "Keeps exploration complete while preserving shortest-step order."
+graph-smallcontraints-grid-bfs:
+  sections:
+    - title: "What It Is"
+      text: "Grid BFS explores matrix coordinates by neighbor layers."
+    - title: "When To Use It"
+      items:
+        - "The board or matrix is the state space."
+        - "Each move has the same cost."
+    - title: "Why It Helps"
+      text: "Coordinates, bounds checks, and visited state stay explicit."
 kth-smallest:
   sections:
     - title: "What This Means"
@@ -166,14 +206,54 @@ kth-smallest:
 kth-smallest-heap:
   sections:
     - title: "What It Is"
-      text: "Sorting gives a full order, while a **heap** keeps only the candidates that matter for the $k$th answer."
+      text: "Rank problems split by whether you need full order, pivot partitioning, or a bounded candidate set."
     - title: "When To Use It"
       items:
         - "The task is to find a ranked element rather than fully sort for its own sake."
         - "$k$ is much smaller than the total number of items."
         - "The input is easier to process incrementally."
     - title: "Why It Helps"
-      text: "Keeps focus on the $k$th answer and often avoids a full ordering."
+      text: "The branch chooses the smallest structure that still returns the rank."
+kth-smallest-sort-scan:
+  sections:
+    - title: "What It Is"
+      text: "Sort and scan builds the full order, then reads or sweeps the needed rank."
+    - title: "When To Use It"
+      items:
+        - "Full ordering helps later comparisons."
+        - "Sorting cost is acceptable."
+    - title: "Why It Helps"
+      text: "It is direct and stable when the sorted order itself carries value."
+kth-smallest-partition:
+  sections:
+    - title: "What This Means"
+      text: "Partitioning can discard one side of the input after comparing a pivot rank."
+    - title: "What To Look For"
+      items:
+        - "Random access to values is available."
+        - "The task needs one ranked element, not the full order."
+    - title: "How To Decide"
+      text: "Use quickselect when partitioning is simple and mutation or copied partitions are acceptable."
+kth-smallest-quickselect:
+  sections:
+    - title: "What It Is"
+      text: "Quickselect partitions until the pivot lands on the requested rank."
+    - title: "When To Use It"
+      items:
+        - "One ranked element is needed."
+        - "Average linear time is useful."
+    - title: "Why It Helps"
+      text: "Avoids sorting the side that cannot contain the answer."
+kth-smallest-top-k-heap:
+  sections:
+    - title: "What It Is"
+      text: "A heap keeps the top k candidates while scanning or generating values."
+    - title: "When To Use It"
+      items:
+        - "$k$ is smaller than the full input."
+        - "Candidates arrive incrementally."
+    - title: "Why It Helps"
+      text: "Bounds memory and avoids maintaining a full sorted order."
 linked-list:
   sections:
     - title: "What This Means"
@@ -276,14 +356,54 @@ subarrays-prefixsums:
 subarrays-twopointers:
   sections:
     - title: "What It Is"
-      text: "**Sliding window** maintains a contiguous range and moves its boundaries as the condition changes."
+      text: "**Sliding window** maintains a contiguous range and splits by fixed length or flexible goal."
     - title: "When To Use It"
       items:
         - "Subarrays or substrings are the core object."
         - "Expanding or shrinking the range changes the condition in a useful direction."
         - "A linear scan beats checking all ranges."
     - title: "Why It Helps"
-      text: "Linear control over a contiguous range without quadratic enumeration."
+      text: "Choose the exact window invariant before writing the loop."
+subarrays-window-fixed:
+  sections:
+    - title: "What It Is"
+      text: "A fixed window keeps exactly one range length while moving both ends together."
+    - title: "When To Use It"
+      items:
+        - "Every candidate has length k."
+        - "Only the entering and leaving elements change."
+    - title: "Why It Helps"
+      text: "Updates each window in constant time after the first one."
+subarrays-window-goal:
+  sections:
+    - title: "What This Means"
+      text: "Flexible windows need a clear goal before the shrink rule is correct."
+    - title: "What To Look For"
+      items:
+        - "Shortest valid range means shrink while valid."
+        - "Longest valid range means shrink only after the invariant breaks."
+    - title: "How To Decide"
+      text: "The objective determines when the left pointer moves."
+subarrays-window-shortest:
+  sections:
+    - title: "What It Is"
+      text: "Shortest sliding window expands until valid, then shrinks while the condition still holds."
+    - title: "When To Use It"
+      items:
+        - "The answer minimizes length."
+        - "Validity improves or weakens monotonically as the window changes."
+    - title: "Why It Helps"
+      text: "Finds minimal valid ranges without testing every start and end."
+subarrays-window-longest:
+  sections:
+    - title: "What It Is"
+      text: "Longest sliding window grows while valid and repairs the range only when the invariant breaks."
+    - title: "When To Use It"
+      items:
+        - "The answer maximizes length."
+        - "A running invariant tells whether the current range is valid."
+    - title: "Why It Helps"
+      text: "Keeps one maximal candidate per right boundary."
 max/min:
   sections:
     - title: "What This Means"

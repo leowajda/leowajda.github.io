@@ -41,7 +41,7 @@ module SiteKit
         algorithmic_topics: template_library_context.topics,
         algorithmic_templates: template_library_context.templates,
         template_guide: template_library_context.guide,
-        flowchart_data: eureka_data.fetch('flowchart', {}),
+        flowchart_data: flowchart_data,
         page_link_resolver: page_link_resolver
       )
     end
@@ -57,11 +57,15 @@ module SiteKit
       @template_library_context ||= TemplateLibraryContext.new(
         topics: eureka_data.fetch('topics', []),
         template_guide: eureka_data.fetch('template_guide', {}),
-        flowchart_data: eureka_data.fetch('flowchart', {}),
+        flowchart_data: flowchart_data,
         entries_by_template: eureka_data.fetch('template_entries', {}),
         language_catalog: eureka_data.fetch('template_languages', {}),
         code_collection_config: app_config.code_collection
       )
+    end
+
+    def flowchart_data
+      @flowchart_data ||= FlowchartLayoutBuilder.new(flowchart_data: eureka_data.fetch('flowchart', {})).build
     end
 
     def generated_pages

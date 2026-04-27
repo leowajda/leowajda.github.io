@@ -1,11 +1,7 @@
 # frozen_string_literal: true
 
 module SiteKit
-  GeneratedPageRegistryRecord = Data.define(:pages) do
-    def by_type
-      @by_type ||= pages.group_by(&:page_type)
-    end
-  end
+  GeneratedPageRegistryRecord = Data.define(:pages)
 
   class GeneratedPageRegistry
     def initialize(eureka_context:, source_notes_context:)

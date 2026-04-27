@@ -7,10 +7,13 @@
   </div>
 
   <div class="site-nav__actions">
+    {%- assign search_url = '/search/' | relative_url -%}
     {%- assign profiles = site.profiles | default: empty -%}
     {%- if page.project_slug -%}
       {%- include icon_action_button.html icon="back" label="Back to previous page" class="icon-action--nav" attributes='data-back-button hidden' -%}
     {%- endif -%}
+
+    {%- include icon_action_link.html href=search_url icon="search" label="Search" external=false class="icon-action--nav" attributes='data-search-open' -%}
 
     {%- for profile in profiles -%}
       {%- include icon_action_link.html href=profile.url icon=profile.icon label=profile.label class="icon-action--nav" rel=profile.rel external=true -%}
