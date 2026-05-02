@@ -64,9 +64,11 @@
 .side-panel input[type="search"] {
   background: var(--surface);
   border: thin solid var(--border);
+  box-sizing: border-box;
   min-height: 2.75rem;
   min-width: 0;
   padding: 0.55rem 0.7rem;
+  width: 100%;
 }
 
 .side-panel__link {
