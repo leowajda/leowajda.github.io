@@ -13,7 +13,7 @@
     "build:search-records": "ruby script/build_search_records.rb",
     "build:pagefind": "node script/build_pagefind_index.mjs",
     "check:pagefind": "node script/check_pagefind_index.mjs",
-    "build:indexed-site": "pnpm build:site && pnpm build:search-records && pnpm build:pagefind && pnpm check:pagefind",
+    "build:indexed-site": "pnpm build:search-records && pnpm build:pagefind && pnpm check:pagefind",
     "serve": "pnpm preview",
     "lint:ruby": "bundle exec rubocop",
     "lint:js": "eslint site-src/assets/js script tests/functional eslint.config.mjs",

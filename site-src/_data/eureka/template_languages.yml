@@ -1,12 +1,16 @@
-cpp:
-  label: C++
-  code_language: cpp
 java:
   label: Java
   code_language: java
+  source_extension: java
 python:
   label: Python
   code_language: python
+  source_extension: py
 scala:
   label: Scala
   code_language: scala
+  source_extension: scala
+cpp:
+  label: C++
+  code_language: cpp
+  source_extension: cpp

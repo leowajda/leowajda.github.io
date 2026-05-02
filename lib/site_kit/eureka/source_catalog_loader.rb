@@ -80,7 +80,7 @@ module SiteKit
           node_id = SiteKit::Core::Helpers.ensure_string(node.fetch('id'), 'Flowchart data node.id')
           raise SiteKit::CatalogError, "Flowchart node ids must be unique: #{node_id}" if result.key?(node_id)
 
-          result[node_id] = SiteKit::Core::Helpers.ensure_string(node.fetch('title'), 'Flowchart data node.title')
+          result[node_id] = SiteKit::Core::Helpers.ensure_string(node.fetch('text'), 'Flowchart data node.text')
         end
       end
     end

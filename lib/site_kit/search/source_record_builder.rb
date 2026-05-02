@@ -42,7 +42,8 @@ module SiteKit
           content: [source_module.fetch('title'), body],
           filters: {
             'language' => language.fetch('language_title'),
-            'module' => source_module.fetch('title')
+            'module' => source_module.fetch('title'),
+            'source_format' => 'module'
           },
           meta: { 'section' => language.fetch('language_title') },
           priority: 65

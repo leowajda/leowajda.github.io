@@ -30,7 +30,7 @@ module SiteKit
           meta: normalize_meta(base_meta(input).merge(input.meta)),
           filters: normalize_filters(base_filters(input).merge(input.filters)),
           sort: { 'priority' => input.priority.to_s }
-        )
+        ).validate!
       end
 
       def clean_text(value)

@@ -15,16 +15,17 @@ export const createFlowchartState = (initialScale) => ({
 
 const readNodeMeta = (button) => {
   const nodeId = button.dataset.flowchartNodeId || ""
-  const nodeLabel = button.dataset.flowchartNodeLabel || button.dataset.flowchartNodeTitle || ""
-  const nodeTitle = button.dataset.flowchartNodeTitle || nodeLabel
+  const nodeText = button.dataset.flowchartNodeText || button.dataset.flowchartNodeCanvasText || ""
+  const nodeCanvasText = button.dataset.flowchartNodeCanvasText || nodeText
   const isDecision = button.dataset.flowchartNodeKind === "decision"
 
   return [nodeId, {
     id: nodeId,
     kind: button.dataset.flowchartNodeKind || "",
-    title: nodeTitle,
-    label: nodeLabel || nodeTitle,
-    question: isDecision ? nodeLabel : nodeTitle,
+    text: nodeText,
+    title: nodeText,
+    label: nodeCanvasText,
+    question: isDecision ? nodeText : "",
     parentId: button.dataset.flowchartParentId || "",
     answer: button.dataset.flowchartParentAnswer || ""
   }]

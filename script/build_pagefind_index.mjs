@@ -13,7 +13,46 @@ const readRecords = async () => {
   if (!Array.isArray(records)) {
     throw new TypeError(`${recordPath} must contain an array of search records`)
   }
+  records.forEach(validateRecord)
   return records
+}
+
+const assertFlatStringMap = (record, field) => {
+  const value = record[field]
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new TypeError(`Search record ${record.url || "<unknown>"}.${field} must be a flat object`)
+  }
+
+  for (const [key, entry] of Object.entries(value)) {
+    if (typeof key !== "string" || typeof entry !== "string") {
+      throw new TypeError(`Search record ${record.url || "<unknown>"}.${field}.${key} must be a string`)
+    }
+  }
+}
+
+const assertFilterMap = (record) => {
+  const { filters } = record
+  if (!filters || typeof filters !== "object" || Array.isArray(filters)) {
+    throw new TypeError(`Search record ${record.url || "<unknown>"}.filters must be a flat object`)
+  }
+
+  for (const [key, values] of Object.entries(filters)) {
+    if (!Array.isArray(values) || values.some((value) => typeof value !== "string")) {
+      throw new TypeError(`Search record ${record.url || "<unknown>"}.filters.${key} must be an array of strings`)
+    }
+  }
+}
+
+const validateRecord = (record) => {
+  for (const field of ["url", "content", "language"]) {
+    if (typeof record[field] !== "string" || record[field].length === 0) {
+      throw new TypeError(`Search record ${record.url || "<unknown>"}.${field} must be a non-empty string`)
+    }
+  }
+
+  assertFlatStringMap(record, "meta")
+  assertFilterMap(record)
+  assertFlatStringMap(record, "sort")
 }
 
 const ensureNoErrors = (context, errors = []) => {

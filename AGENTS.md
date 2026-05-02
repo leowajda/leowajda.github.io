@@ -18,11 +18,18 @@
 - JavaScript modules: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules
 - JavaScript performance: https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Performance/JavaScript
 - ESLint configuration: https://eslint.org/docs/latest/use/configure/
-- Pagefind: https://pagefind.app/docs/
+- Pagefind home: https://pagefind.app/
+- Pagefind docs: https://pagefind.app/docs/
+- Pagefind indexing: https://pagefind.app/docs/indexing/
+- Pagefind Node API: https://pagefind.app/docs/node-api/
 - Pagefind search API: https://pagefind.app/docs/api/
+- Pagefind search config: https://pagefind.app/docs/search-config/
+- Pagefind API reference: https://pagefind.app/docs/api-reference/
 - Pagefind metadata: https://pagefind.app/docs/metadata/
 - Pagefind filters: https://pagefind.app/docs/filtering/
 - Pagefind sorting: https://pagefind.app/docs/sorting/
+- Pagefind ranking: https://pagefind.app/docs/ranking/
+- Pagefind sub-results: https://pagefind.app/docs/sub-results/
 - WAI-ARIA dialog pattern: https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/
 - WAI-ARIA combobox pattern: https://www.w3.org/WAI/ARIA/apg/patterns/combobox/
 
@@ -31,6 +38,7 @@
 - Prefer static generation over runtime assembly. Generate structured data, pages, search records, navigation, and metadata during the build unless there is a clear user-facing reason to defer work to JavaScript.
 - JavaScript should enhance rendered HTML. Do not move content, navigation, or search indexing into browser code when Jekyll, Liquid, data files, front matter, or build-time Ruby can express the requirement.
 - Search is Pagefind-backed. Use Pagefind's documented indexing, metadata, filters, sorting, and API model instead of inventing a parallel search system.
+- Algorithm template snippets are source files under `sources/eureka-templates`, loaded by Ruby at build time, then rendered statically by Jekyll. Do not put editable code snippets back into YAML string blocks.
 
 ## Architecture Principles
 - Keep the program algebra clean: each component should have a small explicit input, a predictable output, and one reason to change.
@@ -75,6 +83,7 @@
 ## Preview
 - Base URL: `http://127.0.0.1:4173`
 - `pnpm preview` and `make serve` build the site, generate the Pagefind index, verify Pagefind output, then serve `_site`.
+- `pnpm build:search-records` runs the Jekyll runtime, writes `_site`, and exports `tmp/search-records.json` from that processed site context.
 - `pnpm validate:catalogs` is separate from preview and build. It validates source catalogs and generated registries without writing files.
 - Debug rendered pages, not raw templates.
 
@@ -91,11 +100,19 @@
 - Do not bypass `eslint.config.mjs`; update the config only when the rule change is intentional and justified by the ESLint docs.
 - For performance-sensitive interaction, consult the MDN JavaScript performance docs before adding eager work, global listeners, or extra runtime dependencies.
 
+## Templates
+- Template guide metadata belongs in `site-src/_data/eureka/template_guide.yml`, `topics.yml`, and `template_languages.yml`.
+- Template code bodies belong in `sources/eureka-templates/<template-id>/<language>.<extension>`.
+- Keep template code minimal and reusable. Do not include package declarations, imports, `#include`, `using namespace`, or `class Solution` boilerplate.
+- The Ruby code-source repository validates language coverage and feeds the Jekyll-rendered code collection model. If a new template or language is added, update the source files and the language catalog together.
+
 ## Search
 - Pagefind is the only site search engine.
 - Add searchable content through build-time search records, then rebuild with `pnpm build:indexed-site`.
+- Indexed-site builds write Pagefind custom records from the same Jekyll runtime that renders `_site`; do not generate search records from a separate data read when rendered URLs or front matter matter.
 - Do not hand-edit `_site/pagefind`; Pagefind runtime assets are generated from the built site.
 - Use Pagefind metadata, filters, sorting, and Search API behavior as documented.
+- Problem explorer text search must pass active filters to Pagefind. Do not reintroduce query-time DOM text matching or URL-set intersection for searchable problem facets.
 - Preserve search accessibility: focus management, Escape behavior, keyboard navigation, dialog semantics, and input/list behavior should follow the linked WAI-ARIA dialog and combobox patterns.
 
 ## Playwright CLI

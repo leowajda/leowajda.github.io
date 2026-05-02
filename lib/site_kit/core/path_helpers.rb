@@ -36,6 +36,27 @@ module SiteKit
         Pathname.new(to_path).relative_path_from(Pathname.new(from_path)).to_s.tr(File::SEPARATOR, '/')
       end
 
+      def inside_path?(root_path, candidate_path)
+        root = Pathname(root_path).cleanpath.to_s
+        candidate = Pathname(candidate_path).cleanpath.to_s
+
+        candidate == root || candidate.start_with?("#{root}#{File::SEPARATOR}")
+      end
+
+      def confined_path(root_path, relative_path, context:, error_class:)
+        root = Pathname(root_path).expand_path
+        path = root.join(relative_path).expand_path
+        raise error_class, "#{context} escapes the source root" unless inside_path?(root, path)
+
+        return path unless path.exist?
+
+        real_root = root.realpath
+        real_path = path.realpath
+        return real_path if inside_path?(real_root, real_path)
+
+        raise error_class, "#{context} escapes the source root"
+      end
+
       def slugify_path_segment(value)
         value
           .gsub(/([a-z0-9])([A-Z])/, '\1-\2')

@@ -54,9 +54,25 @@ const activeSearch = (state) =>
   || state.categories.length > 0
   || state.languageFilterActive
 
-const searchFilters = () => ({
-  kind: ["Problem"]
-})
+const searchFilters = (state) => {
+  const filters = {
+    kind: ["Problem"]
+  }
+
+  if (state.difficulty) {
+    filters.difficulty = [state.difficulty]
+  }
+
+  if (state.categories.length > 0) {
+    filters.category = state.categories
+  }
+
+  if (state.languageFilterActive) {
+    filters.language = state.selectedLanguageLabels
+  }
+
+  return filters
+}
 
 const searchResultUrls = async (query, filters) => {
   const cacheKey = JSON.stringify([query, filters])
@@ -235,9 +251,6 @@ const initializeProblemFilters = () => {
         .map((row) => row.url)
     )
 
-  const intersectUrls = (left, right) =>
-    new Set(Array.from(left).filter((url) => right.has(url)))
-
   const render = async () => {
     const state = readState()
     renderLanguageColumns(state.selectedLanguages)
@@ -258,7 +271,7 @@ const initializeProblemFilters = () => {
 
     let searchUrls
     try {
-      searchUrls = await searchResultUrls(state.query, searchFilters())
+      searchUrls = await searchResultUrls(state.query, searchFilters(state))
     } catch (error) {
       if (sequence.matches(currentSequence)) {
         renderSearchUnavailable()
@@ -271,8 +284,7 @@ const initializeProblemFilters = () => {
       return
     }
 
-    const visibleUrls = intersectUrls(localUrls, searchUrls)
-    renderRows(visibleUrls)
+    renderRows(searchUrls)
   }
 
   const scheduleRender = () => {

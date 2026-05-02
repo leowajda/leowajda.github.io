@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require 'pathname'
 require_relative '../../test_helper'
 
 class SiteKitSourceNotesProjectTest < SiteKitTestCase
@@ -28,5 +29,53 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
     assert_equal document_page[:data]['document_url'], document_page.dig(:data, 'source_document', 'route_url')
     assert_equal %w[about breadcrumbs code_repository programming_language], document_page.dig(:data, 'source_schema').keys
     assert_equal '', module_page[:content].to_s
+  end
+
+  def test_source_note_traversal_rejects_symlinks_that_escape_the_source_root
+    Dir.mktmpdir do |directory|
+      repo = Pathname(directory).join('repo')
+      external = Pathname(directory).join('external')
+      source_root = repo.join('scala', 'module', 'src')
+      FileUtils.mkdir_p(source_root)
+      FileUtils.mkdir_p(external)
+      File.write(external.join('Escape.md'), '# Escape')
+      File.symlink(external, source_root.join('escape'))
+
+      builder = SiteKit::SourceNotes::ModuleBuilder.new(
+        app_config: build_context.app_config,
+        manifest: Struct.new(:source_url, keyword_init: true).new(source_url: 'https://example.test/repo'),
+        source_url_base: 'https://example.test/repo/blob/main',
+        repo_root: repo
+      )
+      module_definition = SiteKit::SourceNotes::ModuleDefinition.new(
+        slug: 'module',
+        title: 'Module',
+        path: 'scala/module',
+        source_roots: ['src']
+      )
+
+      error = assert_raises(SiteKit::SourceError) do
+        builder.build(
+          module_definition: module_definition,
+          language_context: language_context
+        )
+      end
+
+      assert_match(/escapes the source root/, error.message)
+    end
+  end
+
+  private
+
+  def language_context
+    {
+      'project_slug' => 'notes',
+      'project_title' => 'Notes',
+      'project_url' => '',
+      'project_source_url' => 'https://example.test/repo',
+      'language_slug' => 'scala',
+      'language_title' => 'Scala',
+      'language_url' => '/notes/scala/'
+    }
   end
 end

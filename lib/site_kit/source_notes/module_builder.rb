@@ -22,7 +22,7 @@ module SiteKit
                 "Module '#{module_definition.slug}' is missing at '#{absolute_path}'"
         end
 
-        documents = build_documents(module_definition, absolute_path, language_context)
+        documents = build_documents(module_definition, language_context)
 
         {
           'project_slug' => language_context.fetch('project_slug'),
@@ -59,7 +59,7 @@ module SiteKit
 
       attr_reader :app_config, :manifest, :source_url_base, :repo_root, :document_builder
 
-      def build_documents(module_definition, _absolute_path, language_context)
+      def build_documents(module_definition, language_context)
         documents = module_definition.source_roots.flat_map do |root_label|
           absolute_root = source_path(File.join(module_definition.path, root_label),
                                       "Module '#{module_definition.slug}' root '#{root_label}'")
@@ -82,12 +82,14 @@ module SiteKit
         documents
       end
 
-      def walk_text_files(directory)
+      def walk_text_files(directory, traversal_root = directory)
         directory.children.sort_by(&:to_s).flat_map do |entry|
+          validate_traversed_path!(traversal_root, entry)
+
           if entry.directory?
             next [] if ignored_directory?(entry.basename.to_s)
 
-            walk_text_files(entry)
+            walk_text_files(entry, traversal_root)
           elsif app_config.source_notes.text_file_metadata.key?(entry.extname.downcase)
             [entry]
           else
@@ -126,11 +128,22 @@ module SiteKit
       end
 
       def source_path(relative_path, context)
-        path = repo_root.join(relative_path).expand_path
-        root = repo_root.expand_path.to_s
-        return path if path.to_s == root || path.to_s.start_with?("#{root}#{File::SEPARATOR}")
+        SiteKit::Core::Helpers.confined_path(
+          repo_root,
+          relative_path,
+          context: context,
+          error_class: SiteKit::SourceError
+        )
+      end
 
-        raise SiteKit::SourceError, "#{context} escapes the source root"
+      def validate_traversed_path!(root, entry)
+        return unless entry.exist?
+
+        real_root = root.realpath
+        real_entry = entry.realpath
+        return if SiteKit::Core::Helpers.inside_path?(real_root, real_entry)
+
+        raise SiteKit::SourceError, "Source entry '#{entry}' escapes the source root '#{root}'"
       end
     end
   end

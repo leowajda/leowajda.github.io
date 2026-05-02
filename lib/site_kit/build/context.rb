@@ -57,7 +57,7 @@ module SiteKit
           topics: eureka_data.fetch('topics', []),
           template_guide: eureka_data.fetch('template_guide', {}),
           flowchart_data: flowchart_data,
-          entries_by_template: eureka_data.fetch('template_entries', {}),
+          code_source_root: File.join(SiteKit::Core::Helpers.repo_root, 'sources', 'eureka-templates'),
           language_catalog: eureka_data.fetch('template_languages', {}),
           code_collection_config: app_config.code_collection
         )
@@ -70,6 +70,10 @@ module SiteKit
 
       def generated_pages
         generated_page_registry.pages
+      end
+
+      def search_records
+        @search_records ||= SiteKit::Search::IndexBuilder.new(context: self, site: site).records
       end
 
       def validate!

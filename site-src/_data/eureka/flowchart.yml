@@ -21,8 +21,7 @@ chart:
 nodes:
 - id: graph
   kind: decision
-  label: Is it a graph?
-  title: Graph Algorithms
+  text: Is it a graph?
   references:
   - title: Evaluate Division
     url: https://leetcode.com/problems/evaluate-division/
@@ -41,8 +40,7 @@ nodes:
     row: 0
 - id: tree
   kind: decision
-  label: Is it a tree?
-  title: Trees
+  text: Is it a tree?
   references:
   - title: Maximum Depth of Binary Tree
     url: https://leetcode.com/problems/maximum-depth-of-binary-tree/
@@ -61,16 +59,14 @@ nodes:
     row: 1
 - id: tree-dfs
   kind: solution
-  label: DFS
-  title: DFS
+  text: DFS
   references: []
   layout:
     column: secondary
     row: 2
 - id: directed-graph
   kind: decision
-  label: Is problem related to directed acyclic graphs?
-  title: Directed Acyclic Graphs
+  text: Is problem related to directed acyclic graphs?
   references:
   - title: Course Schedule
     url: https://leetcode.com/problems/course-schedule/
@@ -89,16 +85,14 @@ nodes:
     row: 5
 - id: directed-graph-topo
   kind: solution
-  label: Topological Sort
-  title: Topological Sort
+  text: Topological Sort
   references: []
   layout:
     column: secondary
     row: 6
 - id: shortest-path
   kind: decision
-  label: Is the problem related to shortest paths?
-  title: Identifying Shortest Path Problems
+  text: Is the problem related to shortest paths?
   references:
   - title: Network Delay Time
     url: https://leetcode.com/problems/network-delay-time/
@@ -117,8 +111,7 @@ nodes:
     row: 9
 - id: shortest-path-weighted
   kind: decision
-  label: Is the graph Weighted?
-  title: Weighted Graphs
+  text: Is the graph weighted?
   references:
   - title: Network Delay Time
     url: https://leetcode.com/problems/network-delay-time/
@@ -137,16 +130,14 @@ nodes:
     row: 10
 - id: shortest-path-dijkstra
   kind: solution
-  label: Dijkstra's Algorithm
-  title: Dijkstra's Algorithm
+  text: Dijkstra's Algorithm
   references: []
   layout:
     column: tertiary
     row: 11
 - id: shortest-path-bfs
   kind: decision
-  label: Is the state a grid?
-  title: Grid or Graph BFS
+  text: Is the state a grid?
   search_title: Unweighted shortest paths
   references: []
   layout:
@@ -154,24 +145,21 @@ nodes:
     row: 13
 - id: shortest-path-graph-bfs
   kind: solution
-  label: Graph BFS
-  title: Graph BFS
+  text: Graph BFS
   references: []
   layout:
     column: quaternary
     row: 15.25
 - id: shortest-path-grid-bfs
   kind: solution
-  label: Grid BFS
-  title: Grid BFS
+  text: Grid BFS
   references: []
   layout:
     column: quaternary
     row: 16.75
 - id: connectivity
   kind: decision
-  label: Does the problem involve connectivity
-  title: Connectivity Problems
+  text: Does the problem involve connectivity?
   references:
   - title: Accounts Merge
     url: https://leetcode.com/problems/accounts-merge/
@@ -190,8 +178,7 @@ nodes:
     row: 13
 - id: connectivity-dsu
   kind: solution
-  label: Disjoint Set Union
-  title: Disjoint Set Union
+  text: Disjoint Set Union
   references: []
   layout:
     column: secondary
@@ -199,8 +186,7 @@ nodes:
 - id: graph-small-constraints
   aliases: [graph-smallcontraints]
   kind: decision
-  label: Does the problem have small constraints?
-  title: Identifying Brute Force DFS and Backtracking
+  text: Does the problem have small constraints?
   references:
   - title: Word Search
     url: https://leetcode.com/problems/word-search/
@@ -220,8 +206,7 @@ nodes:
 - id: graph-small-constraints-dfs
   aliases: [graph-smallcontraints-dfs]
   kind: solution
-  label: Graph DFS
-  title: Graph DFS
+  text: Graph DFS
   references: []
   layout:
     column: secondary
@@ -229,8 +214,7 @@ nodes:
 - id: graph-small-constraints-bfs
   aliases: [graph-smallcontraints-bfs]
   kind: decision
-  label: Is the state a grid?
-  title: Grid or Graph BFS
+  text: Is the state a grid?
   search_title: Small constraints
   references: []
   layout:
@@ -239,8 +223,7 @@ nodes:
 - id: graph-small-constraints-graph-bfs
   aliases: [graph-smallcontraints-graph-bfs]
   kind: solution
-  label: Graph BFS
-  title: Graph BFS
+  text: Graph BFS
   references: []
   layout:
     column: secondary-branch
@@ -248,16 +231,14 @@ nodes:
 - id: graph-small-constraints-grid-bfs
   aliases: [graph-smallcontraints-grid-bfs]
   kind: solution
-  label: Grid BFS
-  title: Grid BFS
+  text: Grid BFS
   references: []
   layout:
     column: secondary-branch
     row: 21
 - id: kth-smallest
   kind: decision
-  label: Need the $k$th smallest or largest?
-  title: "$k$th smallest or largest"
+  text: Need the $k$th smallest or largest?
   references:
   - title: Top K Frequent Elements
     url: https://leetcode.com/problems/top-k-frequent-elements/
@@ -280,8 +261,7 @@ nodes:
     row: 28
 - id: kth-smallest-heap
   kind: decision
-  label: Need the full sorted order?
-  title: Choose the Rank Strategy
+  text: Need the full sorted order?
   references:
   - title: Kth Largest Element in an Array
     url: https://leetcode.com/problems/kth-largest-element-in-an-array/
@@ -308,40 +288,35 @@ nodes:
     row: 29
 - id: kth-smallest-sort-scan
   kind: solution
-  label: Sort and scan
-  title: Sort and Scan
+  text: Sort and scan
   references: []
   layout:
     column: secondary
     row: 28.25
 - id: kth-smallest-partition
   kind: decision
-  label: Can partition around a pivot?
-  title: Can Partition Around a Pivot?
+  text: Can partition around a pivot?
   references: []
   layout:
     column: secondary
     row: 30.25
 - id: kth-smallest-quickselect
   kind: solution
-  label: Quickselect
-  title: Quickselect
+  text: Quickselect
   references: []
   layout:
     column: secondary-branch
     row: 29.5
 - id: kth-smallest-top-k-heap
   kind: solution
-  label: Top k heap
-  title: Top K Heap
+  text: Top K heap
   references: []
   layout:
     column: secondary-branch
     row: 31.25
 - id: linked-list
   kind: decision
-  label: Involves Linked Lists?
-  title: Linked List
+  text: Involves linked lists?
   references:
   - title: Merge Two Sorted Lists
     url: https://leetcode.com/problems/merge-two-sorted-lists/
@@ -365,8 +340,7 @@ nodes:
 - id: linked-list-two-pointers
   aliases: [linked-list-twopointers]
   kind: solution
-  label: Two pointers
-  title: Two pointers
+  text: Two pointers
   references:
   - title: Remove Nth Node From End of List
     url: https://leetcode.com/problems/remove-nth-node-from-end-of-list/
@@ -401,8 +375,7 @@ nodes:
     row: 33
 - id: small-constraints
   kind: decision
-  label: Small constraint bounds?
-  title: Small constraints
+  text: Small constraint bounds?
   references:
   - title: Minimum Falling Path Sum
     url: https://leetcode.com/problems/minimum-falling-path-sum/
@@ -425,8 +398,7 @@ nodes:
     row: 36
 - id: small-constraints-efficiency
   kind: decision
-  label: Is brute force fast enough?
-  title: Is brute force fast enough?
+  text: Is brute force fast enough?
   references:
   - title: N-Queens II
     url: https://leetcode.com/problems/n-queens-ii/
@@ -446,24 +418,21 @@ nodes:
 - id: small-constraints-backtracking
   aliases: [small-constraints-bruteforce/backtracking]
   kind: solution
-  label: Backtracking
-  title: Backtracking
+  text: Backtracking
   references: []
   layout:
     column: secondary
     row: 38
 - id: small-constraints-dp
   kind: solution
-  label: Dynamic Programming
-  title: Dynamic Programming
+  text: Dynamic Programming
   references: []
   layout:
     column: secondary
     row: 39.5
 - id: subarrays
   kind: decision
-  label: About subarrays or substrings?
-  title: Involves subarrays
+  text: About subarrays or substrings?
   references:
   - title: Subarray Sums Divisible by K
     url: https://leetcode.com/problems/subarray-sums-divisible-by-k/
@@ -486,8 +455,7 @@ nodes:
     row: 43
 - id: sums
   kind: decision
-  label: Deals with sums or additive
-  title: Involves sums or additive
+  text: Is it about sums or additive state?
   references:
   - title: Max Sum of Rectangle No Larger Than K
     url: https://leetcode.com/problems/max-sum-of-rectangle-no-larger-than-k/
@@ -507,8 +475,7 @@ nodes:
 - id: subarrays-prefix-sum
   aliases: [subarrays-prefixsums]
   kind: solution
-  label: Prefix Sums
-  title: Prefix Sums
+  text: Prefix Sums
   references: []
   layout:
     column: decision
@@ -516,40 +483,35 @@ nodes:
 - id: subarrays-two-pointers
   aliases: [subarrays-twopointers]
   kind: decision
-  label: Is the window size fixed?
-  title: Choose the Window Shape
+  text: Is the window size fixed?
   references: []
   layout:
     column: decision
     row: 46
 - id: subarrays-window-fixed
   kind: solution
-  label: Fixed window
-  title: Fixed Sliding Window
+  text: Fixed window
   references: []
   layout:
     column: secondary
     row: 45.25
 - id: subarrays-window-goal
   kind: decision
-  label: Need the shortest valid window?
-  title: Choose the Flexible Window Goal
+  text: Need the shortest valid window?
   references: []
   layout:
     column: secondary
     row: 47
 - id: subarrays-window-shortest
   kind: solution
-  label: Shortest window
-  title: Shortest Sliding Window
+  text: Shortest window
   references: []
   layout:
     column: secondary-branch
     row: 46.25
 - id: subarrays-window-longest
   kind: solution
-  label: Longest window
-  title: Longest Sliding Window
+  text: Longest window
   references: []
   layout:
     column: secondary-branch
@@ -557,8 +519,7 @@ nodes:
 - id: maximum-minimum
   aliases: [max/min]
   kind: decision
-  label: Calculating a maximum or minimum?
-  title: Maximum or minimum problems
+  text: Calculating a maximum or minimum?
   references:
   - title: Minimum Path Sum
     url: https://leetcode.com/problems/minimum-path-sum/
@@ -586,8 +547,7 @@ nodes:
 - id: maximum-minimum-monotonic
   aliases: [max/min-monotonic]
   kind: decision
-  label: Monotonic condition?
-  title: Monotonicity in maximum or minimum problems
+  text: Monotonic condition?
   references:
   - title: Find Minimum in Rotated Sorted Array
     url: https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/
@@ -615,8 +575,7 @@ nodes:
 - id: maximum-minimum-subproblem
   aliases: [max/min-subproblem]
   kind: decision
-  label: Can be split into sub-problems?
-  title: Overlapping Sub-problems
+  text: Can be split into sub-problems?
   references:
   - title: Edit Distance
     url: https://leetcode.com/problems/edit-distance/
@@ -640,8 +599,7 @@ nodes:
 - id: maximum-minimum-greedy-check
   aliases: [max/min-greedyhuh]
   kind: decision
-  label: Greedily calculate answer?
-  title: Greedy Algorithms
+  text: Greedily calculate answer?
   references:
   - title: Patching Array
     url: https://leetcode.com/problems/patching-array/
@@ -665,8 +623,7 @@ nodes:
 - id: maximum-minimum-binary-search
   aliases: [max/min-binarysearch]
   kind: solution
-  label: Binary Search
-  title: Binary Search
+  text: Binary Search
   references:
   - title: Binary Search
     url: https://leetcode.com/problems/binary-search/
@@ -678,8 +635,7 @@ nodes:
 - id: maximum-minimum-dp
   aliases: [max/min-dp]
   kind: solution
-  label: Dynamic Programming
-  title: Dynamic Programming
+  text: Dynamic Programming
   references: []
   layout:
     column: secondary
@@ -687,16 +643,14 @@ nodes:
 - id: maximum-minimum-greedy
   aliases: [max/min-greedy]
   kind: solution
-  label: Greedy Algorithms
-  title: Greedy Algorithms
+  text: Greedy Algorithms
   references: []
   layout:
     column: secondary
     row: 57
 - id: counting
   kind: decision
-  label: Asking for number of ways?
-  title: Counting
+  text: Asking for number of ways?
   references:
   - title: Unique Paths II
     url: https://leetcode.com/problems/unique-paths-ii/
@@ -719,8 +673,7 @@ nodes:
     row: 56
 - id: counting-efficiency
   kind: decision
-  label: Is brute force fast enough?
-  title: Is brute force fast enough?
+  text: Is brute force fast enough?
   references:
   - title: N-Queens II
     url: https://leetcode.com/problems/n-queens-ii/
@@ -740,24 +693,21 @@ nodes:
 - id: counting-backtracking
   aliases: [counting-bruteforce/backtracking]
   kind: solution
-  label: Backtracking aggregate
-  title: Backtracking Aggregate
+  text: Backtracking aggregate
   references: []
   layout:
     column: secondary
     row: 59.5
 - id: counting-dp
   kind: solution
-  label: Dynamic Programming
-  title: Dynamic Programming
+  text: Dynamic Programming
   references: []
   layout:
     column: secondary
     row: 61
 - id: sequence-count
   kind: decision
-  label: Multiple sequences?
-  title: How many sequences?
+  text: Multiple sequences?
   references:
   - title: Longest Word in Dictionary through Deleting
     url: https://leetcode.com/problems/longest-word-in-dictionary-through-deleting/
@@ -780,8 +730,7 @@ nodes:
     row: 61
 - id: sequence-count-monotonic
   kind: decision
-  label: Monotonic conditions?
-  title: Monotonic Condition
+  text: Monotonic conditions?
   references:
   - title: Swap Adjacent in LR String
     url: https://leetcode.com/problems/swap-adjacent-in-lr-string/
@@ -800,8 +749,7 @@ nodes:
     row: 62
 - id: sequence-count-subproblems
   kind: decision
-  label: Can split into sub-problems?
-  title: Overlapping Sub-problems
+  text: Can split into sub-problems?
   references:
   - title: Edit Distance
     url: https://leetcode.com/problems/edit-distance/
@@ -825,8 +773,7 @@ nodes:
 - id: sequence-count-two-pointers
   aliases: [sequence-count-twopointers]
   kind: solution
-  label: Two pointers
-  title: Two Pointers
+  text: Two pointers
   references:
   - title: Merge Sorted Array
     url: https://leetcode.com/problems/merge-sorted-array/
@@ -845,16 +792,14 @@ nodes:
     row: 63
 - id: sequence-count-dp
   kind: solution
-  label: Dynamic Programming
-  title: Dynamic Programming
+  text: Dynamic Programming
   references: []
   layout:
     column: secondary
     row: 67
 - id: find-indices
   kind: decision
-  label: Find or enumerate indices?
-  title: Searching pairs of indices?
+  text: Find or enumerate indices?
   references:
   - title: Valid Triangle Number
     url: https://leetcode.com/problems/valid-triangle-number/
@@ -873,8 +818,7 @@ nodes:
     row: 69
 - id: find-indices-monotonic
   kind: decision
-  label: Monotonic Condition?
-  title: Monotonic Condition
+  text: Monotonic Condition?
   references:
   - title: Max Number of K-Sum Pairs
     url: https://leetcode.com/problems/max-number-of-k-sum-pairs/
@@ -894,8 +838,7 @@ nodes:
 - id: find-indices-two-pointers
   aliases: [find-indices-twopointers]
   kind: solution
-  label: Two pointers
-  title: Two pointers
+  text: Two pointers
   references:
   - title: Boats to Save People
     url: https://leetcode.com/problems/boats-to-save-people/
@@ -914,8 +857,7 @@ nodes:
     row: 71
 - id: constant-memory
   kind: decision
-  label: "$O(1)$ memory required"
-  title: "$O(1)$ memory"
+  text: Is $O(1)$ memory required?
   references:
   - title: Linked List Cycle
     url: https://leetcode.com/problems/linked-list-cycle/
@@ -938,8 +880,7 @@ nodes:
     row: 73
 - id: constant-memory-monotonic
   kind: decision
-  label: Involves monotonic condition?
-  title: Monotonic Condition
+  text: Involves monotonic condition?
   references: []
   layout:
     column: decision
@@ -947,8 +888,7 @@ nodes:
 - id: constant-memory-two-pointers
   aliases: [constant-memory-twopointers]
   kind: solution
-  label: Two pointers
-  title: Two pointers
+  text: Two pointers
   references:
   - title: Remove Duplicates from Sorted Array
     url: https://leetcode.com/problems/remove-duplicates-from-sorted-array/
@@ -963,8 +903,7 @@ nodes:
     row: 75
 - id: parse-symbols
   kind: decision
-  label: Do you need to parse symbols?
-  title: Symbol Parsing Problems
+  text: Do you need to parse symbols?
   references:
   - title: Valid Parentheses
     url: https://leetcode.com/problems/valid-parentheses/
@@ -979,8 +918,7 @@ nodes:
     row: 77
 - id: parse-symbols-stack
   kind: solution
-  label: Stack
-  title: Stack
+  text: Stack
   references:
   - title: Valid Parentheses
     url: https://leetcode.com/problems/valid-parentheses/
