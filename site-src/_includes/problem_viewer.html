@@ -9,13 +9,13 @@
 {%- if embed and selected_implementation -%}
   {%- assign implementation = selected_implementation -%}
   <section class="implementation-list">
-    <article class="code-panel" id="{{ implementation.implementation_id }}" data-code-block>
+    <article class="code-panel" id="{{ implementation.implementation_id | escape }}" data-code-block>
       <header class="code-panel__header">
         <div class="code-panel__heading">
-          <h2 class="code-panel__title">{{ problem.title }}</h2>
+          <h2 class="code-panel__title">{{ problem.title | escape }}</h2>
           <p class="page-note code-panel__meta">
-            <span>{{ implementation.language_label }}</span>
-            <span>{{ implementation.approach_label }}</span>
+            <span>{{ implementation.language_label | escape }}</span>
+            <span>{{ implementation.approach_label | escape }}</span>
           </p>
         </div>
 

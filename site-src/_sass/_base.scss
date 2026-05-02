@@ -38,22 +38,22 @@
   --code-name: #f0f6fc;
 }
 
-html[a="light"] {
+html[data-appearance="light"] {
   color-scheme: light;
 }
 
-html[a="dark"] {
+html[data-appearance="dark"] {
   @include dark-theme;
 }
 
 @media (prefers-color-scheme: dark) {
-  html[a="auto"] {
+  html[data-appearance="auto"] {
     @include dark-theme;
   }
 }
 
 @media (prefers-color-scheme: light) {
-  html[a="auto"] {
+  html[data-appearance="auto"] {
     color-scheme: light;
   }
 }

@@ -8,11 +8,11 @@
   <ul class="tag-list">
     {%- if categories.size == 0 -%}
       {%- for category in problem.categories -%}
-        <li><span class="tag">{{ category }}</span></li>
+        <li><span class="tag">{{ category | escape }}</span></li>
       {%- endfor -%}
     {%- else -%}
       {%- for category in categories -%}
-        <li><span class="tag">{{ category.label }}</span></li>
+        <li><span class="tag">{{ category.label | escape }}</span></li>
       {%- endfor -%}
     {%- endif -%}
   </ul>

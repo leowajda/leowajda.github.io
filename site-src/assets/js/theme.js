@@ -12,7 +12,7 @@ const getStoredTheme = () => {
 const getThemeRoot = () => document.documentElement
 
 const resolveTheme = () => {
-  const attribute = getThemeRoot().getAttribute("a") || "auto"
+  const attribute = getThemeRoot().getAttribute("data-appearance") || "auto"
   if (attribute === "light" || attribute === "dark") {
     return attribute
   }
@@ -24,7 +24,7 @@ const resolveTheme = () => {
 
 const applyTheme = (theme) => {
   const root = getThemeRoot()
-  root.setAttribute("a", theme)
+  root.setAttribute("data-appearance", theme)
   root.style.colorScheme = theme
 }
 

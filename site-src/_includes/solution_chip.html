@@ -8,9 +8,9 @@
 {%- endcase -%}
 <a
   class="solution-chip"
-  href="{{ implementation.detail_url | relative_url }}"
-  aria-label="{{ implementation.approach_label }}"
-  title="{{ implementation.approach_label }}"
+  href="{{ implementation.detail_url | relative_url | escape }}"
+  aria-label="{{ implementation.approach_label | escape }}"
+  title="{{ implementation.approach_label | escape }}"
 >
   {%- include icon.html name=approach_icon class="solution-chip__icon" -%}
 </a>

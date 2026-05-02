@@ -6,61 +6,61 @@
 <section class="content-card content-card--flush problem-table-shell">
   <div class="table-wrap">
     <table
-      class="problem-table problem-table--{{ table_mode }}"
+      class="problem-table problem-table--{{ table_mode | escape }}"
       id="problem-table"
-      data-language-filter="{{ table.language_filter | default: '' }}"
+      data-language-filter="{{ table.language_filter | default: '' | escape }}"
     >
-    <thead>
-      <tr>
-        <th class="problem-table__problem-column">Problem</th>
-        <th>Categories</th>
-        {%- for language in columns -%}
-          <th data-language-column="{{ language.slug }}">{{ language.label }}</th>
-        {%- endfor -%}
-      </tr>
-    </thead>
-    <tbody>
-      {%- for row in rows -%}
-        <tr
-          class="problem-row"
-          data-problem-row
-          data-problem-slug="{{ row.problem_slug }}"
-          data-search-url="{{ row.url | relative_url }}"
-          data-difficulty="{{ row.difficulty | escape }}"
-          data-categories="{{ row.categories | jsonify | escape }}"
-          data-languages="{{ row.language_slugs | jsonify | escape }}"
-        >
-          <td class="problem-title-cell">
-            <div class="problem-title">
-              <a class="problem-title__link" href="{{ row.url | relative_url }}">{{ row.title }}</a>
-              <div class="problem-title__meta">
-                <span class="difficulty-badge difficulty-badge--{{ row.difficulty_slug }}">{{ row.difficulty }}</span>
-              </div>
-            </div>
-          </td>
-          <td class="problem-categories-cell">
-            <ul class="tag-list">
-              {%- for category in row.categories -%}
-                <li class="tag">{{ category }}</li>
-              {%- endfor -%}
-            </ul>
-          </td>
-          {%- for cell in row.cells -%}
-            <td data-language-column="{{ cell.language_slug }}">
-              {%- if cell.implementations.size > 0 -%}
-                <div class="solution-chip-list" aria-label="{{ cell.language_label }} solutions">
-                  {%- for implementation in cell.implementations -%}
-                    {%- include solution_chip.html implementation=implementation -%}
-                  {%- endfor -%}
-                </div>
-              {%- else -%}
-                <span class="solution-empty">—</span>
-              {%- endif -%}
-            </td>
+      <thead>
+        <tr>
+          <th class="problem-table__problem-column">Problem</th>
+          <th>Categories</th>
+          {%- for language in columns -%}
+            <th data-language-column="{{ language.slug | escape }}">{{ language.label | escape }}</th>
           {%- endfor -%}
         </tr>
-      {%- endfor -%}
-    </tbody>
+      </thead>
+      <tbody>
+        {%- for row in rows -%}
+          <tr
+            class="problem-row"
+            data-problem-row
+            data-problem-slug="{{ row.problem_slug | escape }}"
+            data-search-url="{{ row.url | relative_url | escape }}"
+            data-difficulty="{{ row.difficulty | escape }}"
+            data-categories="{{ row.categories | jsonify | escape }}"
+            data-languages="{{ row.language_slugs | jsonify | escape }}"
+          >
+            <td class="problem-title-cell">
+              <div class="problem-title">
+                <a class="problem-title__link" href="{{ row.url | relative_url | escape }}">{{ row.title | escape }}</a>
+                <div class="problem-title__meta">
+                  <span class="difficulty-badge difficulty-badge--{{ row.difficulty_slug | escape }}">{{ row.difficulty | escape }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="problem-categories-cell">
+              <ul class="tag-list">
+                {%- for category in row.categories -%}
+                  <li class="tag">{{ category | escape }}</li>
+                {%- endfor -%}
+              </ul>
+            </td>
+            {%- for cell in row.cells -%}
+              <td data-language-column="{{ cell.language_slug | escape }}">
+                {%- if cell.implementations.size > 0 -%}
+                  <div class="solution-chip-list" aria-label="{{ cell.language_label | escape }} solutions">
+                    {%- for implementation in cell.implementations -%}
+                      {%- include solution_chip.html implementation=implementation -%}
+                    {%- endfor -%}
+                  </div>
+                {%- else -%}
+                  <span class="solution-empty">—</span>
+                {%- endif -%}
+              </td>
+            {%- endfor -%}
+          </tr>
+        {%- endfor -%}
+      </tbody>
     </table>
   </div>
   <p class="problem-table-empty" data-problem-empty hidden>No problems match the current search.</p>

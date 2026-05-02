@@ -134,5 +134,8 @@ DEPENDENCIES
   rubocop-rake (~> 0.7)
   webrick (~> 1.9)
 
+RUBY VERSION
+   ruby 3.2.3p157
+
 BUNDLED WITH
    2.4.20

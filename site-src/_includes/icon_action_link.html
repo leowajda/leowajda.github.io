@@ -10,12 +10,12 @@
 {%- endif -%}
 {%- if href != '' -%}
   <a
-    class="icon-action{% if include.class %} {{ include.class }}{% endif %}"
-    href="{{ href }}"
+    class="icon-action{% if include.class %} {{ include.class | escape }}{% endif %}"
+    href="{{ href | escape }}"
     {% if is_external %}target="_blank"{% endif %}
-    {% if rel_value != '' %}rel="{{ rel_value }}"{% endif %}
-    aria-label="{{ include.label }}"
-    title="{{ include.label }}"
+    {% if rel_value != '' %}rel="{{ rel_value | escape }}"{% endif %}
+    aria-label="{{ include.label | escape }}"
+    title="{{ include.label | escape }}"
     {% if include.attributes %}{{ include.attributes }}{% endif %}
   >
     {%- include icon.html name=include.icon class="icon-action__icon" -%}

@@ -1,11 +1,11 @@
 {%- assign reference = include.reference | default: empty -%}
 {%- assign label_parts = reference.label_parts | default: empty -%}
 {%- if label_parts.parent and label_parts.child -%}
-  <span class="template-reference-label__parent">{{ label_parts.parent }}</span>
-  <span class="template-reference-label__child">{{ label_parts.child }}</span>
+  <span class="template-reference-label__parent">{{ label_parts.parent | escape }}</span>
+  <span class="template-reference-label__child">{{ label_parts.child | escape }}</span>
 {%- elsif reference.pattern_label and reference.variant_label -%}
-  <span class="template-reference-label__parent">{{ reference.pattern_label }}</span>
-  <span class="template-reference-label__child">{{ reference.variant_label }}</span>
+  <span class="template-reference-label__parent">{{ reference.pattern_label | escape }}</span>
+  <span class="template-reference-label__child">{{ reference.variant_label | escape }}</span>
 {%- else -%}
-  <span class="template-reference-label__child">{{ label_parts.child | default: reference.label }}</span>
+  <span class="template-reference-label__child">{{ label_parts.child | default: reference.label | escape }}</span>
 {%- endif -%}

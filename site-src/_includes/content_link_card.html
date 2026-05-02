@@ -3,14 +3,17 @@
 {% assign card_body = include.body | default: '' | strip %}
 {% assign card_footer = include.footer | default: '' | strip %}
 {% assign heading_tag = include.heading_tag | default: 'h3' %}
-<article class="content-card{% if card_class != '' %} {{ card_class }}{% endif %}">
+{% unless heading_tag == 'h2' or heading_tag == 'h3' or heading_tag == 'h4' %}
+  {% assign heading_tag = 'h3' %}
+{% endunless %}
+<article class="content-card{% if card_class != '' %} {{ card_class | escape }}{% endif %}">
   <header class="content-card__header">
     <div class="content-card__heading">
       <{{ heading_tag }}>
         {%- if include.url and include.url != '' -%}
-          <a href="{{ include.url | relative_url }}">{{ include.title }}</a>
+          <a href="{{ include.url | relative_url | escape }}">{{ include.title | escape }}</a>
         {%- else -%}
-          {{ include.title }}
+          {{ include.title | escape }}
         {%- endif -%}
       </{{ heading_tag }}>
     </div>
@@ -20,7 +23,7 @@
   </header>
 
   {%- if card_summary != '' -%}
-    <p class="content-card__summary">{{ include.summary }}</p>
+    <p class="content-card__summary">{{ include.summary | escape }}</p>
   {%- endif -%}
 
   {%- if card_body != '' -%}

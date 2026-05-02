@@ -9,14 +9,14 @@
     {% assign source_groups = project.home_groups | default: empty %}
     {% if project.kind == "source-notes" and source_groups.size > 0 %}
       {% capture project_body %}
-        <ul class="project-tree" aria-label="{{ project.title }} entries">
+        <ul class="project-tree" aria-label="{{ project.title | escape }} entries">
           {% for group in source_groups %}
             <li class="project-tree__group">
-              <p class="project-tree__label">{{ group.language_title }}</p>
+              <p class="project-tree__label">{{ group.language_title | escape }}</p>
               <ul class="project-tree__children">
                 {% for module in group.modules %}
                   <li class="project-tree__item">
-                    <a class="project-tree__entry" href="{{ module.url | relative_url }}">{{ module.title }}</a>
+                    <a class="project-tree__entry" href="{{ module.url | relative_url | escape }}">{{ module.title | escape }}</a>
                   </li>
                 {% endfor %}
               </ul>

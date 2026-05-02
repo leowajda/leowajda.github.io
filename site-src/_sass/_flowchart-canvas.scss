@@ -254,13 +254,13 @@
   min-width: 0;
 }
 
-html[a="dark"] .flowchart-workspace {
+html[data-appearance="dark"] .flowchart-workspace {
   --flowchart-grid-major: rgb(255 255 255 / 12%);
   --flowchart-grid-minor: rgb(255 255 255 / 6%);
 }
 
 @media (prefers-color-scheme: dark) {
-  html[a="auto"] .flowchart-workspace {
+  html[data-appearance="auto"] .flowchart-workspace {
     --flowchart-grid-major: rgb(255 255 255 / 12%);
     --flowchart-grid-minor: rgb(255 255 255 / 6%);
   }

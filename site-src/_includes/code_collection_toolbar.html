@@ -3,9 +3,9 @@
   <div class="code-collection__toolbar">
     {%- for group in toolbar_groups -%}
       <div
-        class="{{ group.class }}"
+        class="{{ group.class | escape }}"
         role="toolbar"
-        aria-label="{{ group.aria_label }}"
+        aria-label="{{ group.aria_label | escape }}"
         {% if group.keep_visible %}data-code-collection-keep-visible="true"{% endif %}
         {% if group.kind == "variant" %}data-code-collection-variant-group{% endif %}
       >
@@ -17,13 +17,13 @@
             data-code-collection-{{ group.kind }}="{{ control.slug | escape }}"
             {% if group.kind == "variant" %}data-code-collection-variant-label="{{ control.label | escape }}"{% endif %}
             aria-pressed="{{ control.active }}"
-            aria-label="{{ control.label }}"
-            title="{{ control.label }}"
+            aria-label="{{ control.label | escape }}"
+            title="{{ control.label | escape }}"
           >
             {%- if control.icon_only and control.icon != '' -%}
               {%- include icon.html name=control.icon class="code-collection__option-icon" -%}
             {%- else -%}
-              {{ control.label }}
+              {{ control.label | escape }}
             {%- endif -%}
           </button>
         {%- endfor -%}

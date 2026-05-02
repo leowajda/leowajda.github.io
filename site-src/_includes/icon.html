@@ -1,3 +1,3 @@
-<svg class="icon{% if include.class %} {{ include.class }}{% endif %}" aria-hidden="true" focusable="false">
-  <use href="#icon-{{ include.name }}"></use>
+<svg class="icon{% if include.class %} {{ include.class | escape }}{% endif %}" aria-hidden="true" focusable="false">
+  <use href="#icon-{{ include.name | escape }}"></use>
 </svg>

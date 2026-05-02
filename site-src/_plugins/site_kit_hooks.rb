@@ -3,5 +3,5 @@
 require_relative '../../lib/site_kit'
 
 Jekyll::Hooks.register :site, :after_reset do |site|
-  SiteKit::BuildContext.clear(site)
+  SiteKit::Build::Context.clear(site)
 end

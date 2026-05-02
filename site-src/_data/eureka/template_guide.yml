@@ -10,10 +10,6 @@ patterns:
       - id: boundary
         label: Boundary
         template: binary-search
-        aliases: [Binary Search]
-        problem_rules:
-          - any: [Binary Search]
-        flowchart_nodes: [maximum-minimum-binary-search]
       - id: rotated-peak
         label: Rotated peak
         template: binary-search-rotated
@@ -31,47 +27,27 @@ patterns:
       - id: two-pointers-inward
         label: Two pointers inward
         template: two-pointers-opposite
-        aliases: [Two Pointers]
         problem_rules:
           - all: [Two Pointers]
             none: [Linked List]
-        flowchart_nodes: [find-indices-two-pointers, constant-memory-two-pointers]
       - id: two-pointers-forward
         label: Two pointers forward
         template: two-pointers-same
-        aliases: [Two Pointers]
         problem_rules:
           - all: [Two Pointers]
             none: [Linked List]
-        flowchart_nodes: [sequence-count-two-pointers]
       - id: sliding-window-fixed
         label: Sliding window fixed
         template: sliding-window-fixed
-        aliases: [Sliding Window]
-        problem_rules:
-          - any: [Sliding Window]
-        flowchart_nodes: [subarrays-window-fixed]
       - id: sliding-window-longest
         label: Sliding window longest
         template: sliding-window-longest
-        aliases: [Sliding Window]
-        problem_rules:
-          - any: [Sliding Window]
-        flowchart_nodes: [subarrays-window-longest]
       - id: sliding-window-shortest
         label: Sliding window shortest
         template: sliding-window-shortest
-        aliases: [Sliding Window]
-        problem_rules:
-          - any: [Sliding Window]
-        flowchart_nodes: [subarrays-window-shortest]
       - id: prefix-sum
         label: Prefix sum
         template: prefix-sum
-        aliases: [Prefix Sum]
-        problem_rules:
-          - any: [Prefix Sum]
-        flowchart_nodes: [subarrays-prefix-sum]
       - id: difference-array
         label: Difference array
         template: difference-array
@@ -90,28 +66,16 @@ patterns:
         label: DFS
         template: depth-first-search
         aliases: [Depth-First Search]
-        problem_rules:
-          - all: [Depth-First Search, Tree]
-          - all: [Depth-First Search, Binary Tree]
-          - all: [Depth-First Search, Binary Search Tree]
-        flowchart_nodes: [tree-dfs]
       - id: bfs
         label: BFS
         template: breadth-first-search
-        aliases: [Breadth-First Search]
-        problem_rules:
-          - all: [Breadth-First Search, Tree]
-          - all: [Breadth-First Search, Binary Tree]
       - id: bst
         label: BST
         template: binary-search-tree
-        aliases: [Binary Search Tree]
-        problem_rules:
-          - any: [Binary Search Tree]
       - id: build-serialize
         label: Build and serialize
         template: tree-serialize
-        aliases: [Design]
+        problem_rules: []
 
   - id: graph
     label: Graph
@@ -127,7 +91,6 @@ patterns:
         problem_rules:
           - all: [Depth-First Search, Graph Theory]
             none: [Tree, Binary Tree, Matrix]
-        flowchart_nodes: [graph-small-constraints-dfs]
       - id: bfs
         label: BFS
         template: graph-bfs
@@ -137,25 +100,15 @@ patterns:
             none: [Tree, Binary Tree, Matrix]
           - all: [Breadth-First Search, Hash Table]
             none: [Tree, Binary Tree, Matrix]
-        flowchart_nodes: [shortest-path-graph-bfs, graph-small-constraints-graph-bfs]
       - id: topological-sort
         label: Topological sort
         template: topological-sort
-        aliases: [Topological Sort]
-        problem_rules:
-          - any: [Topological Sort]
-        flowchart_nodes: [directed-graph-topo]
       - id: union-find
         label: Union find
         template: union-find
-        aliases: [Union-Find]
-        problem_rules:
-          - any: [Union-Find]
-        flowchart_nodes: [connectivity-dsu]
       - id: dijkstra
         label: Dijkstra
         template: dijkstra
-        flowchart_nodes: [shortest-path-dijkstra]
       - id: mst
         label: Minimum spanning tree
         template: mst
@@ -171,15 +124,10 @@ patterns:
         label: BFS
         template: matrix-bfs
         aliases: [Breadth-First Search]
-        problem_rules:
-          - all: [Breadth-First Search, Matrix]
-        flowchart_nodes: [shortest-path-grid-bfs, graph-small-constraints-grid-bfs]
       - id: dfs
         label: DFS
         template: matrix-dfs
         aliases: [Depth-First Search]
-        problem_rules:
-          - all: [Depth-First Search, Matrix]
       - id: direction-scan
         label: Direction scan
         template: matrix-direction-scan
@@ -194,16 +142,9 @@ patterns:
       - id: choose-undo
         label: Choose and undo
         template: backtracking
-        aliases: [Backtracking]
-        problem_rules:
-          - any: [Backtracking]
-        flowchart_nodes: [small-constraints-backtracking]
       - id: aggregate
         label: Aggregate
         template: backtracking-aggregation
-        problem_rules:
-          - all: [Backtracking, Memoization]
-        flowchart_nodes: [counting-backtracking]
 
   - id: dynamic-programming
     label: Dynamic Programming
@@ -216,7 +157,8 @@ patterns:
       - id: one-dimensional
         label: 1D
         template: dynamic-programming
-        aliases: [Dynamic Programming, Memoization]
+        problem_rules: []
+        flowchart_nodes: []
       - id: grid
         label: Grid
         template: dp-grid
@@ -255,7 +197,6 @@ patterns:
         aliases: [Heap (Priority Queue)]
         problem_rules:
           - any: [Heap (Priority Queue)]
-        flowchart_nodes: [kth-smallest-top-k-heap]
       - id: moving-best
         label: Moving best
         template: heap-moving-best
@@ -263,6 +204,7 @@ patterns:
         label: Two heaps
         template: two-heaps
         aliases: [Heap (Priority Queue), Data Stream]
+        problem_rules: []
 
   - id: stack
     label: Stack
@@ -274,10 +216,13 @@ patterns:
       - id: parse
         label: Parse
         template: stack
-        flowchart_nodes: [parse-symbols-stack]
+        aliases: []
+        problem_rules: []
       - id: monotonic-stack
         label: Monotonic stack
         template: mono-stack
+        aliases: []
+        problem_rules: []
       - id: monotonic-queue
         label: Monotonic queue
         template: monotonic-queue
@@ -292,15 +237,10 @@ patterns:
       - id: lookup
         label: Lookup
         template: hash-table
-        aliases: [Hash Table]
-        problem_rules:
-          - any: [Hash Table]
       - id: frequency
         label: Frequency
         template: hash-frequency
         aliases: [Hash Table, Counting]
-        problem_rules:
-          - any: [Counting]
       - id: seen-state
         label: Seen state
         template: hash-seen-state
@@ -316,16 +256,9 @@ patterns:
         label: Sort and scan
         template: sorting
         aliases: [Sorting]
-        problem_rules:
-          - any: [Sorting, Merge Sort]
-        flowchart_nodes: [kth-smallest-sort-scan]
       - id: quickselect
         label: Quickselect
         template: quickselect
-        aliases: [Quickselect]
-        problem_rules:
-          - any: [Quickselect]
-        flowchart_nodes: [kth-smallest-quickselect]
 
   - id: intervals
     label: Intervals
@@ -376,9 +309,6 @@ patterns:
       - id: prefix-lookup
         label: Prefix lookup
         template: trie
-        aliases: [Trie]
-        problem_rules:
-          - any: [Trie]
 
   - id: linked-list
     label: Linked List
@@ -393,7 +323,6 @@ patterns:
         aliases: [Linked List, Two Pointers]
         problem_rules:
           - all: [Linked List, Two Pointers]
-        flowchart_nodes: [linked-list-two-pointers]
       - id: rewire
         label: Reverse and rewire
         template: linked-list-rewire
@@ -411,9 +340,6 @@ patterns:
       - id: kmp
         label: KMP
         template: kmp
-        aliases: [String Matching]
-        problem_rules:
-          - any: [String Matching]
       - id: rolling-hash
         label: Rolling hash
         template: string-pattern
@@ -431,10 +357,6 @@ patterns:
       - id: local-choice
         label: Local choice
         template: greedy
-        aliases: [Greedy]
-        problem_rules:
-          - any: [Greedy]
-        flowchart_nodes: [maximum-minimum-greedy]
       - id: sort-first
         label: Sort first
         template: greedy-sort
@@ -452,6 +374,8 @@ patterns:
       - id: gcd
         label: GCD
         template: math-bits
+        aliases: []
+        problem_rules: []
       - id: sieve
         label: Sieve
         template: sieve

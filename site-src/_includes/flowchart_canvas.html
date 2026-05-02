@@ -6,22 +6,22 @@
 <section
   class="flowchart-workspace flowchart-workspace--empty"
   data-flowchart
-  data-flowchart-width="{{ flowchart.chart.width }}"
-  data-flowchart-height="{{ flowchart.chart.height }}"
-  data-flowchart-scale-desktop="{{ flowchart.chart.scale_desktop }}"
-  data-flowchart-scale-mobile="{{ flowchart.chart.scale_mobile }}"
+  data-flowchart-width="{{ flowchart.chart.width | escape }}"
+  data-flowchart-height="{{ flowchart.chart.height | escape }}"
+  data-flowchart-scale-desktop="{{ flowchart.chart.scale_desktop | escape }}"
+  data-flowchart-scale-mobile="{{ flowchart.chart.scale_mobile | escape }}"
 >
   <article class="content-card flowchart-canvas-shell">
-    <div class="flowchart-canvas__viewport" data-flowchart-viewport tabindex="0" aria-label="{{ flowchart.title }}">
+    <div class="flowchart-canvas__viewport" data-flowchart-viewport tabindex="0" aria-label="{{ flowchart.title | escape }}">
       <div class="flowchart-canvas__scaled" data-flowchart-scaled>
         <div
           class="flowchart-canvas__surface"
           data-flowchart-surface
-          style="--flowchart-width: {{ flowchart.chart.width }}px; --flowchart-height: {{ flowchart.chart.height }}px;"
+          style="--flowchart-width: {{ flowchart.chart.width | escape }}px; --flowchart-height: {{ flowchart.chart.height | escape }}px;"
         >
           <svg
             class="flowchart-canvas__edges"
-            viewBox="0 0 {{ flowchart.chart.width }} {{ flowchart.chart.height }}"
+            viewBox="0 0 {{ flowchart.chart.width | escape }} {{ flowchart.chart.height | escape }}"
             aria-hidden="true"
             focusable="false"
           >
@@ -32,9 +32,9 @@
                 data-flowchart-edge-from="{{ edge.from | escape }}"
                 data-flowchart-edge-to="{{ edge.to | escape }}"
               >
-                <path class="flowchart-edge" d="{{ edge.path }}" />
+                <path class="flowchart-edge" d="{{ edge.path | escape }}" />
                 {%- if edge.label and edge.label != "" -%}
-                  <text class="flowchart-edge__label" x="{{ edge.label_x }}" y="{{ edge.label_y }}">{{ edge.label }}</text>
+                  <text class="flowchart-edge__label" x="{{ edge.label_x | escape }}" y="{{ edge.label_y | escape }}">{{ edge.label | escape }}</text>
                 {%- endif -%}
               </g>
             {%- endfor -%}
@@ -45,20 +45,20 @@
             {%- assign node_label_a11y = node.label | replace: '$', '' -%}
             <button
               type="button"
-              class="flowchart-node flowchart-node--{{ node.kind }}"
+              class="flowchart-node flowchart-node--{{ node.kind | escape }}"
               data-flowchart-node
               data-flowchart-node-id="{{ node.id | escape }}"
               data-flowchart-node-aliases="{{ node.aliases | default: empty | join: ' ' | escape }}"
-              data-flowchart-node-kind="{{ node.kind }}"
+              data-flowchart-node-kind="{{ node.kind | escape }}"
               data-flowchart-node-title="{{ node.title | escape }}"
               data-flowchart-node-label="{{ node.label | escape }}"
               data-flowchart-parent-id="{{ node_payload.parent_id | default: '' | escape }}"
               data-flowchart-parent-answer="{{ node_payload.parent_answer | default: '' | escape }}"
-              aria-label="{{ node.kind | capitalize }} node: {{ node_label_a11y }}"
+              aria-label="{{ node.kind | capitalize | escape }} node: {{ node_label_a11y | escape }}"
               aria-pressed="false"
-              style="left: {{ node.x }}px; top: {{ node.y }}px; width: {{ node.width }}px; height: {{ node.height }}px;"
+              style="left: {{ node.x | escape }}px; top: {{ node.y | escape }}px; width: {{ node.width | escape }}px; height: {{ node.height | escape }}px;"
             >
-              <span class="flowchart-node__label">{{ node.label }}</span>
+              <span class="flowchart-node__label">{{ node.label | escape }}</span>
             </button>
           {%- endfor -%}
         </div>

@@ -1,8 +1,8 @@
 {%- for node in include.nodes -%}
-  <li class="source-tree__item source-tree__item--{{ node.kind }}">
+  <li class="source-tree__item source-tree__item--{{ node.kind | escape }}">
     {%- if node.kind == "directory" -%}
       <details class="source-tree__group">
-        <summary class="source-tree__summary">{{ node.title }}</summary>
+        <summary class="source-tree__summary">{{ node.title | escape }}</summary>
         <ul class="source-tree__list">
           {%- include source_tree_node.html nodes=node.children module_slug=include.module_slug -%}
         </ul>
@@ -10,10 +10,10 @@
     {%- else -%}
       <a
         class="side-panel__link source-tree__link{% if page.url == node.url %} side-panel__link--active{% endif %}"
-        href="{{ node.url | relative_url }}#source-content"
+        href="{{ node.url | relative_url | escape }}#source-content"
         {% if page.url == node.url %}aria-current="page"{% endif %}
       >
-        {{ node.title }}
+        {{ node.title | escape }}
       </a>
     {%- endif -%}
   </li>

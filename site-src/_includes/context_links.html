@@ -1,13 +1,13 @@
 {%- assign links = include.links | default: empty -%}
 {%- if links and links.size > 0 -%}
   <nav
-    class="context-links{% if include.class %} {{ include.class }}{% endif %}"
-    aria-label="{{ include.label | default: 'Related pages' }}"
+    class="context-links{% if include.class %} {{ include.class | escape }}{% endif %}"
+    aria-label="{{ include.label | default: 'Related pages' | escape }}"
   >
     <ul class="context-links__items">
       {%- for link in links -%}
         <li class="context-links__item">
-          <a class="context-links__link" href="{{ link.url | relative_url }}">{{ link.label }}</a>
+          <a class="context-links__link" href="{{ link.url | relative_url | escape }}">{{ link.label | escape }}</a>
         </li>
       {%- endfor -%}
     </ul>

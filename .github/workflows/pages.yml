@@ -30,7 +30,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.2'
+          ruby-version: .ruby-version
           bundler-cache: true
 
       - name: Setup pnpm
@@ -41,7 +41,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version-file: .node-version
           cache: 'pnpm'
 
       - name: Install Node dependencies

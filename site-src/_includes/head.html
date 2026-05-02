@@ -52,7 +52,7 @@
         theme = fallbackTheme
       }
 
-      root.setAttribute("a", theme)
+      root.setAttribute("data-appearance", theme)
 
       const resolvedTheme = theme === "auto"
         ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")

@@ -1,12 +1,12 @@
-<header class="page-header page-header--hero{% if include.class %} {{ include.class }}{% endif %}">
+<header class="page-header page-header--hero{% if include.class %} {{ include.class | escape }}{% endif %}">
   {%- if include.eyebrow and include.eyebrow != '' -%}
-    <p class="page-eyebrow">{{ include.eyebrow }}</p>
+    <p class="page-eyebrow">{{ include.eyebrow | escape }}</p>
   {%- endif -%}
 
-  <h1>{{ include.title }}</h1>
+  <h1>{{ include.title | escape }}</h1>
 
   {%- if include.description and include.description != '' -%}
-    <p class="page-header__description">{{ include.description }}</p>
+    <p class="page-header__description">{{ include.description | escape }}</p>
   {%- endif -%}
 
   {%- assign header_links = include.links | default: empty -%}
@@ -16,7 +16,7 @@
 
   {%- assign header_note = include.note | default: '' | strip -%}
   {%- if header_note != '' -%}
-    <p class="page-note page-header__note">{{ include.note }}</p>
+    <p class="page-note page-header__note">{{ include.note | escape }}</p>
   {%- endif -%}
 
   {%- assign header_extra = include.extra | default: '' | strip -%}

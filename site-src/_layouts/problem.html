@@ -7,8 +7,8 @@ layout: default
 {%- assign problem_topics = page.problem_topics | default: empty -%}
 {%- capture header_extra -%}
   <div class="problem-summary">
-    <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug }}">{{ problem.difficulty }}</span>
-    <span class="problem-summary__item">{{ problem.implementation_count }} implementation{% if problem.implementation_count != 1 %}s{% endif %}</span>
+    <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug | escape }}">{{ problem.difficulty | escape }}</span>
+    <span class="problem-summary__item">{{ problem.implementation_count | escape }} implementation{% if problem.implementation_count != 1 %}s{% endif %}</span>
   </div>
 {%- endcapture -%}
 

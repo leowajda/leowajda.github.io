@@ -8,13 +8,13 @@ module SiteKit
     priority :low
 
     def generate(site)
-      context = BuildContext.for(site)
+      context = SiteKit::Build::Context.for(site)
 
       context.generated_pages.each do |page_definition|
-        site.pages << GeneratedPage.new(site: site, **page_definition.to_h)
+        site.pages << SiteKit::JekyllRuntime::GeneratedPage.new(site: site, **page_definition.to_h)
       end
 
-      SiteInvariantValidator.new(site: site).validate!
+      SiteKit::Checks::SiteInvariants.new(site: site).validate!
     end
   end
 end

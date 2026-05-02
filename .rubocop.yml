@@ -19,7 +19,7 @@ Layout/LineLength:
     - "test/**/*"
 
 Metrics/AbcSize:
-  Max: 40
+  Max: 35
   Exclude:
     - "test/**/*"
 
@@ -37,12 +37,12 @@ Metrics/CyclomaticComplexity:
     - "test/**/*"
 
 Metrics/MethodLength:
-  Max: 32
+  Max: 28
   Exclude:
     - "test/**/*"
 
 Metrics/ParameterLists:
-  Max: 12
+  Max: 6
 
 Metrics/PerceivedComplexity:
   Max: 10
@@ -53,9 +53,6 @@ Minitest/MultipleAssertions:
   Max: 30
 
 Style/Documentation:
-  Enabled: false
-
-Style/ModuleFunction:
   Enabled: false
 
 Style/MultilineBlockChain:

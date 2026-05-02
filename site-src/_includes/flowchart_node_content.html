@@ -3,15 +3,15 @@
 {%- assign summary = payload.summary -%}
 {%- assign guide_entrypoints = payload.template_guide_entrypoints | default: empty -%}
 <div class="flowchart-inspector__template">
-  <p class="flowchart-inspector__eyebrow">{{ node.kind | capitalize }}</p>
-  <h2 aria-label="{{ node.title | replace: '$', '' }}">{{ node.title }}</h2>
+  <p class="flowchart-inspector__eyebrow">{{ node.kind | capitalize | escape }}</p>
+  <h2 aria-label="{{ node.title | replace: '$', '' | escape }}">{{ node.title | escape }}</h2>
 
   {%- if summary and summary.sections and summary.sections.size > 0 -%}
     <section class="flowchart-inspector__panel" data-flowchart-note data-flowchart-structured-summary="true">
       <div class="flowchart-prose flowchart-prose--summary">
         {%- for section in summary.sections -%}
           <section class="flowchart-summary__section">
-            <p class="flowchart-summary__label">{{ section.title }}</p>
+            <p class="flowchart-summary__label">{{ section.title | escape }}</p>
             {%- if section.text -%}
               {{ section.text | markdownify }}
             {%- endif -%}
@@ -34,15 +34,15 @@
       <div class="flowchart-reference-grid">
         {%- for reference in node.references -%}
           <article class="content-card content-card--compact flowchart-reference-card">
-            <p class="page-note">#{{ reference.frontend_id }}{% if reference.difficulty %} · {{ reference.difficulty }}{% endif %}</p>
+            <p class="page-note">#{{ reference.frontend_id | escape }}{% if reference.difficulty %} · {{ reference.difficulty | escape }}{% endif %}</p>
             <h3>
               <a
                 class="problem-title__link"
-                href="{{ reference.url }}"
+                href="{{ reference.url | escape }}"
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {{ reference.title }}
+                {{ reference.title | escape }}
               </a>
             </h3>
           </article>
@@ -58,7 +58,7 @@
           <article class="content-card content-card--compact flowchart-reference-card">
             <p class="page-note">Template guide</p>
             <h3>
-              <a class="problem-title__link template-reference-inline template-reference-label" href="{{ include.templates_url | relative_url }}#{{ entrypoint.target }}">
+              <a class="problem-title__link template-reference-inline template-reference-label" href="{{ include.templates_url | relative_url | escape }}#{{ entrypoint.target | escape }}">
                 {%- include template_reference_label.html reference=entrypoint -%}
               </a>
             </h3>

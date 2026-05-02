@@ -2,19 +2,19 @@
 {%- capture panel_body -%}
   {%- for section in sections -%}
     {%- capture section_body -%}
-      {%- case section.kind -%}
-      {%- when "links" -%}
-        <nav class="side-panel__links" aria-label="{{ section.aria_label }}">
-          {%- for link in section.links -%}
-            <a
-              class="side-panel__link{% if link.active %} side-panel__link--active{% endif %}"
-              href="{{ link.url | relative_url }}"
-              {% if link.active %}aria-current="page"{% endif %}
-            >
-              {{ link.label }}
-            </a>
-          {%- endfor -%}
-        </nav>
+	      {%- case section.kind -%}
+	      {%- when "links" -%}
+	        <nav class="side-panel__links" aria-label="{{ section.aria_label | escape }}">
+	          {%- for link in section.links -%}
+	            <a
+	              class="side-panel__link{% if link.active %} side-panel__link--active{% endif %}"
+	              href="{{ link.url | relative_url | escape }}"
+	              {% if link.active %}aria-current="page"{% endif %}
+	            >
+	              {{ link.label | escape }}
+	            </a>
+	          {%- endfor -%}
+	        </nav>
       {%- when "search" -%}
         <div class="side-panel__search filter-search">
           <input id="problem-search" name="search" type="search" placeholder="Search problems" autocomplete="off">
@@ -22,43 +22,43 @@
             {%- include icon.html name="reset" -%}
           </button>
         </div>
-      {%- when "checkboxes" -%}
-        <div class="{{ section.wrapper_class }}" role="group" aria-label="{{ section.aria_label }}">
-          {%- for item in section.items -%}
-            <label class="{{ item.class | default: 'filter-option filter-option--stacked' }}">
-              <input
-                type="checkbox"
-                name="{{ section.input_name }}"
-                value="{{ item.value }}"
-                data-search-filter-value="{{ item.search_value | default: item.label }}"
-                {% if item.checked %}checked{% endif %}
-              >
-              <span>{{ item.label }}</span>
-            </label>
-          {%- endfor -%}
-        </div>
-      {%- when "scope" -%}
-        <div class="filter-scope">
-          <span>{{ section.label }}</span>
-          <a class="side-panel__link side-panel__link--inline" href="{{ section.url | relative_url }}">{{ section.link_label }}</a>
-        </div>
-      {%- when "radios" -%}
-        <div class="filter-options" role="radiogroup" aria-label="{{ section.aria_label }}">
-          {%- for item in section.items -%}
-            <label class="filter-option">
-              <input type="radio" name="{{ section.input_name }}" value="{{ item.value }}"{% if item.checked %} checked{% endif %}>
-              <span>{{ item.label }}</span>
-            </label>
-          {%- endfor -%}
-        </div>
+	      {%- when "checkboxes" -%}
+	        <div class="{{ section.wrapper_class | escape }}" role="group" aria-label="{{ section.aria_label | escape }}">
+	          {%- for item in section.items -%}
+	            <label class="{{ item.class | default: 'filter-option filter-option--stacked' | escape }}">
+	              <input
+	                type="checkbox"
+	                name="{{ section.input_name | escape }}"
+	                value="{{ item.value | escape }}"
+	                data-search-filter-value="{{ item.search_value | default: item.label | escape }}"
+	                {% if item.checked %}checked{% endif %}
+	              >
+	              <span>{{ item.label | escape }}</span>
+	            </label>
+	          {%- endfor -%}
+	        </div>
+	      {%- when "scope" -%}
+	        <div class="filter-scope">
+	          <span>{{ section.label | escape }}</span>
+	          <a class="side-panel__link side-panel__link--inline" href="{{ section.url | relative_url | escape }}">{{ section.link_label | escape }}</a>
+	        </div>
+	      {%- when "radios" -%}
+	        <div class="filter-options" role="radiogroup" aria-label="{{ section.aria_label | escape }}">
+	          {%- for item in section.items -%}
+	            <label class="filter-option">
+	              <input type="radio" name="{{ section.input_name | escape }}" value="{{ item.value | escape }}"{% if item.checked %} checked{% endif %}>
+	              <span>{{ item.label | escape }}</span>
+	            </label>
+	          {%- endfor -%}
+	        </div>
       {%- when "categories" -%}
-        <div class="filter-options filter-options--stacked">
-          {%- for item in section.items -%}
-            <label class="filter-option filter-option--stacked">
-              <input type="checkbox" name="category" value="{{ item.value }}">
-              <span>{{ item.label }}</span>
-            </label>
-          {%- endfor -%}
+	        <div class="filter-options filter-options--stacked">
+	          {%- for item in section.items -%}
+	            <label class="filter-option filter-option--stacked">
+	              <input type="checkbox" name="category" value="{{ item.value | escape }}">
+	              <span>{{ item.label | escape }}</span>
+	            </label>
+	          {%- endfor -%}
         </div>
       {%- endcase -%}
     {%- endcapture -%}

@@ -1,8 +1,8 @@
 {%- assign references = include.references | default: empty -%}
 {%- if references.size > 0 -%}
   <nav
-    class="template-reference-links{% if include.class %} {{ include.class }}{% endif %}"
-    aria-label="{{ include.label | default: 'Templates' }}"
+    class="template-reference-links{% if include.class %} {{ include.class | escape }}{% endif %}"
+    aria-label="{{ include.label | default: 'Templates' | escape }}"
     {% if include.attributes %}{{ include.attributes }}{% endif %}
   >
     <ul class="tag-list">
@@ -10,7 +10,7 @@
         {%- assign href = reference.url | default: '' -%}
         {%- if href != '' -%}
           <li>
-            <a class="tag tag--link template-reference-link template-reference-label" href="{{ href | relative_url }}">
+            <a class="tag tag--link template-reference-link template-reference-label" href="{{ href | relative_url | escape }}">
               {%- include template_reference_label.html reference=reference -%}
             </a>
           </li>

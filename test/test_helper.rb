@@ -21,12 +21,12 @@ class SiteKitTestCase < Minitest::Test
   def build_site
     @build_site ||= begin
       @tmp_destination = Dir.mktmpdir('site-kit-test-')
-      SiteKit::JekyllSiteLoader.new(destination: @tmp_destination).read
+      SiteKit::JekyllRuntime::SiteLoader.new(destination: @tmp_destination).read
     end
   end
 
   def build_context
-    @build_context ||= SiteKit::BuildContext.for(build_site)
+    @build_context ||= SiteKit::Build::Context.for(build_site)
   end
 
   def generated_site
