@@ -42,7 +42,7 @@
 
           {%- for node_payload in node_payloads -%}
             {%- assign node = node_payload.node -%}
-            {%- assign node_label_a11y = node.label | replace: '$', '' -%}
+            {%- assign node_text_a11y = node.text | replace: '$', '' -%}
             <button
               type="button"
               class="flowchart-node flowchart-node--{{ node.kind | escape }}"
@@ -50,15 +50,15 @@
               data-flowchart-node-id="{{ node.id | escape }}"
               data-flowchart-node-aliases="{{ node.aliases | default: empty | join: ' ' | escape }}"
               data-flowchart-node-kind="{{ node.kind | escape }}"
-              data-flowchart-node-title="{{ node.title | escape }}"
-              data-flowchart-node-label="{{ node.label | escape }}"
+              data-flowchart-node-text="{{ node.text | escape }}"
+              data-flowchart-node-canvas-text="{{ node.canvas_text | escape }}"
               data-flowchart-parent-id="{{ node_payload.parent_id | default: '' | escape }}"
               data-flowchart-parent-answer="{{ node_payload.parent_answer | default: '' | escape }}"
-              aria-label="{{ node.kind | capitalize | escape }} node: {{ node_label_a11y | escape }}"
+              aria-label="{{ node.kind | capitalize | escape }} node: {{ node_text_a11y | escape }}"
               aria-pressed="false"
               style="left: {{ node.x | escape }}px; top: {{ node.y | escape }}px; width: {{ node.width | escape }}px; height: {{ node.height | escape }}px;"
             >
-              <span class="flowchart-node__label">{{ node.label | escape }}</span>
+              <span class="flowchart-node__label">{{ node.canvas_text | escape }}</span>
             </button>
           {%- endfor -%}
         </div>

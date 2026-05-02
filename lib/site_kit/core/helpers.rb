@@ -30,6 +30,8 @@ module SiteKit
                      :slugify,
                      :human_label,
                      :relative_path,
+                     :inside_path?,
+                     :confined_path,
                      :slugify_path_segment,
                      :build_route_path
       def_delegators SiteKit::Core::MarkdownHelpers,

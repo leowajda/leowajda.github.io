@@ -21,8 +21,7 @@ module SiteKit
           categories: SiteKit::Core::Helpers.ensure_array_of_strings(raw_problem.fetch('categories'),
                                                                      "Problem '#{problem_slug}'.categories"),
           implementations: implementations,
-          route_base: route_base,
-          app_config: app_config
+          route_base: route_base
         )
       end
 

@@ -92,20 +92,16 @@ module SiteKit
           file_path,
           "Problem '#{problem_slug}'.implementations[#{index}].file_path"
         )
-        code_path = source_root.join(file_path).expand_path
-        source_root_path = source_root.expand_path.to_s
-        unless inside_source_root?(code_path, source_root_path)
-          raise SiteKit::CatalogError,
-                "Problem '#{problem_slug}' implementation #{index} file_path escapes the source root"
-        end
+        context = "Problem '#{problem_slug}' implementation #{index} file_path"
+        code_path = SiteKit::Core::Helpers.confined_path(
+          source_root,
+          file_path,
+          context: context,
+          error_class: SiteKit::CatalogError
+        )
         raise SiteKit::CatalogError, "Eureka implementation source is missing: '#{code_path}'" unless code_path.exist?
 
         code_path
-      end
-
-      def inside_source_root?(code_path, source_root_path)
-        code_path = code_path.to_s
-        code_path == source_root_path || code_path.start_with?("#{source_root_path}#{File::SEPARATOR}")
       end
 
       def implementation_approach(problem_slug, raw_implementation, index)

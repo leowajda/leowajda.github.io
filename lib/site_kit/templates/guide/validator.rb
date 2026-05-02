@@ -52,7 +52,7 @@ module SiteKit
         def flowchart_labels
           SiteKit::Core::Helpers.ensure_array(flowchart_data.fetch('nodes'), 'Flowchart data.nodes').flat_map do |node|
             node = SiteKit::Core::Helpers.ensure_hash(node, 'Flowchart node')
-            [node.fetch('label', ''), node.fetch('title', '')]
+            [node.fetch('text', ''), node.fetch('canvas_text', ''), node.fetch('search_title', '')]
           end
         end
 

@@ -42,7 +42,7 @@ test("search route opens the same overlay without faceted panels", async ({ page
   await expect(page.getByRole("link", { name: /Binary Search/ }).first()).toBeVisible()
 })
 
-test("global search supports keyboard navigation and escape clearing", async ({ page }) => {
+test("global search supports keyboard navigation and escape closing", async ({ page }) => {
   await page.goto("/")
 
   const overlay = await openSearchOverlay(page, "keyboard")
@@ -56,11 +56,24 @@ test("global search supports keyboard navigation and escape clearing", async ({ 
   await expect(result).toBeFocused()
 
   await page.keyboard.press("Escape")
-  await expect(searchbox).toHaveValue("")
-  await expect(overlay).toBeVisible()
-
-  await page.keyboard.press("Escape")
   await expect(overlay).toBeHidden()
+})
+
+test("global search preserves Pagefind result order when loading more", async ({ page }) => {
+  await page.goto("/")
+
+  const overlay = await openSearchOverlay(page)
+  await overlay.getByRole("searchbox", { name: "Search" }).fill("java")
+
+  const links = page.locator("[data-search-result-link]")
+  await expect(links).toHaveCount(8)
+  const firstPageHrefs = await links.evaluateAll((elements) => elements.map((element) => element.href))
+
+  await overlay.getByRole("button", { name: /Show \d+ more/ }).click()
+  await expect(links).toHaveCount(16)
+  const expandedHrefs = await links.evaluateAll((elements) => elements.slice(0, 8).map((element) => element.href))
+
+  expect(expandedHrefs).toEqual(firstPageHrefs)
 })
 
 test("global search opens the focused result from the keyboard", async ({ page }) => {
@@ -86,4 +99,14 @@ test("problem explorer text search is backed by Pagefind", async ({ page }) => {
 
   await expect(page.locator('[data-problem-row][data-problem-slug="sliding-puzzle"]')).toBeVisible()
   await expect(page.locator('[data-problem-row][data-problem-slug="binary-search"]')).toBeHidden()
+})
+
+test("problem explorer combines text search with Pagefind filters", async ({ page }) => {
+  await page.goto("/eureka/problems/")
+
+  await page.getByRole("searchbox", { name: "Search" }).fill("kth")
+  await page.locator('input[name="category"][value="Matrix"]').check()
+
+  await expect(page.locator('[data-problem-row][data-problem-slug="kth-smallest-element-in-a-sorted-matrix"]')).toBeVisible()
+  await expect(page.locator('[data-problem-row][data-problem-slug="kth-largest-element-in-an-array"]')).toBeHidden()
 })

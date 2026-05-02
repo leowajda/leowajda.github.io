@@ -5,6 +5,7 @@ require_relative '../../test_helper'
 class SiteKitFlowchartRegistryTest < SiteKitTestCase
   NODE_GEOMETRY_KEYS = %w[x y width height].freeze
   EDGE_GEOMETRY_KEYS = %w[path label_x label_y].freeze
+  LEGACY_NODE_TEXT_KEYS = %w[label title].freeze
 
   def test_flowchart_source_keeps_geometry_generated
     source = build_site.data.fetch('eureka').fetch('flowchart')
@@ -18,6 +19,8 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     source = build_site.data.fetch('eureka').fetch('flowchart')
 
     assert_empty(source.fetch('nodes').select { |node| node.key?('details_html') })
+    assert_empty(source.fetch('nodes').flat_map { |node| LEGACY_NODE_TEXT_KEYS & node.keys })
+    assert(source.fetch('nodes').all? { |node| node.fetch('text', '').strip.size.positive? })
     assert_empty(source.fetch('nodes').map { |node| node.fetch('id') }.grep(%r{/|contraints|huh|twopointers}))
     assert_includes source.fetch('nodes').find { |node| node.fetch('id') == 'maximum-minimum-dp' }.fetch('aliases'),
                     'max/min-dp'
@@ -40,7 +43,7 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     source = {
       'chart' => { 'width' => 100 },
       'nodes' => [
-        { 'id' => 'a', 'kind' => 'decision', 'label' => 'A', 'title' => 'A',
+        { 'id' => 'a', 'kind' => 'decision', 'text' => 'A?',
           'layout' => { 'column' => 'main', 'row' => 0 }, 'x' => 100 }
       ],
       'edges' => []
@@ -57,9 +60,9 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     source = {
       'chart' => { 'width' => 100 },
       'nodes' => [
-        { 'id' => 'a', 'kind' => 'decision', 'label' => 'A', 'title' => 'A',
+        { 'id' => 'a', 'kind' => 'decision', 'text' => 'A?',
           'layout' => { 'column' => 'main', 'row' => 0 } },
-        { 'id' => 'b', 'kind' => 'solution', 'label' => 'B', 'title' => 'B',
+        { 'id' => 'b', 'kind' => 'solution', 'text' => 'B',
           'layout' => { 'column' => 'decision', 'row' => 1 } }
       ],
       'edges' => [
@@ -78,7 +81,7 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     source = {
       'chart' => { 'width' => 100 },
       'nodes' => [
-        { 'id' => 'max/min-dp', 'kind' => 'solution', 'label' => 'DP', 'title' => 'DP',
+        { 'id' => 'max/min-dp', 'kind' => 'solution', 'text' => 'DP',
           'layout' => { 'column' => 'main', 'row' => 0 } }
       ],
       'edges' => []
@@ -95,9 +98,9 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     source = {
       'chart' => { 'width' => 100 },
       'nodes' => [
-        { 'id' => 'a', 'aliases' => ['legacy'], 'kind' => 'decision', 'label' => 'A', 'title' => 'A',
+        { 'id' => 'a', 'aliases' => ['legacy'], 'kind' => 'decision', 'text' => 'A?',
           'layout' => { 'column' => 'main', 'row' => 0 } },
-        { 'id' => 'b', 'aliases' => ['legacy'], 'kind' => 'solution', 'label' => 'B', 'title' => 'B',
+        { 'id' => 'b', 'aliases' => ['legacy'], 'kind' => 'solution', 'text' => 'B',
           'layout' => { 'column' => 'decision', 'row' => 1 } }
       ],
       'edges' => []

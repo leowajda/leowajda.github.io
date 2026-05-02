@@ -89,12 +89,6 @@ export const initializeSearchOverlay = () => {
     }
   }
 
-  const clearQuery = () => {
-    input.value = ""
-    resultSet = null
-    renderPrompt({ summary, results, moreButton })
-  }
-
   const closeOverlay = () => {
     if (isSearchRoute()) {
       window.location.assign(document.body.dataset.pagefindBaseUrl || "/")
@@ -132,7 +126,7 @@ export const initializeSearchOverlay = () => {
         return
       }
 
-      const nextResultSet = createSearchResultSet(search, query)
+      const nextResultSet = createSearchResultSet(search)
       const records = await nextResultSet.loadThrough(visibleCount)
       if (!sequence.matches(currentSequence)) {
         return
@@ -175,12 +169,6 @@ export const initializeSearchOverlay = () => {
 
   dialog.addEventListener("cancel", (event) => {
     event.preventDefault()
-
-    if (normalizeSearchQuery(input.value)) {
-      clearQuery()
-      return
-    }
-
     closeOverlay()
   })
 

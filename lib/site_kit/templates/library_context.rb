@@ -3,12 +3,12 @@
 module SiteKit
   module Templates
     class LibraryContext
-      def initialize(topics:, template_guide:, flowchart_data:, entries_by_template:, language_catalog:,
+      def initialize(topics:, template_guide:, flowchart_data:, code_source_root:, language_catalog:,
                      code_collection_config:)
         @topic_records = topics
         @template_guide_data = template_guide
         @flowchart_data = flowchart_data
-        @entries_by_template = entries_by_template
+        @code_source_root = code_source_root
         @language_catalog = language_catalog
         @code_collection_config = code_collection_config
       end
@@ -29,7 +29,7 @@ module SiteKit
       def code_collections
         @code_collections ||= SiteKit::Templates::CodeCollections::Registry.new(
           templates: templates,
-          entries_by_template: entries_by_template,
+          entries_by_template: template_code_entries,
           language_catalog: language_catalog,
           code_collection_config: code_collection_config
         ).record
@@ -46,7 +46,14 @@ module SiteKit
 
       private
 
-      attr_reader :topic_records, :template_guide_data, :flowchart_data, :entries_by_template, :language_catalog,
+      def template_code_entries
+        @template_code_entries ||= SiteKit::Templates::CodeSources::Repository.new(
+          root: code_source_root,
+          language_catalog: language_catalog
+        ).entries_by_template(templates)
+      end
+
+      attr_reader :topic_records, :template_guide_data, :flowchart_data, :code_source_root, :language_catalog,
                   :code_collection_config
     end
   end

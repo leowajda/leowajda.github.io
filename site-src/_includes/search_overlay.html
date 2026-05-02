@@ -8,14 +8,16 @@
         type="search"
         placeholder="Search"
         autocomplete="off"
+        aria-controls="site-search-results"
+        aria-describedby="site-search-summary"
         data-search-input
       >
       <button class="icon-action icon-action--compact" type="button" aria-label="Close search" title="Close search" data-search-close>
         {%- include icon.html name="close" class="icon-action__icon" -%}
       </button>
     </div>
-    <p class="search-overlay__summary" data-search-summary aria-live="polite">Type to search.</p>
-    <div class="search-overlay__results" data-search-results role="list"></div>
+    <p id="site-search-summary" class="search-overlay__summary" data-search-summary aria-live="polite">Type to search.</p>
+    <div id="site-search-results" class="search-overlay__results" data-search-results role="list"></div>
     <button class="control-button search-overlay__more" type="button" data-search-more hidden>Show more</button>
   </div>
 </dialog>

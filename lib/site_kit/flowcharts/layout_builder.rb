@@ -43,8 +43,11 @@ module SiteKit
         validate_node_source!(source_node)
 
         layout = source_node.fetch('layout')
-        node = source_node.except('layout')
+        node = source_node.except('layout', 'short_text')
         node.merge(
+          'text' => SiteKit::Flowcharts::NodeText.text(source_node),
+          'canvas_text' => SiteKit::Flowcharts::NodeText.canvas_text(source_node),
+          'search_title' => SiteKit::Flowcharts::NodeText.search_title(source_node),
           'x' => column_x(layout),
           'y' => row_y(layout),
           'width' => node_width(source_node),
@@ -63,11 +66,13 @@ module SiteKit
 
       def validate_node_source!(node)
         generated_keys = NODE_GEOMETRY_KEYS & node.keys
-        return if generated_keys.empty?
+        unless generated_keys.empty?
+          raise SiteKit::CatalogError,
+                "Flowchart node '#{node.fetch('id',
+                                              '(unknown)')}' defines generated geometry: #{generated_keys.join(', ')}"
+        end
 
-        raise SiteKit::CatalogError,
-              "Flowchart node '#{node.fetch('id',
-                                            '(unknown)')}' defines generated geometry: #{generated_keys.join(', ')}"
+        SiteKit::Flowcharts::NodeText.validate_source!(node)
       end
 
       def validate_edge_source!(edge)
@@ -121,7 +126,8 @@ module SiteKit
 
         [
           layout_config.solution_min_width,
-          (node.fetch('label').length * layout_config.solution_character_width) + layout_config.solution_label_padding
+          (SiteKit::Flowcharts::NodeText.canvas_text(node).length * layout_config.solution_character_width) +
+            layout_config.solution_label_padding
         ].max
       end
 

@@ -23,14 +23,14 @@ module SiteKit
       attr_reader :flowchart, :summaries, :factory
 
       def node_record(node, summary)
-        title = node.fetch('title', node.fetch('label'))
+        title = node_display_text(node)
 
         factory.build(
           kind: KIND,
           title:,
           url: "#{PAGE_URL}##{node.fetch('id')}",
           project: 'Eureka',
-          summary: node.fetch('label'),
+          summary: node_display_text(node),
           content: node_content(node, title, summary),
           filters: { 'flowchart_kind' => node.fetch('kind') },
           meta: { 'target' => node.fetch('id'), 'section' => section_for(node, title) },
@@ -43,7 +43,9 @@ module SiteKit
           node.fetch('id'),
           node.fetch('aliases', []),
           node.fetch('kind'),
-          node.fetch('label'),
+          node_display_text(node),
+          node.fetch('canvas_text'),
+          node.fetch('search_title'),
           title,
           ancestor_labels(node),
           summary_text(summary),
@@ -96,11 +98,15 @@ module SiteKit
       end
 
       def node_title(node)
-        node.fetch('title', node.fetch('label'))
+        node_display_text(node)
       end
 
       def context_title(node)
-        node.fetch('search_title', node_title(node))
+        node.fetch('search_title', node_display_text(node))
+      end
+
+      def node_display_text(node)
+        node.fetch('text')
       end
 
       def nodes_by_title

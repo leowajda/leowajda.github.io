@@ -1,0 +1,10 @@
+ListNode* reverse(ListNode* head) {
+    ListNode* previous = nullptr;
+    while (head != nullptr) {
+        ListNode* next = head->next;
+        head->next = previous;
+        previous = head;
+        head = next;
+    }
+    return previous;
+}

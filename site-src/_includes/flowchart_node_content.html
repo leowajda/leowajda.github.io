@@ -4,7 +4,7 @@
 {%- assign guide_entrypoints = payload.template_guide_entrypoints | default: empty -%}
 <div class="flowchart-inspector__template">
   <p class="flowchart-inspector__eyebrow">{{ node.kind | capitalize | escape }}</p>
-  <h2 aria-label="{{ node.title | replace: '$', '' | escape }}">{{ node.title | escape }}</h2>
+  <h2 aria-label="{{ node.text | replace: '$', '' | escape }}">{{ node.text | escape }}</h2>
 
   {%- if summary and summary.sections and summary.sections.size > 0 -%}
     <section class="flowchart-inspector__panel" data-flowchart-note data-flowchart-structured-summary="true">

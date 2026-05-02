@@ -1,4 +1,3 @@
-import { rankedSearchResults } from "./search-ranking.js"
 import { loadPagefindResultData } from "./pagefind-client.js"
 
 export const SEARCH_PAGE_SIZE = 8
@@ -35,12 +34,12 @@ const createResultElement = (data) => {
   return item
 }
 
-export const createSearchResultSet = (search, query) => ({
+export const createSearchResultSet = (search) => ({
   total: search.results.length,
   records: [],
   async loadThrough(count) {
     const results = search.results.slice(0, count)
-    this.records = rankedSearchResults(await Promise.all(results.map(loadPagefindResultData)), query)
+    this.records = await Promise.all(results.map(loadPagefindResultData))
     return this.records
   }
 })
@@ -52,7 +51,6 @@ export const renderSearchTooShort = ({ summary, results, moreButton }) => {
 }
 
 export const renderSearchResults = ({ records, total = records.length, visibleCount, results, summary, moreButton }) => {
-
   if (total === 0) {
     summary.textContent = "No results."
     results.replaceChildren()
