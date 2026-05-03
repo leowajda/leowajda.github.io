@@ -1,12 +1,15 @@
 {%- assign source_schema = page.source_schema -%}
 {%- assign breadcrumbs = source_schema.breadcrumbs -%}
+<script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": ["TechArticle", "Code"],
   "headline": {{ page.title | jsonify }},
-  "description": {{ page.description | jsonify }},
-  "url": {{ page.url | absolute_url | jsonify }},
-  "mainEntityOfPage": {{ page.url | absolute_url | jsonify }},
+  "description": {{ include.page_description | jsonify }},
+  "url": {{ include.page_url | jsonify }},
+  "mainEntityOfPage": {{ include.page_url | jsonify }},
+  "author": {{ include.person_json | strip }},
+  "publisher": {{ include.person_json | strip }},
   "codeRepository": {{ source_schema.code_repository | jsonify }},
   "programmingLanguage": {{ source_schema.programming_language | jsonify }},
   "about": {{ source_schema.about | jsonify }}
@@ -27,3 +30,4 @@
   }
   {%- endif -%}
 }
+</script>
