@@ -23,7 +23,6 @@ module SiteKit
           edge = SiteKit::Core::Helpers.ensure_hash(edge_entry, 'Flowchart edge')
           target = SiteKit::Core::Helpers.ensure_string(edge.fetch('to'), 'Flowchart edge.to')
           SiteKit::Core::Helpers.ensure_string(edge.fetch('from'), 'Flowchart edge.from')
-          SiteKit::Core::Helpers.ensure_string(edge.fetch('path'), 'Flowchart edge.path')
           raise SiteKit::CatalogError, "Flowchart edge targets must be unique: #{target}" if result.key?(target)
 
           result[target] = edge

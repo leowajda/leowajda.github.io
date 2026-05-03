@@ -58,10 +58,10 @@ module SiteKit
       def build_edge(source_edge, node_index)
         validate_edge_source!(source_edge)
 
-        from = node_index.fetch(source_edge.fetch('from'))
-        to = node_index.fetch(source_edge.fetch('to'))
+        node_index.fetch(source_edge.fetch('from'))
+        node_index.fetch(source_edge.fetch('to'))
 
-        source_edge.merge(SiteKit::Flowcharts::EdgeRouter.new(from:, to:).attributes)
+        source_edge
       end
 
       def validate_node_source!(node)

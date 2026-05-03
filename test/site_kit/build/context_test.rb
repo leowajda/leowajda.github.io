@@ -37,6 +37,7 @@ class SiteKitBuildContextTest < SiteKitTestCase
     assert_predicate explorer_page.data['problem_table'].fetch('rows'), :any?
     assert flowchart_page.data['flowchart_canvas']
     assert_predicate flowchart_page.data['header_links'], :any?
+    assert_predicate flowchart_page.data['flowchart_canvas'].fetch('graph').fetch('nodes'), :any?
     assert_predicate flowchart_page.data['flowchart_canvas'].fetch('node_payloads'), :any?
     refute flowchart_page.data['flowchart_canvas'].key?('topic_registry')
     refute flowchart_page.data['flowchart_canvas'].key?('flowchart_summaries')

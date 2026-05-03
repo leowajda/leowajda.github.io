@@ -28,21 +28,9 @@ const setCheckboxValue = (form, name, value, checked) => {
   }
 }
 
-const parseListMetadata = (value) => {
-  try {
-    const parsed = JSON.parse(value || "[]")
-    return Array.isArray(parsed) ? parsed.filter(Boolean) : []
-  } catch {
-    return []
-  }
-}
-
 const readProblemRow = (element) => ({
   element,
-  url: normalizedPath(element.dataset.searchUrl || ""),
-  difficulty: element.dataset.difficulty || "",
-  categories: parseListMetadata(element.dataset.categories),
-  languages: parseListMetadata(element.dataset.languages)
+  url: normalizedPath(element.dataset.searchUrl || "")
 })
 
 const languageSearchValue = (input) =>
@@ -54,32 +42,36 @@ const activeSearch = (state) =>
   || state.categories.length > 0
   || state.languageFilterActive
 
+const anyFilter = (values) =>
+  values.length === 1 ? values[0] : { any: values }
+
 const searchFilters = (state) => {
   const filters = {
-    kind: ["Problem"]
+    kind: "Problem"
   }
 
   if (state.difficulty) {
-    filters.difficulty = [state.difficulty]
+    filters.difficulty = state.difficulty
   }
 
   if (state.categories.length > 0) {
-    filters.category = state.categories
+    filters.category = anyFilter(state.categories)
   }
 
   if (state.languageFilterActive) {
-    filters.language = state.selectedLanguageLabels
+    filters.language = anyFilter(state.selectedLanguageLabels)
   }
 
   return filters
 }
 
 const searchResultUrls = async (query, filters) => {
-  const cacheKey = JSON.stringify([query, filters])
+  const normalizedQuery = query || null
+  const cacheKey = JSON.stringify([normalizedQuery, filters])
   if (!problemSearchCache.has(cacheKey)) {
     problemSearchCache.set(
       cacheKey,
-      loadPagefindRecords(query, { filters: pagefindFilter(filters) })
+      loadPagefindRecords(normalizedQuery, { filters: pagefindFilter(filters) })
         .then((records) => new Set(records.map((record) => normalizedPath(record.url))))
         .catch((error) => {
           problemSearchCache.delete(cacheKey)
@@ -139,7 +131,6 @@ const initializeProblemFilters = () => {
 
   const readState = () => {
     const selectedLanguages = readSelectedLanguages()
-    const selectedLanguageSlugs = selectedLanguages.map((input) => input.value)
     const selectedLanguageLabels = selectedLanguages.map(languageSearchValue)
     const languageFilterActive = languageInputs.length > 0 && selectedLanguages.length < languageInputs.length
     const query = normalizeSearchQuery(searchInput?.value)
@@ -150,7 +141,6 @@ const initializeProblemFilters = () => {
       difficulty: queryCheckedRadio(form, "difficulty"),
       categories: queryCheckedValues(form, "category"),
       selectedLanguages,
-      selectedLanguageSlugs,
       selectedLanguageLabels,
       languageFilterActive
     }
@@ -234,23 +224,6 @@ const initializeProblemFilters = () => {
     })
   }
 
-  const rowMatchesLocalFilters = (row, state) => {
-    const difficultyMatches = !state.difficulty || row.difficulty === state.difficulty
-    const categoryMatches = state.categories.length === 0
-      || state.categories.some((category) => row.categories.includes(category))
-    const languageMatches = !state.languageFilterActive
-      || state.selectedLanguageSlugs.some((language) => row.languages.includes(language))
-
-    return difficultyMatches && categoryMatches && languageMatches
-  }
-
-  const localFilterUrls = (state) =>
-    new Set(
-      rows
-        .filter((row) => rowMatchesLocalFilters(row, state))
-        .map((row) => row.url)
-    )
-
   const render = async () => {
     const state = readState()
     renderLanguageColumns(state.selectedLanguages)
@@ -263,15 +236,9 @@ const initializeProblemFilters = () => {
       return
     }
 
-    const localUrls = localFilterUrls(state)
-    if (!state.queryActive) {
-      renderRows(localUrls)
-      return
-    }
-
     let searchUrls
     try {
-      searchUrls = await searchResultUrls(state.query, searchFilters(state))
+      searchUrls = await searchResultUrls(state.queryActive ? state.query : null, searchFilters(state))
     } catch (error) {
       if (sequence.matches(currentSequence)) {
         renderSearchUnavailable()

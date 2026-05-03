@@ -27,16 +27,21 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
   end
 
   def test_layout_builder_generates_renderable_geometry
+    source = build_site.data.fetch('eureka').fetch('flowchart')
+    layout_config = source.dig('chart', 'layout')
+    source_node = source.fetch('nodes').find { |entry| entry.fetch('id') == 'graph-small-constraints-bfs' }
     flowchart = build_context.flowchart_data
     node = flowchart.fetch('nodes').find { |entry| entry.fetch('id') == 'graph-small-constraints-bfs' }
     edge = flowchart.fetch('edges').find { |entry| entry.fetch('id') == 'graph-small-constraints-bfs-no' }
 
-    assert_equal 900, node.fetch('x')
-    assert_equal 2000, node.fetch('y')
-    assert_operator flowchart.dig('chart', 'height'), :>, 7800
-    assert_match(/\AM\d+(\.\d+)?,\d+(\.\d+)? C/, edge.fetch('path'))
-    assert edge.key?('label_x')
-    assert edge.key?('label_y')
+    assert_equal layout_config.dig('columns', source_node.dig('layout', 'column')), node.fetch('x')
+    assert_equal source_node.dig('layout', 'row') * layout_config.fetch('row_unit'), node.fetch('y')
+    assert_operator flowchart.dig('chart', 'height'), :>, node.fetch('y')
+    assert_equal 'graph-small-constraints-bfs', edge.fetch('from')
+    assert_equal 'graph-small-constraints-graph-bfs', edge.fetch('to')
+    refute edge.key?('path')
+    refute edge.key?('label_x')
+    refute edge.key?('label_y')
   end
 
   def test_layout_builder_rejects_hand_authored_node_geometry
@@ -173,5 +178,19 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
 
   def node_bottom(node)
     node.fetch('y') + node.fetch('height')
+  end
+end
+
+class SiteKitFlowchartX6GraphBuilderTest < SiteKitTestCase
+  def test_exports_canvas_payload
+    graph = SiteKit::Flowcharts::X6GraphBuilder.new(flowchart: build_context.flowchart_data).build
+    node = graph.fetch('nodes').find { |entry| entry.fetch('id') == 'directed-graph-topo' }
+    edge = graph.fetch('edges').find { |entry| entry.fetch('id') == 'directed-yes' }
+
+    assert_equal 'Eureka Flowchart', graph.dig('chart', 'title')
+    assert_equal 'Topological Sort', node.fetch('label')
+    assert_equal 'directed-graph', edge.fetch('from')
+    assert_equal 'directed-graph-topo', edge.fetch('to')
+    assert_equal 'yes', edge.fetch('label')
   end
 end

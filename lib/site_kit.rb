@@ -38,11 +38,11 @@ require_relative 'site_kit/templates/guide/repository'
 require_relative 'site_kit/templates/library_context'
 require_relative 'site_kit/templates/library_page_context_builder'
 
-require_relative 'site_kit/flowcharts/edge_router'
 require_relative 'site_kit/flowcharts/node_text'
 require_relative 'site_kit/flowcharts/layout_config'
 require_relative 'site_kit/flowcharts/layout_builder'
 require_relative 'site_kit/flowcharts/registry'
+require_relative 'site_kit/flowcharts/x6_graph_builder'
 require_relative 'site_kit/flowcharts/node_payload_builder'
 require_relative 'site_kit/flowcharts/page_context_builder'
 

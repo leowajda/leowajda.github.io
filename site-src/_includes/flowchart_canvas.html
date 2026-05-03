@@ -6,63 +6,17 @@
 <section
   class="flowchart-workspace flowchart-workspace--empty"
   data-flowchart
-  data-flowchart-width="{{ flowchart.chart.width | escape }}"
-  data-flowchart-height="{{ flowchart.chart.height | escape }}"
-  data-flowchart-scale-desktop="{{ flowchart.chart.scale_desktop | escape }}"
-  data-flowchart-scale-mobile="{{ flowchart.chart.scale_mobile | escape }}"
+  data-flowchart-x6-url="{{ '/assets/vendor/x6/x6.min.js' | relative_url | escape }}"
 >
-  <article class="content-card flowchart-canvas-shell">
+  <article class="flowchart-canvas-shell">
+    <div class="flowchart-canvas__toolbar" data-flowchart-zoom-controls aria-label="Flowchart zoom controls">
+      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="out" aria-label="Zoom out">-</button>
+      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="reset" aria-label="Reset zoom">1:1</button>
+      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="in" aria-label="Zoom in">+</button>
+    </div>
     <div class="flowchart-canvas__viewport" data-flowchart-viewport tabindex="0" aria-label="{{ flowchart.title | escape }}">
-      <div class="flowchart-canvas__scaled" data-flowchart-scaled>
-        <div
-          class="flowchart-canvas__surface"
-          data-flowchart-surface
-          style="--flowchart-width: {{ flowchart.chart.width | escape }}px; --flowchart-height: {{ flowchart.chart.height | escape }}px;"
-        >
-          <svg
-            class="flowchart-canvas__edges"
-            viewBox="0 0 {{ flowchart.chart.width | escape }} {{ flowchart.chart.height | escape }}"
-            aria-hidden="true"
-            focusable="false"
-          >
-            {%- for edge in flowchart.edges -%}
-              <g
-                class="flowchart-edge-group"
-                data-flowchart-edge
-                data-flowchart-edge-from="{{ edge.from | escape }}"
-                data-flowchart-edge-to="{{ edge.to | escape }}"
-              >
-                <path class="flowchart-edge" d="{{ edge.path | escape }}" />
-                {%- if edge.label and edge.label != "" -%}
-                  <text class="flowchart-edge__label" x="{{ edge.label_x | escape }}" y="{{ edge.label_y | escape }}">{{ edge.label | escape }}</text>
-                {%- endif -%}
-              </g>
-            {%- endfor -%}
-          </svg>
-
-          {%- for node_payload in node_payloads -%}
-            {%- assign node = node_payload.node -%}
-            {%- assign node_text_a11y = node.text | replace: '$', '' -%}
-            <button
-              type="button"
-              class="flowchart-node flowchart-node--{{ node.kind | escape }}"
-              data-flowchart-node
-              data-flowchart-node-id="{{ node.id | escape }}"
-              data-flowchart-node-aliases="{{ node.aliases | default: empty | join: ' ' | escape }}"
-              data-flowchart-node-kind="{{ node.kind | escape }}"
-              data-flowchart-node-text="{{ node.text | escape }}"
-              data-flowchart-node-canvas-text="{{ node.canvas_text | escape }}"
-              data-flowchart-parent-id="{{ node_payload.parent_id | default: '' | escape }}"
-              data-flowchart-parent-answer="{{ node_payload.parent_answer | default: '' | escape }}"
-              aria-label="{{ node.kind | capitalize | escape }} node: {{ node_text_a11y | escape }}"
-              aria-pressed="false"
-              style="left: {{ node.x | escape }}px; top: {{ node.y | escape }}px; width: {{ node.width | escape }}px; height: {{ node.height | escape }}px;"
-            >
-              <span class="flowchart-node__label">{{ node.canvas_text | escape }}</span>
-            </button>
-          {%- endfor -%}
-        </div>
-      </div>
+      <div class="flowchart-canvas__surface" data-flowchart-surface></div>
+      <script type="application/json" data-flowchart-graph>{{ canvas.graph | jsonify }}</script>
     </div>
   </article>
 

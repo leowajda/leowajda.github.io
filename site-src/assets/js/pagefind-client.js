@@ -63,8 +63,9 @@ export const preloadPagefind = async (query, options = {}) => {
 }
 
 export const searchPagefind = async (query, options = {}) => {
-  const pagefind = await preloadPagefind(query, options)
-  return timed(`search "${query}"`, () => pagefind.search(query, options))
+  const pagefind = query === null ? await loadPagefind() : await preloadPagefind(query, options)
+  const label = query === null ? "filters" : `"${query}"`
+  return timed(`search ${label}`, () => pagefind.search(query, options))
 }
 
 export const loadPagefindResultData = (result) => {

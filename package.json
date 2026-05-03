@@ -34,5 +34,8 @@
     "eslint": "^10.2.1",
     "globals": "^17.5.0",
     "pagefind": "1.5.2"
+  },
+  "dependencies": {
+    "@antv/x6": "^3.1.7"
   }
 }

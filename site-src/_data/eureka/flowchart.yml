@@ -1,23 +1,23 @@
 title: Eureka Flowchart
 chart:
-  width: 1686
-  scale_desktop: 0.57
-  scale_mobile: 0.4
+  width: 2500
+  scale_desktop: 0.78
+  scale_mobile: 0.62
   layout:
-    row_unit: 100
-    bottom_padding: 250
+    row_unit: 140
+    bottom_padding: 320
     decision_size: 200
-    solution_height: 74.7969
-    solution_min_width: 96
-    solution_label_padding: 68
-    solution_character_width: 9
+    solution_height: 82
+    solution_min_width: 110
+    solution_label_padding: 82
+    solution_character_width: 10
     columns:
       main: 100
-      decision: 500
-      secondary: 900
-      secondary-branch: 1250
-      tertiary: 1300
-      quaternary: 1550
+      decision: 620
+      secondary: 1160
+      secondary-branch: 1740
+      tertiary: 1780
+      quaternary: 2300
 nodes:
 - id: graph
   kind: decision

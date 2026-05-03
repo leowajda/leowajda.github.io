@@ -30,45 +30,15 @@ module SiteKit
     class AppConfigRepository
       TEXT_FILE_FORMATS = %w[code markdown].freeze
 
-      EUREKA_SCHEMA = {
-        catalog_version: :integer,
-        metadata_keys: :string_array,
-        implementation_keys: :string_array,
-        browser: lambda { |value, context, repository|
-          repository.__send__(
-            :build_data_record,
-            SiteKit::Catalogs::AppEurekaBrowserConfig,
-            SiteKit::Core::Helpers.ensure_hash(value, context),
-            context,
-            toolbar_label: :string,
-            variant_group_label: :string,
-            variant_group_visibility: :string,
-            variant_presentation: :string
-          )
-        }
-      }.freeze
-      SOURCE_NOTES_SCHEMA = {
-        catalog_version: :integer,
-        ignored_directories: :string_array,
-        text_file_metadata: :string_hash_map
-      }.freeze
-      CODE_COLLECTION_SCHEMA = {
-        default_variant_label: :string,
-        default_toolbar_label: :string,
-        variant_icons: :string_hash,
-        implementation_modes: :string_hash_array
-      }.freeze
-
       def initialize(data_record)
         @data_record = SiteKit::Core::Helpers.ensure_hash(data_record, 'site data.site.app')
       end
 
       def load
         config = SiteKit::Catalogs::AppConfig.new(
-          eureka: section_record(SiteKit::Catalogs::AppEurekaConfig, 'eureka', EUREKA_SCHEMA),
-          source_notes: section_record(SiteKit::Catalogs::AppSourceNotesConfig, 'source_notes', SOURCE_NOTES_SCHEMA),
-          code_collection: section_record(SiteKit::Catalogs::AppCodeCollectionConfig, 'code_collection',
-                                          CODE_COLLECTION_SCHEMA)
+          eureka: eureka_config,
+          source_notes: source_notes_config,
+          code_collection: code_collection_config
         )
         validate_text_file_metadata!(config.source_notes.text_file_metadata)
         config
@@ -78,51 +48,50 @@ module SiteKit
 
       attr_reader :data_record
 
-      def section_record(klass, key, schema)
-        build_data_record(
-          klass,
-          SiteKit::Core::Helpers.ensure_hash(data_record.fetch(key), "site data.site.app.#{key}"),
-          "site data.site.app.#{key}",
-          **schema
+      def eureka_config
+        record = section('eureka')
+        browser = SiteKit::Core::Helpers.ensure_hash(record.fetch('browser'), 'site data.site.app.eureka.browser')
+        SiteKit::Catalogs::AppEurekaConfig.new(
+          catalog_version: record.fetch('catalog_version'),
+          metadata_keys: record.fetch('metadata_keys'),
+          implementation_keys: record.fetch('implementation_keys'),
+          browser: SiteKit::Catalogs::AppEurekaBrowserConfig.new(
+            toolbar_label: browser.fetch('toolbar_label'),
+            variant_group_label: browser.fetch('variant_group_label'),
+            variant_group_visibility: browser.fetch('variant_group_visibility'),
+            variant_presentation: browser.fetch('variant_presentation')
+          )
         )
       end
 
-      def build_data_record(klass, record, context, **schema)
-        klass.new(**schema.to_h do |field, loader|
-          value = record.fetch(field.to_s)
-          [field, load_value(loader, value, "#{context}.#{field}")]
-        end)
+      def source_notes_config
+        record = section('source_notes')
+        SiteKit::Catalogs::AppSourceNotesConfig.new(
+          catalog_version: record.fetch('catalog_version'),
+          ignored_directories: record.fetch('ignored_directories'),
+          text_file_metadata: text_file_metadata(record)
+        )
       end
 
-      def load_value(loader, value, context)
-        case loader
-        when :integer then SiteKit::Core::Helpers.ensure_integer(value, context)
-        when :string then SiteKit::Core::Helpers.ensure_string(value, context)
-        when :string_array then SiteKit::Core::Helpers.ensure_array_of_strings(value, context)
-        when :string_hash then string_hash(value, context)
-        when :string_hash_array then string_hash_array(value, context)
-        when :string_hash_map then string_hash_map(value, context)
-        else loader.call(value, context, self)
-        end
+      def code_collection_config
+        record = section('code_collection')
+        SiteKit::Catalogs::AppCodeCollectionConfig.new(
+          default_variant_label: record.fetch('default_variant_label'),
+          default_toolbar_label: record.fetch('default_toolbar_label'),
+          variant_icons: record.fetch('variant_icons'),
+          implementation_modes: record.fetch('implementation_modes')
+        )
       end
 
-      def string_hash_array(value, context)
-        SiteKit::Core::Helpers.ensure_array(value, context).map.with_index do |entry, index|
-          string_hash(entry, "#{context}[#{index}]")
-        end
+      def section(key)
+        SiteKit::Core::Helpers.ensure_hash(data_record.fetch(key), "site data.site.app.#{key}")
       end
 
-      def string_hash_map(value, context)
-        SiteKit::Core::Helpers.ensure_hash(value, context).transform_values do |entry|
-          string_hash(entry, "#{context} entry")
-        end
-      end
-
-      def string_hash(value, context)
-        SiteKit::Core::Helpers.ensure_hash(value, context).to_h do |key, entry|
-          [SiteKit::Core::Helpers.ensure_string(key, "#{context} key"),
-           SiteKit::Core::Helpers.ensure_string(entry, "#{context}.#{key}")]
-        end
+      def text_file_metadata(record)
+        SiteKit::Core::Helpers.ensure_hash(
+          record.fetch('text_file_metadata'),
+          'site data.site.app.source_notes.text_file_metadata'
+        )
       end
 
       def validate_text_file_metadata!(metadata)

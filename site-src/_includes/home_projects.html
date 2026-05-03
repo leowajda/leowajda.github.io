@@ -2,11 +2,11 @@
 <div class="content-stack">
   {% for project in projects %}
     {% assign project_url = project.home_url | default: '' %}
-    {% if project.slug == "zibaldone" %}
-      {% assign project_url = '' %}
-    {% endif %}
     {% assign project_body = '' %}
     {% assign source_groups = project.home_groups | default: empty %}
+    {% if source_groups.size > 0 %}
+      {% assign project_url = '' %}
+    {% endif %}
     {% if project.kind == "source-notes" and source_groups.size > 0 %}
       {% capture project_body %}
         <ul class="project-tree" aria-label="{{ project.title | escape }} entries">

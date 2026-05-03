@@ -25,6 +25,7 @@ module SiteKit
         document.data['flowchart_canvas'] = {
           'flowchart' => flowchart_record,
           'templates_url' => page_link_resolver.page_link('algorithmic_templates').fetch('url'),
+          'graph' => SiteKit::Flowcharts::X6GraphBuilder.new(flowchart: flowchart_record).build,
           'node_payloads' => SiteKit::Flowcharts::NodePayloadBuilder.new(
             flowchart: flowchart_record,
             incoming_edges_by_target: registry.fetch('incoming_edges_by_target', {}),

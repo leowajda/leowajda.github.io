@@ -1,37 +1,33 @@
-export const createFlowchartState = (initialScale) => ({
-  scale: initialScale,
+export const createFlowchartState = () => ({
   selectedId: "",
   previewId: null,
-  activePanel: "summary",
-  dragStartX: 0,
-  dragStartY: 0,
-  dragStartLeft: 0,
-  dragStartTop: 0,
-  pointerId: null,
-  pointerDown: false,
-  isDragging: false,
-  suppressClick: false
+  activePanel: "summary"
 })
 
-const readNodeMeta = (button) => {
-  const nodeId = button.dataset.flowchartNodeId || ""
-  const nodeText = button.dataset.flowchartNodeText || button.dataset.flowchartNodeCanvasText || ""
-  const nodeCanvasText = button.dataset.flowchartNodeCanvasText || nodeText
-  const isDecision = button.dataset.flowchartNodeKind === "decision"
+const incomingEdgesByTarget = (edges) =>
+  new Map(edges.map((edge) => [edge.to, edge]))
 
-  return [nodeId, {
-    id: nodeId,
-    kind: button.dataset.flowchartNodeKind || "",
+const readNodeMeta = (node, incomingEdge) => {
+  const nodeText = node.text || node.label || ""
+  const nodeCanvasText = node.label || nodeText
+  const isDecision = node.kind === "decision"
+
+  return [node.id, {
+    id: node.id,
+    kind: node.kind || "",
     text: nodeText,
     title: nodeText,
     label: nodeCanvasText,
     question: isDecision ? nodeText : "",
-    parentId: button.dataset.flowchartParentId || "",
-    answer: button.dataset.flowchartParentAnswer || ""
+    parentId: incomingEdge?.from || "",
+    answer: incomingEdge?.label || ""
   }]
 }
 
-export const buildNodeMetaMap = (nodeButtons) => new Map(nodeButtons.map(readNodeMeta))
+export const buildNodeMetaMap = ({ nodes = [], edges = [] }) => {
+  const incomingEdges = incomingEdgesByTarget(edges)
+  return new Map(nodes.map((node) => readNodeMeta(node, incomingEdges.get(node.id))))
+}
 
 export const buildRoute = (nodeMeta, nodeId) => {
   const route = []
