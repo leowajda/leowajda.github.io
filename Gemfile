@@ -8,7 +8,7 @@ gem 'jekyll', '~> 4.4'
 gem 'jekyll-feed', '~> 0.17'
 gem 'jekyll-seo-tag', '~> 2.8'
 gem 'jekyll-sitemap', '~> 1.4'
-gem 'minitest', '~> 5.25'
+gem 'minitest', '~> 6.0'
 gem 'nokogiri', '~> 1.18'
 gem 'rubocop', '~> 1.81', require: false
 gem 'rubocop-minitest', '~> 0.38', require: false
