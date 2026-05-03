@@ -10,7 +10,10 @@ module SiteKit
   EUREKA_IMPLEMENTATION_PAGE_TYPE = 'eureka_implementation_page'
   SOURCE_LANGUAGE_PAGE_TYPE = 'source_language_page'
   SOURCE_MODULE_PAGE_TYPE = 'source_module_page'
+  SOURCE_DOCUMENT_PAGE_TYPE = 'source_document_page'
 
+  STRUCTURED_DATA_SOURCE_DOCUMENT_PARTIAL = 'structured_data/source_document.html'
+  STRUCTURED_DATA_SOURCE_DOCUMENT_CODE_PARTIAL = 'structured_data/source_document_code.html'
   DISALLOWED_PROBLEM_TEMPLATE_KEYS = %w[
     template_guide_primary
     template_guide_url

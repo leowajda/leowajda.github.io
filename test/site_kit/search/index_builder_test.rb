@@ -52,7 +52,7 @@ class SiteKitSearchIndexBuilderTest < SiteKitTestCase
 
   def test_search_records_have_required_pagefind_fields
     search_records.each do |record|
-      assert_match(%r{\A(?:/|https?://)}, record.url)
+      assert_match(%r{\A/}, record.url)
       refute_empty record.content
       assert_equal 'en', record.language
       refute_empty record.meta.fetch('title')
@@ -123,7 +123,6 @@ class SiteKitSearchIndexBuilderTest < SiteKitTestCase
 
     search_records.each do |record|
       route = record.url.split('#', 2).first
-      next if route.start_with?('https://', 'http://')
 
       assert_includes routes, route, "Search record points to missing page: #{record.url}"
     end

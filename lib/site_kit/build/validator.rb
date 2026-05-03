@@ -109,6 +109,7 @@ module SiteKit
         context.source_notes_context.projects.each_value do |project|
           project.generated_language_pages
           project.generated_module_pages
+          project.generated_document_pages
         end
       end
     end

@@ -130,3 +130,11 @@ defaults:
       structured_data_partial: structured_data/source_module.html
       seo:
         type: WebPage
+  - scope:
+      path: ""
+      type: source_document_page
+    values:
+      layout: source_document
+      shell: source
+      seo:
+        type: WebPage

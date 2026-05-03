@@ -60,7 +60,7 @@ module SiteKit
         factory.build(
           kind: KIND,
           title: document.fetch('title'),
-          url: document.fetch('source_url'),
+          url: document.fetch('url'),
           project: registry.fetch('project_title'),
           summary: "#{source_module.fetch('title')}: #{document.fetch('tree_path')}",
           content: [

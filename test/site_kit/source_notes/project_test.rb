@@ -11,6 +11,7 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
     cats_effect = scala.fetch('modules').find { |module_record| module_record.fetch('module_slug') == 'cats-effect' }
     language_page = project.generated_language_pages.find { |page| page[:dir] == '/zibaldone/scala/' }
     module_page = project.generated_module_pages.find { |page| page[:dir] == cats_effect.fetch('url') }
+    document_page = project.generated_document_pages.first
 
     assert_match %r{https://raw\.githubusercontent\.com/.+/scala/cats-effect/cats-effect\.png}, cats_effect.fetch('readme_markdown')
     refute_includes cats_effect.fetch('readme_markdown'), '/sources/zibaldone/'
@@ -18,14 +19,15 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
     assert_predicate cats_effect.fetch('documents'), :any?
     assert_equal scala.fetch('modules').first.fetch('url'), language_page.dig(:data, 'redirect_to')
     assert module_page
+    assert document_page
     assert_instance_of SiteKit::Pages::Definition, module_page
+    assert_instance_of SiteKit::Pages::Definition, document_page
     assert_equal 'cats-effect', module_page.dig(:data, 'source_module', 'module_slug')
     assert_equal 'Scala', module_page.dig(:data, 'source_header', 'eyebrow')
     assert_equal %w[about breadcrumbs], module_page.dig(:data, 'source_schema').keys
-    assert(cats_effect.fetch('documents').all? { |document| document.fetch('source_url').start_with?('https://github.com/') })
-    assert(cats_effect.fetch('roots').flat_map { |root| source_tree_urls(root.fetch('nodes')) }.all? do |url|
-      url.start_with?('https://github.com/')
-    end)
+    assert_equal %w[slug module_slug title url roots], document_page.dig(:data, 'source_module').keys
+    assert_equal document_page[:data]['document_url'], document_page.dig(:data, 'source_document', 'route_url')
+    assert_equal %w[about breadcrumbs code_repository programming_language], document_page.dig(:data, 'source_schema').keys
     assert_equal '', module_page[:content].to_s
   end
 
@@ -75,11 +77,5 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
       'language_title' => 'Scala',
       'language_url' => '/notes/scala/'
     }
-  end
-
-  def source_tree_urls(nodes)
-    nodes.flat_map do |node|
-      [node['url'], *source_tree_urls(node.fetch('children'))]
-    end.reject(&:empty?)
   end
 end
