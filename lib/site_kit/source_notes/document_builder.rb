@@ -11,19 +11,18 @@ module SiteKit
 
       def build(module_definition:, absolute_root:, language_context:, root_label:, file_path:)
         relative_to_root = SiteKit::Core::Helpers.relative_path(absolute_root, file_path)
-        relative_to_source = SiteKit::Core::Helpers.relative_path(source_root, file_path)
+        route_path = SiteKit::Core::Helpers.build_route_path(relative_to_root)
         tree_path = "#{root_label}/#{relative_to_root}"
         metadata = app_config.source_notes.fetch('text_file_metadata').fetch(file_path.extname.downcase)
         raw_content = SiteKit::Core::Helpers.read_text(file_path)
-        source_url = "#{source_url_base}/#{relative_to_source}"
 
         {
           'project_slug' => language_context.fetch('project_slug'),
           'language_slug' => language_context.fetch('language_slug'),
           'module_slug' => module_definition.slug,
           'title' => file_path.basename.to_s,
-          'url' => source_url,
-          'source_url' => source_url,
+          'url' => "#{language_context.fetch('language_url')}#{module_definition.slug}/#{route_path}/",
+          'route_url' => "#{language_context.fetch('language_url')}#{module_definition.slug}/#{route_path}/",
           'tree_path' => tree_path,
           'format' => metadata.fetch('format'),
           'body' => formatted_body(raw_content, metadata, file_path)

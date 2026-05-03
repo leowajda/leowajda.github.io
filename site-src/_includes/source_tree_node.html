@@ -8,11 +8,10 @@
         </ul>
       </details>
     {%- else -%}
-      {%- assign node_url = node.url -%}
       <a
-        class="side-panel__link source-tree__link"
-        href="{{ node_url | escape }}"
-        {% if node_url contains "://" %}target="_blank" rel="noopener"{% endif %}
+        class="side-panel__link source-tree__link{% if page.url == node.url %} side-panel__link--active{% endif %}"
+        href="{{ node.url | relative_url | escape }}#source-content"
+        {% if page.url == node.url %}aria-current="page"{% endif %}
       >
         {{ node.title | escape }}
       </a>

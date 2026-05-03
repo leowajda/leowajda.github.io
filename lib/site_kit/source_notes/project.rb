@@ -20,7 +20,7 @@ module SiteKit
       end
 
       def generated_pages
-        page_factory.language_pages + page_factory.module_pages
+        page_factory.language_pages + page_factory.module_pages + page_factory.document_pages
       end
 
       def generated_language_pages
@@ -29,6 +29,10 @@ module SiteKit
 
       def generated_module_pages
         page_factory.module_pages
+      end
+
+      def generated_document_pages
+        page_factory.document_pages
       end
 
       private

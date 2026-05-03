@@ -1,0 +1,29 @@
+{%- assign source_schema = page.source_schema -%}
+{%- assign breadcrumbs = source_schema.breadcrumbs -%}
+{
+  "@context": "https://schema.org",
+  "@type": ["TechArticle", "Code"],
+  "headline": {{ page.title | jsonify }},
+  "description": {{ page.description | jsonify }},
+  "url": {{ page.url | absolute_url | jsonify }},
+  "mainEntityOfPage": {{ page.url | absolute_url | jsonify }},
+  "codeRepository": {{ source_schema.code_repository | jsonify }},
+  "programmingLanguage": {{ source_schema.programming_language | jsonify }},
+  "about": {{ source_schema.about | jsonify }}
+  {%- if breadcrumbs and breadcrumbs.size > 0 -%}
+  ,
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {%- for crumb in breadcrumbs -%}
+        {
+          "@type": "ListItem",
+          "position": {{ forloop.index }},
+          "name": {{ crumb.name | jsonify }},
+          "item": {{ crumb.item | absolute_url | jsonify }}
+        }{% unless forloop.last %},{% endunless %}
+      {%- endfor -%}
+    ]
+  }
+  {%- endif -%}
+}

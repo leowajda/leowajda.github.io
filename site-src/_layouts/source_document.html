@@ -1,0 +1,29 @@
+---
+layout: default
+---
+
+{%- assign source_module = page.source_module -%}
+{%- assign source_document = page.source_document -%}
+
+{%- capture source_body -%}
+  {%- if source_document.format == "code" -%}
+    <section class="code-panel source-code-block source-layout__content" id="source-content" data-code-block>
+      <header class="code-panel__header code-panel__header--minimal">
+        <div class="code-panel__actions">
+        {%- include icon_action_button.html icon="copy" label="Copy" class="icon-action--compact" attributes='data-code-copy-button data-copy-default-label="Copy"' -%}
+      </div>
+      </header>
+      <div class="code-panel__body code-block__content" data-code-source>{{ source_document.body | markdownify }}</div>
+    </section>
+  {%- else -%}
+    <section class="content-card source-article source-article--document source-layout__content" id="source-content">
+      {{ source_document.body | markdownify }}
+    </section>
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- include source_page_shell.html
+  header=page.source_header
+  module=source_module
+  body=source_body
+-%}

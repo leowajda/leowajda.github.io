@@ -78,7 +78,7 @@ module SiteKit
             )
           end
         end
-        validate_unique_document_paths!(module_definition, documents)
+        validate_unique_document_routes!(module_definition, documents)
         documents
       end
 
@@ -109,7 +109,7 @@ module SiteKit
                     .select { |document| document.fetch('tree_path').start_with?(prefix) }
                     .map do |document|
             { relative_path: document.fetch('tree_path').delete_prefix(prefix),
-              url: document.fetch('source_url') }
+              url: document.fetch('url') }
           end
 
           {
@@ -120,10 +120,10 @@ module SiteKit
         end
       end
 
-      def validate_unique_document_paths!(module_definition, documents)
+      def validate_unique_document_routes!(module_definition, documents)
         SiteKit::Core::Helpers.ensure_unique!(
-          documents.map { |document| document.fetch('tree_path') },
-          "Module '#{module_definition.slug}' document paths must be unique"
+          documents.map { |document| document.fetch('route_url') },
+          "Module '#{module_definition.slug}' document routes must be unique"
         )
       end
 
