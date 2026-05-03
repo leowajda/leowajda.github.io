@@ -9,7 +9,7 @@ gem 'jekyll-feed', '~> 0.17'
 gem 'jekyll-seo-tag', '~> 2.8'
 gem 'jekyll-sitemap', '~> 1.4'
 gem 'minitest', '~> 5.25'
-gem 'nokogiri', '~> 1.18'
+gem 'nokogiri', '~> 1.19'
 gem 'rubocop', '~> 1.81', require: false
 gem 'rubocop-minitest', '~> 0.38', require: false
 gem 'rubocop-performance', '~> 1.26', require: false
