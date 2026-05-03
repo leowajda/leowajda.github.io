@@ -44,7 +44,10 @@ module SiteKit
               'header_links' => page_link_resolver.links_for('problem_detail'),
               'title' => problem.fetch('title'),
               'description' => "#{problem.fetch('title')} solutions",
-              'problem_source_url' => problem.fetch('problem_source_url')
+              'problem_source_url' => problem.fetch('problem_source_url'),
+              'nav_external_url' => problem.fetch('problem_source_url'),
+              'nav_external_icon' => 'leetcode',
+              'nav_external_label' => 'Open LeetCode problem'
             }
           )
         end
@@ -67,7 +70,10 @@ module SiteKit
                 'selected_implementation_record' => implementation,
                 'title' => implementation.fetch('title'),
                 'description' => implementation.fetch('description'),
-                'problem_source_url' => implementation.fetch('problem_source_url')
+                'problem_source_url' => implementation.fetch('problem_source_url'),
+                'nav_external_url' => implementation.fetch('problem_source_url'),
+                'nav_external_icon' => 'leetcode',
+                'nav_external_label' => 'Open LeetCode problem'
               }
             )
           end

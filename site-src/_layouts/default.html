@@ -2,6 +2,10 @@
 <html lang="{{ page.lang | default: 'en' | escape }}" data-appearance="{{ site.theme_config.appearance | default: 'auto' | escape }}">
   {%- include head.html -%}
   {%- assign body_class = page.body_class | default: '' -%}
+  {%- assign search_enabled = true -%}
+  {%- if site.theme_config.search == false -%}
+    {%- assign search_enabled = false -%}
+  {%- endif -%}
   {%- assign shell_class = 'w' -%}
   {%- case page.shell -%}
     {%- when 'source' -%}
@@ -11,9 +15,9 @@
   {%- endcase -%}
   <body
     class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}"
-    data-pagefind-bundle="{{ '/pagefind/pagefind.js' | relative_url }}"
-    data-pagefind-base-url="{{ '/' | relative_url }}"
-    {% if page.search_auto_open %}data-search-auto-open{% endif %}
+    {% if search_enabled %}data-pagefind-bundle="{{ '/pagefind/pagefind.js' | relative_url }}"{% endif %}
+    {% if search_enabled %}data-pagefind-base-url="{{ '/' | relative_url }}"{% endif %}
+    {% if search_enabled and page.search_auto_open %}data-search-auto-open{% endif %}
   >
     {%- include icon-sprite.html -%}
     <main class="page-content" aria-label="Content">
@@ -27,7 +31,9 @@
       {%- include goat_counter.html -%}
     {%- endif -%}
 
-    {%- include search_overlay.html -%}
+    {%- if search_enabled -%}
+      {%- include search_overlay.html -%}
+    {%- endif -%}
 
     {%- if page.needs_math -%}
       <script src="{{ '/assets/vendor/katex/katex.min.js' | relative_url }}"></script>

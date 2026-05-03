@@ -65,6 +65,14 @@ test("flowchart canvas uses softened routed edges and explicit zoom controls", a
   await page.getByRole("button", { name: "Zoom out" }).click()
   await page.getByRole("button", { name: "Reset zoom" }).click()
   await expect(page.getByRole("button", { name: "Decision node: Is it a graph?" })).toBeVisible()
+
+  if ((page.viewportSize()?.width || 0) > 820) {
+    const widthBeforeWheel = await firstNode.evaluate((element) => element.getBoundingClientRect().width)
+    await page.locator("[data-flowchart-surface]").hover()
+    await page.mouse.wheel(0, -600)
+    await expect.poll(async () => firstNode.evaluate((element) => element.getBoundingClientRect().width))
+      .toBeGreaterThan(widthBeforeWheel)
+  }
 })
 
 test("hash selection keeps the mobile canvas position stable", async ({ page }) => {

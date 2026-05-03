@@ -27,6 +27,7 @@ theme_config:
   date_format: "%Y-%m-%d"
   show_description: true
   lowercase_titles: false
+  search: true
 
 github_url: &profile_github_url https://github.com/leowajda
 linkedin_url: &profile_linkedin_url https://www.linkedin.com/in/leowajda/
