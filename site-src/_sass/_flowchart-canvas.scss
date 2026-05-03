@@ -92,9 +92,59 @@
   height: clamp(42rem, 82svh, 68rem);
   min-height: 34rem;
   overflow: hidden;
+  position: relative;
   touch-action: none;
   user-select: none;
   width: 100%;
+}
+
+.flowchart-workspace--ready .flowchart-canvas__fallback {
+  display: none;
+}
+
+.flowchart-canvas__fallback {
+  align-content: start;
+  background: var(--surface);
+  border: thin solid var(--border);
+  display: grid;
+  gap: 0.75rem;
+  inset-block-start: 1rem;
+  inset-inline-start: 1rem;
+  max-width: min(28rem, calc(100% - 2rem));
+  padding: 1rem;
+  position: absolute;
+  z-index: 2;
+}
+
+.flowchart-canvas__fallback h2,
+.flowchart-canvas__fallback p {
+  margin: 0;
+}
+
+.flowchart-canvas__fallback nav {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.flowchart-canvas__fallback-choice {
+  border: thin solid var(--border);
+  color: inherit;
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.55rem 0.65rem;
+  text-decoration: none;
+}
+
+.flowchart-canvas__fallback-choice:hover,
+.flowchart-canvas__fallback-choice:focus-visible {
+  background: var(--surface-muted);
+}
+
+.flowchart-canvas__fallback-choice span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
 }
 
 .flowchart-canvas__surface .x6-graph {

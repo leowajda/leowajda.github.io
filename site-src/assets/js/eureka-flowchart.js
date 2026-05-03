@@ -1,15 +1,16 @@
 import { getHashValue, onReady, replaceHashValue } from "./dom.js"
 import { decorateInspector, renderMathIn } from "./eureka-flowchart-inspector.js"
-import { activeRouteId, buildNodeMetaMap, buildRoute, createFlowchartState } from "./eureka-flowchart-state.js"
+import {
+  activeRouteId,
+  buildNodeMetaMap,
+  buildRoute,
+  createFlowchartState
+} from "./eureka-flowchart-state.js"
 import {
   createGraph,
-  createZoomAnimator,
+  createViewportController,
   loadX6,
-  positionGraphStart,
-  positionInitialNode,
-  registerFlowchartNode,
-  syncGraphScale,
-  zoomGraph
+  registerFlowchartNode
 } from "./eureka-flowchart-x6.js"
 
 const replaceHash = (nodeId) => {
@@ -42,6 +43,30 @@ const readGraphData = (root) => {
   }
 }
 
+const buildChoicesBySource = ({ edges = [] }, nodeMeta) => {
+  const choicesBySource = new Map()
+
+  edges.forEach((edge) => {
+    const sourceId = edge.from || ""
+    const target = nodeMeta.get(edge.to)
+    if (!sourceId || !target) {
+      return
+    }
+
+    if (!choicesBySource.has(sourceId)) {
+      choicesBySource.set(sourceId, [])
+    }
+
+    choicesBySource.get(sourceId).push({
+      ...target,
+      answer: edge.label || target.answer || "",
+      sourceId
+    })
+  })
+
+  return choicesBySource
+}
+
 const syncNodeDataState = (node, nextState) => {
   const data = node.getData() || {}
   if (
@@ -68,6 +93,7 @@ const initializeFlowchart = async (root) => {
   }
 
   const nodeMeta = buildNodeMetaMap(graphData)
+  const choicesBySource = buildChoicesBySource(graphData, nodeMeta)
   const nodeAliasMap = new Map(
     graphData.nodes.flatMap((node) =>
       (node.aliases || []).filter(Boolean).map((alias) => [alias, node.id])
@@ -86,9 +112,11 @@ const initializeFlowchart = async (root) => {
   registerFlowchartNode(X6)
 
   const graph = createGraph(X6, surface, graphData)
-  const zoomAnimator = createZoomAnimator(graph, surface)
+  const viewport = createViewportController(graph, surface, graphData)
+  root.classList.add("flowchart-workspace--ready")
   const supportsHover = typeof window.matchMedia === "function" && window.matchMedia("(hover: hover)").matches
   const state = createFlowchartState()
+  let focusSequence = 0
 
   const hideInspector = () => {
     inspector.hidden = true
@@ -102,15 +130,17 @@ const initializeFlowchart = async (root) => {
     }
 
     const route = buildRoute(nodeMeta, nodeId)
+    const choices = choicesBySource.get(nodeId) || []
     const nextContent = template.content.cloneNode(true)
     decorateInspector(nextContent, {
       route,
+      choices,
       activePanelName: state.activePanel,
       onActivePanelChange: (panelName) => {
         state.activePanel = panelName
       },
       onSelectRouteNode: (routeNodeId) => {
-        commitSelection(routeNodeId)
+        commitSelection(routeNodeId, { focus: true })
       }
     })
     inspectorContent.replaceChildren(nextContent)
@@ -169,7 +199,20 @@ const initializeFlowchart = async (root) => {
     })
   }
 
-  const commitSelection = (nodeId, { updateHash = true } = {}) => {
+  const scheduleViewportFocus = (nodeId, options = {}) => {
+    const currentSequence = ++focusSequence
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (currentSequence !== focusSequence || state.selectedId !== nodeId) {
+          return
+        }
+
+        viewport.focusNode(nodeId, options)
+      })
+    })
+  }
+
+  const commitSelection = (nodeId, { updateHash = true, focus = true, immediate = false } = {}) => {
     nodeId = resolveNodeId(nodeId)
     if (!nodeMeta.has(nodeId)) {
       return
@@ -181,14 +224,20 @@ const initializeFlowchart = async (root) => {
     renderNodeState()
     scheduleNodeStateRender()
 
+    if (focus) {
+      scheduleViewportFocus(nodeId, { immediate })
+    }
+
     if (updateHash) {
       replaceHash(nodeId)
     }
   }
 
   const clearSelection = ({ updateHash = true } = {}) => {
+    focusSequence += 1
     state.selectedId = ""
     state.previewId = null
+    viewport.cancel()
     hideInspector()
     renderNodeState()
     scheduleNodeStateRender()
@@ -262,18 +311,35 @@ const initializeFlowchart = async (root) => {
     }
   })
 
+  surface.addEventListener("wheel", (event) => {
+    focusSequence += 1
+    viewport.zoomFromWheel(event)
+  }, { passive: false })
+
+  surface.addEventListener("pointerdown", (event) => {
+    if (event.button === 0 && !closestElement(event.target, "[data-flowchart-node]")) {
+      focusSequence += 1
+      viewport.cancel()
+    }
+  })
+
   zoomControls?.addEventListener("click", (event) => {
     const button = closestElement(event.target, "[data-flowchart-zoom]")
     if (!button) {
       return
     }
 
-    zoomGraph(zoomAnimator, graphData, button.dataset.flowchartZoom || "")
+    focusSequence += 1
+    viewport.zoomAction(button.dataset.flowchartZoom || "", { selectedNodeId: state.selectedId })
   })
 
   window.addEventListener("hashchange", () => {
     const hashNodeId = resolveNodeId(getHashValue())
     if (hashNodeId && nodeMeta.has(hashNodeId)) {
+      if (hashNodeId === state.selectedId) {
+        return
+      }
+
       commitSelection(hashNodeId, { updateHash: false })
       return
     }
@@ -282,19 +348,19 @@ const initializeFlowchart = async (root) => {
   })
 
   window.addEventListener("resize", () => {
-    zoomAnimator.cancel()
-    syncGraphScale(graph, graphData)
-    if (!state.selectedId) {
-      positionGraphStart(graph)
+    focusSequence += 1
+    viewport.cancel()
+    if (state.selectedId) {
+      viewport.refocusSelected(state.selectedId)
+    } else {
+      viewport.positionStart()
     }
   })
 
-  syncGraphScale(graph, graphData)
-  positionGraphStart(graph)
+  viewport.positionStart()
 
   if (initialHashNodeId && nodeMeta.has(initialHashNodeId)) {
-    commitSelection(initialHashNodeId, { updateHash: false })
-    positionInitialNode(graph, initialHashNodeId, surface)
+    commitSelection(initialHashNodeId, { updateHash: false, immediate: true })
     return
   }
 

@@ -1,10 +1,17 @@
 const FLOWCHART_NODE_SHAPE = "eureka-flowchart-node"
 const FLOWCHART_CONTENT_PADDING = 24
 const MOBILE_GRAPH_X_COMPRESSION = 0.5
-const ZOOM_MAX = 1.45
-const ZOOM_MIN = 0.35
-const ZOOM_STEP = 0.14
-const ZOOM_ANIMATION_MS = 180
+const ZOOM_MAX = 1.38
+const ZOOM_MIN = 0.32
+const ZOOM_STEP = 0.065
+const ZOOM_ANIMATION_MS = 220
+const FOCUS_ANIMATION_MS = 520
+const RESIZE_FOCUS_ANIMATION_MS = 180
+const WHEEL_ZOOM_ANIMATION_MS = 150
+const WHEEL_ZOOM_MAX_DELTA = 240
+const WHEEL_ZOOM_SENSITIVITY = 0.0007
+const FOCUS_SCALE = 0.78
+const ONE_TO_ONE_SCALE = 1
 const ROUTER_PADDING = 20
 const MOBILE_ROUTER_PADDING = 10
 const ROUTER_STEP = 20
@@ -233,6 +240,9 @@ const viewportCenter = (surface) => ({
 
 const clampZoom = (scale) => Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, scale))
 
+const clampWheelDelta = (delta) =>
+  Math.min(WHEEL_ZOOM_MAX_DELTA, Math.max(-WHEEL_ZOOM_MAX_DELTA, delta))
+
 const currentGraphScale = (graph) => {
   const zoom = graph.zoom()
   if (Number.isFinite(zoom)) {
@@ -242,11 +252,62 @@ const currentGraphScale = (graph) => {
   return toNumber(graph.scale()?.sx, 1)
 }
 
+const currentTranslation = (graph) => {
+  const translation = graph.translate()
+  return {
+    tx: toNumber(translation?.tx, 0),
+    ty: toNumber(translation?.ty, 0)
+  }
+}
+
+const currentTransform = (graph) => ({
+  scale: currentGraphScale(graph),
+  ...currentTranslation(graph)
+})
+
 const prefersReducedMotion = () =>
   typeof window.matchMedia === "function" &&
   window.matchMedia("(prefers-reduced-motion: reduce)").matches
 
 const easeOutCubic = (progress) => 1 - ((1 - progress) ** 3)
+
+const localPointAtViewportPoint = (graph, point) => {
+  const { scale, tx, ty } = currentTransform(graph)
+  return {
+    x: (point.x - tx) / scale,
+    y: (point.y - ty) / scale
+  }
+}
+
+const translationForLocalPoint = (localPoint, viewportPoint, scale) => ({
+  tx: viewportPoint.x - localPoint.x * scale,
+  ty: viewportPoint.y - localPoint.y * scale
+})
+
+const nodeCenterPoint = (node) => {
+  const bbox = node.getBBox()
+  return {
+    x: bbox.x + bbox.width / 2,
+    y: bbox.y + bbox.height / 2
+  }
+}
+
+const nodeById = (graph, nodeId) =>
+  graph.getNodes().find((node) => node.id === nodeId)
+
+const pointerViewportPoint = (surface, event) => {
+  const rect = surface.getBoundingClientRect()
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  }
+}
+
+const syncTransformDataset = (surface, transform) => {
+  surface.dataset.flowchartScale = transform.scale.toFixed(3)
+  surface.dataset.flowchartTranslateX = Math.round(transform.tx).toString()
+  surface.dataset.flowchartTranslateY = Math.round(transform.ty).toString()
+}
 
 export const loadX6 = (url) => {
   if (window.X6?.Graph) {
@@ -338,18 +399,159 @@ export const createGraph = ({ Graph }, surface, graphData) => {
     panning: {
       enabled: true,
       eventTypes: ["leftMouseDown"]
-    },
-    mousewheel: {
-      enabled: true,
-      minScale: ZOOM_MIN,
-      maxScale: ZOOM_MAX,
-      factor: 1.05,
-      zoomAtMousePosition: true
     }
   })
 
   graph.fromJSON(buildX6Data(graphData, { compressX: usesMobileGraphLayout() }))
   return graph
+}
+
+export const createViewportController = (graph, surface, graphData) => {
+  let frameId = 0
+
+  const cancel = () => {
+    if (frameId) {
+      window.cancelAnimationFrame(frameId)
+      frameId = 0
+    }
+    delete surface.dataset.flowchartAnimating
+  }
+
+  const apply = (transform) => {
+    const nextTransform = {
+      scale: clampZoom(transform.scale),
+      tx: transform.tx,
+      ty: transform.ty
+    }
+    graph.zoomTo(nextTransform.scale, { maxScale: ZOOM_MAX, minScale: ZOOM_MIN })
+    graph.translate(nextTransform.tx, nextTransform.ty)
+    syncTransformDataset(surface, nextTransform)
+  }
+
+  const animateTo = (targetTransform, { duration = ZOOM_ANIMATION_MS, immediate = false } = {}) => {
+    const startTransform = currentTransform(graph)
+    const endTransform = {
+      scale: clampZoom(targetTransform.scale),
+      tx: targetTransform.tx,
+      ty: targetTransform.ty
+    }
+    cancel()
+
+    if (immediate || prefersReducedMotion() || duration <= 0) {
+      apply(endTransform)
+      return
+    }
+
+    surface.dataset.flowchartAnimating = "true"
+    const startedAt = window.performance.now()
+    const step = (now) => {
+      const progress = Math.min(1, (now - startedAt) / duration)
+      const easedProgress = easeOutCubic(progress)
+      apply({
+        scale: startTransform.scale + ((endTransform.scale - startTransform.scale) * easedProgress),
+        tx: startTransform.tx + ((endTransform.tx - startTransform.tx) * easedProgress),
+        ty: startTransform.ty + ((endTransform.ty - startTransform.ty) * easedProgress)
+      })
+
+      if (progress < 1) {
+        frameId = window.requestAnimationFrame(step)
+      } else {
+        frameId = 0
+        delete surface.dataset.flowchartAnimating
+      }
+    }
+
+    frameId = window.requestAnimationFrame(step)
+  }
+
+  const zoomTo = (targetScale, {
+    anchor = viewportCenter(surface),
+    duration = ZOOM_ANIMATION_MS,
+    immediate = false
+  } = {}) => {
+    const scale = clampZoom(targetScale)
+    const localAnchor = localPointAtViewportPoint(graph, anchor)
+    animateTo(
+      {
+        scale,
+        ...translationForLocalPoint(localAnchor, anchor, scale)
+      },
+      { duration, immediate }
+    )
+  }
+
+  const focusNode = (nodeId, {
+    scale = FOCUS_SCALE,
+    duration = FOCUS_ANIMATION_MS,
+    immediate = false
+  } = {}) => {
+    const node = nodeById(graph, nodeId)
+    if (!node) {
+      return false
+    }
+
+    const targetScale = clampZoom(scale)
+    const center = viewportCenter(surface)
+    animateTo(
+      {
+        scale: targetScale,
+        ...translationForLocalPoint(nodeCenterPoint(node), center, targetScale)
+      },
+      { duration, immediate }
+    )
+    return true
+  }
+
+  const positionStart = () => {
+    cancel()
+    graph.zoomTo(preferredScale(graphData), { maxScale: ZOOM_MAX, minScale: ZOOM_MIN })
+    graph.positionContent("top-left")
+    graph.translateBy(FLOWCHART_CONTENT_PADDING, FLOWCHART_CONTENT_PADDING)
+    syncTransformDataset(surface, currentTransform(graph))
+  }
+
+  return {
+    cancel,
+    focusNode,
+    positionStart,
+    scale() {
+      return currentGraphScale(graph)
+    },
+    zoomAction(action, { selectedNodeId = "" } = {}) {
+      if (action === "in") {
+        zoomTo(currentGraphScale(graph) + ZOOM_STEP)
+        return
+      }
+
+      if (action === "out") {
+        zoomTo(currentGraphScale(graph) - ZOOM_STEP)
+        return
+      }
+
+      if (action === "reset") {
+        if (selectedNodeId && focusNode(selectedNodeId, { scale: ONE_TO_ONE_SCALE })) {
+          return
+        }
+
+        zoomTo(ONE_TO_ONE_SCALE)
+      }
+    },
+    zoomFromWheel(event) {
+      event.preventDefault()
+      const delta = clampWheelDelta(event.deltaY)
+      const scaleFactor = Math.exp(-delta * WHEEL_ZOOM_SENSITIVITY)
+      zoomTo(currentGraphScale(graph) * scaleFactor, {
+        anchor: pointerViewportPoint(surface, event),
+        duration: WHEEL_ZOOM_ANIMATION_MS
+      })
+    },
+    refocusSelected(nodeId) {
+      focusNode(nodeId, {
+        scale: currentGraphScale(graph),
+        duration: RESIZE_FOCUS_ANIMATION_MS
+      })
+    }
+  }
 }
 
 export const syncGraphScale = (graph, graphData) => {
@@ -368,6 +570,7 @@ export const createZoomAnimator = (graph, surface) => {
 
   const apply = (scale, center) => {
     graph.zoomTo(clampZoom(scale), { center, maxScale: ZOOM_MAX, minScale: ZOOM_MIN })
+    syncTransformDataset(surface, currentTransform(graph))
   }
 
   const to = (targetScale) => {
@@ -430,17 +633,18 @@ export const positionGraphStart = (graph) => {
 export const positionInitialNode = (graph, nodeId, surface) => {
   window.requestAnimationFrame(() => {
     window.requestAnimationFrame(() => {
-      const node = graph.getNodes().find((entry) => entry.id === nodeId)
+      const node = nodeById(graph, nodeId)
       if (!node) {
         return
       }
 
-      const bbox = node.getBBox()
+      const center = viewportCenter(surface)
       const scale = currentGraphScale(graph)
       graph.translate(
-        surface.clientWidth / 2 - (bbox.x + bbox.width / 2) * scale,
-        surface.clientHeight / 2 - (bbox.y + bbox.height / 2) * scale
+        center.x - nodeCenterPoint(node).x * scale,
+        center.y - nodeCenterPoint(node).y * scale
       )
+      syncTransformDataset(surface, currentTransform(graph))
     })
   })
 }

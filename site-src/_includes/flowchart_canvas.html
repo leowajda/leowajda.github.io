@@ -11,11 +11,37 @@
   <article class="flowchart-canvas-shell">
     <div class="flowchart-canvas__toolbar" data-flowchart-zoom-controls aria-label="Flowchart zoom controls">
       <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="out" aria-label="Zoom out">-</button>
-      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="reset" aria-label="Reset zoom">1:1</button>
+      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="reset" aria-label="Zoom to 1:1">1:1</button>
       <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="in" aria-label="Zoom in">+</button>
     </div>
     <div class="flowchart-canvas__viewport" data-flowchart-viewport tabindex="0" aria-label="{{ flowchart.title | escape }}">
-      <div class="flowchart-canvas__surface" data-flowchart-surface></div>
+      <div class="flowchart-canvas__surface" data-flowchart-surface>
+        <div class="flowchart-canvas__fallback" data-flowchart-fallback>
+          <p class="section-eyebrow">Decision Path</p>
+          <h2>Is it a graph?</h2>
+          <nav aria-label="Start flowchart">
+            {%- assign graph_nodes = canvas.graph.nodes | default: empty -%}
+            {%- assign graph_edges = canvas.graph.edges | default: empty -%}
+            {%- for edge in graph_edges -%}
+              {%- if edge.from == 'graph' -%}
+                {%- assign target_node = nil -%}
+                {%- for graph_node in graph_nodes -%}
+                  {%- if graph_node.id == edge.to -%}
+                    {%- assign target_node = graph_node -%}
+                    {%- break -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- if target_node -%}
+                  <a class="flowchart-canvas__fallback-choice" href="#{{ target_node.id | escape }}">
+                    <span>{{ edge.label | capitalize | escape }}</span>
+                    <strong>{{ target_node.text | replace: '$', '' | escape }}</strong>
+                  </a>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          </nav>
+        </div>
+      </div>
       <script type="application/json" data-flowchart-graph>{{ canvas.graph | jsonify }}</script>
     </div>
   </article>
@@ -32,6 +58,9 @@
   </aside>
 
   <div hidden>
+    {%- for graph_node in canvas.graph.nodes -%}
+      <span id="{{ graph_node.id | escape }}"></span>
+    {%- endfor -%}
     {%- for node_payload in node_payloads -%}
       <template data-flowchart-template="{{ node_payload.node.id | escape }}">
         {%- include flowchart_node_content.html payload=node_payload templates_url=templates_url -%}

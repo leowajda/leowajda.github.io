@@ -38,7 +38,7 @@
 - Prefer static generation over runtime assembly. Generate structured data, pages, search records, navigation, and metadata during the build unless there is a clear user-facing reason to defer work to JavaScript.
 - JavaScript should enhance rendered HTML. Do not move content, navigation, or search indexing into browser code when Jekyll, Liquid, data files, front matter, or build-time Ruby can express the requirement.
 - Search is Pagefind-backed. Use Pagefind's documented indexing, metadata, filters, sorting, and API model instead of inventing a parallel search system.
-- Algorithm template snippets are source files under `sources/eureka-templates`, loaded by Ruby at build time, then rendered statically by Jekyll. Do not put editable code snippets back into YAML string blocks.
+- Algorithm template snippets are source files under `sources/templates`, loaded by Ruby at build time, then rendered statically by Jekyll. Do not put editable code snippets back into YAML string blocks.
 
 ## Architecture Principles
 - Keep the program algebra clean: each component should have a small explicit input, a predictable output, and one reason to change.
@@ -102,7 +102,7 @@
 
 ## Templates
 - Template guide metadata belongs in `site-src/_data/eureka/template_guide.yml`, `topics.yml`, and `template_languages.yml`.
-- Template code bodies belong in `sources/eureka-templates/<template-id>/<language>.<extension>`.
+- Template code bodies belong in `sources/templates/<template-id>/<language>.<extension>`.
 - Keep template code minimal and reusable. Do not include package declarations, imports, `#include`, `using namespace`, or `class Solution` boilerplate.
 - The Ruby code-source repository validates language coverage and feeds the Jekyll-rendered code collection model. If a new template or language is added, update the source files and the language catalog together.
 

@@ -29,6 +29,7 @@ const createInspectorTab = (label, panelName) => {
 
 export const decorateInspector = (content, {
   route,
+  choices,
   activePanelName = "summary",
   onActivePanelChange,
   onSelectRouteNode
@@ -45,7 +46,7 @@ export const decorateInspector = (content, {
   const notePanel = templateRoot.querySelector("[data-flowchart-note]")
   const templatesPanel = templateRoot.querySelector("[data-flowchart-templates]")
   const referencesPanel = templateRoot.querySelector("[data-flowchart-references]")
-  const routePanel = createRoutePanel(route, onSelectRouteNode)
+  const routePanel = createRoutePanel(route, { choices, onSelectRouteNode })
 
   if (notePanel) {
     const prose = notePanel.querySelector(".flowchart-prose")

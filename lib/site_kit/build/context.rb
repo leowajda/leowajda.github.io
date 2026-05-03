@@ -57,7 +57,7 @@ module SiteKit
           topics: eureka_data.fetch('topics', []),
           template_guide: eureka_data.fetch('template_guide', {}),
           flowchart_data: flowchart_data,
-          code_source_root: File.join(SiteKit::Core::Helpers.repo_root, 'sources', 'eureka-templates'),
+          code_source_root: File.join(SiteKit::Core::Helpers.repo_root, 'sources', 'templates'),
           language_catalog: eureka_data.fetch('template_languages', {}),
           code_collection_config: app_config.code_collection
         )
