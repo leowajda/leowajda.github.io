@@ -13,7 +13,7 @@ module SiteKit
       end
 
       def records
-        flowchart.fetch('nodes').map do |node|
+        graph_index.node_by_id.values.map do |node|
           node_record(node, summaries.fetch(node.fetch('id'), {}))
         end
       end
@@ -21,6 +21,10 @@ module SiteKit
       private
 
       attr_reader :flowchart, :summaries, :factory
+
+      def graph_index
+        @graph_index ||= SiteKit::Flowcharts::GraphIndex.new(flowchart: flowchart)
+      end
 
       def node_record(node, summary)
         title = node_display_text(node)
@@ -114,13 +118,11 @@ module SiteKit
       end
 
       def nodes_by_id
-        @nodes_by_id ||= flowchart.fetch('nodes').to_h { |node| [node.fetch('id'), node] }
+        graph_index.node_by_id
       end
 
       def incoming_edges_by_target
-        @incoming_edges_by_target ||= flowchart.fetch('edges').to_h do |edge|
-          [edge.fetch('to'), edge]
-        end
+        graph_index.incoming_edges_by_target
       end
     end
   end

@@ -65,7 +65,8 @@ module SiteKit
 
       def resolve_path(current_file, href)
         path_part, anchor = href.split('#', 2)
-        decoded_path = CGI.unescape(path_part.to_s)
+        path_without_query = path_part.to_s.split('?', 2).first
+        decoded_path = CGI.unescape(path_without_query.to_s)
         decoded_anchor = CGI.unescape(anchor.to_s)
 
         return [current_file, decoded_anchor] if decoded_path.empty?

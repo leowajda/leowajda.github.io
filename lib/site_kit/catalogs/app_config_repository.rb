@@ -8,7 +8,7 @@ module SiteKit
       TEXT_FILE_FORMATS = %w[code markdown].freeze
 
       def initialize(data_record)
-        @data_record = SiteKit::Core::Helpers.ensure_hash(data_record, 'site data.site.app')
+        @schema = SiteKit::Core::Schema.new(data_record, 'site data.site.app')
       end
 
       def load
@@ -28,57 +28,58 @@ module SiteKit
 
       private
 
-      attr_reader :data_record
+      attr_reader :schema
 
       def validate_eureka!(record)
-        browser = SiteKit::Core::Helpers.ensure_hash(record.fetch('browser'), 'site data.site.app.eureka.browser')
-        record.fetch('catalog_version')
-        record.fetch('metadata_keys')
-        record.fetch('implementation_keys')
-        browser.fetch('toolbar_label')
-        browser.fetch('variant_group_label')
-        browser.fetch('variant_group_visibility')
-        browser.fetch('variant_presentation')
+        eureka = SiteKit::Core::Schema.new(record, 'site data.site.app.eureka')
+        browser = SiteKit::Core::Schema.new(eureka.required_hash('browser'), 'site data.site.app.eureka.browser')
+
+        eureka.required_integer('catalog_version')
+        eureka.required_array_of_strings('metadata_keys')
+        eureka.required_array_of_strings('implementation_keys')
+        browser.required_string('toolbar_label')
+        browser.required_string('variant_group_label')
+        browser.required_string('variant_group_visibility')
+        browser.required_string('variant_presentation')
       end
 
       def validate_source_notes!(record)
-        record.fetch('catalog_version')
-        record.fetch('ignored_directories')
-        validate_text_file_metadata!(text_file_metadata(record))
+        source_notes = SiteKit::Core::Schema.new(record, 'site data.site.app.source_notes')
+
+        source_notes.required_integer('catalog_version')
+        source_notes.required_array_of_strings('ignored_directories')
+        validate_text_file_metadata!(source_notes.required_hash('text_file_metadata'))
       end
 
       def validate_code_collection!(record)
-        record.fetch('default_variant_label')
-        record.fetch('default_toolbar_label')
-        record.fetch('variant_icons')
-        record.fetch('implementation_modes')
+        code_collection = SiteKit::Core::Schema.new(record, 'site data.site.app.code_collection')
+
+        code_collection.required_string('default_variant_label')
+        code_collection.required_string('default_toolbar_label')
+        code_collection.required_hash('variant_icons')
+        code_collection.required_array('implementation_modes')
       end
 
       def section(key)
-        SiteKit::Core::Helpers.ensure_hash(data_record.fetch(key), "site data.site.app.#{key}")
-      end
-
-      def text_file_metadata(record)
-        SiteKit::Core::Helpers.ensure_hash(
-          record.fetch('text_file_metadata'),
-          'site data.site.app.source_notes.text_file_metadata'
-        )
+        schema.required_hash(key)
       end
 
       def validate_text_file_metadata!(metadata)
         metadata.each do |extension, record|
+          entry = SiteKit::Core::Schema.new(record, "site data.site.app.source_notes.text_file_metadata.#{extension}")
+
           unless extension.start_with?('.')
             raise SiteKit::ConfigurationError,
                   "source_notes.text_file_metadata key '#{extension}' must start with ."
           end
 
-          format = record.fetch('format')
+          format = entry.required_string('format')
           unless TEXT_FILE_FORMATS.include?(format)
             raise SiteKit::ConfigurationError,
                   "source_notes.text_file_metadata.#{extension}.format must be code or markdown"
           end
 
-          syntax = record.fetch('syntax')
+          syntax = entry.required_string('syntax')
           if format == 'code' && syntax.empty?
             raise SiteKit::ConfigurationError,
                   "source_notes.text_file_metadata.#{extension}.syntax must not be empty for code files"

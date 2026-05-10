@@ -11,7 +11,10 @@ module SiteKit
 
       def records
         @records ||= [
-          SiteKit::Search::PageRecordBuilder.new(factory: factory),
+          SiteKit::Search::PageRecordBuilder.new(
+            pages: site.pages,
+            factory: factory
+          ),
           SiteKit::Search::ProblemRecordBuilder.new(
             browsers: context.eureka_context.browsers,
             factory: factory

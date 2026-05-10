@@ -44,6 +44,36 @@ const expectCentered = async (page, locator, tolerance = 90) => {
   await expect.poll(async () => centerOffset(page, locator)).toBeLessThan(tolerance)
 }
 
+const trackUnexpectedErrors = (page) => {
+  const errors = []
+
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      errors.push(message.text())
+    }
+  })
+  page.on("pageerror", (error) => {
+    errors.push(error.message)
+  })
+
+  return errors
+}
+
+const setZoomSlider = async (page, percent) => {
+  await page.getByRole("slider", { name: "Zoom" }).evaluate((input, value) => {
+    input.value = value.toString()
+    input.dispatchEvent(new Event("input", { bubbles: true }))
+  }, percent)
+}
+
+const visibleFlowchartNodeCount = async (page) =>
+  flowchartSurface(page).locator("[data-flowchart-node]").evaluateAll((nodes) =>
+    nodes.filter((node) => {
+      const rect = node.getBoundingClientRect()
+      return rect.width > 0 && rect.height > 0
+    }).length
+  )
+
 test("flowchart nodes expose template guide targets", async ({ page }) => {
   await page.goto("/writing/algorithmic-flowchart/#directed-graph-topo")
 
@@ -65,6 +95,55 @@ test("flowchart renders a static fallback before JavaScript enhancement", async 
   expect(html).toContain("Yes")
   expect(html).toContain("Is it a tree?")
   expect(html).toContain("Need the kth smallest or largest?")
+})
+
+test("flowchart page versions JavaScript asset URLs", async ({ page }) => {
+  const response = await page.request.get("/writing/algorithmic-flowchart/")
+  const html = await response.text()
+
+  expect(html).toMatch(/\/assets\/css\/main\.css\?v=\d+/)
+  expect(html).toMatch(/\/site\.webmanifest\?v=\d+/)
+  expect(html).toMatch(/\/assets\/js\/core\.js\?v=\d+/)
+  expect(html).toMatch(/\/assets\/js\/eureka-flowchart\.js\?v=\d+/)
+  expect(html).toMatch(/data-pagefind-bundle="\/pagefind\/pagefind\.js\?v=\d+"/)
+  expect(html).toMatch(/"\/assets\/js\/dom\.js":"\/assets\/js\/dom\.js\?v=\d+"/)
+  expect(html).toMatch(/"\/assets\/js\/eureka-flowchart-node-state\.js":"\/assets\/js\/eureka-flowchart-node-state\.js\?v=\d+"/)
+  expect(html).toMatch(/data-flowchart-x6-url="\/assets\/vendor\/x6\/x6\.min\.js\?v=\d+"/)
+})
+
+test("browser requests versioned local JavaScript modules", async ({ page }) => {
+  const scriptRequests = []
+
+  page.on("request", (request) => {
+    const url = new URL(request.url())
+    if (url.pathname.startsWith("/assets/js/")) {
+      scriptRequests.push(url)
+    }
+  })
+
+  await page.goto("/writing/algorithmic-flowchart/")
+  await expect(page.getByRole("button", { name: "Decision node: Is it a graph?" })).toBeVisible()
+
+  expect(scriptRequests.map((url) => url.pathname)).toContain("/assets/js/dom.js")
+  expect(scriptRequests.map((url) => url.pathname)).toContain("/assets/js/eureka-flowchart-node-state.js")
+  expect(scriptRequests.filter((url) => !url.searchParams.has("v")).map((url) => url.pathname)).toEqual([])
+})
+
+test("flowchart keeps the static fallback until the enhanced canvas is visible", async ({ page }) => {
+  await page.goto("/writing/algorithmic-flowchart/")
+
+  await expect(page.locator("[data-flowchart]")).toHaveClass(/flowchart-workspace--rendered/)
+  await expect(page.locator("[data-flowchart-fallback]")).toBeHidden()
+  await expect.poll(async () => visibleFlowchartNodeCount(page)).toBeGreaterThan(0)
+})
+
+test("flowchart fallback remains visible when X6 cannot load", async ({ page }) => {
+  await page.route("**/assets/vendor/x6/x6.min.js*", (route) => route.abort())
+  await page.goto("/writing/algorithmic-flowchart/")
+
+  await expect(page.locator("[data-flowchart]")).not.toHaveClass(/flowchart-workspace--rendered/)
+  await expect(page.locator("[data-flowchart-fallback]")).toBeVisible()
+  await expect(page.getByRole("heading", { name: "Is it a graph?", level: 2 })).toBeVisible()
 })
 
 test("generic dynamic programming nodes link to the broad template group", async ({ page }) => {
@@ -101,36 +180,105 @@ test("flowchart canvas labels branches on X6 ports instead of edges", async ({ p
   await expect(surface.locator(".x6-port-label").getByText("No").first()).toBeVisible()
 })
 
-test("flowchart canvas uses softened routed edges and explicit zoom controls", async ({ page }) => {
+test("flowchart canvas uses softened routed edges and stateful zoom controls", async ({ page }) => {
   await page.goto("/writing/algorithmic-flowchart/")
 
   const firstNode = page.locator('[data-flowchart-node-id="graph"]')
   await expect(firstNode).toBeVisible()
+  await expect(page.getByRole("slider", { name: "Zoom" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Zoom out" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Zoom in" })).toBeVisible()
+  await expect(page.getByRole("button", { name: "Reset zoom" })).toBeVisible()
+  await expect(page.getByRole("slider", { name: "Zoom" })).toHaveAttribute("min", "32")
+  await expect(page.getByRole("slider", { name: "Zoom" })).toHaveAttribute("max", "138")
+  await expect(page.locator("[data-flowchart-minimap]")).toHaveCount(0)
 
   const curvedEdgeCount = await page.locator("[data-flowchart-surface] .x6-edge path").evaluateAll((paths) =>
     paths.filter((path) => (path.getAttribute("d") || "").includes("C")).length
   )
   expect(curvedEdgeCount).toBeGreaterThan(0)
+})
 
-  const widthBefore = await firstNode.evaluate((element) => element.getBoundingClientRect().width)
-  await page.getByRole("button", { name: "Zoom in" }).click()
-  await expect.poll(async () => firstNode.evaluate((element) => element.getBoundingClientRect().width))
-    .toBeGreaterThan(widthBefore)
+test("flowchart wheel input keeps page scrolling separate from deliberate zoom", async ({ page }) => {
+  await page.goto("/writing/algorithmic-flowchart/")
 
-  await page.getByRole("button", { name: "Zoom out" }).click()
-  await page.getByRole("button", { name: "Zoom to 1:1" }).click()
-  await expectScaleNear(page, 1)
-  await expect(page.getByRole("button", { name: "Decision node: Is it a graph?" })).toBeVisible()
+  const firstNode = page.locator('[data-flowchart-node-id="graph"]')
+  await expect(firstNode).toBeVisible()
+
+  await flowchartSurface(page).hover()
+  const scaleBeforeWheel = await flowchartScale(page)
+  const scrollBefore = await page.evaluate(() => globalThis.scrollY)
+  await page.mouse.wheel(0, 600)
+
+  await expect.poll(async () => page.evaluate(() => globalThis.scrollY)).toBeGreaterThan(scrollBefore)
+  await expect.poll(async () => Math.abs((await flowchartScale(page)) - scaleBeforeWheel)).toBeLessThan(0.01)
 
   if ((page.viewportSize()?.width || 0) > 820) {
     const widthBeforeWheel = await firstNode.evaluate((element) => element.getBoundingClientRect().width)
+    await page.evaluate(() => globalThis.scrollTo(0, 0))
     await page.locator("[data-flowchart-surface]").hover()
+    await page.keyboard.down("Control")
     await page.mouse.wheel(0, -600)
+    await page.keyboard.up("Control")
     await expect.poll(async () => {
       const width = await firstNode.evaluate((element) => element.getBoundingClientRect().width)
       return Math.abs(width - widthBeforeWheel)
     }).toBeGreaterThan(4)
   }
+})
+
+test("flowchart interactions do not emit console errors", async ({ page }) => {
+  const errors = trackUnexpectedErrors(page)
+  await page.goto("/writing/algorithmic-flowchart/")
+
+  await page.getByRole("button", { name: "Decision node: Is it a graph?" }).click()
+  await setZoomSlider(page, 100)
+  await page.evaluate(() => {
+    globalThis.location.hash = "directed-graph"
+  })
+  await page.getByRole("button", { name: "Reset zoom" }).click()
+  await page.getByRole("button", { name: "Decision Path" }).click()
+  await page.locator("[data-flowchart-panel='path']").getByRole("button", { name: "Yes: Topological Sort" }).click()
+
+  await expect(page.locator('[data-flowchart-node-id="directed-graph-topo"]')).toHaveAttribute("aria-pressed", "true")
+  expect(errors).toEqual([])
+})
+
+test("manual zoom controls preserve scale when selection changes", async ({ page }) => {
+  await page.goto("/writing/algorithmic-flowchart/")
+
+  await expect(page.getByRole("slider", { name: "Zoom" })).toBeVisible()
+  await setZoomSlider(page, 100)
+  await expectScaleNear(page, 1, 0.02)
+  await expect(flowchartSurface(page)).toHaveAttribute("data-flowchart-zoom-mode", "manual")
+
+  await page.evaluate(() => {
+    globalThis.location.hash = "directed-graph"
+  })
+
+  const selectedNode = page.locator('[data-flowchart-node-id="directed-graph"]')
+  await expect(selectedNode).toHaveAttribute("aria-pressed", "true")
+  await expectScaleNear(page, 1, 0.03)
+  await expectCentered(page, selectedNode)
+})
+
+test("reset zoom returns selection focus to automatic scale", async ({ page }) => {
+  await page.goto("/writing/algorithmic-flowchart/")
+
+  await setZoomSlider(page, 100)
+  await page.evaluate(() => {
+    globalThis.location.hash = "directed-graph"
+  })
+
+  const selectedNode = page.locator('[data-flowchart-node-id="directed-graph"]')
+  await expect(selectedNode).toHaveAttribute("aria-pressed", "true")
+  await expectScaleNear(page, 1, 0.03)
+
+  await page.getByRole("button", { name: "Reset zoom" }).click()
+
+  await expect(flowchartSurface(page)).toHaveAttribute("data-flowchart-zoom-mode", "auto")
+  await expectScaleNear(page, FOCUS_SCALE)
+  await expectCentered(page, selectedNode)
 })
 
 test("node activation focuses the selected node at the standard focus scale", async ({ page }) => {
@@ -139,10 +287,9 @@ test("node activation focuses the selected node at the standard focus scale", as
   const graphNode = page.locator('[data-flowchart-node-id="graph"]')
   await expect(graphNode).toBeVisible()
 
-  await page.getByRole("button", { name: "Zoom out" }).click()
-  await expect.poll(async () => flowchartScale(page)).toBeLessThan(1)
-
   await page.getByRole("button", { name: "Decision node: Is it a graph?" }).click()
+  await flowchartSurface(page).hover()
+  await page.mouse.wheel(0, 600)
 
   await expect(graphNode).toHaveAttribute("aria-pressed", "true")
   await expectScaleNear(page, FOCUS_SCALE)
@@ -152,7 +299,6 @@ test("node activation focuses the selected node at the standard focus scale", as
 test("decision path activation focuses route nodes at the standard focus scale", async ({ page }) => {
   await page.goto("/writing/algorithmic-flowchart/#shortest-path-dijkstra")
 
-  await page.getByRole("button", { name: "Zoom out" }).click()
   await page.getByRole("button", { name: "Decision Path" }).click()
 
   const path = page.locator("[data-flowchart-panel='path']")
@@ -190,7 +336,6 @@ test("decision path shows children for deeper decision nodes", async ({ page }) 
 test("decision path choices move forward through the flowchart", async ({ page }) => {
   await page.goto("/writing/algorithmic-flowchart/#sums")
 
-  await page.getByRole("button", { name: "Zoom out" }).click()
   await page.getByRole("button", { name: "Decision Path" }).click()
 
   const path = page.locator("[data-flowchart-panel='path']")

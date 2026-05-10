@@ -3,9 +3,9 @@
 module SiteKit
   module Flowcharts
     class NodePayloadBuilder
-      def initialize(flowchart:, incoming_edges_by_target:, topic_registry:, flowchart_summaries:)
+      def initialize(flowchart:, graph_index:, topic_registry:, flowchart_summaries:)
         @flowchart = flowchart
-        @incoming_edges_by_target = incoming_edges_by_target
+        @graph_index = graph_index
         @topic_registry = topic_registry
         @flowchart_summaries = flowchart_summaries
       end
@@ -27,7 +27,11 @@ module SiteKit
 
       private
 
-      attr_reader :flowchart, :incoming_edges_by_target, :topic_registry, :flowchart_summaries
+      attr_reader :flowchart, :graph_index, :topic_registry, :flowchart_summaries
+
+      def incoming_edges_by_target
+        graph_index.incoming_edges_by_target
+      end
 
       def flowchart_nodes
         @flowchart_nodes ||= topic_registry.fetch('flowchart_nodes', {})

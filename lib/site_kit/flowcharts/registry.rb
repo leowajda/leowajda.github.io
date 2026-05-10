@@ -9,7 +9,7 @@ module SiteKit
 
       def record
         @record ||= {
-          'incoming_edges_by_target' => incoming_edges_by_target
+          'incoming_edges_by_target' => graph_index.incoming_edges_by_target
         }
       end
 
@@ -17,16 +17,8 @@ module SiteKit
 
       attr_reader :flowchart_data
 
-      def incoming_edges_by_target
-        SiteKit::Core::Helpers.ensure_array(flowchart_data['edges'],
-                                            'Flowchart data.edges').each_with_object({}) do |edge_entry, result|
-          edge = SiteKit::Core::Helpers.ensure_hash(edge_entry, 'Flowchart edge')
-          target = SiteKit::Core::Helpers.ensure_string(edge.fetch('to'), 'Flowchart edge.to')
-          SiteKit::Core::Helpers.ensure_string(edge.fetch('from'), 'Flowchart edge.from')
-          raise SiteKit::CatalogError, "Flowchart edge targets must be unique: #{target}" if result.key?(target)
-
-          result[target] = edge
-        end
+      def graph_index
+        @graph_index ||= SiteKit::Flowcharts::GraphIndex.new(flowchart: flowchart_data)
       end
     end
   end

@@ -10,6 +10,7 @@ module SiteKit
       def initialize(manifest:, registry_record:)
         @manifest = manifest
         @registry_record = registry_record
+        @pages = SiteKit::Pages::DefinitionBuilder.new(project_slug: manifest.slug)
       end
 
       def language_pages
@@ -32,7 +33,7 @@ module SiteKit
 
       private
 
-      attr_reader :manifest, :registry_record
+      attr_reader :manifest, :registry_record, :pages
 
       def languages
         registry_record.fetch('languages')
@@ -41,15 +42,14 @@ module SiteKit
       def build_language_page(language)
         title = language.fetch('language_title')
 
-        page(
+        pages.build(
           dir: "#{manifest.route_base}/#{language.fetch('language_slug')}/",
           page_type: SOURCE_LANGUAGE_PAGE_TYPE,
+          title: title,
+          description: "Source notes for #{title}.",
           data: {
             'redirect_to' => language.fetch('modules').first&.fetch('url') || '/',
-            'project_slug' => manifest.slug,
             'language_slug' => language.fetch('language_slug'),
-            'title' => title,
-            'description' => "Source notes for #{title}.",
             'sitemap' => false
           }
         )
@@ -107,15 +107,20 @@ module SiteKit
       end
 
       def build_source_page(dir:, page_type:, **data)
-        page(dir: dir, page_type: page_type, data: source_page_data(data))
+        title = data.fetch(:title)
+
+        pages.build(
+          dir: dir,
+          page_type: page_type,
+          title: title,
+          description: "#{title} notes",
+          data: source_page_data(data)
+        )
       end
 
       def source_page_data(payload)
         {
-          'project_slug' => manifest.slug,
           'language_slug' => payload.fetch(:language_slug),
-          'title' => payload.fetch(:title),
-          'description' => "#{payload.fetch(:title)} notes",
           'source_header' => payload.fetch(:source_header),
           'source_schema' => payload.fetch(:source_schema),
           'source_module' => payload.fetch(:source_module),
@@ -164,10 +169,6 @@ module SiteKit
         return STRUCTURED_DATA_SOURCE_DOCUMENT_CODE_PARTIAL if format == 'code'
 
         STRUCTURED_DATA_SOURCE_DOCUMENT_PARTIAL
-      end
-
-      def page(dir:, page_type:, data:)
-        SiteKit::Pages::Definition.build(dir: dir, page_type: page_type, data: data)
       end
 
       def slice_record(record, keys)

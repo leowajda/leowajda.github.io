@@ -13,6 +13,24 @@ class SiteKitRenderedChecksTest < SiteKitTestCase
     end
   end
 
+  def test_internal_link_check_ignores_cache_busting_queries
+    Dir.mktmpdir do |directory|
+      FileUtils.mkdir_p(File.join(directory, 'assets', 'css'))
+      FileUtils.mkdir_p(File.join(directory, 'guide'))
+      File.write(File.join(directory, 'assets', 'css', 'main.css'), '')
+      File.write(File.join(directory, 'guide', 'index.html'), '<!doctype html><h1 id="intro">Guide</h1>')
+      File.write(File.join(directory, 'index.html'), <<~HTML)
+        <!doctype html>
+        <link rel="stylesheet" href="/assets/css/main.css?v=123">
+        <a href="/guide/?v=456#intro">Guide</a>
+        <a href="?v=789#home">Home</a>
+        <h1 id="home">Home</h1>
+      HTML
+
+      assert_empty SiteKit::Checks::InternalLinks.new(site_dir: directory).failures
+    end
+  end
+
   def test_seo_check_accepts_indexable_page_in_sitemap
     Dir.mktmpdir do |directory|
       File.write(File.join(directory, 'index.html'), <<~HTML)

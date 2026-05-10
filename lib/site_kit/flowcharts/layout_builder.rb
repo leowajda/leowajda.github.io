@@ -5,7 +5,7 @@ module SiteKit
     class LayoutBuilder
       NODE_GEOMETRY_KEYS = %w[x y width height].freeze
       EDGE_GEOMETRY_KEYS = %w[path label_x label_y].freeze
-      LEGACY_ID_PATTERN = %r{/|contraints|huh|twopointers|prefixsums|binarysearch}
+      CLEAN_ID_PATTERN = /\A[a-z0-9]+(?:-[a-z0-9]+)*\z/
 
       def initialize(flowchart_data:)
         @flowchart_data = flowchart_data
@@ -85,14 +85,15 @@ module SiteKit
       end
 
       def validate_clean_node_ids!
-        legacy_ids = source_nodes.filter_map do |node|
+        invalid_ids = source_nodes.filter_map do |node|
           node_id = node.fetch('id')
-          node_id if node_id.match?(LEGACY_ID_PATTERN)
+          node_id unless node_id.match?(CLEAN_ID_PATTERN)
         end
-        return if legacy_ids.empty?
+        return if invalid_ids.empty?
 
         raise SiteKit::CatalogError,
-              "Flowchart node ids must be clean; use aliases for legacy ids: #{legacy_ids.join(', ')}"
+              'Flowchart node ids must use lowercase slug segments; use aliases for legacy ids: ' \
+              "#{invalid_ids.join(', ')}"
       end
 
       def validate_unique_node_references!

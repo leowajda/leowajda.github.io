@@ -16,8 +16,9 @@ module SiteKit
       def attach(document)
         project_slug = document.data.fetch('project_slug')
         browser = eureka_browsers.fetch(project_slug)
-        registry = flowcharts.fetch(project_slug)
+        flowcharts.fetch(project_slug)
         topic_registry = eureka_topics.fetch(project_slug)
+        graph_index = SiteKit::Flowcharts::GraphIndex.new(flowchart: flowchart_record)
         validate_flowchart_summaries!
 
         document.data['project_title'] ||= browser.fetch('project_title')
@@ -25,10 +26,13 @@ module SiteKit
         document.data['flowchart_canvas'] = {
           'flowchart' => flowchart_record,
           'templates_url' => page_link_resolver.page_link('algorithmic_templates').fetch('url'),
-          'graph' => SiteKit::Flowcharts::X6GraphBuilder.new(flowchart: flowchart_record).build,
+          'graph' => SiteKit::Flowcharts::X6GraphBuilder.new(
+            flowchart: flowchart_record,
+            graph_index: graph_index
+          ).build,
           'node_payloads' => SiteKit::Flowcharts::NodePayloadBuilder.new(
             flowchart: flowchart_record,
-            incoming_edges_by_target: registry.fetch('incoming_edges_by_target', {}),
+            graph_index: graph_index,
             topic_registry: topic_registry,
             flowchart_summaries: flowchart_summaries
           ).build

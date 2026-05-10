@@ -3,28 +3,12 @@ import { createSearchResultSet, renderSearchResults, renderSearchTooShort, SEARC
 import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery } from "./search-query.js"
 
 const SEARCH_ROUTE = /\/search\/?$/
+let searchOverlay = null
 
 const isSearchRoute = () => SEARCH_ROUTE.test(window.location.pathname)
 
-const isEditableTarget = (target) =>
-  target instanceof HTMLInputElement
-  || target instanceof HTMLTextAreaElement
-  || target instanceof HTMLSelectElement
-  || target?.isContentEditable
-
-const queryFromUrl = () => new URLSearchParams(window.location.search).get("q") || ""
-
 const warmSearchIndex = () => {
   loadPagefind().catch(() => {})
-}
-
-const warmSearchIndexOnIdle = () => {
-  if ("requestIdleCallback" in window) {
-    window.requestIdleCallback(warmSearchIndex, { timeout: 3000 })
-    return
-  }
-
-  window.setTimeout(warmSearchIndex, 1200)
 }
 
 const renderPrompt = ({ summary, results, moreButton }) => {
@@ -40,6 +24,10 @@ const renderUnavailable = ({ summary, results, moreButton }) => {
 }
 
 export const initializeSearchOverlay = () => {
+  if (searchOverlay) {
+    return searchOverlay
+  }
+
   const dialog = document.querySelector("[data-search-overlay]")
   const input = dialog?.querySelector("[data-search-input]")
   const summary = dialog?.querySelector("[data-search-summary]")
@@ -47,7 +35,7 @@ export const initializeSearchOverlay = () => {
   const moreButton = dialog?.querySelector("[data-search-more]")
 
   if (!(dialog instanceof HTMLDialogElement) || !input || !summary || !results || !moreButton) {
-    return
+    return null
   }
 
   let opener = null
@@ -152,18 +140,9 @@ export const initializeSearchOverlay = () => {
     }
 
     warmSearchIndex()
-    window.setTimeout(() => input.focus(), 0)
+    input.focus()
     render()
   }
-
-  document.querySelectorAll("[data-search-open]").forEach((control) => {
-    control.addEventListener("click", (event) => {
-      event.preventDefault()
-      openOverlay()
-    })
-    control.addEventListener("pointerenter", warmSearchIndex, { once: true })
-    control.addEventListener("focus", warmSearchIndex, { once: true })
-  })
 
   dialog.querySelector("[data-search-close]")?.addEventListener("click", closeOverlay)
 
@@ -233,26 +212,18 @@ export const initializeSearchOverlay = () => {
     }
   })
 
-  document.addEventListener("keydown", (event) => {
-    if (dialog.open || isEditableTarget(event.target)) {
-      return
-    }
-
-    if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey) {
-      event.preventDefault()
-      openOverlay({ query: "" })
-      return
-    }
-
-    if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault()
-      openOverlay({ query: "" })
-    }
-  })
-
-  if (document.body.hasAttribute("data-search-auto-open")) {
-    openOverlay({ query: queryFromUrl() })
+  searchOverlay = {
+    open: openOverlay,
+    warm: warmSearchIndex
   }
 
-  warmSearchIndexOnIdle()
+  return searchOverlay
+}
+
+export const openSearchOverlay = (options = {}) => {
+  initializeSearchOverlay()?.open(options)
+}
+
+export const warmSearchOverlay = () => {
+  initializeSearchOverlay()?.warm()
 }

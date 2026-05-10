@@ -1,0 +1,9 @@
+{%- assign asset_path = include.path | default: '' -%}
+{%- assign asset_url = asset_path | relative_url -%}
+{%- assign asset_versions = site.data.asset_versions.versions | default: empty -%}
+{%- assign asset_version = asset_versions[asset_path] -%}
+{%- if asset_version -%}
+  {{- asset_url | append: '?v=' | append: asset_version -}}
+{%- else -%}
+  {{- asset_url -}}
+{%- endif -%}

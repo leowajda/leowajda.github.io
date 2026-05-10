@@ -82,7 +82,7 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     assert_match(/defines generated geometry: path/, error.message)
   end
 
-  def test_layout_builder_rejects_legacy_node_ids
+  def test_layout_builder_rejects_non_slug_node_ids
     source = {
       'chart' => { 'width' => 100 },
       'nodes' => [
@@ -129,8 +129,8 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
   def test_rejects_duplicate_flowchart_edge_targets
     flowchart = {
       'edges' => [
-        { 'from' => 'a', 'to' => 'b', 'path' => 'yes' },
-        { 'from' => 'c', 'to' => 'b', 'path' => 'no' }
+        { 'id' => 'a-b', 'from' => 'a', 'to' => 'b', 'path' => 'yes' },
+        { 'id' => 'c-b', 'from' => 'c', 'to' => 'b', 'path' => 'no' }
       ]
     }
 
@@ -192,5 +192,17 @@ class SiteKitFlowchartX6GraphBuilderTest < SiteKitTestCase
     assert_equal 'directed-graph', edge.fetch('from')
     assert_equal 'directed-graph-topo', edge.fetch('to')
     assert_equal 'yes', edge.fetch('label')
+    assert_equal 'graph', graph.fetch('rootId')
+    assert_equal 'maximum-minimum-dp', graph.fetch('aliasMap').fetch('max/min-dp')
+    assert_equal(
+      'Is problem related to directed acyclic graphs?',
+      graph.dig('nodeMeta', 'directed-graph', 'question')
+    )
+    assert_equal 'tree', graph.dig('nodeMeta', 'directed-graph', 'parentId')
+    assert_equal 'no', graph.dig('nodeMeta', 'directed-graph', 'answer')
+    assert_equal(
+      %w[tree kth-smallest],
+      graph.fetch('choicesBySource').fetch('graph').map { |choice| choice.fetch('id') }
+    )
   end
 end

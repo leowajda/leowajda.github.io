@@ -59,6 +59,24 @@ test("global search supports keyboard navigation and escape closing", async ({ p
   await expect(overlay).toBeHidden()
 })
 
+test("global search moves focus inside the modal and restores the opener", async ({ page }) => {
+  await page.goto("/")
+
+  const opener = page.getByRole("link", { name: "Search" })
+  await opener.focus()
+  await opener.click()
+
+  const overlay = page.getByRole("dialog", { name: "Search" })
+  const searchbox = overlay.getByRole("searchbox", { name: "Search" })
+  await expect(overlay).toBeVisible()
+  await expect(searchbox).toBeFocused()
+
+  await page.keyboard.press("Escape")
+
+  await expect(overlay).toBeHidden()
+  await expect(opener).toBeFocused()
+})
+
 test("global search preserves Pagefind result order when loading more", async ({ page }) => {
   await page.goto("/")
 

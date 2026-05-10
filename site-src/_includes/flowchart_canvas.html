@@ -2,28 +2,44 @@
 {%- assign flowchart = canvas.flowchart -%}
 {%- assign templates_url = canvas.templates_url | default: '' -%}
 {%- assign node_payloads = canvas.node_payloads | default: empty -%}
+{%- assign graph_nodes = canvas.graph.nodes | default: empty -%}
+{%- assign graph_edges = canvas.graph.edges | default: empty -%}
+{%- assign root_id = canvas.graph.rootId | default: '' -%}
+{%- capture x6_url -%}{%- include asset_url.html path='/assets/vendor/x6/x6.min.js' -%}{%- endcapture -%}
+{%- assign root_node = graph_nodes | first -%}
+{%- if root_id != '' -%}
+  {%- for graph_node in graph_nodes -%}
+    {%- if graph_node.id == root_id -%}
+      {%- assign root_node = graph_node -%}
+      {%- break -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endif -%}
 
 <section
   class="flowchart-workspace flowchart-workspace--empty"
   data-flowchart
-  data-flowchart-x6-url="{{ '/assets/vendor/x6/x6.min.js' | relative_url | escape }}"
+  data-flowchart-x6-url="{{ x6_url | strip | escape }}"
 >
   <article class="flowchart-canvas-shell">
-    <div class="flowchart-canvas__toolbar" data-flowchart-zoom-controls aria-label="Flowchart zoom controls">
-      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="out" aria-label="Zoom out">-</button>
-      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="reset" aria-label="Zoom to 1:1">1:1</button>
-      <button class="flowchart-canvas__control" type="button" data-flowchart-zoom="in" aria-label="Zoom in">+</button>
+    <div class="flowchart-canvas__controls" data-flowchart-zoom-controls hidden>
+      <button class="control-button control-button--icon flowchart-canvas__zoom-button" type="button" aria-label="Zoom out" title="Zoom out" data-flowchart-zoom-step="-1">−</button>
+      <input class="flowchart-canvas__zoom-range" type="range" step="2" aria-label="Zoom" data-flowchart-zoom-range />
+      <output class="flowchart-canvas__zoom-value" data-flowchart-zoom-value></output>
+      <button class="control-button control-button--icon flowchart-canvas__zoom-button" type="button" aria-label="Zoom in" title="Zoom in" data-flowchart-zoom-step="1">+</button>
+      <button class="control-button control-button--icon flowchart-canvas__zoom-button" type="button" aria-label="Reset zoom" title="Reset zoom" data-flowchart-zoom-reset>
+        {%- include icon.html name="reset" -%}
+      </button>
     </div>
     <div class="flowchart-canvas__viewport" data-flowchart-viewport tabindex="0" aria-label="{{ flowchart.title | escape }}">
       <div class="flowchart-canvas__surface" data-flowchart-surface>
         <div class="flowchart-canvas__fallback" data-flowchart-fallback>
-          <p class="section-eyebrow">Decision Path</p>
-          <h2>Is it a graph?</h2>
-          <nav aria-label="Start flowchart">
-            {%- assign graph_nodes = canvas.graph.nodes | default: empty -%}
-            {%- assign graph_edges = canvas.graph.edges | default: empty -%}
+          {%- if root_node -%}
+          <p class="section-eyebrow">{{ flowchart.title | default: 'Flowchart' | escape }}</p>
+          <h2>{{ root_node.text | replace: '$', '' | escape }}</h2>
+          <nav aria-label="Start {{ flowchart.title | default: 'flowchart' | escape }}">
             {%- for edge in graph_edges -%}
-              {%- if edge.from == 'graph' -%}
+              {%- if edge.from == root_node.id -%}
                 {%- assign target_node = nil -%}
                 {%- for graph_node in graph_nodes -%}
                   {%- if graph_node.id == edge.to -%}
@@ -40,6 +56,7 @@
               {%- endif -%}
             {%- endfor -%}
           </nav>
+          {%- endif -%}
         </div>
       </div>
       <script type="application/json" data-flowchart-graph>{{ canvas.graph | jsonify }}</script>

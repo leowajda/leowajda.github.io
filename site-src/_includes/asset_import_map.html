@@ -1,0 +1,4 @@
+{%- assign asset_import_map = site.data.asset_versions.import_map | default: nil -%}
+{%- if asset_import_map and asset_import_map.imports -%}
+  <script type="importmap">{{ asset_import_map | jsonify }}</script>
+{%- endif -%}

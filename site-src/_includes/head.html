@@ -10,8 +10,10 @@
     <meta name="robots" content="noindex, nofollow" />
   {%- endif -%}
 
-  <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml" />
-  <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}" />
+  {%- capture favicon_url -%}{%- include asset_url.html path='/assets/favicon.svg' -%}{%- endcapture -%}
+  {%- capture manifest_url -%}{%- include asset_url.html path='/site.webmanifest' -%}{%- endcapture -%}
+  <link rel="icon" href="{{ favicon_url | strip | escape }}" type="image/svg+xml" />
+  <link rel="manifest" href="{{ manifest_url | strip | escape }}" />
 
   {%- seo -%}
   {%- feed_meta -%}
@@ -62,8 +64,12 @@
     })()
   </script>
 
-  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}" />
+  {%- include asset_import_map.html -%}
+
+  {%- capture stylesheet_url -%}{%- include asset_url.html path='/assets/css/main.css' -%}{%- endcapture -%}
+  <link rel="stylesheet" href="{{ stylesheet_url | strip | escape }}" />
   {%- if page.needs_math -%}
-    <link rel="stylesheet" href="{{ '/assets/vendor/katex/katex.min.css' | relative_url }}" />
+    {%- capture katex_stylesheet_url -%}{%- include asset_url.html path='/assets/vendor/katex/katex.min.css' -%}{%- endcapture -%}
+    <link rel="stylesheet" href="{{ katex_stylesheet_url | strip | escape }}" />
   {%- endif -%}
 </head>

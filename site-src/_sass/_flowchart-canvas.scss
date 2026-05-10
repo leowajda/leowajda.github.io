@@ -55,34 +55,38 @@
   padding: 0;
 }
 
-.flowchart-canvas__toolbar {
-  display: flex;
-  gap: 0.35rem;
-  inset-block-start: 0.75rem;
-  inset-inline-end: 0.75rem;
-  position: absolute;
-  z-index: 5;
-}
-
-.flowchart-canvas__control {
+.flowchart-canvas__controls {
   align-items: center;
   background: var(--surface);
   border: thin solid var(--border);
+  border-bottom: 0;
   box-sizing: border-box;
-  color: var(--text);
-  cursor: pointer;
-  display: inline-grid;
-  font: inherit;
-  font-weight: bold;
-  height: 2.25rem;
-  justify-items: center;
-  min-width: 2.25rem;
-  padding: 0 0.55rem;
+  display: flex;
+  gap: 0.45rem;
+  min-width: 0;
+  padding: 0.45rem;
 }
 
-.flowchart-canvas__control:hover,
-.flowchart-canvas__control:focus-visible {
-  background: var(--surface-muted);
+.flowchart-canvas__controls[hidden] {
+  display: none;
+}
+
+.flowchart-canvas__zoom-button {
+  font-weight: bold;
+  line-height: 1;
+}
+
+.flowchart-canvas__zoom-range {
+  accent-color: var(--text);
+  flex: 1 1 12rem;
+  min-width: 7rem;
+}
+
+.flowchart-canvas__zoom-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: bold;
+  min-width: 4ch;
+  text-align: right;
 }
 
 .flowchart-canvas__surface {
@@ -98,7 +102,7 @@
   width: 100%;
 }
 
-.flowchart-workspace--ready .flowchart-canvas__fallback {
+.flowchart-workspace--rendered .flowchart-canvas__fallback {
   display: none;
 }
 
@@ -147,15 +151,15 @@
   text-transform: uppercase;
 }
 
-.flowchart-canvas__surface .x6-graph {
+.flowchart-canvas__surface.x6-graph {
   font-family: monospace;
 }
 
-.flowchart-canvas__surface .x6-graph-pannable {
+.flowchart-canvas__surface.x6-graph-pannable {
   cursor: grab;
 }
 
-.flowchart-canvas__surface .x6-graph-panning {
+.flowchart-canvas__surface.x6-graph-panning {
   cursor: grabbing;
 }
 

@@ -13,9 +13,12 @@
     {%- when 'wide' -%}
       {%- assign shell_class = shell_class | append: ' w--wide' -%}
   {%- endcase -%}
+  {%- if search_enabled -%}
+    {%- capture pagefind_bundle_url -%}{%- include asset_url.html path='/pagefind/pagefind.js' -%}{%- endcapture -%}
+  {%- endif -%}
   <body
     class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}"
-    {% if search_enabled %}data-pagefind-bundle="{{ '/pagefind/pagefind.js' | relative_url }}"{% endif %}
+    {% if search_enabled %}data-pagefind-bundle="{{ pagefind_bundle_url | strip | escape }}"{% endif %}
     {% if search_enabled %}data-pagefind-base-url="{{ '/' | relative_url }}"{% endif %}
     {% if search_enabled and page.search_auto_open %}data-search-auto-open{% endif %}
   >
@@ -36,14 +39,20 @@
     {%- endif -%}
 
     {%- if page.needs_math -%}
-      <script src="{{ '/assets/vendor/katex/katex.min.js' | relative_url }}"></script>
-      <script src="{{ '/assets/vendor/katex/contrib/auto-render.min.js' | relative_url }}"></script>
-      <script type="module" src="{{ '/assets/js/math.js' | relative_url }}"></script>
+      {%- capture katex_js_url -%}{%- include asset_url.html path='/assets/vendor/katex/katex.min.js' -%}{%- endcapture -%}
+      {%- capture katex_render_js_url -%}{%- include asset_url.html path='/assets/vendor/katex/contrib/auto-render.min.js' -%}{%- endcapture -%}
+      {%- capture math_js_url -%}{%- include asset_url.html path='/assets/js/math.js' -%}{%- endcapture -%}
+      <script src="{{ katex_js_url | strip | escape }}"></script>
+      <script src="{{ katex_render_js_url | strip | escape }}"></script>
+      <script type="module" src="{{ math_js_url | strip | escape }}"></script>
     {%- endif -%}
-    <script type="module" src="{{ '/assets/js/core.js' | relative_url }}"></script>
+    {%- capture core_js_url -%}{%- include asset_url.html path='/assets/js/core.js' -%}{%- endcapture -%}
+    <script type="module" src="{{ core_js_url | strip | escape }}"></script>
     {%- if page.custom_js -%}
       {%- for js_file in page.custom_js -%}
-        <script type="module" src="{{ '/assets/js/' | append: js_file | append: '.js' | relative_url }}"></script>
+        {%- assign custom_js_path = '/assets/js/' | append: js_file | append: '.js' -%}
+        {%- capture custom_js_url -%}{%- include asset_url.html path=custom_js_path -%}{%- endcapture -%}
+        <script type="module" src="{{ custom_js_url | strip | escape }}"></script>
       {%- endfor -%}
     {%- endif -%}
   </body>

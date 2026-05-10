@@ -8,22 +8,24 @@ module SiteKit
         @route_base = route_base
         @browser_record = browser_record
         @topics_record = topics_record
-        @page_link_resolver = page_link_resolver
+        @pages = SiteKit::Pages::DefinitionBuilder.new(
+          project_slug: project_slug,
+          page_link_resolver: page_link_resolver
+        )
       end
 
       def language_pages
         browser_record.fetch('languages').map do |language|
-          page(
+          pages.build(
             dir: "#{route_base}/#{language.fetch('slug')}/",
             page_type: EUREKA_LANGUAGE_PAGE_TYPE,
+            title: language.fetch('title'),
+            description: language.fetch('description'),
             data: {
-              'project_slug' => project_slug,
               'language_filter' => language.fetch('slug'),
               'browser_record' => browser_record,
               'active_language_record' => language,
-              'header_links' => page_link_resolver.links_for('problem_explorer'),
-              'title' => language.fetch('title'),
-              'description' => language.fetch('description')
+              'header_links' => pages.links_for('problem_explorer')
             }
           )
         end
@@ -32,23 +34,19 @@ module SiteKit
       def problem_pages
         browser_record.fetch('problems').map do |problem|
           problem_slug = problem.fetch('problem_slug')
+          topics = problem_topics(problem_slug)
 
-          page(
-            dir: "#{route_base}/problems/#{problem.fetch('problem_slug')}/",
+          pages.build(
+            dir: "#{route_base}/problems/#{problem_slug}/",
             page_type: EUREKA_PROBLEM_PAGE_TYPE,
+            title: problem.fetch('title'),
+            description: "#{problem.fetch('title')} solutions",
             data: {
-              'project_slug' => project_slug,
-              'problem_slug' => problem.fetch('problem_slug'),
+              'problem_slug' => problem_slug,
               'problem_record' => problem,
-              'problem_topics' => problem_topics(problem_slug),
-              'header_links' => page_link_resolver.links_for('problem_detail'),
-              'title' => problem.fetch('title'),
-              'description' => "#{problem.fetch('title')} solutions",
-              'problem_source_url' => problem.fetch('problem_source_url'),
-              'nav_external_url' => problem.fetch('problem_source_url'),
-              'nav_external_icon' => 'leetcode',
-              'nav_external_label' => 'Open LeetCode problem'
-            }
+              'problem_topics' => topics,
+              'header_links' => pages.links_for('problem_detail')
+            }.merge(problem_external_link(problem))
           )
         end
       end
@@ -59,22 +57,17 @@ module SiteKit
             problem_slug = implementation.fetch('problem_slug')
             implementation_id = implementation.fetch('implementation_id')
 
-            page(
+            pages.build(
               dir: "#{route_base}/problems/#{problem_slug}/embed/#{implementation_id}/",
               page_type: EUREKA_IMPLEMENTATION_PAGE_TYPE,
+              title: implementation.fetch('title'),
+              description: implementation.fetch('description'),
               data: {
-                'project_slug' => project_slug,
-                'problem_slug' => implementation.fetch('problem_slug'),
-                'implementation_id' => implementation.fetch('implementation_id'),
+                'problem_slug' => problem_slug,
+                'implementation_id' => implementation_id,
                 'problem_record' => problem,
-                'selected_implementation_record' => implementation,
-                'title' => implementation.fetch('title'),
-                'description' => implementation.fetch('description'),
-                'problem_source_url' => implementation.fetch('problem_source_url'),
-                'nav_external_url' => implementation.fetch('problem_source_url'),
-                'nav_external_icon' => 'leetcode',
-                'nav_external_label' => 'Open LeetCode problem'
-              }
+                'selected_implementation_record' => implementation
+              }.merge(problem_external_link(implementation))
             )
           end
         end
@@ -82,7 +75,7 @@ module SiteKit
 
       private
 
-      attr_reader :project_slug, :route_base, :browser_record, :topics_record, :page_link_resolver
+      attr_reader :project_slug, :route_base, :browser_record, :topics_record, :pages
 
       def problem_topics(problem_slug)
         topic_record = topics_record.fetch('problems').fetch(problem_slug)
@@ -103,8 +96,15 @@ module SiteKit
         end
       end
 
-      def page(dir:, page_type:, data:)
-        SiteKit::Pages::Definition.build(dir: dir, page_type: page_type, data: data)
+      def problem_external_link(record)
+        problem_source_url = record.fetch('problem_source_url')
+
+        {
+          'problem_source_url' => problem_source_url,
+          'nav_external_url' => problem_source_url,
+          'nav_external_icon' => 'leetcode',
+          'nav_external_label' => 'Open LeetCode problem'
+        }
       end
     end
   end
