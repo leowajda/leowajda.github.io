@@ -3,11 +3,10 @@
 module SiteKit
   module Search
     class ProblemRecordBuilder
-      KIND = 'Problem'
+      KIND = SiteKit::Search::Contract::KIND_PROBLEM
 
-      def initialize(browsers:, factory:)
+      def initialize(browsers:)
         @browsers = browsers
-        @factory = factory
       end
 
       def records
@@ -19,14 +18,14 @@ module SiteKit
 
       private
 
-      attr_reader :browsers, :factory
+      attr_reader :browsers
 
       def problem_record(problem, project)
         languages = problem.fetch('languages').map { |language| language.fetch('label') }
         approaches = problem.fetch('implementations').map { |entry| entry.fetch('approach_label') }.uniq
         template_labels = problem.fetch('template_references', []).map { |reference| reference.fetch('label') }
 
-        factory.build(
+        SiteKit::Search::Record.build(
           kind: KIND,
           title: problem.fetch('title'),
           url: problem.fetch('url'),
@@ -42,12 +41,12 @@ module SiteKit
             template_labels
           ],
           filters: {
-            'difficulty' => problem.fetch('difficulty'),
-            'language' => languages,
-            'category' => problem.fetch('categories'),
-            'template' => template_labels
+            SiteKit::Search::Contract::FILTER_DIFFICULTY => problem.fetch('difficulty'),
+            SiteKit::Search::Contract::FILTER_LANGUAGE => languages,
+            SiteKit::Search::Contract::FILTER_CATEGORY => problem.fetch('categories'),
+            SiteKit::Search::Contract::FILTER_TEMPLATE => template_labels
           },
-          priority: 90
+          priority: SiteKit::Search::Contract.priority(KIND)
         )
       end
     end

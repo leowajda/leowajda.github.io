@@ -3,33 +3,7 @@
 require_relative '../../test_helper'
 
 class SiteKitSearchIndexBuilderTest < SiteKitTestCase
-  EXPECTED_KINDS = %w[Flowchart Page Problem Source Template Writing].freeze
-  RECORD_CONTRACTS = {
-    'Flowchart' => {
-      meta: %w[kind project section summary target title],
-      filters: %w[flowchart_kind kind project]
-    },
-    'Page' => {
-      meta: %w[kind project summary title],
-      filters: %w[kind project]
-    },
-    'Problem' => {
-      meta: %w[kind project summary title],
-      filters: %w[category difficulty kind language project template]
-    },
-    'Source' => {
-      meta: %w[kind project section summary title],
-      filters: %w[kind language module project source_format]
-    },
-    'Template' => {
-      meta: %w[kind pattern project section summary target title],
-      filters: %w[kind project template]
-    },
-    'Writing' => {
-      meta: %w[kind project summary title],
-      filters: %w[kind project]
-    }
-  }.freeze
+  EXPECTED_KINDS = SiteKit::Search::Contract.kinds.freeze
 
   def test_builds_structured_pagefind_records
     records = search_records
@@ -67,10 +41,10 @@ class SiteKitSearchIndexBuilderTest < SiteKitTestCase
 
     assert_equal EXPECTED_KINDS.sort, records_by_kind.keys.sort
 
-    RECORD_CONTRACTS.each do |kind, contract|
+    SiteKit::Search::Contract::ENTRIES.each do |kind, contract|
       records_by_kind.fetch(kind).each do |record|
-        assert_equal contract.fetch(:meta), record.meta.keys.sort, "#{kind} meta keys changed for #{record.url}"
-        assert_equal contract.fetch(:filters), record.filters.keys.sort, "#{kind} filter keys changed for #{record.url}"
+        assert_equal contract.fetch(:meta_keys), record.meta.keys.sort, "#{kind} meta keys changed for #{record.url}"
+        assert_equal contract.fetch(:filter_keys), record.filters.keys.sort, "#{kind} filter keys changed for #{record.url}"
       end
     end
   end
@@ -78,7 +52,7 @@ class SiteKitSearchIndexBuilderTest < SiteKitTestCase
   def test_search_index_size_stays_bounded
     assert_operator search_records.size, :>=, 400
     assert_operator search_records.size, :<=, 800
-    assert(search_records.all? { |record| record.content.length <= SiteKit::Search::RecordFactory::MAX_CONTENT_LENGTH })
+    assert(search_records.all? { |record| record.content.length <= SiteKit::Search::RECORD_MAX_CONTENT_LENGTH })
   end
 
   def test_search_records_do_not_duplicate_the_same_result

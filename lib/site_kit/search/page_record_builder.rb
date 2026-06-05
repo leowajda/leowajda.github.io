@@ -3,11 +3,10 @@
 module SiteKit
   module Search
     class PageRecordBuilder
-      KIND = 'Page'
+      KIND = SiteKit::Search::Contract::KIND_PAGE
 
-      def initialize(pages:, factory:)
+      def initialize(pages:)
         @pages = pages
-        @factory = factory
       end
 
       def records
@@ -16,10 +15,10 @@ module SiteKit
 
       private
 
-      attr_reader :pages, :factory
+      attr_reader :pages
 
       def page_record(page)
-        factory.build(
+        SiteKit::Search::Record.build(
           kind: KIND,
           title: page.data.fetch('title'),
           url: page.url,
@@ -44,7 +43,7 @@ module SiteKit
         configured = page.data.fetch('search_content', '').to_s
         return configured unless configured.empty?
 
-        factory.clean_html(page.output || page.content)
+        SiteKit::Search::Record.clean_html(page.output || page.content)
       end
     end
   end

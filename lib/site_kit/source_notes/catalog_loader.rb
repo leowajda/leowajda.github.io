@@ -20,7 +20,7 @@ module SiteKit
 
         SiteKit::SourceNotes::Catalog.new(
           source_url_base: SiteKit::Core::Helpers.ensure_string(source.fetch('source_url_base'),
-                                                                'Zibaldone catalog.source_url_base'),
+                                                                "#{catalog_label}.source_url_base"),
           languages: parse_languages(source.fetch('languages'))
         )
       end
@@ -33,20 +33,20 @@ module SiteKit
         @raw_catalog ||= begin
           raw = SiteKit::Core::Helpers.read_text(repo_root.join('data', 'modules.yml'))
           source = SiteKit::Core::Helpers.ensure_hash(
-            SiteKit::Core::Helpers.parse_yaml(raw, 'Unable to decode Zibaldone modules catalog'),
-            'Zibaldone catalog'
+            SiteKit::Core::Helpers.parse_yaml(raw, "Unable to decode #{catalog_label}"),
+            catalog_label
           )
           version = source['version']
           expected_version = app_config.source_notes.fetch('catalog_version')
           unless version == expected_version
-            raise SiteKit::CatalogError, "Zibaldone catalog.version must be #{expected_version}"
+            raise SiteKit::CatalogError, "#{catalog_label}.version must be #{expected_version}"
           end
 
-          project = SiteKit::Core::Helpers.ensure_hash(source.fetch('project'), 'Zibaldone catalog.project')
-          project_slug = SiteKit::Core::Helpers.ensure_string(project.fetch('slug'), 'Zibaldone catalog.project.slug')
+          project = SiteKit::Core::Helpers.ensure_hash(source.fetch('project'), "#{catalog_label}.project")
+          project_slug = SiteKit::Core::Helpers.ensure_string(project.fetch('slug'), "#{catalog_label}.project.slug")
           unless project_slug == manifest.slug
             raise SiteKit::CatalogError,
-                  "Zibaldone catalog.project.slug must match '#{manifest.slug}'"
+                  "#{catalog_label}.project.slug must match '#{manifest.slug}'"
           end
 
           source
@@ -54,7 +54,7 @@ module SiteKit
       end
 
       def parse_languages(value)
-        SiteKit::Core::Helpers.ensure_hash(value, 'Zibaldone catalog.languages').map do |language_slug, entry|
+        SiteKit::Core::Helpers.ensure_hash(value, "#{catalog_label}.languages").map do |language_slug, entry|
           raw_language = SiteKit::Core::Helpers.ensure_hash(entry, "Language '#{language_slug}'")
           modules = SiteKit::Core::Helpers.ensure_hash(
             raw_language.fetch('modules'),
@@ -84,6 +84,10 @@ module SiteKit
             modules: modules.sort_by { |module_record| module_record.title.downcase }
           )
         end.sort_by { |language| language.title.downcase }
+      end
+
+      def catalog_label
+        @catalog_label ||= "#{manifest.title} source-notes catalog"
       end
     end
   end

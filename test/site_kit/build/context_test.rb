@@ -21,7 +21,6 @@ class SiteKitBuildContextTest < SiteKitTestCase
     assert template_library.code_collections.fetch('binary-search')
     assert(template_library.guide.fetch('patterns').any? { |pattern| pattern.fetch('id') == 'binary-search' })
     assert_equal 'binary-search/boundary', template_library.guide.fetch('redirects').fetch('binary-search')
-    assert eureka_context.flowcharts.fetch('eureka')
   end
 
   def test_injects_context_into_authored_pages

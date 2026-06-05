@@ -3,13 +3,12 @@
 module SiteKit
   module Search
     class FlowchartRecordBuilder
-      KIND = 'Flowchart'
+      KIND = SiteKit::Search::Contract::KIND_FLOWCHART
       PAGE_URL = '/writing/algorithmic-flowchart/'
 
-      def initialize(flowchart:, summaries:, factory:)
+      def initialize(flowchart:, summaries:)
         @flowchart = flowchart
         @summaries = summaries
-        @factory = factory
       end
 
       def records
@@ -20,7 +19,7 @@ module SiteKit
 
       private
 
-      attr_reader :flowchart, :summaries, :factory
+      attr_reader :flowchart, :summaries
 
       def graph_index
         @graph_index ||= SiteKit::Flowcharts::GraphIndex.new(flowchart: flowchart)
@@ -29,14 +28,14 @@ module SiteKit
       def node_record(node, summary)
         title = node_display_text(node)
 
-        factory.build(
+        SiteKit::Search::Record.build(
           kind: KIND,
           title:,
           url: "#{PAGE_URL}##{node.fetch('id')}",
           project: 'Eureka',
           summary: node_display_text(node),
           content: node_content(node, title, summary),
-          filters: { 'flowchart_kind' => node.fetch('kind') },
+          filters: { SiteKit::Search::Contract::FILTER_FLOWCHART_KIND => node.fetch('kind') },
           meta: { 'target' => node.fetch('id'), 'section' => section_for(node, title) },
           priority: node.fetch('kind') == 'solution' ? 80 : 60
         )
@@ -60,7 +59,7 @@ module SiteKit
       def summary_text(summary)
         return '' unless summary.is_a?(Hash)
 
-        factory.clean_text(summary.values)
+        SiteKit::Search::Record.clean_text(summary.values)
       end
 
       def section_for(node, title)
