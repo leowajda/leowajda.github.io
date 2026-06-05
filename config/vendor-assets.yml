@@ -1,0 +1,25 @@
+assets:
+  - name: x6
+    package: "@antv/x6"
+    version: 3.1.7
+    source: "Vendored UMD browser bundle from @antv/x6."
+    files:
+      - path: site-src/assets/vendor/x6/x6.min.js
+        sha256: fecd8188f50ea9ebfcb5c4cc5abd2e58b11c36c1f1e32286cb3fefa2deb7b58d
+
+  - name: katex
+    package: katex
+    version: 0.16.45
+    source: "Vendored browser runtime, auto-render extension, stylesheet, and font files."
+    files:
+      - path: site-src/assets/vendor/katex/katex.min.js
+        sha256: e1c5d9e1b5b906881c40faf67950585a3f5d5adb4636d10e9678b9ba74b57dcc
+      - path: site-src/assets/vendor/katex/contrib/auto-render.min.js
+        sha256: e5372d199bcdae8b4de71d0f7ceba72a4ba12774a27c60a6f1f77d03b3228ee4
+      - path: site-src/assets/vendor/katex/katex.min.css
+        sha256: 23aefa0850248a16478b9f55d6b67028f74cc0b46b82b24dc22af068acaa4170
+        contains:
+          - 'content:"0.16.45"'
+    globs:
+      - pattern: site-src/assets/vendor/katex/fonts/*
+        count: 60

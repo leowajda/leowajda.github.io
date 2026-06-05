@@ -3,16 +3,15 @@
 module SiteKit
   module Search
     class WritingRecordBuilder
-      KIND = 'Writing'
+      KIND = SiteKit::Search::Contract::KIND_WRITING
 
-      def initialize(documents:, factory:)
+      def initialize(documents:)
         @documents = documents
-        @factory = factory
       end
 
       def records
         documents.map do |document|
-          factory.build(
+          SiteKit::Search::Record.build(
             kind: KIND,
             title: document.data.fetch('title'),
             url: document.url,
@@ -30,7 +29,7 @@ module SiteKit
 
       private
 
-      attr_reader :documents, :factory
+      attr_reader :documents
     end
   end
 end

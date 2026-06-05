@@ -20,5 +20,8 @@ test-results/
 tmp/
 site-src/.jekyll-cache/
 src/dojo/*
+.bsp/
+.metals/
+.scala-build/
 
 .DS_Store

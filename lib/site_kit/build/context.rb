@@ -64,12 +64,16 @@ module SiteKit
       end
 
       def flowchart_data
-        @flowchart_data ||= SiteKit::Flowcharts::LayoutBuilder.new(flowchart_data: eureka_data.fetch('flowchart',
-                                                                                                     {})).build
+        @flowchart_data ||= SiteKit::Flowcharts::LayoutBuilder.new(
+          flowchart_data: eureka_data.fetch('flowchart', {})
+        ).build
       end
 
       def generated_pages
-        generated_page_registry.pages
+        @generated_pages ||= SiteKit::JekyllRuntime::GeneratedPageRegistry.new(
+          eureka_context: eureka_context,
+          source_notes_context: source_notes_context
+        ).record.pages
       end
 
       def search_records
@@ -93,13 +97,6 @@ module SiteKit
 
       def eureka_data
         @eureka_data ||= site.data.fetch(EUREKA_NAMESPACE, {})
-      end
-
-      def generated_page_registry
-        @generated_page_registry ||= SiteKit::JekyllRuntime::GeneratedPageRegistry.new(
-          eureka_context: eureka_context,
-          source_notes_context: source_notes_context
-        ).record
       end
     end
   end

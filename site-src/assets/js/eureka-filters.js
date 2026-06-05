@@ -5,13 +5,90 @@ import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery, norma
 const PROBLEM_SEARCH_DEBOUNCE_MS = 160
 const problemSearchCache = new Map()
 
-const queryCheckedRadio = (form, name) =>
-  form.querySelector(`input[name="${name}"]:checked`)?.value ?? ""
+const languageSearchValue = (input) =>
+  input.dataset.searchFilterValue || input.value
 
-const queryCheckedValues = (form, name) =>
-  Array.from(form.querySelectorAll(`input[name="${name}"]:checked`))
-    .map((input) => input.value)
-    .filter(Boolean)
+const readProblemSearchContract = (form) => ({
+  filters: {
+    category: form.dataset.searchFilterCategory || "",
+    difficulty: form.dataset.searchFilterDifficulty || "",
+    kind: form.dataset.searchFilterKind || "",
+    language: form.dataset.searchFilterLanguage || ""
+  },
+  problemKind: form.dataset.searchKindProblem || ""
+})
+
+const activeProblemSearch = (state) =>
+  state.queryActive
+  || state.difficulty
+  || state.categories.length > 0
+  || state.languageFilterActive
+
+const anyFilter = (values) =>
+  values.length === 1 ? values[0] : { any: values }
+
+const problemSearchFilters = (state, contract) => {
+  const { filters: filterKeys, problemKind } = contract
+  const filters = {
+    [filterKeys.kind]: problemKind
+  }
+
+  if (state.difficulty) {
+    filters[filterKeys.difficulty] = state.difficulty
+  }
+
+  if (state.categories.length > 0) {
+    filters[filterKeys.category] = anyFilter(state.categories)
+  }
+
+  if (state.languageFilterActive) {
+    filters[filterKeys.language] = anyFilter(state.selectedLanguageLabels)
+  }
+
+  return filters
+}
+
+const activeFilterRecords = (state) => {
+  const filters = []
+
+  if (state.queryActive) {
+    filters.push({ kind: "search", value: state.query, label: `Search: ${state.query}` })
+  }
+
+  if (state.difficulty) {
+    filters.push({ kind: "difficulty", value: state.difficulty, label: `Difficulty: ${state.difficulty}` })
+  }
+
+  for (const category of state.categories) {
+    filters.push({ kind: "category", value: category, label: `Category: ${category}` })
+  }
+
+  if (state.languageFilterActive) {
+    state.selectedLanguages.forEach((input) => {
+      filters.push({ kind: "language", value: input.value, label: `Language: ${languageSearchValue(input)}` })
+    })
+  }
+
+  return filters
+}
+
+const problemSearchResultUrls = async (query, filters) => {
+  const normalizedQuery = query || null
+  const cacheKey = JSON.stringify([normalizedQuery, filters])
+  if (!problemSearchCache.has(cacheKey)) {
+    problemSearchCache.set(
+      cacheKey,
+      loadPagefindRecords(normalizedQuery, { filters: pagefindFilter(filters) })
+        .then((records) => new Set(records.map((record) => normalizedPath(record.url))))
+        .catch((error) => {
+          problemSearchCache.delete(cacheKey)
+          throw error
+        })
+    )
+  }
+
+  return problemSearchCache.get(cacheKey)
+}
 
 const setRadioValue = (form, name, value) => {
   const target = form.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`)
@@ -33,56 +110,6 @@ const readProblemRow = (element) => ({
   url: normalizedPath(element.dataset.searchUrl || "")
 })
 
-const languageSearchValue = (input) =>
-  input.dataset.searchFilterValue || input.value
-
-const activeSearch = (state) =>
-  state.queryActive
-  || state.difficulty
-  || state.categories.length > 0
-  || state.languageFilterActive
-
-const anyFilter = (values) =>
-  values.length === 1 ? values[0] : { any: values }
-
-const searchFilters = (state) => {
-  const filters = {
-    kind: "Problem"
-  }
-
-  if (state.difficulty) {
-    filters.difficulty = state.difficulty
-  }
-
-  if (state.categories.length > 0) {
-    filters.category = anyFilter(state.categories)
-  }
-
-  if (state.languageFilterActive) {
-    filters.language = anyFilter(state.selectedLanguageLabels)
-  }
-
-  return filters
-}
-
-const searchResultUrls = async (query, filters) => {
-  const normalizedQuery = query || null
-  const cacheKey = JSON.stringify([normalizedQuery, filters])
-  if (!problemSearchCache.has(cacheKey)) {
-    problemSearchCache.set(
-      cacheKey,
-      loadPagefindRecords(normalizedQuery, { filters: pagefindFilter(filters) })
-        .then((records) => new Set(records.map((record) => normalizedPath(record.url))))
-        .catch((error) => {
-          problemSearchCache.delete(cacheKey)
-          throw error
-        })
-    )
-  }
-
-  return problemSearchCache.get(cacheKey)
-}
-
 const initializeProblemFilters = () => {
   const form = document.querySelector("[data-problem-filters]")
   const table = document.getElementById("problem-table")
@@ -97,6 +124,7 @@ const initializeProblemFilters = () => {
   const languageCells = Array.from(table.querySelectorAll("[data-language-column]"))
   const rows = Array.from(table.querySelectorAll("[data-problem-row]")).map(readProblemRow)
   const sequence = createSequenceGuard()
+  const searchContract = readProblemSearchContract(form)
   const defaultEmptyMessage = emptyState?.textContent || "No problems match the current search."
   let renderDebounce
 
@@ -134,12 +162,13 @@ const initializeProblemFilters = () => {
     const selectedLanguageLabels = selectedLanguages.map(languageSearchValue)
     const languageFilterActive = languageInputs.length > 0 && selectedLanguages.length < languageInputs.length
     const query = normalizeSearchQuery(searchInput?.value)
+    const formData = new FormData(form)
 
     return {
       query,
       queryActive: meaningfulSearchQuery(query),
-      difficulty: queryCheckedRadio(form, "difficulty"),
-      categories: queryCheckedValues(form, "category"),
+      difficulty: formData.get("difficulty")?.toString() || "",
+      categories: formData.getAll("category").map((value) => value.toString()).filter(Boolean),
       selectedLanguages,
       selectedLanguageLabels,
       languageFilterActive
@@ -151,25 +180,7 @@ const initializeProblemFilters = () => {
       return
     }
 
-    const filters = []
-
-    if (state.queryActive) {
-      filters.push({ kind: "search", value: state.query, label: `Search: ${state.query}` })
-    }
-
-    if (state.difficulty) {
-      filters.push({ kind: "difficulty", value: state.difficulty, label: `Difficulty: ${state.difficulty}` })
-    }
-
-    for (const category of state.categories) {
-      filters.push({ kind: "category", value: category, label: `Category: ${category}` })
-    }
-
-    if (state.languageFilterActive) {
-      state.selectedLanguages.forEach((input) => {
-        filters.push({ kind: "language", value: input.value, label: `Language: ${languageSearchValue(input)}` })
-      })
-    }
+    const filters = activeFilterRecords(state)
 
     activeFilterList.replaceChildren()
 
@@ -231,14 +242,17 @@ const initializeProblemFilters = () => {
 
     const currentSequence = sequence.next()
 
-    if (!activeSearch(state)) {
+    if (!activeProblemSearch(state)) {
       renderRows()
       return
     }
 
     let searchUrls
     try {
-      searchUrls = await searchResultUrls(state.queryActive ? state.query : null, searchFilters(state))
+      searchUrls = await problemSearchResultUrls(
+        state.queryActive ? state.query : null,
+        problemSearchFilters(state, searchContract)
+      )
     } catch (error) {
       if (sequence.matches(currentSequence)) {
         renderSearchUnavailable()

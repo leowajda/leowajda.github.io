@@ -34,12 +34,6 @@ module SiteKit
         @topics ||= projects.transform_values(&:topics_record)
       end
 
-      def flowcharts
-        @flowcharts ||= projects.transform_values do |project|
-          SiteKit::Flowcharts::Registry.new(flowchart_data: project.flowchart_data).record
-        end
-      end
-
       def generated_pages
         @generated_pages ||= projects.values.flat_map(&:generated_pages)
       end

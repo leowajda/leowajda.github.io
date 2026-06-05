@@ -1,4 +1,5 @@
 {%- assign sections = include.panel.sections -%}
+{%- assign search_contract = site.data.site.search_contract -%}
 {%- capture panel_body -%}
   {%- for section in sections -%}
     {%- capture section_body -%}
@@ -75,10 +76,19 @@
     -%}
   {%- endfor -%}
 {%- endcapture -%}
+{%- capture panel_attributes -%}
+  aria-label="Problem filters"
+  data-problem-filters
+  data-search-kind-problem="{{ search_contract.kinds.problem.label | escape }}"
+  data-search-filter-category="{{ search_contract.filters.category | escape }}"
+  data-search-filter-difficulty="{{ search_contract.filters.difficulty | escape }}"
+  data-search-filter-kind="{{ search_contract.filters.kind | escape }}"
+  data-search-filter-language="{{ search_contract.filters.language | escape }}"
+{%- endcapture -%}
 
 {%- include side_panel.html
   tag="form"
   class="filters side-panel--sticky side-panel--scrollable"
-  attributes='aria-label="Problem filters" data-problem-filters'
+  attributes=panel_attributes
   body=panel_body
 -%}

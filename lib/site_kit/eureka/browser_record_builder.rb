@@ -19,10 +19,7 @@ module SiteKit
           'project_title' => project_title,
           'project_description' => project_description,
           'browser_url' => "#{route_base}/problems/",
-          'filters' => SiteKit::Eureka::FilterBuilder.new(
-            problem_records: problem_records,
-            language_page_records: language_page_records
-          ).build,
+          'filters' => filters,
           'languages' => language_page_records,
           'problems' => problem_records
         }
@@ -32,6 +29,14 @@ module SiteKit
 
       attr_reader :project_slug, :project_title, :project_description, :route_base, :language_page_records,
                   :problem_records
+
+      def filters
+        {
+          'difficulties' => problem_records.map { |problem| problem.fetch('difficulty') }.uniq,
+          'categories' => problem_records.flat_map { |problem| problem.fetch('categories') }.uniq,
+          'languages' => language_page_records.map { |language| language.slice('slug', 'label', 'url') }
+        }
+      end
     end
   end
 end

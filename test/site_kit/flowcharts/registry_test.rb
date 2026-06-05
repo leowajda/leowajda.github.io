@@ -119,8 +119,8 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
   end
 
   def test_builds_incoming_edges_by_target
-    registry = build_context.eureka_context.flowcharts.fetch('eureka')
-    edge = registry.fetch('incoming_edges_by_target').fetch('directed-graph-topo')
+    graph_index = SiteKit::Flowcharts::GraphIndex.new(flowchart: build_context.flowchart_data)
+    edge = graph_index.incoming_edges_by_target.fetch('directed-graph-topo')
 
     assert_equal 'directed-graph', edge.fetch('from')
     assert_equal 'yes', edge.fetch('label')
@@ -135,7 +135,7 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     }
 
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::Registry.new(flowchart_data: flowchart).record
+      SiteKit::Flowcharts::GraphIndex.new(flowchart: flowchart).incoming_edges_by_target
     end
 
     assert_match(/Flowchart edge targets must be unique: b/, error.message)
@@ -181,9 +181,9 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
   end
 end
 
-class SiteKitFlowchartX6GraphBuilderTest < SiteKitTestCase
+class SiteKitFlowchartGraphIndexTest < SiteKitTestCase
   def test_exports_canvas_payload
-    graph = SiteKit::Flowcharts::X6GraphBuilder.new(flowchart: build_context.flowchart_data).build
+    graph = SiteKit::Flowcharts::GraphIndex.new(flowchart: build_context.flowchart_data).graph_payload
     node = graph.fetch('nodes').find { |entry| entry.fetch('id') == 'directed-graph-topo' }
     edge = graph.fetch('edges').find { |entry| entry.fetch('id') == 'directed-yes' }
 

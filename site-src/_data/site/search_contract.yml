@@ -1,0 +1,93 @@
+kinds:
+  flowchart:
+    label: Flowchart
+    priority: 60
+    meta_keys:
+      - kind
+      - project
+      - section
+      - summary
+      - target
+      - title
+    filter_keys:
+      - flowchart_kind
+      - kind
+      - project
+  page:
+    label: Page
+    priority: 50
+    meta_keys:
+      - kind
+      - project
+      - summary
+      - title
+    filter_keys:
+      - kind
+      - project
+  problem:
+    label: Problem
+    priority: 90
+    meta_keys:
+      - kind
+      - project
+      - summary
+      - title
+    filter_keys:
+      - category
+      - difficulty
+      - kind
+      - language
+      - project
+      - template
+  source:
+    label: Source
+    priority: 55
+    meta_keys:
+      - kind
+      - project
+      - section
+      - summary
+      - title
+    filter_keys:
+      - kind
+      - language
+      - module
+      - project
+      - source_format
+  template:
+    label: Template
+    priority: 85
+    meta_keys:
+      - kind
+      - pattern
+      - project
+      - section
+      - summary
+      - target
+      - title
+    filter_keys:
+      - kind
+      - project
+      - template
+  writing:
+    label: Writing
+    priority: 50
+    meta_keys:
+      - kind
+      - project
+      - summary
+      - title
+    filter_keys:
+      - kind
+      - project
+
+filters:
+  category: category
+  difficulty: difficulty
+  flowchart_kind: flowchart_kind
+  kind: kind
+  language: language
+  module: module
+  project: project
+  source_format: source_format
+  template: template

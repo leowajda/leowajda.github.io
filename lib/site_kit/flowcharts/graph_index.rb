@@ -15,7 +15,8 @@ module SiteKit
           'rootId' => root_id,
           'aliasMap' => alias_map,
           'nodeMeta' => node_meta,
-          'choicesBySource' => choices_by_source
+          'choicesBySource' => choices_by_source,
+          'x6' => x6_payload
         }
       end
 
@@ -65,7 +66,7 @@ module SiteKit
 
       def alias_map
         @alias_map ||= node_records.each_with_object({}) do |node, result|
-          node.fetch('aliases', []).each do |node_alias|
+          node.fetch('aliases').each do |node_alias|
             result[node_alias] = node.fetch('id')
           end
         end
@@ -73,46 +74,49 @@ module SiteKit
 
       def node_meta
         @node_meta ||= node_records.to_h do |node|
-          node_id = node.fetch('id')
-          incoming_edge = incoming_edges_by_target[node_id]
-          text = node.fetch('text', node.fetch('label', ''))
-          label = node.fetch('label', text)
+          incoming_edge = incoming_edges_by_target[node.fetch('id')]
           decision = node.fetch('kind') == 'decision'
 
-          [node_id, {
-            'id' => node_id,
-            'kind' => node.fetch('kind', ''),
-            'text' => text,
-            'title' => text,
-            'label' => label,
-            'question' => decision ? text : '',
-            'parentId' => incoming_edge&.fetch('from', '') || '',
-            'answer' => incoming_edge&.fetch('label', '') || ''
-          }]
+          [
+            node.fetch('id'),
+            node_meta_record(
+              node,
+              parent_id: incoming_edge&.fetch('from', '') || '',
+              answer: incoming_edge&.fetch('label', '') || '',
+              question: decision ? node.fetch('text') : ''
+            )
+          ]
         end
       end
 
       def choices_by_source
-        @choices_by_source ||= edge_records
-                               .group_by { |edge| edge.fetch('from', '') }
-                               .each_with_object({}) do |(source_id, source_edges), result|
-          choices = source_edges.filter_map do |edge|
-            target = node_meta[edge.fetch('to')]
-            next unless target
-
-            target.merge(
-              'answer' => edge.fetch('label', '').empty? ? target.fetch('answer', '') : edge.fetch('label'),
-              'sourceId' => source_id
-            )
-          end
-
-          result[source_id] = choices unless choices.empty?
-        end
+        @choices_by_source ||= build_choices_by_source
       end
 
       private
 
       attr_reader :flowchart
+
+      def x6_payload
+        @x6_payload ||= SiteKit::Flowcharts::X6PayloadBuilder.new(
+          nodes: node_records,
+          edges: edge_records
+        ).build
+      end
+
+      def build_choices_by_source
+        edge_records.group_by { |edge| edge.fetch('from') }.filter_map do |source_id, source_edges|
+          choices = source_edges.filter_map do |edge|
+            target = node_meta[edge.fetch('to')]
+            next unless target
+
+            answer = edge.fetch('label', '').empty? ? target.fetch('answer', '') : edge.fetch('label')
+            target.merge('answer' => answer, 'sourceId' => source_id)
+          end
+
+          [source_id, choices] unless choices.empty?
+        end.to_h
+      end
 
       def chart_payload
         chart = flowchart.fetch('chart')
@@ -122,6 +126,19 @@ module SiteKit
           'height' => chart.fetch('height'),
           'scale_desktop' => chart.fetch('scale_desktop'),
           'scale_mobile' => chart.fetch('scale_mobile')
+        }
+      end
+
+      def node_meta_record(node, parent_id:, answer:, question:)
+        {
+          'id' => node.fetch('id'),
+          'kind' => node.fetch('kind'),
+          'text' => node.fetch('text'),
+          'title' => node.fetch('text'),
+          'label' => node.fetch('label'),
+          'question' => question,
+          'parentId' => parent_id,
+          'answer' => answer
         }
       end
 

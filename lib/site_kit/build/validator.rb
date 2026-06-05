@@ -8,16 +8,27 @@ module SiteKit
       end
 
       def validate!
-        validate_template_library!
-        validate_eureka_projects!
-        validate_source_notes_projects!
-        context.site_projects
-        context.generated_pages
+        errors = []
+        check(errors, 'template library') { validate_template_library! }
+        check(errors, 'eureka projects') { validate_eureka_projects! }
+        check(errors, 'source notes projects') { validate_source_notes_projects! }
+        check(errors, 'site project navigation') { context.site_projects }
+        check(errors, 'generated pages') { context.generated_pages }
+        check(errors, 'vendor assets') { SiteKit::Checks::VendorAssets.new.validate! }
+        return if errors.empty?
+
+        raise SiteKit::InvariantError, "Build validation failed:\n- #{errors.join("\n- ")}"
       end
 
       private
 
       attr_reader :context
+
+      def check(errors, label)
+        yield
+      rescue SiteKit::Error => e
+        errors << "#{label}: #{e.message}"
+      end
 
       def validate_template_library!
         library = context.template_library_context
@@ -30,7 +41,7 @@ module SiteKit
         context.eureka_context.browsers
         context.eureka_context.topics
         validate_template_reference_rules!
-        context.eureka_context.flowcharts
+        validate_flowchart!
         context.eureka_context.projects.each_value do |project|
           validate_eureka_browser!(project.browser_record)
           project.generated_language_pages
@@ -45,6 +56,10 @@ module SiteKit
 
         raise SiteKit::InvariantError,
               "Template guide reference rules use unknown problem categories: #{unknown_labels.sort.join(', ')}"
+      end
+
+      def validate_flowchart!
+        SiteKit::Flowcharts::GraphIndex.new(flowchart: context.flowchart_data).incoming_edges_by_target
       end
 
       def validate_eureka_browser!(browser)

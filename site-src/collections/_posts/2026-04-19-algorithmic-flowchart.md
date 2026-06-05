@@ -6,6 +6,7 @@ date: 2026-04-19 00:00:00 +0200
 layout: eureka_flowchart
 permalink: /writing/algorithmic-flowchart/
 project_slug: eureka
+page_context: eureka_flowchart
 needs_math: true
 custom_js:
   - eureka-flowchart
