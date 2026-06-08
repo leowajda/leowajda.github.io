@@ -276,7 +276,7 @@
   order: 6
   template: dp-bitmask
   description: Store one state per subset mask.
-  aliases: []
+  aliases: [Bitmask]
 
 - id: dp-lis
   label: Longest Increasing Subsequence
