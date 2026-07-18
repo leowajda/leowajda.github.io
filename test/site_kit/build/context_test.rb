@@ -26,14 +26,14 @@ class SiteKitBuildContextTest < SiteKitTestCase
   def test_injects_context_into_authored_pages
     home_page = generated_site.pages.find { |page| page.url == '/' }
     explorer_page = generated_site.pages.find { |page| page.url == '/eureka/problems/' }
-    flowchart_page = generated_site.collections.fetch('posts').docs.find { |page| page.url == '/writing/algorithmic-flowchart/' }
-    templates_page = generated_site.collections.fetch('posts').docs.find { |page| page.url == '/writing/algorithmic-templates/' }
+    flowchart_page = generated_site.pages.find { |page| page.url == '/eureka/flowchart/' }
+    templates_page = generated_site.pages.find { |page| page.url == '/templates/' }
 
     assert home_page.data['home_projects']
     assert explorer_page.data['browser_record']
     assert_predicate explorer_page.data['header_links'], :any?
-    assert explorer_page.data['problem_filter_panel']
-    assert_predicate explorer_page.data['problem_table'].fetch('rows'), :any?
+    assert_predicate explorer_page.data['browser_record'].fetch('problems'), :any?
+    assert_predicate explorer_page.data['browser_record'].fetch('filters').fetch('languages'), :any?
     assert flowchart_page.data['flowchart_canvas']
     assert_predicate flowchart_page.data['header_links'], :any?
     assert_predicate flowchart_page.data['flowchart_canvas'].fetch('graph').fetch('nodes'), :any?

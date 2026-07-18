@@ -1,6 +1,8 @@
 {%- assign template = include.template -%}
 {%- assign template_id = template.id | default: template.template_id -%}
 {%- assign code_collection_id = template.code_collection_id -%}
+{%- assign entries = template.entries | default: template.code_entries | default: empty -%}
+{%- assign code_cfg = site.data.site.app.code_collection -%}
 
 <section
   class="template-panel"
@@ -21,9 +23,12 @@
   </header>
   <div class="template-panel__code">
     {%- include code_collection.html
-      collection=template.code_collection
+      entries=entries
       collection_id=code_collection_id
       entry_dom_prefix=code_collection_id
+      toolbar_aria=code_cfg.default_toolbar_label
+      variant_group_label=code_cfg.default_variant_label
+      variant_icons=code_cfg.variant_icons
     -%}
   </div>
 </section>

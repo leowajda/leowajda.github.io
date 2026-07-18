@@ -1,4 +1,4 @@
-import { getHashValue, onReady, replaceHashValue } from "./dom.js"
+import { getHashValue, onHashChange, onReady, replaceHashValue } from "./dom.js"
 import { loadPagefindRecords } from "./pagefind-client.js"
 import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery } from "./search-query.js"
 
@@ -234,7 +234,7 @@ const initializeTemplateLibrary = (root) => {
 
   searchInput?.addEventListener("input", renderSearch)
 
-  window.addEventListener("hashchange", () => {
+  onHashChange(() => {
     const nextTarget = getHashValue()
     if (nextTarget) {
       renderTarget(nextTarget, { updateHash: false })

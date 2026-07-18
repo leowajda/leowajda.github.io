@@ -1,4 +1,4 @@
-import { getHashValue, replaceHashValue } from "./dom.js"
+import { getHashValue, onHashChange, replaceHashValue } from "./dom.js"
 
 const resolveCollectionItem = ({ entryId, language, variant, itemMap, defaultEntryId, items }) => {
   if (entryId && itemMap.has(entryId)) {
@@ -141,7 +141,7 @@ const initializeCodeCollection = (collection) => {
   render(resolveItem(syncHash ? getHashValue() : "", "", ""))
 
   if (syncHash) {
-    window.addEventListener("hashchange", () => {
+    onHashChange(() => {
       const nextHash = getHashValue()
       if (!nextHash || !itemMap.has(nextHash)) {
         return

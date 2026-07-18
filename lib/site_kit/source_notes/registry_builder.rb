@@ -18,8 +18,8 @@ module SiteKit
           'project_slug' => manifest.slug,
           'project_title' => manifest.title,
           'project_description' => manifest.description,
-          'project_url' => manifest.entry_url,
-          'project_home_url' => manifest.entry_url.empty? ? default_project_home_url(languages) : manifest.entry_url,
+          'project_url' => project_home_url,
+          'project_home_url' => project_home_url,
           'project_source_url' => manifest.source_url,
           'modules' => languages.flat_map do |language|
             language.fetch('modules').map do |module_record|
@@ -40,24 +40,25 @@ module SiteKit
 
       def language_records
         @language_records ||= source_catalog.languages.map do |language|
+          language_url = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).item(language.slug)
           language_context = {
             'project_slug' => manifest.slug,
             'project_title' => manifest.title,
-            'project_url' => manifest.entry_url,
+            'project_url' => project_home_url,
             'project_source_url' => manifest.source_url,
             'language_slug' => language.slug,
             'language_title' => language.title,
-            'language_url' => "#{manifest.route_base}/#{language.slug}/"
+            'language_url' => language_url
           }
 
           {
             'project_slug' => manifest.slug,
             'project_title' => manifest.title,
-            'project_url' => manifest.entry_url,
+            'project_url' => project_home_url,
             'project_source_url' => manifest.source_url,
             'language_slug' => language.slug,
             'language_title' => language.title,
-            'url' => language_context.fetch('language_url'),
+            'url' => language_url,
             'source_url' => module_builder.tree_source_url(language.path),
             'modules' => language.modules.map do |module_definition|
               module_builder.build(module_definition: module_definition, language_context: language_context)
@@ -76,8 +77,10 @@ module SiteKit
         }
       end
 
-      def default_project_home_url(languages)
-        languages.flat_map { |language| language.fetch('modules') }.first&.fetch('url') || ''
+      def project_home_url
+        return manifest.entry_url unless manifest.entry_url.empty?
+
+        SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).root
       end
 
       def module_builder

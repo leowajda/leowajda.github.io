@@ -1,8 +1,26 @@
-<article class="source-layout">
+<article
+  class="source-layout"
+  data-pagefind-body
+  data-pagefind-meta="title:{{ page.title | escape }}"
+  data-pagefind-meta="kind:Source"
+  data-pagefind-meta="project:{{ page.source_schema.about.first | default: 'Zibaldone' | escape }}"
+  data-pagefind-meta="summary:{{ page.description | escape }}"
+  data-pagefind-filter="kind:Source"
+  data-pagefind-filter="project:{{ page.source_schema.about.first | default: 'Zibaldone' | escape }}"
+  {%- if page.language_slug %}
+  data-pagefind-filter="language:{{ page.language_slug | escape }}"
+  {%- endif %}
+  {%- if page.module_slug %}
+  data-pagefind-filter="module:{{ page.module_slug | escape }}"
+  {%- endif %}
+  {%- if page.format %}
+  data-pagefind-filter="source_format:{{ page.format | escape }}"
+  {%- endif %}
+>
   {%- include source_page_header.html header=include.header -%}
 
   <div class="source-layout__body">
-    <aside class="source-layout__sidebar">
+    <aside class="source-layout__sidebar" data-pagefind-ignore>
       {%- include source_sidebar.html module=include.module hide_title=true -%}
     </aside>
 

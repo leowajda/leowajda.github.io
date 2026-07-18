@@ -1,5 +1,5 @@
-import { getHashValue, onReady } from "./dom.js"
-import { bindFlowchartEvents } from "./eureka-flowchart-events.js"
+import { getHashValue, onHashChange, onReady, replaceHashValue } from "./dom.js"
+import { decorateInspector, renderMathIn } from "./eureka-flowchart-inspector.js"
 import {
   createFlowchartNodeStateRenderer,
   queryFlowchartNodeButton
@@ -141,14 +141,206 @@ const initializeFlowchart = async (root) => {
     }
   })
 
-  bindFlowchartEvents({
-    surface,
-    viewportElement,
-    graph,
-    metadata,
-    selection,
-    viewport,
-    zoomControls
+  const showEnhancedFlowchart = () => {
+    root.classList.add("flowchart-workspace--rendered")
+    zoomControls?.setHidden(false)
+    zoomControls?.sync(viewport.state())
+  }
+
+  const hideInspector = () => {
+    inspector.hidden = true
+    root.classList.add("flowchart-workspace--empty")
+  }
+
+  const renderInspector = (nodeId) => {
+    const template = queryTemplate(root, nodeId)
+    if (!template) {
+      return
+    }
+
+    const route = buildRoute(nodeMeta, nodeId)
+    const choices = choicesBySource.get(nodeId) || []
+    const nextContent = template.content.cloneNode(true)
+    decorateInspector(nextContent, {
+      route,
+      choices,
+      activePanelName: state.activePanel,
+      onActivePanelChange: (panelName) => {
+        state.activePanel = panelName
+      },
+      onSelectRouteNode: (routeNodeId) => {
+        commitSelection(routeNodeId, { focus: true })
+      }
+    })
+    inspectorContent.replaceChildren(nextContent)
+    renderMathIn(inspectorContent)
+    inspector.hidden = false
+    root.classList.remove("flowchart-workspace--empty")
+  }
+
+  const scheduleViewportFocus = (nodeId, options = {}) => {
+    const currentSequence = ++focusSequence
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (currentSequence !== focusSequence || state.selectedId !== nodeId) {
+          return
+        }
+
+        viewport.focusNode(nodeId, options)
+      })
+    })
+  }
+
+  const commitSelection = (nodeId, { updateHash = true, focus = true, immediate = false } = {}) => {
+    nodeId = resolveNodeId(nodeId)
+    if (!nodeMeta.has(nodeId)) {
+      return
+    }
+
+    state.selectedId = nodeId
+    state.previewId = null
+    renderInspector(nodeId)
+    nodeStateRenderer.render()
+
+    if (focus) {
+      scheduleViewportFocus(nodeId, { immediate })
+    }
+
+    if (updateHash) {
+      replaceHash(nodeId)
+    }
+  }
+
+  const clearSelection = ({ updateHash = true } = {}) => {
+    focusSequence += 1
+    state.selectedId = ""
+    state.previewId = null
+    viewport.cancel()
+    hideInspector()
+    nodeStateRenderer.render()
+
+    if (updateHash) {
+      replaceHash("")
+    }
+  }
+
+  const previewNode = (nodeId) => {
+    nodeId = resolveNodeId(nodeId)
+    if (!supportsHover || nodeId === state.selectedId || !nodeMeta.has(nodeId)) {
+      return
+    }
+
+    state.previewId = nodeId
+    renderInspector(nodeId)
+    nodeStateRenderer.render()
+  }
+
+  const clearPreview = () => {
+    if (!supportsHover || !state.previewId) {
+      return
+    }
+
+    state.previewId = null
+    if (state.selectedId) {
+      renderInspector(state.selectedId)
+    } else {
+      hideInspector()
+    }
+    nodeStateRenderer.render()
+  }
+
+  graph.on("node:click", ({ node }) => {
+    commitSelection(node.id)
+  })
+
+  graph.on("blank:click", () => {
+    clearSelection()
+  })
+
+  graph.on("node:mouseenter", ({ node }) => {
+    previewNode(node.id)
+  })
+
+  graph.on("node:mouseleave", () => {
+    clearPreview()
+  })
+
+  surface.addEventListener("click", (event) => {
+    const button = closestElement(event.target, "[data-flowchart-node]")
+    if (button && event.detail === 0) {
+      commitSelection(button.dataset.flowchartNodeId || "")
+    }
+  })
+
+  surface.addEventListener("focusin", (event) => {
+    const button = closestElement(event.target, "[data-flowchart-node]")
+    if (button) {
+      previewNode(button.dataset.flowchartNodeId || "")
+    }
+  })
+
+  surface.addEventListener("focusout", (event) => {
+    const button = closestElement(event.target, "[data-flowchart-node]")
+    if (button && !containsRelatedTarget(button, event.relatedTarget)) {
+      clearPreview()
+    }
+  })
+
+  surface.addEventListener("wheel", (event) => {
+    if (viewport.zoomFromWheel(event)) {
+      focusSequence += 1
+    }
+  }, { passive: false })
+
+  surface.addEventListener("pointerdown", (event) => {
+    if (event.button === 0 && !closestElement(event.target, "[data-flowchart-node]")) {
+      focusSequence += 1
+      viewport.cancel()
+    }
+  })
+
+  viewportElement?.addEventListener("keydown", (event) => {
+    if (zoomControls?.contains(event.target) || event.altKey || event.ctrlKey || event.metaKey) {
+      return
+    }
+
+    if (event.key === "+" || event.key === "=") {
+      event.preventDefault()
+      focusSequence += 1
+      viewport.stepZoom(1)
+    } else if (event.key === "-") {
+      event.preventDefault()
+      focusSequence += 1
+      viewport.stepZoom(-1)
+    } else if (event.key === "0") {
+      event.preventDefault()
+      focusSequence += 1
+      viewport.resetAuto({ selectedNodeId: state.selectedId })
+    }
+  })
+
+  onHashChange(() => {
+    const hashNodeId = resolveNodeId(getHashValue())
+    if (hashNodeId && nodeMeta.has(hashNodeId)) {
+      if (hashNodeId === state.selectedId) {
+        return
+      }
+
+      commitSelection(hashNodeId, { updateHash: false })
+      return
+    }
+
+    clearSelection({ updateHash: false })
+  })
+
+  window.addEventListener("resize", () => {
+    focusSequence += 1
+    viewport.cancel()
+    if (state.selectedId) {
+      viewport.refocusSelected(state.selectedId)
+    } else {
+      viewport.positionStart({ preserveScale: viewport.isManual() })
+    }
   })
 
   viewport.positionStart()

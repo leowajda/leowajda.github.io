@@ -11,12 +11,20 @@ module SiteKit
       :implementations,
       :route_base
     ) do
+      def paths
+        SiteKit::Core::ResourcePaths.new(route_base: route_base)
+      end
+
       def difficulty_slug
         SiteKit::Core::Helpers.slugify(difficulty)
       end
 
       def url
-        "#{route_base}/problems/#{slug}/"
+        paths.item('problems', slug)
+      end
+
+      def embed_url
+        paths.embed('problems', slug)
       end
 
       def implementation_entries
@@ -42,6 +50,7 @@ module SiteKit
           'problem_slug' => slug,
           'title' => title,
           'url' => url,
+          'embed_url' => embed_url,
           'problem_source_url' => problem_source_url,
           'difficulty' => difficulty,
           'difficulty_slug' => difficulty_slug,

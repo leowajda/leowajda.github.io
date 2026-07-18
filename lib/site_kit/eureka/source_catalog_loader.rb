@@ -5,13 +5,12 @@ require 'pathname'
 module SiteKit
   module Eureka
     Language = Data.define(:slug, :label, :code_language) do
-      def page_record(route_base)
+      def page_record(_route_base = nil)
         {
           'slug' => slug,
           'label' => label,
           'title' => "#{label} Solutions",
-          'description' => "All LeetCode solutions in #{label}.",
-          'url' => "#{route_base}/#{slug}/"
+          'description' => "All LeetCode solutions in #{label}."
         }
       end
     end

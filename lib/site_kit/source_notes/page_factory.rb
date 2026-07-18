@@ -2,7 +2,7 @@
 
 module SiteKit
   module SourceNotes
-    class PageFactory
+    class PageFactory # rubocop:disable Metrics/ClassLength
       MODULE_PAGE_CONTEXT_KEYS = %w[slug module_slug title url readme_markdown roots].freeze
       MODULE_NAVIGATION_CONTEXT_KEYS = %w[slug module_slug title url roots].freeze
       DOCUMENT_CONTEXT_KEYS = %w[route_url title format body].freeze
@@ -10,7 +10,37 @@ module SiteKit
       def initialize(manifest:, registry_record:)
         @manifest = manifest
         @registry_record = registry_record
+        @paths = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base)
         @pages = SiteKit::Pages::DefinitionBuilder.new(project_slug: manifest.slug)
+      end
+
+      def home_page
+        pages.build(
+          dir: paths.root,
+          page_type: SOURCE_HOME_PAGE_TYPE,
+          title: registry_record.fetch('project_title'),
+          description: registry_record.fetch('project_description'),
+          data: {
+            'source_home' => {
+              'title' => registry_record.fetch('project_title'),
+              'description' => registry_record.fetch('project_description'),
+              'source_url' => registry_record.fetch('project_source_url'),
+              'languages' => languages.map do |language|
+                {
+                  'slug' => language.fetch('language_slug'),
+                  'title' => language.fetch('language_title'),
+                  'url' => language.fetch('url'),
+                  'modules' => language.fetch('modules').map do |module_record|
+                    {
+                      'title' => module_record.fetch('title'),
+                      'url' => module_record.fetch('url')
+                    }
+                  end
+                }
+              end
+            }
+          }
+        )
       end
 
       def language_pages
@@ -33,7 +63,7 @@ module SiteKit
 
       private
 
-      attr_reader :manifest, :registry_record, :pages
+      attr_reader :manifest, :registry_record, :paths, :pages
 
       def languages
         registry_record.fetch('languages')
@@ -43,14 +73,25 @@ module SiteKit
         title = language.fetch('language_title')
 
         pages.build(
-          dir: "#{manifest.route_base}/#{language.fetch('language_slug')}/",
+          dir: language.fetch('url'),
           page_type: SOURCE_LANGUAGE_PAGE_TYPE,
           title: title,
           description: "Source notes for #{title}.",
           data: {
-            'redirect_to' => language.fetch('modules').first&.fetch('url') || '/',
             'language_slug' => language.fetch('language_slug'),
-            'sitemap' => false
+            'source_language' => {
+              'slug' => language.fetch('language_slug'),
+              'title' => title,
+              'url' => language.fetch('url'),
+              'source_url' => language.fetch('source_url'),
+              'modules' => language.fetch('modules').map do |module_record|
+                {
+                  'title' => module_record.fetch('title'),
+                  'url' => module_record.fetch('url')
+                }
+              end
+            },
+            'source_header' => header(eyebrow: registry_record.fetch('project_title'), title: title)
           }
         )
       end
@@ -69,6 +110,8 @@ module SiteKit
             about: [registry_record.fetch('project_title'), language.fetch('language_title'), title],
             breadcrumbs: [
               breadcrumb('Home', '/'),
+              breadcrumb(registry_record.fetch('project_title'), paths.root),
+              breadcrumb(language.fetch('language_title'), language.fetch('url')),
               breadcrumb(title, module_record.fetch('url'))
             ]
           ),
@@ -92,6 +135,8 @@ module SiteKit
                     language.fetch('language_title')],
             breadcrumbs: [
               breadcrumb('Home', '/'),
+              breadcrumb(registry_record.fetch('project_title'), paths.root),
+              breadcrumb(language.fetch('language_title'), language.fetch('url')),
               breadcrumb(module_record.fetch('title'), module_record.fetch('url')),
               breadcrumb(title, document.fetch('route_url'))
             ],

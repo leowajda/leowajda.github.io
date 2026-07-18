@@ -6,7 +6,7 @@ test("problem code exposes derived template links beside the selected implementa
   const taxonomy = page.locator(".content-card").filter({ hasText: "Categories" }).first()
   const guideLink = taxonomy.getByRole("link", { name: "Binary Search Boundary" })
 
-  await expect(guideLink).toHaveAttribute("href", /\/writing\/algorithmic-templates\/#binary-search\/boundary$/)
+  await expect(guideLink).toHaveAttribute("href", /\/templates\/#binary-search\/boundary$/)
   await expect(page.locator(".code-panel").getByRole("link", { name: "Binary Search Boundary" })).toHaveCount(0)
   await expect(page.getByRole("button", { name: "Templates" })).toHaveCount(0)
 })
@@ -18,11 +18,11 @@ test("multi-template problems expose every derived template as visible links", a
 
   await expect(taxonomy.getByRole("link", { name: "Grid BFS" })).toHaveAttribute(
     "href",
-    /\/writing\/algorithmic-templates\/#grid\/bfs$/
+    /\/templates\/#grid\/bfs$/
   )
   await expect(taxonomy.getByRole("link", { name: "Dynamic Programming" })).toHaveAttribute(
     "href",
-    /\/writing\/algorithmic-templates\/#dynamic-programming$/
+    /\/templates\/#dynamic-programming$/
   )
   await expect(page.locator(".code-panel").getByRole("link", { name: "Grid BFS" })).toHaveCount(0)
   await expect(page.getByRole("button", { name: "Templates" })).toHaveCount(0)

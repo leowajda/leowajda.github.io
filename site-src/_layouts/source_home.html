@@ -1,0 +1,31 @@
+---
+layout: default
+---
+
+{%- assign home = page.source_home -%}
+
+{%- include page_hero_header.html
+  class="source-home-header"
+  eyebrow="Source notes"
+  title=home.title
+  description=home.description
+-%}
+
+<section class="source-home">
+  {%- for language in home.languages -%}
+    <section class="content-card source-home__language">
+      <header class="source-home__language-header">
+        <h2 class="source-home__language-title">
+          <a href="{{ language.url | relative_url | escape }}">{{ language.title | escape }}</a>
+        </h2>
+      </header>
+      <ul class="source-home__modules">
+        {%- for module in language.modules -%}
+          <li>
+            <a href="{{ module.url | relative_url | escape }}">{{ module.title | escape }}</a>
+          </li>
+        {%- endfor -%}
+      </ul>
+    </section>
+  {%- endfor -%}
+</section>

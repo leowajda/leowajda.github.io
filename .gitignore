@@ -24,4 +24,11 @@ src/dojo/*
 .metals/
 .scala-build/
 
+# IDE / language servers
+.bsp/
+.metals/
+.scala-build/
+.bloop/
+.idea/
+
 .DS_Store

@@ -1,51 +1,23 @@
 {%- assign problem = include.problem -%}
 {%- assign embed = include.embed | default: false -%}
-{%- assign all_implementations = include.implementations | default: problem.implementations -%}
-{%- assign selected_implementation = include.selected_implementation | default: nil -%}
-{%- if embed and selected_implementation == nil -%}
-  {%- assign selected_implementation = all_implementations | first -%}
-{%- endif -%}
+{%- assign implementations = include.implementations | default: problem.implementations -%}
+{%- assign code_cfg = site.data.site.app.code_collection -%}
+{%- assign browser_cfg = site.data.site.app.eureka.browser | default: empty -%}
 
-{%- if embed and selected_implementation -%}
-  {%- assign implementation = selected_implementation -%}
-  <section class="implementation-list">
-    <article class="code-panel" id="{{ implementation.implementation_id | escape }}" data-code-block>
-      <header class="code-panel__header">
-        <div class="code-panel__heading">
-          <h2 class="code-panel__title">{{ problem.title | escape }}</h2>
-          <p class="page-note code-panel__meta">
-            <span>{{ implementation.language_label | escape }}</span>
-            <span>{{ implementation.approach_label | escape }}</span>
-          </p>
-        </div>
-
-        <div class="code-panel__actions">
-          {%- include icon_action_link.html href=implementation.detail_url icon="open-page" label="Open full page" external=false class="icon-action--compact" -%}
-          {%- include icon_action_link.html href=implementation.source_url icon="github" label="Source on GitHub" class="icon-action--compact" -%}
-          {%- include icon_action_link.html href=problem.problem_source_url icon="leetcode" label="Open LeetCode problem" class="icon-action--compact" -%}
-          {%- include icon_action_button.html icon="copy" label="Copy" class="icon-action--compact" attributes='data-code-copy-button data-copy-default-label="Copy"' -%}
-        </div>
-      </header>
-
-      <div class="code-panel__body code-block__content" data-code-source>
-        {%- if implementation.code -%}
-          {%- capture code_block -%}
-```{{ implementation.code_language }}
-{{ implementation.code }}
-```
-          {%- endcapture -%}
-          {{ code_block | markdownify }}
-        {%- else -%}
-          {{ implementation.content | markdownify }}
-        {%- endif -%}
-      </div>
-    </article>
-  </section>
-{%- elsif embed -%}
+{%- if implementations.size == 0 -%}
   <p>Problem implementation data not found.</p>
 {%- else -%}
   {%- include code_collection.html
-    collection=problem.code_collection
+    entries=implementations
     collection_id='problem-code'
+    sync_hash=true
+    embed=embed
+    problem_source_url=problem.problem_source_url
+    toolbar_aria=browser_cfg.toolbar_label
+    variant_group_label=browser_cfg.variant_group_label
+    variant_group_visibility=browser_cfg.variant_group_visibility
+    variant_presentation=browser_cfg.variant_presentation
+    variant_catalog=code_cfg.implementation_modes
+    variant_icons=code_cfg.variant_icons
   -%}
 {%- endif -%}

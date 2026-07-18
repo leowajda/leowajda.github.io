@@ -1,0 +1,105 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "xai/grok-4.5",
+  "small_model": "xai/grok-4.3",
+  "default_agent": "build",
+  "subagent_depth": 2,
+  // AGENTS.md is auto-loaded from the project root.
+  // DESIGN.md is project design authority (UI, copy, interaction).
+  // Framework docs: Context7 MCP + git references below (not URL dumps in AGENTS.md).
+  "instructions": ["DESIGN.md"],
+  // Permissionless project mode: never prompt; always allow tools/commands.
+  "permission": "allow",
+  // Authoritative gates remain pnpm scripts in AGENTS.md.
+  "lsp": {
+    "eslint": { "disabled": true },
+  },
+  "compaction": {
+    "auto": true,
+    "prune": true,
+    "tail_turns": 4,
+  },
+  "mcp": {
+    "context7": {
+      "type": "remote",
+      "url": "https://mcp.context7.com/mcp",
+      "enabled": true,
+    },
+  },
+  "agent": {
+    "build": {
+      "mode": "primary",
+      "model": "xai/grok-4.5",
+      "variant": "high",
+      "description": "Default implementer for this Jekyll site. Use for site_kit Ruby, Jekyll layouts/includes/plugins, progressive JS, Pagefind search records, catalogs, and cross-cutting changes. Spawn explore for local discovery and scout for upstream Jekyll/Pagefind/ARIA/ESLint docs via references and Context7.",
+      "permission": {
+        "task": {
+          "*": "allow",
+          "explore": "allow",
+          "scout": "allow",
+          "general": "allow",
+        },
+      },
+    },
+    "plan": {
+      "mode": "primary",
+      "model": "xai/grok-4.5",
+      "variant": "high",
+      "temperature": 0.1,
+      "description": "Architecture and rewrite planning for this site. Analyze catalog → page context → search → Jekyll boundaries and multi-step campaigns without implementing unless explicitly asked.",
+      "permission": {
+        "edit": "deny",
+        "task": {
+          "*": "deny",
+          "explore": "allow",
+          "scout": "allow",
+        },
+      },
+    },
+    "explore": {
+      "mode": "subagent",
+      "model": "xai/grok-4.3",
+      "variant": "low",
+      "description": "Fast read-only mapping of this repo. Spawn in parallel for where-is-X and structure questions before build work.",
+    },
+    "scout": {
+      "mode": "subagent",
+      "model": "xai/grok-4.3",
+      "variant": "low",
+      "description": "Upstream framework research via configured references (@jekyll, @pagefind, @aria, @ruby-style, @eslint) and Context7. Use for idiomatic APIs from source, not local bug hunts.",
+    },
+    "general": {
+      "mode": "subagent",
+      "model": "xai/grok-4.5",
+      "variant": "medium",
+      "description": "Parallel multi-step implementation chunks with full tools. Use for scoped subtasks once explore/scout have narrowed the work.",
+    },
+  },
+  "references": {
+    "jekyll": {
+      "repository": "jekyll/jekyll",
+      "branch": "master",
+      "description": "Canonical Jekyll source and docs site under docs/. Use for generators, Liquid, data files, layouts, includes, collections, front matter, and plugins. Read-only; do not invent Jekyll behavior from memory.",
+    },
+    "pagefind": {
+      "repository": "CloudCannon/pagefind",
+      "branch": "main",
+      "description": "Canonical Pagefind source. Prefer docs/content for indexing, metadata, filters, sorting, ranking, and Search API; pagefind_web_js for browser client behavior. Read-only; Pagefind is the only site search engine.",
+    },
+    "aria": {
+      "repository": "w3c/aria-practices",
+      "branch": "main",
+      "description": "WAI-ARIA Authoring Practices. Use content/patterns for dialog-modal and combobox (search UI, focus, Escape, keyboard). Read-only.",
+    },
+    "ruby-style": {
+      "repository": "rubocop/ruby-style-guide",
+      "branch": "master",
+      "description": "Community Ruby style guide (README.adoc). Use with local RuboCop config when writing or reviewing Ruby under lib/ and script/. Read-only.",
+    },
+    "eslint": {
+      "repository": "eslint/eslint",
+      "branch": "main",
+      "description": "ESLint source and docs. Use when changing eslint.config.mjs or lint rules; do not bypass project ESLint without justification. Read-only.",
+    },
+  },
+}

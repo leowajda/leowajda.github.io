@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test"
 import { templatePanel } from "./helpers.js"
 
 test("template guide opens old template hashes through redirects", async ({ page }) => {
-  await page.goto("/writing/algorithmic-templates/#topological-sort")
+  await page.goto("/templates/#topological-sort")
 
   await expect(page.getByRole("heading", { name: "Algorithmic Templates" })).toBeVisible()
   await expect(page.getByRole("button", { name: "Graph" })).toHaveAttribute("aria-expanded", "true")
@@ -12,7 +12,7 @@ test("template guide opens old template hashes through redirects", async ({ page
 })
 
 test("broad pattern targets open a compact chooser", async ({ page }) => {
-  await page.goto("/writing/algorithmic-templates/#graph")
+  await page.goto("/templates/#graph")
 
   const guide = page.locator(".template-library__nav")
   const graphTemplates = page.getByLabel("Graph templates")
@@ -30,7 +30,7 @@ test("broad pattern targets open a compact chooser", async ({ page }) => {
 })
 
 test("dynamic programming pattern exposes every concrete variant", async ({ page }) => {
-  await page.goto("/writing/algorithmic-templates/#dynamic-programming")
+  await page.goto("/templates/#dynamic-programming")
 
   const guide = page.locator(".template-library__nav")
   const dynamicProgrammingTemplates = page.getByLabel("Dynamic Programming templates")
@@ -51,7 +51,7 @@ test("dynamic programming pattern exposes every concrete variant", async ({ page
 })
 
 test("pattern chooser opens one concrete code panel", async ({ page }) => {
-  await page.goto("/writing/algorithmic-templates/#graph")
+  await page.goto("/templates/#graph")
 
   await page.locator('[data-template-pattern-panel][data-guide-pattern="graph"]').getByRole("link", { name: /BFS/ }).click()
 
@@ -63,7 +63,7 @@ test("pattern chooser opens one concrete code panel", async ({ page }) => {
 })
 
 test("template search uses Pagefind results without expanding the outline", async ({ page }) => {
-  await page.goto("/writing/algorithmic-templates/#binary-search")
+  await page.goto("/templates/#binary-search")
 
   const searchbox = page.getByRole("searchbox", { name: "Patterns" })
   await searchbox.fill("lis")
@@ -89,7 +89,7 @@ test("template search uses Pagefind results without expanding the outline", asyn
 })
 
 test("variant selection reveals the matching code panel", async ({ page }) => {
-  await page.goto("/writing/algorithmic-templates/#stack")
+  await page.goto("/templates/#stack")
   await page.locator(".template-library__nav").getByRole("button", { name: "Parse" }).click()
 
   await expect(templatePanel(page, "stack/parse")).toBeVisible()
@@ -99,7 +99,7 @@ test("variant selection reveals the matching code panel", async ({ page }) => {
 test("every concrete template variant opens one matching code panel", async ({ page }) => {
   test.setTimeout(60000)
 
-  await page.goto("/writing/algorithmic-templates/")
+  await page.goto("/templates/")
 
   const variants = await page.locator('[data-guide-variant-control][data-guide-has-template="true"]').evaluateAll(
     (controls) => controls.map((control) => ({

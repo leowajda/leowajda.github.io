@@ -1,80 +1,68 @@
-{%- assign sections = include.panel.sections -%}
-{%- assign search_contract = site.data.site.search_contract -%}
+{%- assign browser = include.browser -%}
+{%- assign filters = browser.filters -%}
+
 {%- capture panel_body -%}
-  {%- for section in sections -%}
-    {%- capture section_body -%}
-	      {%- case section.kind -%}
-	      {%- when "links" -%}
-	        <nav class="side-panel__links" aria-label="{{ section.aria_label | escape }}">
-	          {%- for link in section.links -%}
-	            <a
-	              class="side-panel__link{% if link.active %} side-panel__link--active{% endif %}"
-	              href="{{ link.url | relative_url | escape }}"
-	              {% if link.active %}aria-current="page"{% endif %}
-	            >
-	              {{ link.label | escape }}
-	            </a>
-	          {%- endfor -%}
-	        </nav>
-      {%- when "search" -%}
-        <div class="side-panel__search filter-search">
-          <input id="problem-search" name="search" type="search" placeholder="Search problems" autocomplete="off">
-          <button class="control-button control-button--icon filter-button filter-button--icon" type="reset" aria-label="Reset filters" title="Reset filters">
-            {%- include icon.html name="reset" -%}
-          </button>
-        </div>
-	      {%- when "checkboxes" -%}
-	        <div class="{{ section.wrapper_class | escape }}" role="group" aria-label="{{ section.aria_label | escape }}">
-	          {%- for item in section.items -%}
-	            <label class="{{ item.class | default: 'filter-option filter-option--stacked' | escape }}">
-	              <input
-	                type="checkbox"
-	                name="{{ section.input_name | escape }}"
-	                value="{{ item.value | escape }}"
-	                data-search-filter-value="{{ item.search_value | default: item.label | escape }}"
-	                {% if item.checked %}checked{% endif %}
-	              >
-	              <span>{{ item.label | escape }}</span>
-	            </label>
-	          {%- endfor -%}
-	        </div>
-	      {%- when "scope" -%}
-	        <div class="filter-scope">
-	          <span>{{ section.label | escape }}</span>
-	          <a class="side-panel__link side-panel__link--inline" href="{{ section.url | relative_url | escape }}">{{ section.link_label | escape }}</a>
-	        </div>
-	      {%- when "radios" -%}
-	        <div class="filter-options" role="radiogroup" aria-label="{{ section.aria_label | escape }}">
-	          {%- for item in section.items -%}
-	            <label class="filter-option">
-	              <input type="radio" name="{{ section.input_name | escape }}" value="{{ item.value | escape }}"{% if item.checked %} checked{% endif %}>
-	              <span>{{ item.label | escape }}</span>
-	            </label>
-	          {%- endfor -%}
-	        </div>
-      {%- when "categories" -%}
-	        <div class="filter-options filter-options--stacked">
-	          {%- for item in section.items -%}
-	            <label class="filter-option filter-option--stacked">
-	              <input type="checkbox" name="category" value="{{ item.value | escape }}">
-	              <span>{{ item.label | escape }}</span>
-	            </label>
-	          {%- endfor -%}
-        </div>
-      {%- endcase -%}
-    {%- endcapture -%}
-    {%- assign section_class = "filter-group" -%}
-    {%- if section.class -%}
-      {%- assign section_class = section_class | append: " " | append: section.class -%}
-    {%- endif -%}
-    {%- include side_panel_section.html
-      title=section.title
-      title_tag=section.title_tag
-      title_for=section.title_for
-      body=section_body
-      class=section_class
-    -%}
-  {%- endfor -%}
+  {%- capture search_body -%}
+    <div class="side-panel__search filter-search">
+      <input id="problem-search" name="search" type="search" placeholder="Search problems" autocomplete="off">
+      <button class="control-button control-button--icon filter-button filter-button--icon" type="reset" aria-label="Reset filters" title="Reset filters">
+        {%- include icon.html name="reset" -%}
+      </button>
+    </div>
+  {%- endcapture -%}
+  {%- include side_panel_section.html
+    title="Search"
+    title_tag="label"
+    title_for="problem-search"
+    body=search_body
+    class="filter-group side-panel__section--search"
+  -%}
+
+  {%- capture languages_body -%}
+    <div class="filter-options filter-options--stacked filter-options--languages" role="group" aria-label="Languages">
+      {%- for language in filters.languages -%}
+        <label class="filter-option filter-option--stacked filter-option--language">
+          <input
+            type="checkbox"
+            name="language"
+            value="{{ language.slug | escape }}"
+            data-search-filter-value="{{ language.label | escape }}"
+            checked
+          >
+          <span>{{ language.label | escape }}</span>
+        </label>
+      {%- endfor -%}
+    </div>
+  {%- endcapture -%}
+  {%- include side_panel_section.html title="Languages" body=languages_body class="filter-group" -%}
+
+  {%- capture difficulty_body -%}
+    <div class="filter-options" role="radiogroup" aria-label="Difficulty">
+      <label class="filter-option">
+        <input type="radio" name="difficulty" value="" checked>
+        <span>All difficulties</span>
+      </label>
+      {%- for difficulty in filters.difficulties -%}
+        <label class="filter-option">
+          <input type="radio" name="difficulty" value="{{ difficulty | escape }}">
+          <span>{{ difficulty | escape }}</span>
+        </label>
+      {%- endfor -%}
+    </div>
+  {%- endcapture -%}
+  {%- include side_panel_section.html title="Difficulty" body=difficulty_body class="filter-group" -%}
+
+  {%- capture categories_body -%}
+    <div class="filter-options filter-options--stacked">
+      {%- for category in filters.categories -%}
+        <label class="filter-option filter-option--stacked">
+          <input type="checkbox" name="category" value="{{ category | escape }}">
+          <span>{{ category | escape }}</span>
+        </label>
+      {%- endfor -%}
+    </div>
+  {%- endcapture -%}
+  {%- include side_panel_section.html title="Categories" body=categories_body class="filter-group" -%}
 {%- endcapture -%}
 {%- capture panel_attributes -%}
   aria-label="Problem filters"

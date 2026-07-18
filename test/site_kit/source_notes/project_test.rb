@@ -9,6 +9,7 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
     registry = project.registry_record
     scala = registry.fetch('languages').find { |language| language.fetch('language_slug') == 'scala' }
     cats_effect = scala.fetch('modules').find { |module_record| module_record.fetch('module_slug') == 'cats-effect' }
+    home_page = project.generated_home_page
     language_page = project.generated_language_pages.find { |page| page[:dir] == '/zibaldone/scala/' }
     module_page = project.generated_module_pages.find { |page| page[:dir] == cats_effect.fetch('url') }
     document_page = project.generated_document_pages.first
@@ -17,7 +18,11 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
     refute_includes cats_effect.fetch('readme_markdown'), '/sources/zibaldone/'
     refute_includes cats_effect.fetch('readme_markdown'), '/assets/generated/'
     assert_predicate cats_effect.fetch('documents'), :any?
-    assert_equal scala.fetch('modules').first.fetch('url'), language_page.dig(:data, 'redirect_to')
+    assert_equal '/zibaldone/', home_page[:dir]
+    assert_equal '/zibaldone/', registry.fetch('project_home_url')
+    assert_equal 'scala', language_page.dig(:data, 'source_language', 'slug')
+    assert_predicate language_page.dig(:data, 'source_language', 'modules'), :any?
+    refute language_page[:data].key?('redirect_to')
     assert module_page
     assert document_page
     assert_instance_of SiteKit::Pages::Definition, module_page

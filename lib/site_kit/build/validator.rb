@@ -44,9 +44,8 @@ module SiteKit
         validate_flowchart!
         context.eureka_context.projects.each_value do |project|
           validate_eureka_browser!(project.browser_record)
-          project.generated_language_pages
           project.generated_problem_pages
-          project.generated_implementation_pages
+          project.generated_embed_pages
         end
       end
 
@@ -122,6 +121,7 @@ module SiteKit
       def validate_source_notes_projects!
         context.source_notes_context.registries
         context.source_notes_context.projects.each_value do |project|
+          project.generated_home_page
           project.generated_language_pages
           project.generated_module_pages
           project.generated_document_pages
