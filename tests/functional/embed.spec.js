@@ -5,7 +5,7 @@ test("problem embed is chrome-free and exposes multi-language code UI", async ({
 
   await expect(page.locator("nav.site-nav")).toHaveCount(0)
   await expect(page.locator("[data-search-open]")).toHaveCount(0)
-  await expect(page.locator("[data-eureka-embed]")).toBeVisible()
+  await expect(page.locator("[data-embed-page]")).toBeVisible()
   await expect(page.locator("[data-code-collection]")).toBeVisible()
 
   const languages = page.locator("[data-code-collection-language-control]")
@@ -24,7 +24,7 @@ test("problem embed posts resize messages to the parent frame", async ({ page })
     return await new Promise((resolve, reject) => {
       const timer = window.setTimeout(() => reject(new Error("resize message timeout")), 5000)
       const onMessage = (event) => {
-        if (event.data?.source === "eureka-embed" && event.data?.type === "resize") {
+        if (event.data?.source === "remnote-iframe-plugin" && event.data?.type === "resize") {
           window.clearTimeout(timer)
           window.removeEventListener("message", onMessage)
           resolve(event.data.height)
