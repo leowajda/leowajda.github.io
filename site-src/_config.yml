@@ -87,7 +87,6 @@ defaults:
       type: eureka_embed_page
     values:
       layout: problem_embed
-      shell: wide
       noindex: true
       sitemap: false
       seo:

@@ -25,13 +25,6 @@
       {%- include icon_action_link.html href=nav_external_url icon=nav_external_icon label=nav_external_label class="icon-action--nav" -%}
     {%- endif -%}
 
-    {%- if page.layout == 'problem_embed' -%}
-      {%- assign embed_detail_url = page.detail_url | default: page.problem_record.url -%}
-      {%- if embed_detail_url != '' -%}
-        {%- include icon_action_link.html href=embed_detail_url icon="open-page" label="Open full page" external=false class="icon-action--nav" -%}
-      {%- endif -%}
-    {%- endif -%}
-
     {%- include icon_action_button.html icon="theme-dark" label="Switch theme" class="icon-action--nav" attributes='data-theme-toggle' -%}
   </div>
 </nav>

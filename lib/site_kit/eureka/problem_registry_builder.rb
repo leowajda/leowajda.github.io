@@ -136,7 +136,8 @@ module SiteKit
           'code' => code,
           'code_language' => language.code_language,
           'detail_url' => paths.with_fragment(problem_url, entry_id),
-          'embed_url' => paths.with_fragment(paths.embed('problems', problem_slug), entry_id)
+          # Embed is problem-level (all languages); hash is optional client selection only.
+          'embed_url' => paths.embed('problems', problem_slug)
         }
       end
 

@@ -1,22 +1,22 @@
-<article
-  class="source-layout"
-  data-pagefind-body
-  data-pagefind-meta="title:{{ page.title | escape }}"
-  data-pagefind-meta="kind:Source"
-  data-pagefind-meta="project:{{ page.source_schema.about.first | default: 'Zibaldone' | escape }}"
-  data-pagefind-meta="summary:{{ page.description | escape }}"
-  data-pagefind-filter="kind:Source"
-  data-pagefind-filter="project:{{ page.source_schema.about.first | default: 'Zibaldone' | escape }}"
-  {%- if page.language_slug %}
-  data-pagefind-filter="language:{{ page.language_slug | escape }}"
-  {%- endif %}
-  {%- if page.module_slug %}
-  data-pagefind-filter="module:{{ page.module_slug | escape }}"
-  {%- endif %}
-  {%- if page.format %}
-  data-pagefind-filter="source_format:{{ page.format | escape }}"
-  {%- endif %}
->
+<article class="source-layout" data-pagefind-body>
+  <div hidden aria-hidden="true">
+    <span data-pagefind-meta="title">{{ page.title | escape }}</span>
+    <span data-pagefind-meta="kind">Source</span>
+    <span data-pagefind-meta="project">{{ page.source_schema.about.first | default: 'Zibaldone' | escape }}</span>
+    <span data-pagefind-meta="summary">{{ page.description | escape }}</span>
+    <span data-pagefind-filter="kind">Source</span>
+    <span data-pagefind-filter="project">{{ page.source_schema.about.first | default: 'Zibaldone' | escape }}</span>
+    {%- if page.language_slug -%}
+      <span data-pagefind-filter="language">{{ page.language_slug | escape }}</span>
+    {%- endif -%}
+    {%- if page.module_slug -%}
+      <span data-pagefind-filter="module">{{ page.module_slug | escape }}</span>
+    {%- endif -%}
+    {%- if page.format -%}
+      <span data-pagefind-filter="source_format">{{ page.format | escape }}</span>
+    {%- endif -%}
+  </div>
+
   {%- include source_page_header.html header=include.header -%}
 
   <div class="source-layout__body">
