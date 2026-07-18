@@ -1,4 +1,5 @@
-const MESSAGE_SOURCE = "eureka-embed"
+// Protocol shared with RemNote Iframe Plugin (and any compatible host).
+const MESSAGE_SOURCE = "remnote-iframe-plugin"
 const MESSAGE_TYPE = "resize"
 
 const measureHeight = () => {

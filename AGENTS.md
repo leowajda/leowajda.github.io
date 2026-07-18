@@ -40,7 +40,7 @@ Concrete routes:
 | Writing | `/writing/{slug}/` |
 | Search | `/search/?q=` |
 
-Language is a filter on the problem explorer, not a separate path tree. Embeds are problem-level (one URL per problem), not per implementation. Embed pages use a bare layout (no site nav) and post `{ source: "eureka-embed", type: "resize", height }` for iframe hosts such as the RemNote plugin.
+Language is a filter on the problem explorer, not a separate path tree. Embeds are problem-level (one URL per problem), not per implementation. Embed pages use a bare layout (no site nav) and post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts (e.g. RemNote Iframe Plugin).
 
 ## Philosophy
 
