@@ -16,26 +16,26 @@ layout: default
   <p>Problem data not found.</p>
 {%- else -%}
   {%- capture pagefind_summary -%}{{ problem.difficulty }}. {{ problem.categories | join: ', ' }}{%- endcapture -%}
-  <article
-    class="problem-page"
-    data-pagefind-body
-    data-pagefind-meta="title:{{ problem.title | escape }}"
-    data-pagefind-meta="kind:Problem"
-    data-pagefind-meta="project:Eureka"
-    data-pagefind-meta="summary:{{ pagefind_summary | strip | escape }}"
-    data-pagefind-filter="kind:Problem"
-    data-pagefind-filter="project:Eureka"
-    data-pagefind-filter="difficulty:{{ problem.difficulty | escape }}"
-    {%- for category in problem.categories %}
-    data-pagefind-filter="category:{{ category | escape }}"
-    {%- endfor %}
-    {%- for language in problem.languages %}
-    data-pagefind-filter="language:{{ language.label | escape }}"
-    {%- endfor %}
-    {%- for reference in template_references %}
-    data-pagefind-filter="template:{{ reference.label | escape }}"
-    {%- endfor %}
-  >
+  <article class="problem-page" data-pagefind-body>
+    <div hidden aria-hidden="true">
+      <span data-pagefind-meta="title">{{ problem.title | escape }}</span>
+      <span data-pagefind-meta="kind">Problem</span>
+      <span data-pagefind-meta="project">Eureka</span>
+      <span data-pagefind-meta="summary">{{ pagefind_summary | strip | escape }}</span>
+      <span data-pagefind-filter="kind">Problem</span>
+      <span data-pagefind-filter="project">Eureka</span>
+      <span data-pagefind-filter="difficulty">{{ problem.difficulty | escape }}</span>
+      {%- for category in problem.categories -%}
+        <span data-pagefind-filter="category">{{ category | escape }}</span>
+      {%- endfor -%}
+      {%- for language in problem.languages -%}
+        <span data-pagefind-filter="language">{{ language.label | escape }}</span>
+      {%- endfor -%}
+      {%- for reference in template_references -%}
+        <span data-pagefind-filter="template">{{ reference.label | escape }}</span>
+      {%- endfor -%}
+    </div>
+
     {%- include page_hero_header.html
       class="problem-header"
       eyebrow="Eureka Problem"

@@ -140,10 +140,13 @@ test("problem explorer text search is backed by Pagefind", async ({ page }) => {
 test("problem explorer standalone filters are backed by Pagefind", async ({ page }) => {
   await page.goto("/eureka/problems/")
 
+  const totalRows = await page.locator("[data-problem-row]").count()
   await page.locator('input[name="difficulty"][value="Easy"]').check()
 
   await expect(page.locator('[data-problem-row][data-problem-slug="binary-search"]')).toBeVisible()
   await expect(page.locator('[data-problem-row][data-problem-slug="kth-largest-element-in-an-array"]')).toBeHidden()
+  await expect(page.locator("[data-problem-row]:visible")).not.toHaveCount(totalRows)
+  await expect(page.locator("[data-problem-row]:visible")).not.toHaveCount(0)
 })
 
 test("problem explorer combines text search with Pagefind filters", async ({ page }) => {

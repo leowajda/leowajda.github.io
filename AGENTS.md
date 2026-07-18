@@ -32,7 +32,7 @@ Concrete routes:
 |----------|-----|
 | Problem catalog | `/eureka/problems/` |
 | Problem | `/eureka/problems/{slug}/` |
-| Problem embed (all languages) | `/eureka/problems/{slug}/embed/` |
+| Problem embed (all languages, iframe-ready) | `/eureka/problems/{slug}/embed/` |
 | Flowchart | `/eureka/flowchart/` |
 | Templates | `/templates/` |
 | Source notes home | `/zibaldone/` |
@@ -40,7 +40,7 @@ Concrete routes:
 | Writing | `/writing/{slug}/` |
 | Search | `/search/?q=` |
 
-Language is a filter on the problem explorer, not a separate path tree. Embeds are problem-level (one URL per problem), not per implementation.
+Language is a filter on the problem explorer, not a separate path tree. Embeds are problem-level (one URL per problem), not per implementation. Embed pages use a bare layout (no site nav) and post `{ source: "eureka-embed", type: "resize", height }` for iframe hosts such as the RemNote plugin.
 
 ## Philosophy
 

@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: 'en' | escape }}" data-appearance="{{ site.theme_config.appearance | default: 'auto' | escape }}">
+  {%- include head.html -%}
+  <body class="site-body site-body--embed" data-eureka-embed>
+    {%- include icon-sprite.html -%}
+    <main class="embed-root" aria-label="Embedded content">
+      {{ content }}
+    </main>
+    {%- capture embed_js_url -%}{%- include asset_url.html path='/assets/js/embed.js' -%}{%- endcapture -%}
+    <script type="module" src="{{ embed_js_url | strip | escape }}"></script>
+  </body>
+</html>
