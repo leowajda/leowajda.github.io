@@ -3,10 +3,6 @@
 module SiteKit
   module SourceNotes
     class PageFactory # rubocop:disable Metrics/ClassLength
-      MODULE_PAGE_CONTEXT_KEYS = %w[slug module_slug title url readme_markdown roots].freeze
-      MODULE_NAVIGATION_CONTEXT_KEYS = %w[slug module_slug title url roots].freeze
-      DOCUMENT_CONTEXT_KEYS = %w[route_url title format body].freeze
-
       def initialize(manifest:, registry_record:)
         @manifest = manifest
         @registry_record = registry_record
@@ -25,38 +21,88 @@ module SiteKit
               'title' => registry_record.fetch('project_title'),
               'description' => registry_record.fetch('project_description'),
               'source_url' => registry_record.fetch('project_source_url'),
-              'languages' => languages.map do |language|
-                {
-                  'slug' => language.fetch('language_slug'),
-                  'title' => language.fetch('language_title'),
-                  'url' => language.fetch('url'),
-                  'modules' => language.fetch('modules').map do |module_record|
-                    {
-                      'title' => module_record.fetch('title'),
-                      'url' => module_record.fetch('url')
-                    }
-                  end
-                }
-              end
+              'languages' => languages.map { |language| language_summary(language) }
             }
           }
         )
       end
 
       def language_pages
-        languages.map { |language| build_language_page(language) }
-      end
-
-      def module_pages
-        languages.flat_map do |language|
-          language.fetch('modules').map { |module_record| build_module_page(language, module_record) }
+        languages.map do |language|
+          title = language.fetch('language_title')
+          pages.build(
+            dir: language.fetch('url'),
+            page_type: SOURCE_LANGUAGE_PAGE_TYPE,
+            title: title,
+            description: "Source notes for #{title}.",
+            data: {
+              'language_slug' => language.fetch('language_slug'),
+              'source_language' => language_summary(language).merge(
+                'source_url' => language.fetch('source_url')
+              ),
+              'source_header' => header(registry_record.fetch('project_title'), title)
+            }
+          )
         end
       end
 
-      def document_pages
-        languages.flat_map do |language|
-          language.fetch('modules').flat_map do |module_record|
-            module_record.fetch('documents').map { |document| build_document_page(language, module_record, document) }
+      def module_pages
+        each_module.map do |language, module_record|
+          title = module_record.fetch('title')
+          crumbs = [
+            crumb('Home', '/'),
+            crumb(registry_record.fetch('project_title'), paths.root),
+            crumb(language.fetch('language_title'), language.fetch('url')),
+            crumb(title, module_record.fetch('url'))
+          ]
+          emit(
+            dir: module_record.fetch('url'),
+            page_type: SOURCE_MODULE_PAGE_TYPE,
+            title: title,
+            language_slug: language.fetch('language_slug'),
+            module_slug: module_record.fetch('module_slug'),
+            header: header(language.fetch('language_title'), title),
+            schema: schema(
+              [registry_record.fetch('project_title'), language.fetch('language_title'), title],
+              crumbs
+            ),
+            source_module: slice(module_record, %w[slug module_slug title url readme_markdown roots])
+          )
+        end
+      end
+
+      def document_pages # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+        each_module.flat_map do |language, module_record|
+          module_record.fetch('documents').map do |document|
+            title = document.fetch('title')
+            format = document.fetch('format')
+            crumbs = [
+              crumb('Home', '/'),
+              crumb(registry_record.fetch('project_title'), paths.root),
+              crumb(language.fetch('language_title'), language.fetch('url')),
+              crumb(module_record.fetch('title'), module_record.fetch('url')),
+              crumb(title, document.fetch('route_url'))
+            ]
+            emit(
+              dir: document.fetch('route_url'),
+              page_type: SOURCE_DOCUMENT_PAGE_TYPE,
+              title: title,
+              language_slug: language.fetch('language_slug'),
+              module_slug: module_record.fetch('module_slug'),
+              header: header(module_record.fetch('title'), title),
+              schema: schema(
+                [registry_record.fetch('project_title'), module_record.fetch('title'),
+                 language.fetch('language_title')],
+                crumbs,
+                code_repository: registry_record.fetch('project_source_url'),
+                programming_language: language.fetch('language_title')
+              ),
+              source_module: slice(module_record, %w[slug module_slug title url roots]),
+              document_url: document.fetch('route_url'),
+              source_document: slice(document, %w[route_url title format body]),
+              format: format,
+              structured_data_partial: document_structured_data(format)
+            )
           end
         end
       end
@@ -69,135 +115,46 @@ module SiteKit
         registry_record.fetch('languages')
       end
 
-      def build_language_page(language)
-        title = language.fetch('language_title')
-
-        pages.build(
-          dir: language.fetch('url'),
-          page_type: SOURCE_LANGUAGE_PAGE_TYPE,
-          title: title,
-          description: "Source notes for #{title}.",
-          data: {
-            'language_slug' => language.fetch('language_slug'),
-            'source_language' => {
-              'slug' => language.fetch('language_slug'),
-              'title' => title,
-              'url' => language.fetch('url'),
-              'source_url' => language.fetch('source_url'),
-              'modules' => language.fetch('modules').map do |module_record|
-                {
-                  'title' => module_record.fetch('title'),
-                  'url' => module_record.fetch('url')
-                }
-              end
-            },
-            'source_header' => header(eyebrow: registry_record.fetch('project_title'), title: title)
-          }
-        )
+      def each_module
+        languages.flat_map { |language| language.fetch('modules').map { |mod| [language, mod] } }
       end
 
-      def build_module_page(language, module_record)
-        title = module_record.fetch('title')
-
-        build_source_page(
-          dir: module_record.fetch('url'),
-          page_type: SOURCE_MODULE_PAGE_TYPE,
-          language_slug: language.fetch('language_slug'),
-          module_slug: module_record.fetch('module_slug'),
-          title:,
-          source_header: header(eyebrow: language.fetch('language_title'), title:),
-          source_schema: schema(
-            about: [registry_record.fetch('project_title'), language.fetch('language_title'), title],
-            breadcrumbs: [
-              breadcrumb('Home', '/'),
-              breadcrumb(registry_record.fetch('project_title'), paths.root),
-              breadcrumb(language.fetch('language_title'), language.fetch('url')),
-              breadcrumb(title, module_record.fetch('url'))
-            ]
-          ),
-          source_module: module_page_context(module_record)
-        )
+      def language_summary(language)
+        {
+          'slug' => language.fetch('language_slug'),
+          'title' => language.fetch('language_title'),
+          'url' => language.fetch('url'),
+          'modules' => language.fetch('modules').map do |mod|
+            { 'title' => mod.fetch('title'), 'url' => mod.fetch('url') }
+          end
+        }
       end
 
-      def build_document_page(language, module_record, document)
-        title = document.fetch('title')
-        format = document.fetch('format')
-
-        build_source_page(
-          dir: document.fetch('route_url'),
-          page_type: SOURCE_DOCUMENT_PAGE_TYPE,
-          language_slug: language.fetch('language_slug'),
-          module_slug: module_record.fetch('module_slug'),
-          title:,
-          source_header: header(eyebrow: module_record.fetch('title'), title:),
-          source_schema: schema(
-            about: [registry_record.fetch('project_title'), module_record.fetch('title'),
-                    language.fetch('language_title')],
-            breadcrumbs: [
-              breadcrumb('Home', '/'),
-              breadcrumb(registry_record.fetch('project_title'), paths.root),
-              breadcrumb(language.fetch('language_title'), language.fetch('url')),
-              breadcrumb(module_record.fetch('title'), module_record.fetch('url')),
-              breadcrumb(title, document.fetch('route_url'))
-            ],
-            code_repository: registry_record.fetch('project_source_url'),
-            programming_language: language.fetch('language_title')
-          ),
-          source_module: module_navigation_context(module_record),
-          document_url: document.fetch('route_url'),
-          source_document: document_context(document),
-          format:,
-          structured_data_partial: structured_data_partial(format)
-        )
-      end
-
-      def build_source_page(dir:, page_type:, **data)
-        title = data.fetch(:title)
-
+      def emit(dir:, page_type:, title:, language_slug:, header:, schema:, source_module:, **extra) # rubocop:disable Metrics/ParameterLists
         pages.build(
           dir: dir,
           page_type: page_type,
           title: title,
           description: "#{title} notes",
-          data: source_page_data(data)
+          data: {
+            'language_slug' => language_slug,
+            'source_header' => header,
+            'source_schema' => schema,
+            'source_module' => source_module,
+            'module_slug' => extra[:module_slug],
+            'document_url' => extra[:document_url],
+            'source_document' => extra[:source_document],
+            'format' => extra[:format],
+            'structured_data_partial' => extra[:structured_data_partial]
+          }.compact
         )
       end
 
-      def source_page_data(payload)
-        {
-          'language_slug' => payload.fetch(:language_slug),
-          'source_header' => payload.fetch(:source_header),
-          'source_schema' => payload.fetch(:source_schema),
-          'source_module' => payload.fetch(:source_module),
-          'module_slug' => payload[:module_slug],
-          'document_url' => payload[:document_url],
-          'source_document' => payload[:source_document],
-          'format' => payload[:format],
-          'structured_data_partial' => payload[:structured_data_partial]
-        }.compact
+      def header(eyebrow, title)
+        { 'eyebrow' => eyebrow, 'title' => title, 'links' => [] }
       end
 
-      def module_page_context(module_record)
-        slice_record(module_record, MODULE_PAGE_CONTEXT_KEYS)
-      end
-
-      def module_navigation_context(module_record)
-        slice_record(module_record, MODULE_NAVIGATION_CONTEXT_KEYS)
-      end
-
-      def document_context(document)
-        slice_record(document, DOCUMENT_CONTEXT_KEYS)
-      end
-
-      def header(eyebrow:, title:)
-        {
-          'eyebrow' => eyebrow,
-          'title' => title,
-          'links' => []
-        }
-      end
-
-      def schema(about:, breadcrumbs:, code_repository: nil, programming_language: nil)
+      def schema(about, breadcrumbs, code_repository: nil, programming_language: nil)
         {
           'about' => about,
           'breadcrumbs' => breadcrumbs,
@@ -206,20 +163,18 @@ module SiteKit
         }.compact
       end
 
-      def breadcrumb(name, item)
+      def crumb(name, item)
         { 'name' => name, 'item' => item }
       end
 
-      def structured_data_partial(format)
+      def slice(record, keys)
+        keys.to_h { |key| [key, record.fetch(key)] }
+      end
+
+      def document_structured_data(format)
         return STRUCTURED_DATA_SOURCE_DOCUMENT_CODE_PARTIAL if format == 'code'
 
         STRUCTURED_DATA_SOURCE_DOCUMENT_PARTIAL
-      end
-
-      def slice_record(record, keys)
-        keys.to_h do |key|
-          [key, record.fetch(key)]
-        end
       end
     end
   end
