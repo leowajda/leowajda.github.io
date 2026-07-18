@@ -3,6 +3,7 @@
 module SiteKit
   module Templates
     module CodeCollections
+      # Validates and normalizes flat code entries per template (no toolbar/view shaping).
       class Registry
         MAX_CODE_LINES = 180
         DISALLOWED_CODE_PATTERNS = [
@@ -25,7 +26,7 @@ module SiteKit
             validate_known_template_entries!
 
             templates.to_h do |template|
-              [template.template_id, code_collection_for(template)]
+              [template.template_id, entries_for(template)]
             end
           end
         end
@@ -43,25 +44,8 @@ module SiteKit
                 "Template entries reference unknown templates: #{stray_entry_ids.sort.join(', ')}"
         end
 
-        def code_collection_for(template)
-          entries = entries_for(template)
-          validate_unique_entry_ids!(template.template_id, entries)
-          validate_unique_language_variants!(template.template_id, entries)
-          validate_language_coverage!(template.template_id, entries)
-
-          SiteKit::Templates::CodeCollections::Model.build(
-            entries: entries,
-            default_entry_id: entries.first && entries.first['entry_id'],
-            options: SiteKit::Templates::CodeCollections::Options.build(
-              toolbar_aria: code_collection_config.fetch('default_toolbar_label'),
-              variant_group_label: code_collection_config.fetch('default_variant_label'),
-              variant_icon_map: code_collection_config.fetch('variant_icons')
-            )
-          )
-        end
-
         def entries_for(template)
-          SiteKit::Core::Helpers.ensure_array(
+          entries = SiteKit::Core::Helpers.ensure_array(
             entries_by_template.fetch(template.template_id) do
               raise SiteKit::CatalogError, "Template '#{template.template_id}' is missing code entries"
             end,
@@ -71,6 +55,10 @@ module SiteKit
                             "Template entries for #{template.template_id}[#{index}]",
                             template.template_id)
           end
+          validate_unique_entry_ids!(template.template_id, entries)
+          validate_unique_language_variants!(template.template_id, entries)
+          validate_language_coverage!(template.template_id, entries)
+          entries
         end
 
         def normalize_language_catalog(value)

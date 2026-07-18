@@ -1,0 +1,22 @@
+---
+layout: default
+---
+
+{%- assign language = page.source_language -%}
+
+{%- include page_hero_header.html
+  class="source-language-header"
+  eyebrow="Source notes"
+  title=language.title
+  links=page.source_header.links
+-%}
+
+<section class="content-card source-language">
+  <ul class="source-language__modules">
+    {%- for module in language.modules -%}
+      <li>
+        <a href="{{ module.url | relative_url | escape }}">{{ module.title | escape }}</a>
+      </li>
+    {%- endfor -%}
+  </ul>
+</section>

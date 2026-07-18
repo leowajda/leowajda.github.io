@@ -3,8 +3,8 @@
 module SiteKit
   module Search
     class TemplateRecordBuilder
-      KIND = SiteKit::Search::Contract::KIND_TEMPLATE
-      PAGE_URL = '/writing/algorithmic-templates/'
+      KIND = 'Template'
+      PAGE_URL = '/templates/'
 
       def initialize(guide:)
         @guide = guide

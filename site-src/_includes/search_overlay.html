@@ -6,9 +6,13 @@
         id="site-search-input"
         class="search-overlay__input"
         type="search"
+        role="combobox"
         placeholder="Search"
         autocomplete="off"
+        aria-autocomplete="list"
+        aria-expanded="false"
         aria-controls="site-search-results"
+        aria-haspopup="listbox"
         aria-describedby="site-search-summary"
         data-search-input
       >
@@ -17,7 +21,7 @@
       </button>
     </div>
     <p id="site-search-summary" class="search-overlay__summary" data-search-summary aria-live="polite">Type to search.</p>
-    <div id="site-search-results" class="search-overlay__results" data-search-results role="list"></div>
+    <div id="site-search-results" class="search-overlay__results" data-search-results role="listbox" aria-label="Search results"></div>
     <button class="control-button search-overlay__more" type="button" data-search-more hidden>Show more</button>
   </div>
 </dialog>

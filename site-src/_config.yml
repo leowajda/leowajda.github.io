@@ -64,35 +64,15 @@ defaults:
     values:
       structured_data_partial: structured_data/problems.html
   - scope:
-      path: "collections/_posts/2026-04-19-algorithmic-flowchart.md"
-    values:
-      structured_data_partial: structured_data/writing_page.html
-      project_title: Eureka
-  - scope:
-      path: "collections/_posts/2026-04-20-algorithmic-templates.md"
-    values:
-      structured_data_partial: structured_data/writing_page.html
-      project_title: Eureka
-  - scope:
       path: ""
       type: posts
     values:
       layout: post
       shell: wide
+      permalink: /writing/:slug/
       structured_data_partial: structured_data/post.html
       seo:
         type: Article
-  - scope:
-      path: ""
-      type: eureka_language_page
-    values:
-      layout: problems
-      shell: wide
-      custom_js:
-        - eureka-filters
-      structured_data_partial: structured_data/problems.html
-      seo:
-        type: WebPage
   - scope:
       path: ""
       type: eureka_problem_page
@@ -104,7 +84,7 @@ defaults:
         type: WebPage
   - scope:
       path: ""
-      type: eureka_implementation_page
+      type: eureka_embed_page
     values:
       layout: problem_embed
       shell: wide
@@ -114,11 +94,20 @@ defaults:
         type: WebPage
   - scope:
       path: ""
+      type: source_home_page
+    values:
+      layout: source_home
+      shell: wide
+      structured_data_partial: structured_data/source_home.html
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
       type: source_language_page
     values:
-      layout: redirect
+      layout: source_language
       shell: wide
-      sitemap: false
+      structured_data_partial: structured_data/source_language.html
       seo:
         type: WebPage
   - scope:

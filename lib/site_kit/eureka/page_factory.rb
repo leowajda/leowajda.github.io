@@ -8,27 +8,11 @@ module SiteKit
         @route_base = route_base
         @browser_record = browser_record
         @topics_record = topics_record
+        @paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
         @pages = SiteKit::Pages::DefinitionBuilder.new(
           project_slug: project_slug,
           page_link_resolver: page_link_resolver
         )
-      end
-
-      def language_pages
-        browser_record.fetch('languages').map do |language|
-          pages.build(
-            dir: "#{route_base}/#{language.fetch('slug')}/",
-            page_type: EUREKA_LANGUAGE_PAGE_TYPE,
-            title: language.fetch('title'),
-            description: language.fetch('description'),
-            data: {
-              'language_filter' => language.fetch('slug'),
-              'browser_record' => browser_record,
-              'active_language_record' => language,
-              'header_links' => pages.links_for('problem_explorer')
-            }
-          )
-        end
       end
 
       def problem_pages
@@ -37,7 +21,7 @@ module SiteKit
           topics = problem_topics(problem_slug)
 
           pages.build(
-            dir: "#{route_base}/problems/#{problem_slug}/",
+            dir: paths.item('problems', problem_slug),
             page_type: EUREKA_PROBLEM_PAGE_TYPE,
             title: problem.fetch('title'),
             description: "#{problem.fetch('title')} solutions",
@@ -51,31 +35,28 @@ module SiteKit
         end
       end
 
-      def implementation_pages
-        browser_record.fetch('problems').flat_map do |problem|
-          problem.fetch('implementations').map do |implementation|
-            problem_slug = implementation.fetch('problem_slug')
-            implementation_id = implementation.fetch('implementation_id')
+      def embed_pages
+        browser_record.fetch('problems').map do |problem|
+          problem_slug = problem.fetch('problem_slug')
 
-            pages.build(
-              dir: "#{route_base}/problems/#{problem_slug}/embed/#{implementation_id}/",
-              page_type: EUREKA_IMPLEMENTATION_PAGE_TYPE,
-              title: implementation.fetch('title'),
-              description: implementation.fetch('description'),
-              data: {
-                'problem_slug' => problem_slug,
-                'implementation_id' => implementation_id,
-                'problem_record' => problem,
-                'selected_implementation_record' => implementation
-              }.merge(problem_external_link(implementation))
-            )
-          end
+          pages.build(
+            dir: paths.embed('problems', problem_slug),
+            page_type: EUREKA_EMBED_PAGE_TYPE,
+            title: "#{problem.fetch('title')} · Embed",
+            description: "#{problem.fetch('title')} solutions embed",
+            data: {
+              'problem_slug' => problem_slug,
+              'problem_record' => problem,
+              'detail_url' => problem.fetch('url'),
+              'embed' => true
+            }.merge(problem_external_link(problem))
+          )
         end
       end
 
       private
 
-      attr_reader :project_slug, :route_base, :browser_record, :topics_record, :pages
+      attr_reader :project_slug, :route_base, :browser_record, :topics_record, :paths, :pages
 
       def problem_topics(problem_slug)
         topic_record = topics_record.fetch('problems').fetch(problem_slug)

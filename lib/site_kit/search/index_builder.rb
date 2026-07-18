@@ -2,6 +2,7 @@
 
 module SiteKit
   module Search
+    # Only hash-target extras (templates, flowchart). Problems/source/pages come from HTML crawl.
     class IndexBuilder
       def initialize(site:, context:)
         @context = context
@@ -10,24 +11,13 @@ module SiteKit
 
       def records
         @records ||= [
-          SiteKit::Search::PageRecordBuilder.new(
-            pages: site.pages
-          ),
-          SiteKit::Search::ProblemRecordBuilder.new(
-            browsers: context.eureka_context.browsers
-          ),
           SiteKit::Search::TemplateRecordBuilder.new(
             guide: context.template_library_context.guide
           ),
           SiteKit::Search::FlowchartRecordBuilder.new(
             flowchart: context.flowchart_data,
-            summaries: eureka_data.fetch('flowchart_summaries', {})
-          ),
-          SiteKit::Search::SourceRecordBuilder.new(
-            registries: context.source_notes_context.registries
-          ),
-          SiteKit::Search::WritingRecordBuilder.new(
-            documents: site.collections.fetch('posts').docs
+            summaries: eureka_data.fetch('flowchart_summaries', {}),
+            factory: factory
           )
         ].flat_map(&:records)
       end

@@ -14,13 +14,19 @@ module SiteKit
       end
 
       def build
+        languages = language_page_records.map { |language| language.slice('slug', 'label') }
+
         {
           'project_slug' => project_slug,
           'project_title' => project_title,
           'project_description' => project_description,
-          'browser_url' => "#{route_base}/problems/",
-          'filters' => filters,
-          'languages' => language_page_records,
+          'browser_url' => SiteKit::Core::ResourcePaths.new(route_base: route_base).catalog('problems'),
+          'filters' => {
+            'difficulties' => problem_records.map { |problem| problem.fetch('difficulty') }.uniq,
+            'categories' => problem_records.flat_map { |problem| problem.fetch('categories') }.uniq,
+            'languages' => languages
+          },
+          'languages' => languages,
           'problems' => problem_records
         }
       end

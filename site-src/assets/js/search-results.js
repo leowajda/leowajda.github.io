@@ -5,10 +5,11 @@ export const SEARCH_PAGE_SIZE = 8
 const resultMetaLine = (data) =>
   [data.meta?.kind, data.meta?.section].filter(Boolean).join(": ")
 
-const createResultElement = (data) => {
+const createResultElement = (data, index) => {
   const item = document.createElement("article")
   item.className = "search-result"
-  item.setAttribute("role", "listitem")
+  item.id = `site-search-option-${index}`
+  item.setAttribute("role", "option")
 
   const meta = document.createElement("p")
   meta.className = "search-result__meta"
@@ -20,6 +21,7 @@ const createResultElement = (data) => {
   link.href = data.url
   link.textContent = data.meta?.title || data.url
   link.dataset.searchResultLink = ""
+  link.tabIndex = -1
   title.append(link)
 
   const summary = document.createElement("p")
@@ -61,7 +63,7 @@ export const renderSearchResults = ({ records, total = records.length, visibleCo
   summary.textContent = total === 1 ? "1 result." : `${total} results.`
 
   const visibleRecords = records.slice(0, visibleCount)
-  results.replaceChildren(...visibleRecords.map(createResultElement))
+  results.replaceChildren(...visibleRecords.map((record, index) => createResultElement(record, index)))
 
   moreButton.hidden = visibleCount >= total
   moreButton.textContent = `Show ${Math.min(SEARCH_PAGE_SIZE, total - visibleCount)} more`

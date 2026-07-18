@@ -22,8 +22,8 @@ class SiteKitTemplateLanguageCoverageTest < SiteKitTestCase
   def test_every_template_exposes_every_supported_language
     expected_languages = template_language_catalog.keys.sort
 
-    build_context.template_library_context.code_collections.each do |template_id, collection|
-      actual_languages = collection.fetch('items').map { |item| item.fetch('language_slug') }.sort
+    build_context.template_library_context.code_collections.each do |template_id, entries|
+      actual_languages = entries.map { |item| item.fetch('language') }.sort
 
       assert_equal expected_languages, actual_languages, "Wrong language coverage for #{template_id}"
     end

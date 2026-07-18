@@ -40,19 +40,15 @@ module SiteKit
       end
 
       def generated_pages
-        page_factory.language_pages + page_factory.problem_pages + page_factory.implementation_pages
-      end
-
-      def generated_language_pages
-        page_factory.language_pages
+        page_factory.problem_pages + page_factory.embed_pages
       end
 
       def generated_problem_pages
         page_factory.problem_pages
       end
 
-      def generated_implementation_pages
-        page_factory.implementation_pages
+      def generated_embed_pages
+        page_factory.embed_pages
       end
 
       private
@@ -63,40 +59,8 @@ module SiteKit
         @problem_records ||= catalog.problem_records.map do |problem|
           problem_topics = topics_record.fetch('problems').fetch(problem.fetch('problem_slug'))
           template_references = with_template_reference_urls(problem_topics.fetch('template_references', []))
-          record = problem.merge('template_references' => template_references)
-
-          with_code_collection(record)
+          problem.merge('template_references' => template_references)
         end
-      end
-
-      def with_code_collection(problem)
-        problem.merge(
-          'implementations_by_language' => problem.fetch('implementations').group_by do |entry|
-            entry.fetch('language')
-          end,
-          'code_collection' => problem_code_collection(problem)
-        )
-      end
-
-      def problem_code_collection(problem)
-        implementations = problem.fetch('implementations')
-        browser_config = app_config.eureka.fetch('browser')
-        code_config = app_config.code_collection
-
-        SiteKit::Templates::CodeCollections::Model.build(
-          entries: implementations,
-          default_entry_id: implementations.first&.fetch('entry_id'),
-          options: SiteKit::Templates::CodeCollections::Options.build(
-            toolbar_aria: browser_config.fetch('toolbar_label'),
-            variant_catalog: code_config.fetch('implementation_modes'),
-            variant_group_label: browser_config.fetch('variant_group_label'),
-            variant_group_visibility: browser_config.fetch('variant_group_visibility'),
-            variant_presentation: browser_config.fetch('variant_presentation'),
-            variant_icon_map: code_config.fetch('variant_icons'),
-            sync_hash: true,
-            problem_source_url: problem.fetch('problem_source_url')
-          )
-        )
       end
 
       def with_template_reference_urls(template_references)

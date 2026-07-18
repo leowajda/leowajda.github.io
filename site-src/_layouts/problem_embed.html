@@ -4,16 +4,11 @@ layout: default
 
 {%- assign problem = page.problem_record | default: nil -%}
 {%- assign implementations = problem.implementations | default: empty -%}
-{%- assign implementation = page.selected_implementation_record | default: nil -%}
 
 {%- if problem == nil or implementations.size == 0 -%}
   <p>Problem data not found.</p>
 {%- else -%}
   <article class="problem-embed problem-embed--centered">
-    {%- if implementation != nil -%}
-      {%- include problem_viewer.html problem=problem implementations=implementations selected_implementation=implementation embed=true -%}
-    {%- else -%}
-      <p>Problem implementation data not found.</p>
-    {%- endif -%}
+    {%- include problem_viewer.html problem=problem implementations=implementations embed=true -%}
   </article>
 {%- endif -%}

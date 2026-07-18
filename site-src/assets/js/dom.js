@@ -7,6 +7,11 @@ export const onReady = (callback) => {
   callback()
 }
 
+export const onHashChange = (callback) => {
+  window.addEventListener("hashchange", callback)
+  return () => window.removeEventListener("hashchange", callback)
+}
+
 export const getHashValue = () => {
   const hash = window.location.hash.replace(/^#/, "")
 

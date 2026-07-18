@@ -15,7 +15,27 @@ layout: default
 {%- if problem == nil or implementations.size == 0 -%}
   <p>Problem data not found.</p>
 {%- else -%}
-  <article class="problem-page">
+  {%- capture pagefind_summary -%}{{ problem.difficulty }}. {{ problem.categories | join: ', ' }}{%- endcapture -%}
+  <article
+    class="problem-page"
+    data-pagefind-body
+    data-pagefind-meta="title:{{ problem.title | escape }}"
+    data-pagefind-meta="kind:Problem"
+    data-pagefind-meta="project:Eureka"
+    data-pagefind-meta="summary:{{ pagefind_summary | strip | escape }}"
+    data-pagefind-filter="kind:Problem"
+    data-pagefind-filter="project:Eureka"
+    data-pagefind-filter="difficulty:{{ problem.difficulty | escape }}"
+    {%- for category in problem.categories %}
+    data-pagefind-filter="category:{{ category | escape }}"
+    {%- endfor %}
+    {%- for language in problem.languages %}
+    data-pagefind-filter="language:{{ language.label | escape }}"
+    {%- endfor %}
+    {%- for reference in problem_topics.template_references %}
+    data-pagefind-filter="template:{{ reference.label | escape }}"
+    {%- endfor %}
+  >
     {%- include page_hero_header.html
       class="problem-header"
       eyebrow="Eureka Problem"

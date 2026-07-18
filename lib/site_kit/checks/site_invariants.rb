@@ -73,7 +73,10 @@ module SiteKit
       end
 
       def hidden_from_index?(page)
-        page.data['noindex'] == true || page.data['layout'] == 'redirect' || page.data['layout'] == 'problem_embed'
+        page.data['noindex'] == true ||
+          page.data['layout'] == 'redirect' ||
+          page.data['layout'] == 'problem_embed' ||
+          page.data['page_type'] == EUREKA_EMBED_PAGE_TYPE
       end
     end
   end

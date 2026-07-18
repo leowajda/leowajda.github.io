@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'json'
 require_relative '../../test_helper'
 
 class SiteKitPluginGenerationTest < SiteKitTestCase
@@ -8,35 +7,31 @@ class SiteKitPluginGenerationTest < SiteKitTestCase
     site = generated_site
     home_page = site.pages.find { |page| page.url == '/' }
     explorer_page = site.pages.find { |page| page.url == '/eureka/problems/' }
-    templates_post = site.posts.docs.find { |post| post.url == '/writing/algorithmic-templates/' }
+    templates_page = site.pages.find { |page| page.url == '/templates/' }
+    flowchart_page = site.pages.find { |page| page.url == '/eureka/flowchart/' }
 
     refute site.data.key?('source_notes')
     refute site.data.fetch('site').key?('projects')
     assert(home_page.data['home_projects'].any? { |project| project.fetch('slug') == 'eureka' })
     assert explorer_page.data['browser_record']
     assert_predicate explorer_page.data['header_links'], :any?
-    assert explorer_page.data['problem_filter_panel']
-    assert_predicate explorer_page.data['problem_table'].fetch('rows'), :any?
+    assert_predicate explorer_page.data['browser_record'].fetch('problems'), :any?
+    assert_predicate explorer_page.data['browser_record'].fetch('filters').fetch('languages'), :any?
     assert(site.pages.any? { |page| page.url == '/eureka/problems/binary-search/' })
-    assert templates_post.data['template_guide']
+    assert(site.pages.any? { |page| page.url == '/eureka/problems/binary-search/embed/' })
+    assert(site.pages.any? { |page| page.url == '/zibaldone/' })
+    assert templates_page.data['template_guide']
+    assert flowchart_page.data['flowchart_canvas']
   end
 
-  def test_search_record_exporter_writes_records_from_the_processed_jekyll_site
-    Dir.mktmpdir do |directory|
-      records_path = File.join(directory, 'search-records.json')
-      destination = File.join(directory, 'site')
+  def test_pagefind_extras_cover_template_and_flowchart_hash_targets
+    records = build_context.search_records
+    urls = records.map(&:url)
 
-      SiteKit::Build::SearchRecordExporter.new(
-        destination: destination,
-        output_path: records_path
-      ).export
-
-      records = JSON.parse(File.read(records_path))
-      routes = records.map { |record| record.fetch('url').split('#', 2).first }
-
-      assert_operator records.size, :>, 400
-      assert_includes routes, '/eureka/problems/binary-search/'
-      assert_includes routes, '/writing/algorithmic-templates/'
-    end
+    assert(records.any? { |record| record.meta.fetch('kind') == 'Template' })
+    assert(records.any? { |record| record.meta.fetch('kind') == 'Flowchart' })
+    assert(urls.any? { |url| url.start_with?('/templates/#') })
+    assert(urls.any? { |url| url.start_with?('/eureka/flowchart/#') })
+    refute(urls.any? { |url| url.include?('/embed/') })
   end
 end

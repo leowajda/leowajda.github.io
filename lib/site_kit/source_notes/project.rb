@@ -20,7 +20,11 @@ module SiteKit
       end
 
       def generated_pages
-        page_factory.language_pages + page_factory.module_pages + page_factory.document_pages
+        [page_factory.home_page] + page_factory.language_pages + page_factory.module_pages + page_factory.document_pages
+      end
+
+      def generated_home_page
+        page_factory.home_page
       end
 
       def generated_language_pages

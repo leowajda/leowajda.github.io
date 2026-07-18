@@ -41,39 +41,70 @@ export const initializeSearchOverlay = () => {
   let opener = null
   let resultSet = null
   let visibleCount = SEARCH_PAGE_SIZE
+  let activeIndex = -1
   const sequence = createSequenceGuard()
   let debounce
 
   const resultLinks = () =>
     Array.from(results.querySelectorAll("[data-search-result-link]"))
 
-  const focusResult = (offset) => {
+  const resultOptions = () =>
+    Array.from(results.querySelectorAll('[role="option"]'))
+
+  const setExpanded = (expanded) => {
+    input.setAttribute("aria-expanded", expanded ? "true" : "false")
+  }
+
+  const clearActiveOption = () => {
+    activeIndex = -1
+    input.removeAttribute("aria-activedescendant")
+    resultOptions().forEach((option) => {
+      option.removeAttribute("aria-selected")
+    })
+  }
+
+  const setActiveOption = (index) => {
+    const options = resultOptions()
+    if (options.length === 0) {
+      clearActiveOption()
+      return
+    }
+
+    activeIndex = Math.max(0, Math.min(index, options.length - 1))
+    options.forEach((option, optionIndex) => {
+      if (optionIndex === activeIndex) {
+        option.setAttribute("aria-selected", "true")
+        input.setAttribute("aria-activedescendant", option.id)
+        option.scrollIntoView({ block: "nearest" })
+      } else {
+        option.removeAttribute("aria-selected")
+      }
+    })
+  }
+
+  const moveActiveOption = (offset) => {
+    const options = resultOptions()
+    if (options.length === 0) {
+      return
+    }
+
+    if (activeIndex === -1) {
+      setActiveOption(offset > 0 ? 0 : options.length - 1)
+      return
+    }
+
+    setActiveOption(activeIndex + offset)
+  }
+
+  const openActiveResult = () => {
     const links = resultLinks()
     if (links.length === 0) {
       return
     }
 
-    const currentIndex = links.indexOf(document.activeElement)
-    const nextIndex = currentIndex === -1 ? 0 : Math.max(0, Math.min(currentIndex + offset, links.length - 1))
-    links[nextIndex].focus()
-  }
-
-  const focusPreviousResult = () => {
-    const links = resultLinks()
-    const currentIndex = links.indexOf(document.activeElement)
-
-    if (currentIndex <= 0) {
-      input.focus()
-      return
-    }
-
-    links[currentIndex - 1].focus()
-  }
-
-  const openFocusedResult = () => {
-    const [firstResult] = resultLinks()
-    if (firstResult) {
-      window.location.assign(firstResult.href)
+    const target = activeIndex >= 0 ? links[activeIndex] : links[0]
+    if (target) {
+      window.location.assign(target.href)
     }
   }
 
@@ -93,6 +124,8 @@ export const initializeSearchOverlay = () => {
     if (resetVisibleCount) {
       visibleCount = SEARCH_PAGE_SIZE
     }
+
+    clearActiveOption()
 
     if (!query) {
       resultSet = null
@@ -139,6 +172,7 @@ export const initializeSearchOverlay = () => {
       dialog.showModal()
     }
 
+    setExpanded(true)
     warmSearchIndex()
     input.focus()
     render()
@@ -152,6 +186,8 @@ export const initializeSearchOverlay = () => {
   })
 
   dialog.addEventListener("close", () => {
+    setExpanded(false)
+    clearActiveOption()
     if (opener instanceof HTMLElement && document.contains(opener)) {
       opener.focus()
     }
@@ -184,7 +220,11 @@ export const initializeSearchOverlay = () => {
         return
       }
 
+      const previousActive = activeIndex
       renderSearchResults({ records, total: resultSet.total, visibleCount, results, summary, moreButton })
+      if (previousActive >= 0) {
+        setActiveOption(previousActive)
+      }
     } catch (error) {
       if (sequence.matches(currentSequence)) {
         summary.textContent = "Search index is unavailable."
@@ -194,21 +234,33 @@ export const initializeSearchOverlay = () => {
   })
 
   dialog.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault()
+      closeOverlay()
+      return
+    }
+
     if (event.key === "ArrowDown") {
       event.preventDefault()
-      focusResult(1)
+      moveActiveOption(1)
       return
     }
 
     if (event.key === "ArrowUp") {
       event.preventDefault()
-      focusPreviousResult()
+      if (activeIndex <= 0) {
+        clearActiveOption()
+        input.focus()
+        return
+      }
+
+      moveActiveOption(-1)
       return
     }
 
     if (event.key === "Enter" && document.activeElement === input) {
       event.preventDefault()
-      openFocusedResult()
+      openActiveResult()
     }
   })
 

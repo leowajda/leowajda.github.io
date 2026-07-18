@@ -9,19 +9,27 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     browser = project.browser_record
     topics = project.topics_record
     problem_page = project.generated_problem_pages.find { |page| page[:dir] == '/eureka/problems/binary-search/' }
-    single_language_problem_page = project.generated_problem_pages.find { |page| page[:dir] == '/eureka/problems/find-if-path-exists-in-graph/' }
-    implementation_page = project.generated_implementation_pages.find { |page| page[:page_type] == 'eureka_implementation_page' }
-    single_language_problem = browser.fetch('problems').find { |problem| problem.fetch('problem_slug') == 'find-if-path-exists-in-graph' }
+    single_language_problem_page = project.generated_problem_pages.find do |page|
+      page[:dir] == '/eureka/problems/find-if-path-exists-in-graph/'
+    end
+    embed_page = project.generated_embed_pages.find { |page| page[:dir] == '/eureka/problems/binary-search/embed/' }
+    single_language_problem = browser.fetch('problems').find do |problem|
+      problem.fetch('problem_slug') == 'find-if-path-exists-in-graph'
+    end
 
     assert(browser.fetch('languages').any? { |language| language.fetch('slug') == 'java' })
+    refute(browser.fetch('languages').any? { |language| language.key?('url') })
     binary_search = browser.fetch('problems').find { |problem| problem.fetch('problem_slug') == 'binary-search' }
 
     assert binary_search
     assert single_language_problem
     assert_equal ['Array', 'Binary Search'], binary_search.fetch('categories')
+    assert_equal '/eureka/problems/binary-search/embed/', binary_search.fetch('embed_url')
     refute browser.fetch('filters').key?('patterns')
-    assert_equal(%w[language variant], binary_search.dig('code_collection', 'toolbar_groups').map { |group| group.fetch('kind') })
-    assert_equal(%w[language variant], single_language_problem.dig('code_collection', 'toolbar_groups').map { |group| group.fetch('kind') })
+    assert_operator binary_search.fetch('implementations').size, :>=, 1
+    assert binary_search.fetch('implementations').first.key?('entry_id')
+    assert binary_search.fetch('implementations').first.key?('code')
+    refute binary_search.key?('code_collection')
     refute binary_search.key?('implementations_by_id')
     assert_predicate topics.dig('categories', 'Binary Search', 'topic_ids'), :any?
     tree_targets = topics.dig('flowchart_nodes', 'tree-dfs').map { |entrypoint| entrypoint.fetch('target') }
@@ -29,17 +37,18 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     assert_equal ['tree/dfs'], tree_targets
     assert problem_page
     assert single_language_problem_page
-    assert implementation_page
+    assert embed_page
     assert_instance_of SiteKit::Pages::Definition, problem_page
-    assert_instance_of SiteKit::Pages::Definition, implementation_page
+    assert_instance_of SiteKit::Pages::Definition, embed_page
     assert_equal 'binary-search', problem_page.dig(:data, 'problem_record', 'problem_slug')
     assert_predicate problem_page.dig(:data, 'problem_topics', 'categories'), :any?
-    assert_equal '/writing/algorithmic-templates/#binary-search/boundary',
+    assert_equal '/templates/#binary-search/boundary',
                  problem_page.dig(:data, 'problem_topics', 'template_references').first.fetch('url')
     assert_operator single_language_problem_page.dig(:data, 'problem_topics', 'template_references').size, :>, 1
-    assert_equal implementation_page[:data]['problem_slug'], implementation_page.dig(:data, 'problem_record', 'problem_slug')
-    assert_equal implementation_page[:data]['implementation_id'], implementation_page.dig(:data, 'selected_implementation_record', 'implementation_id')
-    assert_equal '', implementation_page[:content].to_s
+    assert_equal 'binary-search', embed_page.dig(:data, 'problem_record', 'problem_slug')
+    assert embed_page.dig(:data, 'embed')
+    assert_equal '/eureka/problems/binary-search/', embed_page.dig(:data, 'detail_url')
+    assert_equal '', embed_page[:content].to_s
   end
 
   def test_browser_problem_records_keep_template_references_problem_scoped
@@ -47,18 +56,12 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     binary_search = project.browser_record.fetch('problems').find do |problem|
       problem.fetch('problem_slug') == 'binary-search'
     end
-    menu_actions = binary_search.dig('code_collection', 'entry_action_groups').first.fetch('actions').select do |action|
-      action.fetch('kind') == 'menu'
-    end
 
     assert_equal(['binary-search/boundary'],
                  binary_search.fetch('template_references').map { |reference| reference.fetch('target') })
     assert_equal(%w[kind label label_parts pattern_label target url variant_label],
                  binary_search.fetch('template_references').first.keys.sort)
-    assert binary_search.dig('code_collection', 'entry_action_groups').first.fetch('active')
-    assert_empty menu_actions
     refute binary_search.fetch('template_references').first.key?('action_label')
-    refute binary_search.dig('code_collection', 'items').first.key?('template_references')
     refute binary_search.key?('template_pattern_ids')
     refute binary_search.key?('template_guide_primary')
     refute binary_search.key?('topic_ids')
@@ -66,11 +69,13 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     refute binary_search.key?('category_topics')
   end
 
-  def test_implementation_page_data_does_not_duplicate_problem_template_references
+  def test_embed_page_shares_full_implementations
     project = build_context.eureka_context.projects.fetch('eureka')
-    implementation_page = project.generated_implementation_pages.find { |page| page[:page_type] == 'eureka_implementation_page' }
+    embed_page = project.generated_embed_pages.find { |page| page[:dir] == '/eureka/problems/binary-search/embed/' }
+    implementations = embed_page.dig(:data, 'problem_record', 'implementations')
 
-    refute implementation_page.dig(:data, 'selected_implementation_record').key?('template_references')
+    assert_operator implementations.size, :>, 1
+    assert(implementations.any? { |entry| entry.fetch('detail_url').include?('/eureka/problems/binary-search/') })
   end
 
   def test_sliding_puzzle_exposes_all_derived_template_references

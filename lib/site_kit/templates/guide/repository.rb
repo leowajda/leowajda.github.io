@@ -131,7 +131,7 @@ module SiteKit
             'topic_id' => template.topic_id,
             'title' => template.title,
             'description' => template.description,
-            'code_collection' => code_collections.fetch(template.template_id)
+            'entries' => code_collections.fetch(template.template_id)
           }
         end
 

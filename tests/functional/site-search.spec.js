@@ -5,12 +5,12 @@ test("global search opens as an overlay from the main navigation", async ({ page
   await page.goto("/")
 
   const overlay = await openSearchOverlay(page)
-  await overlay.getByRole("searchbox", { name: "Search" }).fill("grid bfs")
+  await overlay.getByRole("combobox", { name: "Search" }).fill("grid bfs")
 
-  await expect(page.locator('[data-search-result-link][href="/writing/algorithmic-templates/#grid/bfs"]')).toBeVisible()
+  await expect(page.locator('[data-search-result-link][href="/templates/#grid/bfs"]')).toBeVisible()
   await expect(
     page.locator(".search-result").filter({
-      has: page.locator('[data-search-result-link][href="/writing/algorithmic-templates/#grid/bfs"]')
+      has: page.locator('[data-search-result-link][href="/templates/#grid/bfs"]')
     }).locator(".search-result__meta")
   ).toContainText("Template: Grid")
   await expect(
@@ -25,7 +25,7 @@ test("global search waits for meaningful query length", async ({ page }) => {
   await page.goto("/")
 
   const overlay = await openSearchOverlay(page)
-  await overlay.getByRole("searchbox", { name: "Search" }).fill("b")
+  await overlay.getByRole("combobox", { name: "Search" }).fill("b")
 
   await expect(page.locator("[data-search-summary]")).toHaveText("Type at least 2 characters.")
   await expect(page.locator(".search-result")).toHaveCount(0)
@@ -37,7 +37,7 @@ test("search route opens the same overlay without faceted panels", async ({ page
   const overlay = page.getByRole("dialog", { name: "Search" })
 
   await expect(overlay).toBeVisible()
-  await expect(overlay.getByRole("searchbox", { name: "Search" })).toHaveValue("binary sear")
+  await expect(overlay.getByRole("combobox", { name: "Search" })).toHaveValue("binary sear")
   await expect(page.locator("[data-search-filters]")).toHaveCount(0)
   await expect(page.getByRole("link", { name: /Binary Search/ }).first()).toBeVisible()
 })
@@ -46,14 +46,16 @@ test("global search supports keyboard navigation and escape closing", async ({ p
   await page.goto("/")
 
   const overlay = await openSearchOverlay(page, "keyboard")
-  const searchbox = overlay.getByRole("searchbox", { name: "Search" })
+  const searchbox = overlay.getByRole("combobox", { name: "Search" })
 
   await searchbox.fill("grid bfs")
-  const result = page.locator("[data-search-result-link]").first()
-  await expect(result).toBeVisible()
+  const option = overlay.getByRole("option").first()
+  await expect(option).toBeVisible()
 
   await page.keyboard.press("ArrowDown")
-  await expect(result).toBeFocused()
+  await expect(searchbox).toHaveAttribute("aria-activedescendant", /site-search-option-0/)
+  await expect(option).toHaveAttribute("aria-selected", "true")
+  await expect(searchbox).toBeFocused()
 
   await page.keyboard.press("Escape")
   await expect(overlay).toBeHidden()
@@ -67,7 +69,7 @@ test("global search moves focus inside the modal and restores the opener", async
   await opener.click()
 
   const overlay = page.getByRole("dialog", { name: "Search" })
-  const searchbox = overlay.getByRole("searchbox", { name: "Search" })
+  const searchbox = overlay.getByRole("combobox", { name: "Search" })
   await expect(overlay).toBeVisible()
   await expect(searchbox).toBeFocused()
 
@@ -81,7 +83,7 @@ test("global search preserves Pagefind result order when loading more", async ({
   await page.goto("/")
 
   const overlay = await openSearchOverlay(page)
-  await overlay.getByRole("searchbox", { name: "Search" }).fill("java")
+  await overlay.getByRole("combobox", { name: "Search" }).fill("java")
 
   const links = page.locator("[data-search-result-link]")
   await expect(links).toHaveCount(8)
@@ -99,7 +101,7 @@ test("global search opens the focused result from the keyboard", async ({ page }
 
   await page.keyboard.press("/")
   const overlay = page.getByRole("dialog", { name: "Search" })
-  await overlay.getByRole("searchbox", { name: "Search" }).fill("grid bfs")
+  await overlay.getByRole("combobox", { name: "Search" }).fill("grid bfs")
   const result = page.locator("[data-search-result-link]").first()
   await expect(result).toBeVisible()
   const href = await result.getAttribute("href")
@@ -110,10 +112,26 @@ test("global search opens the focused result from the keyboard", async ({ page }
   await expect(page).toHaveURL(new URL(href, page.url()).toString())
 })
 
+test("global search exposes combobox listbox semantics", async ({ page }) => {
+  await page.goto("/")
+
+  const overlay = await openSearchOverlay(page)
+  const searchbox = overlay.getByRole("combobox", { name: "Search" })
+  const listbox = overlay.getByRole("listbox", { name: "Search results" })
+
+  await expect(searchbox).toHaveAttribute("aria-expanded", "true")
+  await expect(searchbox).toHaveAttribute("aria-controls", "site-search-results")
+  await expect(listbox).toBeAttached()
+
+  await searchbox.fill("grid bfs")
+  await expect(overlay.getByRole("option").first()).toBeVisible()
+  await expect(listbox).toBeVisible()
+})
+
 test("problem explorer text search is backed by Pagefind", async ({ page }) => {
   await page.goto("/eureka/problems/")
 
-  await page.getByRole("searchbox", { name: "Search" }).fill("sliding puzzle")
+  await page.locator("#problem-search").fill("sliding puzzle")
 
   await expect(page.locator('[data-problem-row][data-problem-slug="sliding-puzzle"]')).toBeVisible()
   await expect(page.locator('[data-problem-row][data-problem-slug="binary-search"]')).toBeHidden()
@@ -131,7 +149,7 @@ test("problem explorer standalone filters are backed by Pagefind", async ({ page
 test("problem explorer combines text search with Pagefind filters", async ({ page }) => {
   await page.goto("/eureka/problems/")
 
-  await page.getByRole("searchbox", { name: "Search" }).fill("kth")
+  await page.locator("#problem-search").fill("kth")
   await page.locator('input[name="category"][value="Matrix"]').check()
 
   await expect(page.locator('[data-problem-row][data-problem-slug="kth-smallest-element-in-a-sorted-matrix"]')).toBeVisible()

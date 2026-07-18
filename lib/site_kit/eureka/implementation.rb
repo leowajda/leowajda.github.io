@@ -14,6 +14,10 @@ module SiteKit
       :route_base,
       :language_label
     ) do
+      def paths
+        SiteKit::Core::ResourcePaths.new(route_base: route_base)
+      end
+
       def implementation_id
         SiteKit::Core::Helpers.slugify("#{language}-#{approach}")
       end
@@ -30,12 +34,16 @@ module SiteKit
         "#{problem_title} solution in #{language_label} using the #{approach_label.downcase} approach."
       end
 
+      def problem_url
+        paths.item('problems', problem_slug)
+      end
+
       def detail_url
-        "#{route_base}/problems/#{problem_slug}/##{implementation_id}"
+        paths.with_fragment(problem_url, implementation_id)
       end
 
       def embed_url
-        "#{route_base}/problems/#{problem_slug}/embed/#{implementation_id}/"
+        paths.with_fragment(paths.embed('problems', problem_slug), implementation_id)
       end
 
       def to_summary_hash

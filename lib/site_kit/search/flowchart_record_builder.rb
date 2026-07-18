@@ -3,8 +3,8 @@
 module SiteKit
   module Search
     class FlowchartRecordBuilder
-      KIND = SiteKit::Search::Contract::KIND_FLOWCHART
-      PAGE_URL = '/writing/algorithmic-flowchart/'
+      KIND = 'Flowchart'
+      PAGE_URL = '/eureka/flowchart/'
 
       def initialize(flowchart:, summaries:)
         @flowchart = flowchart

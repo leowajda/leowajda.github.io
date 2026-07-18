@@ -3,12 +3,6 @@ layout: default
 ---
 
 {%- assign browser = page.browser_record -%}
-{%- assign active_language = page.active_language_record | default: nil -%}
-{%- capture header_note -%}
-  {%- if active_language -%}
-    Viewing {{ active_language.label }} solutions.
-  {%- endif -%}
-{%- endcapture -%}
 
 {%- include page_hero_header.html
   class="problem-browser-header"
@@ -16,7 +10,6 @@ layout: default
   title=page.title
   description=page.description
   links=page.header_links
-  note=header_note
 -%}
 
 {%- assign page_content = content | strip -%}
@@ -28,11 +21,11 @@ layout: default
 
 <section class="problem-browser">
   <aside class="problem-browser__filters">
-    {%- include problems_filters.html panel=page.problem_filter_panel -%}
+    {%- include problems_filters.html browser=browser -%}
   </aside>
 
   <div class="problem-browser__results">
     <div class="active-filter-list" data-active-filter-list hidden></div>
-    {%- include problems_table.html table=page.problem_table -%}
+    {%- include problems_table.html browser=browser -%}
   </div>
 </section>
