@@ -64,9 +64,7 @@ module SiteKit
       end
 
       def flowchart_data
-        @flowchart_data ||= SiteKit::Flowcharts::LayoutBuilder.new(
-          flowchart_data: eureka_data.fetch('flowchart', {})
-        ).build
+        @flowchart_data ||= SiteKit::Compile::Flowchart.layout(eureka_data.fetch('flowchart', {}))
       end
 
       def generated_pages

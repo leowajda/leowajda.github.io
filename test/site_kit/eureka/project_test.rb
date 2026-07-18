@@ -41,10 +41,10 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     assert_instance_of SiteKit::Pages::Definition, problem_page
     assert_instance_of SiteKit::Pages::Definition, embed_page
     assert_equal 'binary-search', problem_page.dig(:data, 'problem_record', 'problem_slug')
-    assert_predicate problem_page.dig(:data, 'problem_topics', 'categories'), :any?
+    assert_predicate problem_page.dig(:data, 'problem_record', 'template_references'), :any?
     assert_equal '/templates/#binary-search/boundary',
-                 problem_page.dig(:data, 'problem_topics', 'template_references').first.fetch('url')
-    assert_operator single_language_problem_page.dig(:data, 'problem_topics', 'template_references').size, :>, 1
+                 problem_page.dig(:data, 'problem_record', 'template_references').first.fetch('url')
+    assert_operator single_language_problem_page.dig(:data, 'problem_record', 'template_references').size, :>, 1
     assert_equal 'binary-search', embed_page.dig(:data, 'problem_record', 'problem_slug')
     assert embed_page.dig(:data, 'embed')
     assert_equal '/eureka/problems/binary-search/', embed_page.dig(:data, 'detail_url')
@@ -95,7 +95,7 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     end
 
     project.generated_problem_pages.each do |page|
-      page.dig(:data, 'problem_topics', 'template_references').each do |reference|
+      Array(page.dig(:data, 'problem_record', 'template_references')).each do |reference|
         assert_includes guide_targets, reference.fetch('target'), "Unknown template guide target for #{page[:dir]}"
       end
     end
@@ -106,6 +106,6 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
   def problem_template_references(project, slug)
     project.generated_problem_pages
            .find { |page| page[:dir] == "/eureka/problems/#{slug}/" }
-           .dig(:data, 'problem_topics', 'template_references')
+           .dig(:data, 'problem_record', 'template_references')
   end
 end

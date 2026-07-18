@@ -22,7 +22,7 @@ module SiteKit
       attr_reader :flowchart, :summaries
 
       def graph_index
-        @graph_index ||= SiteKit::Flowcharts::GraphIndex.new(flowchart: flowchart)
+        @graph_index ||= SiteKit::Compile::Flowchart::GraphIndex.new(flowchart: flowchart)
       end
 
       def node_record(node, summary)
