@@ -4,7 +4,7 @@ layout: default
 
 {%- assign problem = page.problem_record | default: nil -%}
 {%- assign implementations = problem.implementations | default: empty -%}
-{%- assign problem_topics = page.problem_topics | default: empty -%}
+{%- assign template_references = problem.template_references | default: empty -%}
 {%- capture header_extra -%}
   <div class="problem-summary">
     <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug | escape }}">{{ problem.difficulty | escape }}</span>
@@ -32,7 +32,7 @@ layout: default
     {%- for language in problem.languages %}
     data-pagefind-filter="language:{{ language.label | escape }}"
     {%- endfor %}
-    {%- for reference in problem_topics.template_references %}
+    {%- for reference in template_references %}
     data-pagefind-filter="template:{{ reference.label | escape }}"
     {%- endfor %}
   >
@@ -44,7 +44,7 @@ layout: default
       extra=header_extra
     -%}
 
-    {%- include problem_taxonomy.html problem=problem problem_topics=problem_topics -%}
+    {%- include problem_taxonomy.html problem=problem -%}
     {%- include problem_viewer.html problem=problem implementations=implementations embed=false -%}
   </article>
 {%- endif -%}

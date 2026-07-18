@@ -3,11 +3,10 @@
 module SiteKit
   module Eureka
     class PageFactory
-      def initialize(project_slug:, route_base:, browser_record:, topics_record:, page_link_resolver:)
+      def initialize(project_slug:, route_base:, browser_record:, page_link_resolver:)
         @project_slug = project_slug
         @route_base = route_base
         @browser_record = browser_record
-        @topics_record = topics_record
         @paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
         @pages = SiteKit::Pages::DefinitionBuilder.new(
           project_slug: project_slug,
@@ -18,7 +17,6 @@ module SiteKit
       def problem_pages
         browser_record.fetch('problems').map do |problem|
           problem_slug = problem.fetch('problem_slug')
-          topics = problem_topics(problem_slug)
 
           pages.build(
             dir: paths.item('problems', problem_slug),
@@ -28,7 +26,6 @@ module SiteKit
             data: {
               'problem_slug' => problem_slug,
               'problem_record' => problem,
-              'problem_topics' => topics,
               'header_links' => pages.links_for('problem_detail')
             }.merge(problem_external_link(problem))
           )
@@ -56,26 +53,7 @@ module SiteKit
 
       private
 
-      attr_reader :project_slug, :route_base, :browser_record, :topics_record, :paths, :pages
-
-      def problem_topics(problem_slug)
-        topic_record = topics_record.fetch('problems').fetch(problem_slug)
-
-        topic_record.merge(
-          'categories' => topic_record.fetch('categories'),
-          'template_references' => problem_record(problem_slug).fetch('template_references', [])
-        )
-      end
-
-      def problem_record(problem_slug)
-        problems_by_slug.fetch(problem_slug)
-      end
-
-      def problems_by_slug
-        @problems_by_slug ||= browser_record.fetch('problems').to_h do |problem|
-          [problem.fetch('problem_slug'), problem]
-        end
-      end
+      attr_reader :project_slug, :route_base, :browser_record, :paths, :pages
 
       def problem_external_link(record)
         problem_source_url = record.fetch('problem_source_url')

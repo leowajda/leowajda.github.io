@@ -41,7 +41,6 @@ module SiteKit
         context.eureka_context.browsers
         context.eureka_context.topics
         validate_template_reference_rules!
-        validate_flowchart!
         context.eureka_context.projects.each_value do |project|
           validate_eureka_browser!(project.browser_record)
           project.generated_problem_pages

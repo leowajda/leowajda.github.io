@@ -29,14 +29,14 @@ module SiteKit
       end
 
       def topics_record
-        @topics_record ||= SiteKit::Eureka::TopicRegistry.new(
+        @topics_record ||= SiteKit::Eureka::Topics.record(
           project_slug: slug,
           topics: template_library.topics,
           templates: template_library.templates,
           template_guide: template_library.guide,
           flowchart_titles: catalog.flowchart_titles,
           problem_records: catalog.problem_records
-        ).record
+        )
       end
 
       def generated_pages
@@ -82,7 +82,6 @@ module SiteKit
           project_slug: slug,
           route_base: manifest.route_base,
           browser_record: browser_record,
-          topics_record: topics_record,
           page_link_resolver: page_link_resolver
         )
       end

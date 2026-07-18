@@ -55,7 +55,7 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     }
 
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::LayoutBuilder.new(flowchart_data: source).build
+      SiteKit::Compile::Flowchart.layout(source)
     end
 
     assert_match(/defines generated geometry: x/, error.message)
@@ -76,7 +76,7 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     }
 
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::LayoutBuilder.new(flowchart_data: source).build
+      SiteKit::Compile::Flowchart.layout(source)
     end
 
     assert_match(/defines generated geometry: path/, error.message)
@@ -93,7 +93,7 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     }
 
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::LayoutBuilder.new(flowchart_data: source).build
+      SiteKit::Compile::Flowchart.layout(source)
     end
 
     assert_match(%r{use aliases for legacy ids: max/min-dp}, error.message)
@@ -112,15 +112,15 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
     }
 
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::LayoutBuilder.new(flowchart_data: source).build
+      SiteKit::Compile::Flowchart.layout(source)
     end
 
     assert_match(/ids and aliases must be unique: legacy/, error.message)
   end
 
   def test_builds_incoming_edges_by_target
-    graph_index = SiteKit::Flowcharts::GraphIndex.new(flowchart: build_context.flowchart_data)
-    edge = graph_index.incoming_edges_by_target.fetch('directed-graph-topo')
+    index = SiteKit::Compile::Flowchart::GraphIndex.new(flowchart: build_context.flowchart_data)
+    edge = index.incoming_edges_by_target.fetch('directed-graph-topo')
 
     assert_equal 'directed-graph', edge.fetch('from')
     assert_equal 'yes', edge.fetch('label')
@@ -128,14 +128,15 @@ class SiteKitFlowchartRegistryTest < SiteKitTestCase
 
   def test_rejects_duplicate_flowchart_edge_targets
     flowchart = {
+      'nodes' => [],
       'edges' => [
-        { 'id' => 'a-b', 'from' => 'a', 'to' => 'b', 'path' => 'yes' },
-        { 'id' => 'c-b', 'from' => 'c', 'to' => 'b', 'path' => 'no' }
+        { 'id' => 'a-b', 'from' => 'a', 'to' => 'b', 'label' => 'yes' },
+        { 'id' => 'c-b', 'from' => 'c', 'to' => 'b', 'label' => 'no' }
       ]
     }
 
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::GraphIndex.new(flowchart: flowchart).incoming_edges_by_target
+      SiteKit::Compile::Flowchart::GraphIndex.new(flowchart: flowchart).incoming_edges_by_target
     end
 
     assert_match(/Flowchart edge targets must be unique: b/, error.message)
@@ -183,7 +184,7 @@ end
 
 class SiteKitFlowchartGraphIndexTest < SiteKitTestCase
   def test_exports_canvas_payload
-    graph = SiteKit::Flowcharts::GraphIndex.new(flowchart: build_context.flowchart_data).graph_payload
+    graph = SiteKit::Compile::Flowchart::GraphIndex.new(flowchart: build_context.flowchart_data).graph_payload
     node = graph.fetch('nodes').find { |entry| entry.fetch('id') == 'directed-graph-topo' }
     edge = graph.fetch('edges').find { |entry| entry.fetch('id') == 'directed-yes' }
 

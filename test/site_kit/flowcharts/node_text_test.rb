@@ -15,7 +15,7 @@ class SiteKitFlowchartNodeTextTest < SiteKitTestCase
 
   def test_layout_builder_rejects_legacy_node_text_keys
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::LayoutBuilder.new(flowchart_data: flowchart_with_node('label' => 'A')).build
+      SiteKit::Compile::Flowchart.layout(flowchart_with_node('label' => 'A'))
     end
 
     assert_match(/uses legacy text keys: label/, error.message)
@@ -23,7 +23,7 @@ class SiteKitFlowchartNodeTextTest < SiteKitTestCase
 
   def test_layout_builder_rejects_non_question_decisions
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::LayoutBuilder.new(flowchart_data: flowchart_with_node('text' => 'A')).build
+      SiteKit::Compile::Flowchart.layout(flowchart_with_node('text' => 'A'))
     end
 
     assert_match(/decision 'a' text must be phrased as a question/, error.message)
@@ -31,9 +31,7 @@ class SiteKitFlowchartNodeTextTest < SiteKitTestCase
 
   def test_layout_builder_rejects_question_solutions
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Flowcharts::LayoutBuilder.new(
-        flowchart_data: flowchart_with_node('kind' => 'solution', 'text' => 'A?')
-      ).build
+      SiteKit::Compile::Flowchart.layout(flowchart_with_node('kind' => 'solution', 'text' => 'A?'))
     end
 
     assert_match(/solution 'a' text must not be phrased as a question/, error.message)
