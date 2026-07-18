@@ -18,14 +18,22 @@ module SiteKit
       attr_reader :flowchart_data
 
       def browser_record
-        @browser_record ||= SiteKit::Eureka::BrowserRecordBuilder.new(
-          project_slug: slug,
-          project_title: manifest.title,
-          project_description: manifest.description,
-          route_base: manifest.route_base,
-          language_page_records: catalog.language_page_records,
-          problem_records: problem_records
-        ).build
+        @browser_record ||= begin
+          languages = catalog.language_page_records.map { |language| language.slice('slug', 'label') }
+          {
+            'project_slug' => slug,
+            'project_title' => manifest.title,
+            'project_description' => manifest.description,
+            'browser_url' => SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).catalog('problems'),
+            'filters' => {
+              'difficulties' => problem_records.map { |problem| problem.fetch('difficulty') }.uniq,
+              'categories' => problem_records.flat_map { |problem| problem.fetch('categories') }.uniq,
+              'languages' => languages
+            },
+            'languages' => languages,
+            'problems' => problem_records
+          }
+        end
       end
 
       def topics_record
@@ -57,15 +65,12 @@ module SiteKit
 
       def problem_records
         @problem_records ||= catalog.problem_records.map do |problem|
-          problem_topics = topics_record.fetch('problems').fetch(problem.fetch('problem_slug'))
-          template_references = with_template_reference_urls(problem_topics.fetch('template_references', []))
-          problem.merge('template_references' => template_references)
-        end
-      end
-
-      def with_template_reference_urls(template_references)
-        template_references.map do |reference|
-          reference.merge('url' => template_guide_url_resolver.url_for(reference))
+          refs = topics_record.fetch('problems').fetch(problem.fetch('problem_slug')).fetch('template_references', [])
+          problem.merge(
+            'template_references' => refs.map do |reference|
+              reference.merge('url' => template_guide_url_resolver.url_for(reference))
+            end
+          )
         end
       end
 

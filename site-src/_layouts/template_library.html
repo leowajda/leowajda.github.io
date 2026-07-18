@@ -6,6 +6,12 @@ layout: default
 {%- assign patterns = guide.patterns | default: empty -%}
 {%- assign template_panels = guide.template_panels | default: empty -%}
 {%- assign default_target = page.default_template_target | default: guide.default_target | default: 'binary-search/boundary' -%}
+{%- assign rendered_target = default_target -%}
+{%- for pattern in patterns -%}
+  {%- if pattern.target == default_target -%}
+    {%- assign rendered_target = pattern.default_target -%}
+  {%- endif -%}
+{%- endfor -%}
 
 <article
   class="template-library"
@@ -21,8 +27,17 @@ layout: default
   -%}
 
   <section class="template-library__content">
-    {%- include template_library_navigation.html patterns=patterns -%}
-    {%- include template_library_panels.html patterns=patterns template_panels=template_panels -%}
+    {%- include template_library_navigation.html
+      patterns=patterns
+      default_target=default_target
+      rendered_target=rendered_target
+    -%}
+    {%- include template_library_panels.html
+      patterns=patterns
+      template_panels=template_panels
+      default_target=default_target
+      rendered_target=rendered_target
+    -%}
   </section>
 
   {%- include template_library_redirects.html redirects=guide.redirects -%}

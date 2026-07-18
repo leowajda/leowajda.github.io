@@ -1,8 +1,15 @@
 {%- assign template = include.template -%}
 {%- assign template_id = template.id | default: template.template_id -%}
-{%- assign code_collection_id = template.code_collection_id -%}
+{%- assign code_collection_id = include.code_collection_id | default: template.code_collection_id -%}
+{%- if code_collection_id == nil or code_collection_id == '' -%}
+  {%- assign code_collection_id = template.target | replace: '/', '-' | append: '-code' -%}
+{%- endif -%}
 {%- assign entries = template.entries | default: template.code_entries | default: empty -%}
 {%- assign code_cfg = site.data.site.app.code_collection -%}
+{%- assign panel_active = include.active -%}
+{%- if panel_active == nil -%}
+  {%- assign panel_active = template.active -%}
+{%- endif -%}
 
 <section
   class="template-panel"
@@ -12,7 +19,7 @@
   data-guide-pattern="{{ template.pattern_id }}"
   data-guide-variant="{{ template.variant_id }}"
   data-guide-target="{{ template.target }}"
-  {% unless template.active %}hidden{% endunless %}
+  {% unless panel_active %}hidden{% endunless %}
 >
   <header class="template-panel__header">
     <p class="section-eyebrow">{{ template.pattern_label }}</p>
