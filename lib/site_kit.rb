@@ -19,12 +19,8 @@ require_relative 'site_kit/catalogs/project_manifest_repository'
 require_relative 'site_kit/catalogs/project_registry'
 require_relative 'site_kit/catalogs/site_project_presenter'
 
-require_relative 'site_kit/pages/definition'
-require_relative 'site_kit/pages/definition_builder'
+require_relative 'site_kit/emit'
 require_relative 'site_kit/pages/link_resolver'
-require_relative 'site_kit/pages/context_registry'
-require_relative 'site_kit/pages/home_context_builder'
-require_relative 'site_kit/pages/problem_browser_context_builder'
 
 require_relative 'site_kit/templates/topic_repository'
 require_relative 'site_kit/templates/topic_presenter'
@@ -39,10 +35,8 @@ require_relative 'site_kit/templates/guide/reference_resolver'
 require_relative 'site_kit/templates/guide/url_resolver'
 require_relative 'site_kit/templates/guide/repository'
 require_relative 'site_kit/templates/library_context'
-require_relative 'site_kit/templates/library_page_context_builder'
 
 require_relative 'site_kit/compile/flowchart'
-require_relative 'site_kit/flowcharts/page_context_builder'
 
 require_relative 'site_kit/eureka/topics'
 require_relative 'site_kit/eureka/source_catalog_loader'
@@ -65,15 +59,20 @@ require_relative 'site_kit/search/record'
 require_relative 'site_kit/search/record_factory'
 require_relative 'site_kit/search/template_record_builder'
 require_relative 'site_kit/search/flowchart_record_builder'
-require_relative 'site_kit/search/index_builder'
+require_relative 'site_kit/extras/pagefind'
 
 require_relative 'site_kit/jekyll_runtime/site_loader'
 require_relative 'site_kit/jekyll_runtime/generated_page'
-require_relative 'site_kit/jekyll_runtime/generated_page_registry'
 require_relative 'site_kit/checks/internal_links'
 require_relative 'site_kit/checks/seo_metadata'
 require_relative 'site_kit/checks/site_invariants'
 require_relative 'site_kit/checks/vendor_assets'
 
-require_relative 'site_kit/build/context'
-require_relative 'site_kit/build/validator'
+require_relative 'site_kit/runtime'
+
+# Compatibility for scripts/tests still referencing Build::Context
+module SiteKit
+  module Build
+    Context = SiteKit::Runtime
+  end
+end

@@ -65,6 +65,8 @@ Separate concerns:
 
 Prefer Liquid over Ruby view builders. Explorer filters and problem tables are Liquid over `browser_record`. Code switchers are Liquid over flat `implementations` / `entries` (no Ruby toolbar builders). Coordinators stay thin. Prefer typed, domain-specific failures that name the catalog, page, source, or invariant.
 
+Build entry is `SiteKit::Runtime.for(site)` (cached on the Jekyll site). Generated pages are plain hashes via `SiteKit::Emit.page`. Plugins only attach data and emit pages — no view builders or Definition types.
+
 ### Code entry contract (problems + templates)
 
 Each code entry is a flat hash for Liquid `code_collection.html`:

@@ -38,8 +38,8 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     assert problem_page
     assert single_language_problem_page
     assert embed_page
-    assert_instance_of SiteKit::Pages::Definition, problem_page
-    assert_instance_of SiteKit::Pages::Definition, embed_page
+    assert_kind_of Hash, problem_page
+    assert_kind_of Hash, embed_page
     assert_equal 'binary-search', problem_page.dig(:data, 'problem_record', 'problem_slug')
     assert_predicate problem_page.dig(:data, 'problem_record', 'template_references'), :any?
     assert_equal '/templates/#binary-search/boundary',

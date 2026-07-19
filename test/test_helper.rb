@@ -26,7 +26,7 @@ class SiteKitTestCase < Minitest::Test
   end
 
   def build_context
-    @build_context ||= SiteKit::Build::Context.for(build_site)
+    @build_context ||= SiteKit::Runtime.for(build_site)
   end
 
   def generated_site
