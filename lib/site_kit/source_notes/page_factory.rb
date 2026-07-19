@@ -7,11 +7,11 @@ module SiteKit
         @manifest = manifest
         @registry_record = registry_record
         @paths = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base)
-        @pages = SiteKit::Pages::DefinitionBuilder.new(project_slug: manifest.slug)
       end
 
       def home_page
-        pages.build(
+        SiteKit::Emit.page(
+          project_slug: manifest.slug,
           dir: paths.root,
           page_type: SOURCE_HOME_PAGE_TYPE,
           title: registry_record.fetch('project_title'),
@@ -30,7 +30,8 @@ module SiteKit
       def language_pages
         languages.map do |language|
           title = language.fetch('language_title')
-          pages.build(
+          SiteKit::Emit.page(
+            project_slug: manifest.slug,
             dir: language.fetch('url'),
             page_type: SOURCE_LANGUAGE_PAGE_TYPE,
             title: title,
@@ -109,7 +110,7 @@ module SiteKit
 
       private
 
-      attr_reader :manifest, :registry_record, :paths, :pages
+      attr_reader :manifest, :registry_record, :paths
 
       def languages
         registry_record.fetch('languages')
@@ -131,7 +132,8 @@ module SiteKit
       end
 
       def emit(dir:, page_type:, title:, language_slug:, header:, schema:, source_module:, **extra) # rubocop:disable Metrics/ParameterLists
-        pages.build(
+        SiteKit::Emit.page(
+          project_slug: manifest.slug,
           dir: dir,
           page_type: page_type,
           title: title,

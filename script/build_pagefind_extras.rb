@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-# Hash-target search entries (templates, flowchart nodes) that HTML crawl cannot express.
 require 'bundler/setup'
 require 'fileutils'
 require 'jekyll'
@@ -19,19 +18,8 @@ site = Jekyll::Site.new(
 )
 site.read
 
-context = SiteKit::Build::Context.for(site)
-factory = SiteKit::Search::RecordFactory.new
-records = [
-  SiteKit::Search::TemplateRecordBuilder.new(
-    guide: context.template_library_context.guide,
-    factory: factory
-  ),
-  SiteKit::Search::FlowchartRecordBuilder.new(
-    flowchart: context.flowchart_data,
-    summaries: site.data.fetch(SiteKit::EUREKA_NAMESPACE).fetch('flowchart_summaries', {}),
-    factory: factory
-  )
-].flat_map(&:records).map(&:to_h)
+runtime = SiteKit::Runtime.for(site)
+records = runtime.search_records.map(&:to_h)
 
 FileUtils.mkdir_p(File.dirname(OUTPUT_PATH))
 File.write(OUTPUT_PATH, JSON.pretty_generate(records))

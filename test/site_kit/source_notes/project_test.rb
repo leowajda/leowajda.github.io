@@ -25,8 +25,8 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
     refute language_page[:data].key?('redirect_to')
     assert module_page
     assert document_page
-    assert_instance_of SiteKit::Pages::Definition, module_page
-    assert_instance_of SiteKit::Pages::Definition, document_page
+    assert_kind_of Hash, module_page
+    assert_kind_of Hash, document_page
     assert_equal 'cats-effect', module_page.dig(:data, 'source_module', 'module_slug')
     assert_equal 'Scala', module_page.dig(:data, 'source_header', 'eyebrow')
     assert_equal %w[about breadcrumbs], module_page.dig(:data, 'source_schema').keys
