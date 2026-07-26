@@ -11,7 +11,7 @@ gem 'jekyll-sitemap', '~> 1.4'
 gem 'minitest', '~> 6.0'
 gem 'nokogiri', '~> 1.19'
 gem 'rubocop', '~> 1.87', require: false
-gem 'rubocop-minitest', '~> 0.38', require: false
+gem 'rubocop-minitest', '~> 0.40', require: false
 gem 'rubocop-performance', '~> 1.26', require: false
 gem 'rubocop-rake', '~> 0.7', require: false
 gem 'webrick', '~> 1.9'
