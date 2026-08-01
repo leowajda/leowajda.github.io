@@ -1,8 +1,7 @@
 ---
 layout: home
 title: Leonardo Wajda
-description: "Algorithm solutions, source notes, and technical writing."
-page_context: home
+description: "a modest offering to the data gods"
 ---
 
 ## Projects
