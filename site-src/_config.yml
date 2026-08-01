@@ -4,8 +4,8 @@ email: dev.leowajda@tuta.io
 url: https://leowajda.github.io
 baseurl: ""
 locale: en_US
-tagline: "Algorithms, source notes, and technical writing."
-description: "A focused personal website for algorithm solutions, source notes, and technical writing."
+tagline: "a modest offering to the data gods"
+description: "a modest offering to the data gods"
 logo: /assets/favicon.svg
 
 markdown: kramdown
