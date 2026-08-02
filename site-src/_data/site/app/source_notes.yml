@@ -9,6 +9,9 @@ ignored_directories:
   - out
   - target
 text_file_metadata:
+  ".css":
+    format: code
+    syntax: css
   ".conf":
     format: code
     syntax: conf
