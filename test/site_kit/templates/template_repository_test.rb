@@ -4,7 +4,7 @@ require_relative '../../test_helper'
 
 class SiteKitAlgorithmicTemplateRepositoryTest < SiteKitTestCase
   def test_loads_templates_from_algorithmic_topics
-    template = build_context.template_library_context.templates.find { |entry| entry.template_id == 'binary-search' }
+    template = build_context.templates.templates.find { |entry| entry.template_id == 'binary-search' }
 
     assert template
     assert_equal 'Binary Search', template.title

@@ -20,11 +20,8 @@ require_relative 'site_kit/catalogs/project_registry'
 require_relative 'site_kit/catalogs/site_project_presenter'
 
 require_relative 'site_kit/emit'
-require_relative 'site_kit/pages/link_resolver'
 
 require_relative 'site_kit/templates/topic_repository'
-require_relative 'site_kit/templates/topic_presenter'
-require_relative 'site_kit/templates/template_repository'
 require_relative 'site_kit/templates/problem_rules'
 require_relative 'site_kit/templates/reference_label'
 require_relative 'site_kit/templates/code_sources/repository'
@@ -32,7 +29,6 @@ require_relative 'site_kit/templates/code_collections/registry'
 require_relative 'site_kit/templates/guide/index_builder'
 require_relative 'site_kit/templates/guide/validator'
 require_relative 'site_kit/templates/guide/reference_resolver'
-require_relative 'site_kit/templates/guide/url_resolver'
 require_relative 'site_kit/templates/guide/repository'
 require_relative 'site_kit/templates/library_context'
 
@@ -56,9 +52,6 @@ require_relative 'site_kit/source_notes/project'
 require_relative 'site_kit/source_notes/context'
 
 require_relative 'site_kit/search/record'
-require_relative 'site_kit/search/record_factory'
-require_relative 'site_kit/search/template_record_builder'
-require_relative 'site_kit/search/flowchart_record_builder'
 require_relative 'site_kit/extras/pagefind'
 
 require_relative 'site_kit/jekyll_runtime/site_loader'
@@ -70,10 +63,3 @@ require_relative 'site_kit/checks/source_catalogs'
 require_relative 'site_kit/checks/vendor_assets'
 
 require_relative 'site_kit/runtime'
-
-# Compatibility for scripts/tests still referencing Build::Context
-module SiteKit
-  module Build
-    Context = SiteKit::Runtime
-  end
-end

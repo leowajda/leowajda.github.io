@@ -4,7 +4,7 @@ require_relative '../../../test_helper'
 
 class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
   def test_builds_flat_major_patterns_with_redirects
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
     pattern_labels = guide.fetch('patterns').map { |pattern| pattern.fetch('label') }
 
     assert_includes pattern_labels, 'Sequence'
@@ -17,7 +17,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
   end
 
   def test_problem_matching_returns_template_reference_sets
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
     resolver = SiteKit::Templates::Guide::ReferenceResolver.new(guide: guide)
 
     binary_search = resolver.references_for_categories(['Array', 'Binary Search'])
@@ -30,7 +30,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
   end
 
   def test_problem_matching_contracts_are_table_driven
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
     resolver = SiteKit::Templates::Guide::ReferenceResolver.new(guide: guide)
     cases = {
       ['Array', 'Binary Search'] => ['binary-search/boundary'],
@@ -49,7 +49,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
   end
 
   def test_problem_matching_returns_only_public_reference_keys
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
     resolver = SiteKit::Templates::Guide::ReferenceResolver.new(guide: guide)
 
     references = resolver.references_for_categories(['Array', 'Binary Search'])
@@ -59,7 +59,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
   end
 
   def test_multi_pattern_problem_matching_preserves_all_relevant_references
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
     resolver = SiteKit::Templates::Guide::ReferenceResolver.new(guide: guide)
 
     sliding_puzzle = resolver.references_for_categories(
@@ -85,8 +85,8 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     error = assert_raises(SiteKit::Error) do
       SiteKit::Templates::Guide::Repository.new(
         data: data,
-        templates: build_context.template_library_context.templates,
-        code_collections: build_context.template_library_context.code_collections,
+        templates: build_context.templates.templates,
+        code_collections: build_context.templates.code_collections,
         flowchart_data: build_context.flowchart_data
       ).build
     end
@@ -105,8 +105,8 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     error = assert_raises(SiteKit::Error) do
       SiteKit::Templates::Guide::Repository.new(
         data: data,
-        templates: build_context.template_library_context.templates,
-        code_collections: build_context.template_library_context.code_collections,
+        templates: build_context.templates.templates,
+        code_collections: build_context.templates.code_collections,
         flowchart_data: build_context.flowchart_data
       ).build
     end
@@ -125,8 +125,8 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     error = assert_raises(SiteKit::Error) do
       SiteKit::Templates::Guide::Repository.new(
         data: data,
-        templates: build_context.template_library_context.templates,
-        code_collections: build_context.template_library_context.code_collections,
+        templates: build_context.templates.templates,
+        code_collections: build_context.templates.code_collections,
         flowchart_data: build_context.flowchart_data
       ).build
     end
@@ -141,8 +141,8 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     error = assert_raises(SiteKit::Error) do
       SiteKit::Templates::Guide::Repository.new(
         data: data,
-        templates: build_context.template_library_context.templates,
-        code_collections: build_context.template_library_context.code_collections,
+        templates: build_context.templates.templates,
+        code_collections: build_context.templates.code_collections,
         flowchart_data: build_context.flowchart_data
       ).build
     end
@@ -161,8 +161,8 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     error = assert_raises(SiteKit::Error) do
       SiteKit::Templates::Guide::Repository.new(
         data: data,
-        templates: build_context.template_library_context.templates,
-        code_collections: build_context.template_library_context.code_collections,
+        templates: build_context.templates.templates,
+        code_collections: build_context.templates.code_collections,
         flowchart_data: build_context.flowchart_data
       ).build
     end
@@ -171,7 +171,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
   end
 
   def test_flowchart_mappings_use_guide_targets
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
 
     stack_targets = guide.dig('flowchart_nodes', 'parse-symbols-stack').map { |entry| entry.fetch('target') }
 

@@ -6,6 +6,8 @@ module SiteKit
     module Topics # rubocop:disable Metrics/ModuleLength
       module_function
 
+      TOPIC_REFERENCE_KEYS = %w[id label description template_id kind order priority].freeze
+
       def record(project_slug:, topics:, templates:, template_guide:, flowchart_titles:, problem_records:)
         topic_index = build_topic_index(topics:, templates:, flowchart_titles:)
         problem_index = build_problem_index(
@@ -26,7 +28,6 @@ module SiteKit
       end
 
       def build_topic_index(topics:, templates:, flowchart_titles:)
-        presenter = SiteKit::Templates::TopicPresenter.new
         topic_records = {}
         categories = {}
         flowchart_nodes = {}
@@ -46,9 +47,9 @@ module SiteKit
 
         {
           'topics' => topic_records,
-          'categories' => finalize_category_index(categories, topic_records, presenter),
-          'flowchart_nodes' => finalize_flowchart_index(flowchart_nodes, topic_records, presenter),
-          'templates' => template_records(topic_records, presenter)
+          'categories' => finalize_category_index(categories, topic_records),
+          'flowchart_nodes' => finalize_flowchart_index(flowchart_nodes, topic_records),
+          'templates' => template_records(topic_records)
         }
       end
 
@@ -59,16 +60,15 @@ module SiteKit
                 "Eureka problem categories are not mapped to local topics: #{unknown.sort.join(', ')}"
         end
 
-        presenter = SiteKit::Templates::TopicPresenter.new
         resolver = SiteKit::Templates::Guide::ReferenceResolver.new(guide: template_guide)
-        titles = problem_records.to_h { |p| [p.fetch('problem_slug'), p.fetch('title')] }
+        titles = problem_records.to_h { |problem| [problem.fetch('problem_slug'), problem.fetch('title')] }
         topic_problem_slugs = topics.transform_values { [] }
 
         problems = problem_records.to_h do |problem|
           labels = problem.fetch('categories')
-          topic_ids = matching_topic_ids(topics, labels, presenter)
+          topic_ids = matching_topic_ids(topics, labels)
           topic_ids.each { |topic_id| topic_problem_slugs.fetch(topic_id) << problem.fetch('problem_slug') }
-          entry = problem_topic_entry(labels, topic_ids, categories, topics, presenter, resolver)
+          entry = problem_topic_entry(labels, topic_ids, categories, topics, resolver)
 
           [problem.fetch('problem_slug'), entry]
         end
@@ -84,13 +84,13 @@ module SiteKit
         }
       end
 
-      def problem_topic_entry(labels, topic_ids, categories, topics, presenter, resolver)
+      def problem_topic_entry(labels, topic_ids, categories, topics, resolver)
         {
           'topic_ids' => topic_ids,
-          'topics' => topic_ids.map { |id| presenter.topic_reference(topics.fetch(id)) },
+          'topics' => topic_ids.map { |id| topic_reference(topics.fetch(id)) },
           'template_references' => resolver.references_for_categories(labels),
           'categories' => labels.map do |category|
-            category_record(category, topic_ids, categories, topics, presenter)
+            category_record(category, topic_ids, categories, topics)
           end
         }
       end
@@ -129,48 +129,70 @@ module SiteKit
         end
       end
 
-      def finalize_category_index(index, topics, presenter)
+      def topic_reference(topic)
+        TOPIC_REFERENCE_KEYS.to_h { |key| [key, topic.fetch(key)] }
+      end
+
+      def template_id(topic)
+        topic.fetch('template_id', '')
+      end
+
+      def present_template_id(topic)
+        value = template_id(topic)
+        value unless value.empty?
+      end
+
+      def template_reference(topic)
+        topic_template_id = template_id(topic)
+        return nil if topic_template_id.empty?
+
+        topic_reference(topic).merge('id' => topic_template_id, 'topic_id' => topic.fetch('id'))
+      end
+
+      def finalize_category_index(index, topics)
         index.transform_values do |topic_ids|
           sorted = sort_topic_ids(topic_ids, topics)
           {
             'topic_ids' => sorted,
-            'topics' => sorted.map { |id| presenter.topic_reference(topics.fetch(id)) },
-            'template_ids' => sorted.filter_map { |id| presenter.present_template_id(topics.fetch(id)) }
+            'topics' => sorted.map { |id| topic_reference(topics.fetch(id)) },
+            'template_ids' => sorted.filter_map { |id| present_template_id(topics.fetch(id)) }
           }
         end
       end
 
-      def finalize_flowchart_index(index, topics, presenter)
+      def finalize_flowchart_index(index, topics)
         index.transform_values do |topic_ids|
           sorted = sort_topic_ids(topic_ids, topics)
           {
             'topic_ids' => sorted,
-            'topics' => sorted.filter_map { |id| presenter.template_reference(topics.fetch(id)) },
-            'template_ids' => sorted.filter_map { |id| presenter.present_template_id(topics.fetch(id)) }
+            'topics' => sorted.filter_map { |id| template_reference(topics.fetch(id)) },
+            'template_ids' => sorted.filter_map { |id| present_template_id(topics.fetch(id)) }
           }
         end
       end
 
-      def template_records(topics, presenter)
+      def template_records(topics)
         topics.values
-              .filter_map { |topic| presenter.template_reference(topic) }
+              .filter_map { |topic| template_reference(topic) }
               .to_h { |topic| [topic.fetch('id'), topic] }
       end
 
-      def matching_topic_ids(topics, category_labels, presenter)
+      def matching_topic_ids(topics, category_labels)
         topics.values
-              .select { |topic| SiteKit::Templates::ProblemRules.match_any?(topic.fetch('problem_rules', []), category_labels) }
-              .sort_by { |topic| presenter.sort_key(topic) }
+              .select do |topic|
+                SiteKit::Templates::ProblemRules.match_any?(topic.fetch('problem_rules', []), category_labels)
+              end
+              .sort_by { |topic| [topic.fetch('priority'), topic.fetch('order'), topic.fetch('label').downcase] }
               .map { |topic| topic.fetch('id') }
       end
 
-      def category_record(category, problem_topic_ids, categories, topics, presenter)
+      def category_record(category, problem_topic_ids, categories, topics)
         cat = categories.fetch(category, { 'topic_ids' => [], 'topics' => [] })
         ids = cat.fetch('topic_ids') & problem_topic_ids
         {
           'label' => category,
           'topic_ids' => ids,
-          'topics' => ids.map { |id| presenter.topic_reference(topics.fetch(id)) },
+          'topics' => ids.map { |id| topic_reference(topics.fetch(id)) },
           'primary_topic_id' => ids.size == 1 ? ids.first : ''
         }
       end

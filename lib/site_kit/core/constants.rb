@@ -4,6 +4,8 @@ module SiteKit
   EUREKA_NAMESPACE = 'eureka'
   EUREKA_PROJECT_KIND = 'eureka'
   SOURCE_NOTES_PROJECT_KIND = 'source-notes'
+  TEMPLATES_URL = '/templates/'
+  FLOWCHART_URL = '/eureka/flowchart/'
 
   EUREKA_PROBLEM_PAGE_TYPE = 'eureka_problem_page'
   EUREKA_EMBED_PAGE_TYPE = 'eureka_embed_page'

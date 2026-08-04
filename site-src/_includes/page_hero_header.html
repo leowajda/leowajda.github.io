@@ -9,9 +9,27 @@
     <p class="page-header__description">{{ include.description | escape }}</p>
   {%- endif -%}
 
-  {%- assign header_links = include.links | default: empty -%}
-  {%- if header_links and header_links.size > 0 -%}
-    {%- include context_links.html links=header_links class="page-header__links" label="Related pages" -%}
+  {%- if include.link_group and include.link_group != '' -%}
+    {%- assign group_keys = site.data.site.page_links[include.link_group] | default: empty -%}
+    {%- if group_keys and group_keys.size > 0 -%}
+      <nav class="context-links page-header__links" aria-label="Related pages">
+        <ul class="context-links__items">
+          {%- for page_key in group_keys -%}
+            {%- assign link_page = site.data.site.pages[page_key] -%}
+            {%- if link_page -%}
+              <li class="context-links__item">
+                <a class="context-links__link" href="{{ link_page.url | relative_url | escape }}">{{ link_page.label | escape }}</a>
+              </li>
+            {%- endif -%}
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+  {%- else -%}
+    {%- assign header_links = include.links | default: empty -%}
+    {%- if header_links and header_links.size > 0 -%}
+      {%- include context_links.html links=header_links class="page-header__links" label="Related pages" -%}
+    {%- endif -%}
   {%- endif -%}
 
   {%- assign header_note = include.note | default: '' | strip -%}

@@ -4,7 +4,7 @@ require_relative '../../../test_helper'
 
 class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
   def test_builds_flat_template_code_entries
-    entries = build_context.template_library_context.code_collections.fetch('binary-search')
+    entries = build_context.templates.code_collections.fetch('binary-search')
 
     assert_equal 'binary-search-java', entries.first.fetch('entry_id')
     assert_predicate entries, :any?
@@ -15,7 +15,7 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
   end
 
   def test_derives_language_metadata_from_the_catalog
-    template = build_context.template_library_context.templates.find { |entry| entry.template_id == 'binary-search' }
+    template = build_context.templates.templates.find { |entry| entry.template_id == 'binary-search' }
     entries = complete_entries_for('binary-search').map do |entry|
       entry.fetch('language') == 'python' ? entry.merge('code' => 'def search(values): return 0') : entry
     end
@@ -23,8 +23,7 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
     collection = SiteKit::Templates::CodeCollections::Registry.new(
       templates: [template],
       entries_by_template: { template.template_id => entries },
-      language_catalog: template_language_catalog,
-      code_collection_config: build_context.app_config.code_collection
+      language_catalog: template_language_catalog
     ).record.fetch(template.template_id)
 
     python_item = collection.find { |item| item.fetch('language') == 'python' }
@@ -34,7 +33,7 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
   end
 
   def test_rejects_unknown_template_languages
-    template = build_context.template_library_context.templates.find { |entry| entry.template_id == 'binary-search' }
+    template = build_context.templates.templates.find { |entry| entry.template_id == 'binary-search' }
     entry = {
       'entry_id' => 'binary-search-ruby',
       'language' => 'ruby',
@@ -45,8 +44,7 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
       SiteKit::Templates::CodeCollections::Registry.new(
         templates: [template],
         entries_by_template: { template.template_id => [entry] },
-        language_catalog: template_language_catalog,
-        code_collection_config: build_context.app_config.code_collection
+        language_catalog: template_language_catalog
       ).record
     end
 
@@ -54,7 +52,7 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
   end
 
   def test_rejects_non_template_boilerplate_in_snippets
-    template = build_context.template_library_context.templates.find { |entry| entry.template_id == 'binary-search' }
+    template = build_context.templates.templates.find { |entry| entry.template_id == 'binary-search' }
     entry = {
       'entry_id' => 'binary-search-java',
       'language' => 'java',
@@ -65,8 +63,7 @@ class SiteKitTemplateCodeCollectionRegistryTest < SiteKitTestCase
       SiteKit::Templates::CodeCollections::Registry.new(
         templates: [template],
         entries_by_template: { template.template_id => [entry] },
-        language_catalog: template_language_catalog,
-        code_collection_config: build_context.app_config.code_collection
+        language_catalog: template_language_catalog
       ).record
     end
 
