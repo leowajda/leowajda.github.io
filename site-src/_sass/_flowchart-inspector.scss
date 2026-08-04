@@ -1,3 +1,11 @@
+.flowchart-inspector__panel-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.5rem;
+  text-transform: uppercase;
+}
+
 .flowchart-inspector {
   align-content: start;
   gap: 1rem;
@@ -152,6 +160,7 @@
   min-width: 0;
   padding: 0.45rem 0.55rem;
   text-align: left;
+  text-decoration: none;
   width: 100%;
 }
 

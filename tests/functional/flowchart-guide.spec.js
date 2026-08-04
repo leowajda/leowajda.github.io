@@ -80,8 +80,7 @@ test("flowchart nodes expose template guide targets", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Algorithmic Flowchart" })).toBeVisible()
   await expect(page.getByRole("button", { name: "Solution node: Topological Sort" })).toHaveAttribute("aria-pressed", "true")
   await expect(page.getByRole("heading", { name: "Topological Sort", level: 2 })).toBeVisible()
-  await page.getByRole("tab", { name: "Template Guide" }).click()
-  await expect(page.getByRole("link", { name: "Graph Topological sort" })).toHaveAttribute(
+  await expect(page.locator("[data-flowchart-templates]").getByRole("link", { name: "Graph Topological sort" })).toHaveAttribute(
     "href",
     /\/templates\/#graph\/topological-sort$/
   )
@@ -150,9 +149,8 @@ test("generic dynamic programming nodes link to the broad template group", async
   await page.goto("/eureka/flowchart/#counting-dp")
 
   await expect(page.getByRole("heading", { name: "Dynamic Programming", level: 2 })).toBeVisible()
-  await page.getByRole("tab", { name: "Template Guide" }).click()
 
-  const guideLink = page.getByRole("link", { name: "Dynamic Programming" })
+  const guideLink = page.locator("[data-flowchart-templates]").getByRole("link", { name: "Dynamic Programming" })
   await expect(guideLink).toHaveAttribute("href", /\/templates\/#dynamic-programming$/)
   await expect(page.getByRole("link", { name: /Dynamic Programming 1D/ })).toHaveCount(0)
 })
@@ -160,11 +158,9 @@ test("generic dynamic programming nodes link to the broad template group", async
 test("solution nodes appear in the decision path", async ({ page }) => {
   await page.goto("/eureka/flowchart/#shortest-path-dijkstra")
 
-  await page.getByRole("tab", { name: "Decision Path" }).click()
-
-  const path = page.locator("[data-flowchart-panel='path']")
-  await expect(path.getByRole("button", { name: "Is the graph weighted?" })).toBeVisible()
-  await expect(path.getByRole("button", { name: "Dijkstra's Algorithm" })).toBeVisible()
+  const path = page.locator("[data-flowchart-path]")
+  await expect(path.getByRole("link", { name: "Is the graph weighted?" })).toBeVisible()
+  await expect(path.getByRole("link", { name: "Dijkstra's Algorithm" })).toBeVisible()
 })
 
 test("flowchart canvas labels branches on X6 ports instead of edges", async ({ page }) => {
@@ -237,8 +233,7 @@ test("flowchart interactions do not emit console errors", async ({ page }) => {
     globalThis.location.hash = "directed-graph"
   })
   await page.getByRole("button", { name: "Reset zoom" }).click()
-  await page.getByRole("tab", { name: "Decision Path" }).click()
-  await page.locator("[data-flowchart-panel='path']").getByRole("button", { name: "Yes: Topological Sort" }).click()
+  await page.locator("[data-flowchart-path]").getByRole("link", { name: "Yes: Topological Sort" }).click()
 
   await expect(page.locator('[data-flowchart-node-id="directed-graph-topo"]')).toHaveAttribute("aria-pressed", "true")
   expect(errors).toEqual([])
@@ -299,11 +294,8 @@ test("node activation focuses the selected node at the standard focus scale", as
 test("decision path activation focuses route nodes at the standard focus scale", async ({ page }) => {
   await page.goto("/eureka/flowchart/#shortest-path-dijkstra")
 
-  await page.getByRole("tab", { name: "Decision Path" }).click()
-
-  const path = page.locator("[data-flowchart-panel='path']")
-  const entry = path.getByRole("button", { name: "Is the graph weighted?" })
-  await entry.locator(".flowchart-path__answer").click()
+  const path = page.locator("[data-flowchart-path]")
+  await path.getByRole("link", { name: "Is the graph weighted?" }).click()
 
   const weightedNode = page.getByRole("button", { name: "Decision node: Is the graph weighted?" })
   await expect(weightedNode).toHaveAttribute("aria-pressed", "true")
@@ -315,37 +307,32 @@ test("decision path activation focuses route nodes at the standard focus scale",
 test("decision path shows root children as next choices", async ({ page }) => {
   await page.goto("/eureka/flowchart/#graph")
 
-  await page.getByRole("tab", { name: "Decision Path" }).click()
-
-  const path = page.locator("[data-flowchart-panel='path']")
+  const path = page.locator("[data-flowchart-path]")
   await expect(path.getByText("Next")).toBeVisible()
-  await expect(path.getByRole("button", { name: "Yes: Is it a tree?" })).toBeVisible()
-  await expect(path.getByRole("button", { name: "No: Need the kth smallest or largest?" })).toBeVisible()
+  await expect(path.getByRole("link", { name: "Yes: Is it a tree?" })).toBeVisible()
+  await expect(path.getByRole("link", { name: "No: Need the kth smallest or largest?" })).toBeVisible()
 })
 
 test("decision path shows children for deeper decision nodes", async ({ page }) => {
   await page.goto("/eureka/flowchart/#directed-graph")
 
-  await page.getByRole("tab", { name: "Decision Path" }).click()
-
-  const path = page.locator("[data-flowchart-panel='path']")
-  await expect(path.getByRole("button", { name: "Yes: Topological Sort" })).toBeVisible()
-  await expect(path.getByRole("button", { name: "No: Is the problem related to shortest paths?" })).toBeVisible()
+  const path = page.locator("[data-flowchart-path]")
+  await expect(path.getByRole("link", { name: "Yes: Topological Sort" })).toBeVisible()
+  await expect(path.getByRole("link", { name: "No: Is the problem related to shortest paths?" })).toBeVisible()
 })
 
 test("decision path choices move forward through the flowchart", async ({ page }) => {
   await page.goto("/eureka/flowchart/#sums")
 
-  await page.getByRole("tab", { name: "Decision Path" }).click()
-
-  const path = page.locator("[data-flowchart-panel='path']")
-  await expect(path.getByRole("button", { name: "Yes: Prefix Sums" })).toBeVisible()
-  await path.getByRole("button", { name: "No: About subarrays or substrings?" }).click()
+  let path = page.locator("[data-flowchart-path]")
+  await expect(path.getByRole("link", { name: "Yes: Prefix Sums" })).toBeVisible()
+  await path.getByRole("link", { name: "No: About subarrays or substrings?" }).click()
 
   const subarraysNode = page.getByRole("button", { name: "Decision node: About subarrays or substrings?" })
   await expect(subarraysNode).toHaveAttribute("aria-pressed", "true")
   await expect(page.getByRole("heading", { name: "About subarrays or substrings?", level: 2 })).toBeVisible()
-  await expect(path.getByRole("button", { name: "No: Calculating a maximum or minimum?" })).toBeVisible()
+  path = page.locator("[data-flowchart-path]")
+  await expect(path.getByRole("link", { name: "No: Calculating a maximum or minimum?" })).toBeVisible()
   await expectScaleNear(page, FOCUS_SCALE)
   await expectCentered(page, subarraysNode)
 })
