@@ -25,8 +25,8 @@ module SiteKit
         none_labels = rule.fetch('none', [])
 
         all_labels.all? { |label| labels.include?(label) } &&
-          (any_labels.empty? || any_labels.any? { |label| labels.include?(label) }) &&
-          none_labels.none? { |label| labels.include?(label) }
+          (any_labels.empty? || any_labels.intersect?(labels)) &&
+          !none_labels.intersect?(labels)
       end
 
       def match_any?(rules, labels)
