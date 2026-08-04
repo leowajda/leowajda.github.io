@@ -119,10 +119,12 @@ Read `DESIGN.md` before any UI, navigation, interaction, or copy change. Writing
 
 ## JavaScript
 
-- Modern ES modules and browser APIs; small focused modules
-- Semantic HTML from Jekyll first; attach behavior progressively
-- `pnpm check:js` for syntax and lint; do not bypass `eslint.config.mjs` without intentional, documented rule changes
-- Avoid eager work, global listeners, or extra runtime deps unless the interaction needs them
+- Progressive enhancement only: Jekyll owns content; JS selects, zooms, and enhances.
+- Module budget: one entry file per page feature until it exceeds ~400 LOC of distinct concerns. Flowchart is at most three files (`flowchart.js`, `flowchart-x6.js`, `flowchart-viewport.js`). Do not reintroduce satellite modules for state factories, rename wrappers, or thin event glue.
+- Contracts over DOM IPC: no synthetic `.click()` across features; no double-`setTimeout` layout hacks. Prefer small exported APIs on the owning module.
+- Modern ES modules and browser APIs. Shared helpers stay in `dom.js` (or one tiny lib) — not a utils folder.
+- `pnpm check:js` for syntax and lint; do not bypass `eslint.config.mjs` without intentional, documented rule changes.
+- Avoid eager work, global listeners, or extra runtime deps unless the interaction needs them.
 
 ## Templates
 

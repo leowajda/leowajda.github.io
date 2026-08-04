@@ -104,10 +104,10 @@ test("flowchart page versions JavaScript asset URLs", async ({ page }) => {
   expect(html).toMatch(/\/assets\/css\/main\.css\?v=\d+/)
   expect(html).toMatch(/\/site\.webmanifest\?v=\d+/)
   expect(html).toMatch(/\/assets\/js\/core\.js\?v=\d+/)
-  expect(html).toMatch(/\/assets\/js\/eureka-flowchart\.js\?v=\d+/)
+  expect(html).toMatch(/\/assets\/js\/flowchart\.js\?v=\d+/)
   expect(html).toMatch(/data-pagefind-bundle="\/pagefind\/pagefind\.js\?v=\d+"/)
   expect(html).toMatch(/"\/assets\/js\/dom\.js":"\/assets\/js\/dom\.js\?v=\d+"/)
-  expect(html).toMatch(/"\/assets\/js\/eureka-flowchart-node-state\.js":"\/assets\/js\/eureka-flowchart-node-state\.js\?v=\d+"/)
+  expect(html).toMatch(/"\/assets\/js\/flowchart-x6\.js":"\/assets\/js\/flowchart-x6\.js\?v=\d+"/)
   expect(html).toMatch(/data-flowchart-x6-url="\/assets\/vendor\/x6\/x6\.min\.js\?v=\d+"/)
 })
 
@@ -125,7 +125,7 @@ test("browser requests versioned local JavaScript modules", async ({ page }) => 
   await expect(page.getByRole("button", { name: "Decision node: Is it a graph?" })).toBeVisible()
 
   expect(scriptRequests.map((url) => url.pathname)).toContain("/assets/js/dom.js")
-  expect(scriptRequests.map((url) => url.pathname)).toContain("/assets/js/eureka-flowchart-node-state.js")
+  expect(scriptRequests.map((url) => url.pathname)).toContain("/assets/js/flowchart-x6.js")
   expect(scriptRequests.filter((url) => !url.searchParams.has("v")).map((url) => url.pathname)).toEqual([])
 })
 
