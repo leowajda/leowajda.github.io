@@ -8,7 +8,7 @@ project_title: Eureka
 needs_math: true
 shell: wide
 custom_js:
-  - eureka-flowchart
+  - flowchart
 seo:
   type: WebPage
 ---
