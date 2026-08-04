@@ -15,8 +15,6 @@ sass:
   sass_dir: _sass
   style: compressed
 
-collections_dir: collections
-
 plugins:
   - jekyll-feed
   - jekyll-seo-tag

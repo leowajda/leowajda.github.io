@@ -3,12 +3,11 @@
 module SiteKit
   module Eureka
     class Project
-      def initialize(manifest:, app_config:, template_library:, flowchart_data:, page_link_resolver:)
+      def initialize(manifest:, app_config:, template_library:, flowchart_data:)
         @manifest = manifest
         @app_config = app_config
         @template_library = template_library
         @flowchart_data = flowchart_data
-        @page_link_resolver = page_link_resolver
       end
 
       def slug
@@ -61,14 +60,15 @@ module SiteKit
 
       private
 
-      attr_reader :manifest, :app_config, :template_library, :page_link_resolver
+      attr_reader :manifest, :app_config, :template_library
 
       def problem_records
         @problem_records ||= catalog.problem_records.map do |problem|
           refs = topics_record.fetch('problems').fetch(problem.fetch('problem_slug')).fetch('template_references', [])
           problem.merge(
             'template_references' => refs.map do |reference|
-              reference.merge('url' => template_guide_url_resolver.url_for(reference))
+              target = reference.fetch('target', '')
+              reference.merge('url' => target.empty? ? '' : "#{SiteKit::TEMPLATES_URL}##{target}")
             end
           )
         end
@@ -86,14 +86,8 @@ module SiteKit
         @page_factory ||= SiteKit::Eureka::PageFactory.new(
           project_slug: slug,
           route_base: manifest.route_base,
-          browser_record: browser_record,
-          page_link_resolver: page_link_resolver
+          browser_record: browser_record
         )
-      end
-
-      def template_guide_url_resolver
-        @template_guide_url_resolver ||=
-          SiteKit::Templates::Guide::UrlResolver.new(page_link_resolver: page_link_resolver)
       end
     end
   end

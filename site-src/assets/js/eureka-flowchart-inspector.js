@@ -1,5 +1,4 @@
 import { createRoutePanel } from "./eureka-flowchart-route-panel.js"
-import { buildNoteSummary } from "./eureka-flowchart-summary.js"
 
 export const renderMathIn = (element) => {
   if (!(element instanceof Element) || typeof window.renderMathInElement !== "function") {
@@ -49,16 +48,7 @@ export const decorateInspector = (content, {
   const routePanel = createRoutePanel(route, { choices, onSelectRouteNode })
 
   if (notePanel) {
-    const prose = notePanel.querySelector(".flowchart-prose")
-    if (notePanel.hasAttribute("data-flowchart-structured-summary")) {
-      prose?.classList.add("flowchart-prose--summary")
-    } else {
-      const summary = buildNoteSummary(prose)
-      if (prose && summary) {
-        prose.replaceChildren(...Array.from(summary.children))
-        prose.classList.add("flowchart-prose--summary")
-      }
-    }
+    notePanel.querySelector(".flowchart-prose")?.classList.add("flowchart-prose--summary")
   }
 
   if (routePanel) {

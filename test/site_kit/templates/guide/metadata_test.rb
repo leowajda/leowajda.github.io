@@ -13,8 +13,8 @@ class SiteKitTemplateGuideMetadataTest < SiteKitTestCase
 
     guide = SiteKit::Templates::Guide::Repository.new(
       data: data,
-      templates: build_context.template_library_context.templates,
-      code_collections: build_context.template_library_context.code_collections,
+      templates: build_context.templates.templates,
+      code_collections: build_context.templates.code_collections,
       flowchart_data: build_context.flowchart_data
     ).build
 
@@ -24,7 +24,7 @@ class SiteKitTemplateGuideMetadataTest < SiteKitTestCase
   end
 
   def test_template_metadata_can_be_explicitly_suppressed_by_guide_variant
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
     stack = guide.fetch('patterns')
                  .find { |pattern| pattern.fetch('id') == 'stack' }
                  .fetch('variants')

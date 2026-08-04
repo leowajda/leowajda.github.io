@@ -1,4 +1,9 @@
-import { clampNumber, toNumber } from "./eureka-flowchart-geometry.js"
+const toNumber = (value, fallback = 0) => {
+  const parsed = Number.parseFloat(value)
+  return Number.isFinite(parsed) ? parsed : fallback
+}
+const clampNumber = (value, min, max) => Math.min(max, Math.max(min, value))
+
 
 const FLOWCHART_CONTENT_PADDING = 24
 const ZOOM_MAX = 1.38

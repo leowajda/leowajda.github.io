@@ -3,12 +3,11 @@
 module SiteKit
   module Eureka
     class PageFactory
-      def initialize(project_slug:, route_base:, browser_record:, page_link_resolver:)
+      def initialize(project_slug:, route_base:, browser_record:)
         @project_slug = project_slug
         @route_base = route_base
         @browser_record = browser_record
         @paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
-        @page_link_resolver = page_link_resolver
       end
 
       def problem_pages
@@ -22,8 +21,7 @@ module SiteKit
             description: "#{problem.fetch('title')} solutions",
             data: {
               'problem_slug' => problem_slug,
-              'problem_record' => problem,
-              'header_links' => page_link_resolver.links_for('problem_detail')
+              'problem_record' => problem
             }.merge(problem_external_link(problem))
           )
         end
@@ -50,7 +48,7 @@ module SiteKit
 
       private
 
-      attr_reader :project_slug, :route_base, :browser_record, :paths, :page_link_resolver
+      attr_reader :project_slug, :route_base, :browser_record, :paths
 
       def problem_external_link(record)
         problem_source_url = record.fetch('problem_source_url')

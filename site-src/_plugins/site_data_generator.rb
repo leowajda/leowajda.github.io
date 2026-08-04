@@ -30,7 +30,6 @@ module SiteKit
     def attach_problems(document, runtime)
       browser = runtime.eureka.browsers.fetch(document.data.fetch('project_slug'))
       document.data['browser_record'] = browser
-      document.data['header_links'] = runtime.page_links.links_for('problem_explorer')
     end
 
     def attach_flowchart(document, site, runtime)
@@ -38,12 +37,11 @@ module SiteKit
       browser = runtime.eureka.browsers.fetch(project_slug)
       topics = runtime.eureka.topics.fetch(project_slug)
       document.data['project_title'] ||= browser.fetch('project_title')
-      document.data['header_links'] = runtime.page_links.links_for('algorithmic_flowchart')
       document.data['flowchart_canvas'] = SiteKit::Compile::Flowchart.canvas(
         laid_out: runtime.flowchart_data,
         summaries: site.data.fetch('eureka').fetch('flowchart_summaries', {}),
         flowchart_nodes: topics.fetch('flowchart_nodes', {}),
-        templates_url: runtime.page_links.page_link('algorithmic_templates').fetch('url')
+        templates_url: SiteKit::TEMPLATES_URL
       )
     end
 
@@ -53,7 +51,6 @@ module SiteKit
       document.data['default_template_target'] = guide.fetch('default_target')
       project_slug = document.data.fetch('project_slug')
       document.data['project_title'] ||= runtime.eureka.browsers.fetch(project_slug).fetch('project_title')
-      document.data['header_links'] = runtime.page_links.links_for('algorithmic_templates')
     end
   end
 end

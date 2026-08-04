@@ -14,11 +14,10 @@ module SiteKit
           /class Solution/
         ].freeze
 
-        def initialize(templates:, entries_by_template:, language_catalog:, code_collection_config:)
+        def initialize(templates:, entries_by_template:, language_catalog:)
           @templates = templates
           @entries_by_template = entries_by_template
           @language_catalog = normalize_language_catalog(language_catalog)
-          @code_collection_config = code_collection_config
         end
 
         def record
@@ -33,7 +32,7 @@ module SiteKit
 
         private
 
-        attr_reader :templates, :entries_by_template, :language_catalog, :code_collection_config
+        attr_reader :templates, :entries_by_template, :language_catalog
 
         def validate_known_template_entries!
           known_template_ids = templates.map(&:template_id)

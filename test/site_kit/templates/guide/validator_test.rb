@@ -13,8 +13,8 @@ class SiteKitTemplateGuideValidatorTest < SiteKitTestCase
     error = assert_raises(SiteKit::Error) do
       SiteKit::Templates::Guide::Repository.new(
         data: guide,
-        templates: build_context.template_library_context.templates,
-        code_collections: build_context.template_library_context.code_collections,
+        templates: build_context.templates.templates,
+        code_collections: build_context.templates.code_collections,
         flowchart_data: build_context.flowchart_data
       ).build
     end
@@ -33,8 +33,8 @@ class SiteKitTemplateGuideValidatorTest < SiteKitTestCase
     error = assert_raises(SiteKit::Error) do
       SiteKit::Templates::Guide::Repository.new(
         data: guide,
-        templates: build_context.template_library_context.templates,
-        code_collections: build_context.template_library_context.code_collections,
+        templates: build_context.templates.templates,
+        code_collections: build_context.templates.code_collections,
         flowchart_data: build_context.flowchart_data
       ).build
     end
@@ -44,7 +44,7 @@ class SiteKitTemplateGuideValidatorTest < SiteKitTestCase
   end
 
   def test_guide_variants_do_not_expose_stale_navigation_flags
-    guide = build_context.template_library_context.guide
+    guide = build_context.templates.guide
     variants = guide.fetch('patterns').flat_map { |pattern| pattern.fetch('variants') }
 
     refute(variants.any? { |variant| variant.key?('navigation_visible') })

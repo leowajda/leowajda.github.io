@@ -11,7 +11,4 @@ custom_js:
 structured_data_partial: structured_data/writing_page.html
 seo:
   type: WebPage
-search_record: true
-search_priority: 80
-search_kind: Template
 ---

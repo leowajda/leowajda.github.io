@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Prefer the main Jekyll build (PagefindExtrasGenerator). This script remains for
+# standalone re-generation without a full site build.
+
 require 'bundler/setup'
 require 'fileutils'
 require 'jekyll'
@@ -17,10 +20,9 @@ site = Jekyll::Site.new(
   )
 )
 site.read
+site.generate
 
-runtime = SiteKit::Runtime.for(site)
-records = runtime.search_records.map(&:to_h)
-
+records = SiteKit::Runtime.for(site).search_records.map(&:to_h)
 FileUtils.mkdir_p(File.dirname(OUTPUT_PATH))
 File.write(OUTPUT_PATH, JSON.pretty_generate(records))
 puts "Wrote #{records.size} Pagefind extras to #{OUTPUT_PATH}."

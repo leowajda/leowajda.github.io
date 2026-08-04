@@ -4,7 +4,7 @@ require_relative '../../../test_helper'
 
 class SiteKitTemplatesCodeSourcesRepositoryTest < SiteKitTestCase
   def test_template_code_sources_feed_code_collections_from_language_files
-    entries = build_context.template_library_context.code_collections.fetch('binary-search')
+    entries = build_context.templates.code_collections.fetch('binary-search')
     java = entries.find { |item| item.fetch('language') == 'java' }
 
     assert_equal 'binary-search-java', java.fetch('entry_id')
@@ -45,6 +45,6 @@ class SiteKitTemplatesCodeSourcesRepositoryTest < SiteKitTestCase
   end
 
   def template(template_id)
-    build_context.template_library_context.templates.find { |entry| entry.template_id == template_id }
+    build_context.templates.templates.find { |entry| entry.template_id == template_id }
   end
 end

@@ -5,7 +5,7 @@ require_relative '../../test_helper'
 
 class SiteKitSourceNotesProjectTest < SiteKitTestCase
   def test_builds_registry_and_generates_resolved_pages
-    project = build_context.source_notes_context.projects.fetch('zibaldone')
+    project = build_context.source_notes.projects.fetch('zibaldone')
     registry = project.registry_record
     scala = registry.fetch('languages').find { |language| language.fetch('language_slug') == 'scala' }
     cats_effect = scala.fetch('modules').find { |module_record| module_record.fetch('module_slug') == 'cats-effect' }
