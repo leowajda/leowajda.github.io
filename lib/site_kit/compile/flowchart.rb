@@ -404,18 +404,40 @@ module SiteKit
         end
 
         def node_payloads
-          incoming = graph_index.incoming_edges_by_target
+          meta = graph_index.node_meta
+          choices = graph_index.choices_by_source
           flowchart.fetch('nodes').map do |node|
             node_id = node.fetch('id')
-            edge = incoming[node_id]
+            path = path_for(node_id, meta)
             {
               'node' => node,
-              'parent_id' => edge&.fetch('from', nil),
-              'parent_answer' => edge&.fetch('label', nil),
+              'path' => path,
+              'path_ids' => path.map { |step| step.fetch('id') },
+              'choices' => choices.fetch(node_id, []),
               'summary' => summaries[node_id],
               'template_guide_entrypoints' => flowchart_nodes.fetch(node_id, [])
             }
           end
+        end
+
+        def path_for(node_id, meta)
+          path = []
+          seen = {}
+          current = node_id
+          while current && !current.empty? && !seen[current]
+            seen[current] = true
+            step = meta[current]
+            break unless step
+
+            path.unshift(
+              'id' => step.fetch('id'),
+              'kind' => step.fetch('kind'),
+              'label' => step.fetch('kind') == 'decision' ? step.fetch('question') : step.fetch('label'),
+              'answer' => step.fetch('answer', '')
+            )
+            current = step.fetch('parentId', '')
+          end
+          path
         end
       end
     end

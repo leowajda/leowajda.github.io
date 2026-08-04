@@ -4,7 +4,6 @@ const toNumber = (value, fallback = 0) => {
 }
 const clampNumber = (value, min, max) => Math.min(max, Math.max(min, value))
 
-
 const FLOWCHART_CONTENT_PADDING = 24
 const ZOOM_MAX = 1.38
 const ZOOM_MIN = 0.32
