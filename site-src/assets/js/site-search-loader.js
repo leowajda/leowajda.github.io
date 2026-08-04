@@ -1,17 +1,12 @@
-const SEARCH_ROUTE = /\/search\/?$/
+import { closestElement, isSearchRoute } from "./dom.js"
 
 let overlayModulePromise = null
-
-const isSearchRoute = () => SEARCH_ROUTE.test(window.location.pathname)
 
 const isEditableTarget = (target) =>
   target instanceof HTMLInputElement
   || target instanceof HTMLTextAreaElement
   || target instanceof HTMLSelectElement
   || target?.isContentEditable
-
-const closestElement = (target, selector) =>
-  target instanceof Element ? target.closest(selector) : null
 
 const queryFromUrl = () => new URLSearchParams(window.location.search).get("q") || ""
 

@@ -6,10 +6,13 @@ const resultMetaLine = (data) =>
   [data.meta?.kind, data.meta?.section].filter(Boolean).join(": ")
 
 const createResultElement = (data, index) => {
-  const item = document.createElement("article")
+  const item = document.createElement("a")
   item.className = "search-result"
   item.id = `site-search-option-${index}`
+  item.href = data.url
   item.setAttribute("role", "option")
+  item.dataset.searchResultLink = ""
+  item.tabIndex = -1
 
   const meta = document.createElement("p")
   meta.className = "search-result__meta"
@@ -17,12 +20,7 @@ const createResultElement = (data, index) => {
 
   const title = document.createElement("h2")
   title.className = "search-result__title"
-  const link = document.createElement("a")
-  link.href = data.url
-  link.textContent = data.meta?.title || data.url
-  link.dataset.searchResultLink = ""
-  link.tabIndex = -1
-  title.append(link)
+  title.textContent = data.meta?.title || data.url
 
   const summary = document.createElement("p")
   summary.className = "search-result__summary"

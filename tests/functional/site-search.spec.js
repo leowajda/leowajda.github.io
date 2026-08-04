@@ -7,12 +7,9 @@ test("global search opens as an overlay from the main navigation", async ({ page
   const overlay = await openSearchOverlay(page)
   await overlay.getByRole("combobox", { name: "Search" }).fill("grid bfs")
 
-  await expect(page.locator('[data-search-result-link][href="/templates/#grid/bfs"]')).toBeVisible()
-  await expect(
-    page.locator(".search-result").filter({
-      has: page.locator('[data-search-result-link][href="/templates/#grid/bfs"]')
-    }).locator(".search-result__meta")
-  ).toContainText("Template: Grid")
+  const gridResult = page.locator('[data-search-result-link][href="/templates/#grid/bfs"]')
+  await expect(gridResult).toBeVisible()
+  await expect(gridResult.locator(".search-result__meta")).toContainText("Template: Grid")
   await expect(
     page.locator(".search-result__meta").filter({ hasText: "Flowchart: Unweighted shortest paths / Solution" })
   ).toBeVisible()
@@ -39,7 +36,7 @@ test("search route opens the same overlay without faceted panels", async ({ page
   await expect(overlay).toBeVisible()
   await expect(overlay.getByRole("combobox", { name: "Search" })).toHaveValue("binary sear")
   await expect(page.locator("[data-search-filters]")).toHaveCount(0)
-  await expect(page.getByRole("link", { name: /Binary Search/ }).first()).toBeVisible()
+  await expect(page.locator("[data-search-result-link]").filter({ hasText: "Binary Search" }).first()).toBeVisible()
 })
 
 test("global search supports keyboard navigation and escape closing", async ({ page }) => {

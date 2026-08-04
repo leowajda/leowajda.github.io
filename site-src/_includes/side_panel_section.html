@@ -1,14 +1,17 @@
 {%- assign title_tag = include.title_tag | default: "h3" -%}
-{%- unless title_tag == "h2" or title_tag == "h3" or title_tag == "h4" -%}
-  {%- assign title_tag = "h3" -%}
-{%- endunless -%}
 <section class="side-panel__section{% if include.class %} {{ include.class | escape }}{% endif %}">
   {%- if include.header -%}
     <div class="side-panel__section-header">
       {{ include.header }}
     </div>
   {%- elsif include.title -%}
-    <{{ title_tag }} class="side-panel__section-title"{% if include.title_for %} for="{{ include.title_for | escape }}"{% endif %}>{{ include.title | escape }}</{{ title_tag }}>
+    {%- if title_tag == "label" and include.title_for -%}
+      <label class="side-panel__section-title" for="{{ include.title_for | escape }}">{{ include.title | escape }}</label>
+    {%- elsif title_tag == "h2" or title_tag == "h3" or title_tag == "h4" -%}
+      <{{ title_tag }} class="side-panel__section-title">{{ include.title | escape }}</{{ title_tag }}>
+    {%- else -%}
+      <h3 class="side-panel__section-title">{{ include.title | escape }}</h3>
+    {%- endif -%}
   {%- endif -%}
 
   {{ include.body }}

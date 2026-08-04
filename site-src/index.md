@@ -8,6 +8,8 @@ description: "a modest offering to the data gods"
 
 {% include home_projects.html projects=page.home_projects %}
 
-<h2>Writing</h2>
+{% if site.posts.size > 0 %}
+## Writing
 
 {% include home_writing.html posts=site.posts %}
+{% endif %}

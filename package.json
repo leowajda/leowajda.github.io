@@ -6,7 +6,6 @@
   "scripts": {
     "docs:refresh": "ln -sfn AGENTS.md README.md",
     "sync:sources": "git submodule sync --recursive && git submodule update --init --recursive --remote",
-    "check:validate": "ruby -c script/validate_catalogs.rb",
     "validate:catalogs": "ruby script/validate_catalogs.rb",
     "preview": "pnpm build:indexed-site && python3 -m http.server 4173 --bind 127.0.0.1 --directory _site",
     "build:site": "bundle exec jekyll build --source site-src --destination _site",
@@ -26,7 +25,9 @@
     "test:functional": "pnpm build:indexed-site && pnpm test:functional:built",
     "test:functional:built": "playwright test --config=playwright.config.mjs",
     "test:ci": "pnpm test:full",
-    "test:full": "pnpm check:validate && pnpm lint:ruby && pnpm check:js && pnpm validate:catalogs && pnpm test:ruby && pnpm build:indexed-site && pnpm check:seo && pnpm check:links && pnpm test:functional:built"
+    "test:full": "pnpm check:syntax && pnpm lint:ruby && pnpm check:js && pnpm validate:catalogs && pnpm test:ruby && pnpm build:indexed-site && pnpm check:seo && pnpm check:links && pnpm test:functional:built",
+    "check:syntax": "ruby -c script/validate_catalogs.rb",
+    "check:validate": "pnpm validate:catalogs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

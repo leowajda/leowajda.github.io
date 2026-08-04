@@ -1,7 +1,6 @@
 plugins:
   - rubocop-minitest
   - rubocop-performance
-  - rubocop-rake
 
 AllCops:
   NewCops: enable
@@ -30,6 +29,8 @@ Metrics/BlockLength:
 
 Metrics/ClassLength:
   Max: 150
+  Exclude:
+    - "test/**/*"
 
 Metrics/CyclomaticComplexity:
   Max: 10

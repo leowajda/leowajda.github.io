@@ -119,7 +119,7 @@ const initializeTemplateLibrary = (root) => {
 
     const activeControl = showPattern
       ? control
-      : variantControls.find((control) => control.dataset.guideTarget === renderableTarget) || control
+      : variantControls.find((variantControl) => variantControl.dataset.guideTarget === renderableTarget) || control
     activeControl.scrollIntoView({ block: "nearest" })
 
     if (updateHash || target !== rawTarget) {

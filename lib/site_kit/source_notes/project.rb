@@ -20,23 +20,8 @@ module SiteKit
       end
 
       def generated_pages
-        [page_factory.home_page] + page_factory.language_pages + page_factory.module_pages + page_factory.document_pages
-      end
-
-      def generated_home_page
-        page_factory.home_page
-      end
-
-      def generated_language_pages
-        page_factory.language_pages
-      end
-
-      def generated_module_pages
-        page_factory.module_pages
-      end
-
-      def generated_document_pages
-        page_factory.document_pages
+        factory = page_factory
+        [factory.home_page] + factory.language_pages + factory.module_pages + factory.document_pages
       end
 
       private

@@ -117,15 +117,11 @@ const createRouteStep = ({ step, answer, current = false, onSelectRouteNode }) =
   return block
 }
 
-export const createRoutePanel = (route, onSelectRouteNodeOrOptions, nextChoices = []) => {
+export const createRoutePanel = ({ route, choices = [], onSelectRouteNode } = {}) => {
   if (!Array.isArray(route) || route.length === 0) {
     return null
   }
 
-  const options = typeof onSelectRouteNodeOrOptions === "function"
-    ? { choices: nextChoices, onSelectRouteNode: onSelectRouteNodeOrOptions }
-    : (onSelectRouteNodeOrOptions || {})
-  const { choices = [], onSelectRouteNode } = options
   const panel = document.createElement("section")
   panel.className = "flowchart-inspector__panel flowchart-path"
 

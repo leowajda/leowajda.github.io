@@ -2,7 +2,6 @@
 {%- assign profiles = site.profiles | default: empty -%}
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#ffffff" />
   <meta name="color-scheme" content="light dark" />
@@ -13,11 +12,15 @@
   {%- capture favicon_url -%}{%- include asset_url.html path='/assets/favicon.svg' -%}{%- endcapture -%}
   {%- capture manifest_url -%}{%- include asset_url.html path='/site.webmanifest' -%}{%- endcapture -%}
   <link rel="icon" href="{{ favicon_url | strip | escape }}" type="image/svg+xml" />
-  <link rel="manifest" href="{{ manifest_url | strip | escape }}" />
+  {%- unless page.noindex -%}
+    <link rel="manifest" href="{{ manifest_url | strip | escape }}" />
+  {%- endunless -%}
 
   {%- seo -%}
-  {%- feed_meta -%}
-  {%- unless page.noindex or page.layout == 'redirect' or page.layout == 'problem_embed' -%}
+  {%- unless page.noindex -%}
+    {%- if site.posts.size > 0 -%}
+      {%- feed_meta -%}
+    {%- endif -%}
     {%- assign page_url = page.url | absolute_url -%}
     {%- assign page_description = page.description | default: site.description -%}
     {%- assign site_same_as = site.social.links | default: empty -%}
@@ -32,10 +35,10 @@
     {%- if page.structured_data_partial -%}
       {%- include {{ page.structured_data_partial }} page_url=page_url page_description=page_description person_json=person_json -%}
     {%- endif -%}
+    {%- for profile in profiles -%}
+      <link rel="me" href="{{ profile.url }}" />
+    {%- endfor -%}
   {%- endunless -%}
-  {%- for profile in profiles -%}
-    <link rel="me" href="{{ profile.url }}" />
-  {%- endfor -%}
 
   <script>
     (() => {

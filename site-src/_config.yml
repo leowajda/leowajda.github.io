@@ -24,7 +24,6 @@ theme_config:
   appearance: "auto"
   date_format: "%Y-%m-%d"
   show_description: true
-  lowercase_titles: false
   search: true
 
 github_url: &profile_github_url https://github.com/leowajda
@@ -95,7 +94,6 @@ defaults:
     values:
       layout: source_home
       shell: wide
-      structured_data_partial: structured_data/source_home.html
       seo:
         type: WebPage
   - scope:
@@ -104,7 +102,6 @@ defaults:
     values:
       layout: source_language
       shell: wide
-      structured_data_partial: structured_data/source_language.html
       seo:
         type: WebPage
   - scope:
@@ -113,7 +110,6 @@ defaults:
     values:
       layout: source_module
       shell: source
-      structured_data_partial: structured_data/source_module.html
       seo:
         type: WebPage
   - scope:

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module SiteKit
-  # Plain-hash page emission (no Definition class).
   module Emit
     module_function
 

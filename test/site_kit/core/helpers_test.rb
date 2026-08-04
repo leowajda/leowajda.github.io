@@ -60,8 +60,8 @@ class SiteKitHelpersTest < SiteKitTestCase
     assert_equal 'hello-world', SiteKit::Core::Helpers.slugify(' Hello,   World! ')
   end
 
-  def test_record_helpers_compact_string_keys
-    record = SiteKit::Core::RecordHelpers.compact_string_keys(label: 'Graph', count: 2, empty: nil)
+  def test_record_helpers_compact_hash
+    record = SiteKit::Core::RecordHelpers.compact_hash('label' => 'Graph', 'count' => 2, 'empty' => nil)
 
     assert_equal({ 'label' => 'Graph', 'count' => 2 }, record)
   end

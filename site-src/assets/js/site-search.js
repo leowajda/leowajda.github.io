@@ -1,11 +1,9 @@
+import { isSearchRoute } from "./dom.js"
 import { loadPagefind, preloadPagefind, searchPagefind } from "./pagefind-client.js"
 import { createSearchResultSet, renderSearchResults, renderSearchTooShort, SEARCH_PAGE_SIZE } from "./search-results.js"
 import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery } from "./search-query.js"
 
-const SEARCH_ROUTE = /\/search\/?$/
 let searchOverlay = null
-
-const isSearchRoute = () => SEARCH_ROUTE.test(window.location.pathname)
 
 const warmSearchIndex = () => {
   loadPagefind().catch(() => {})

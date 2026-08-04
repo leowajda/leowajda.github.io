@@ -8,11 +8,11 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
 
     browser = project.browser_record
     topics = project.topics_record
-    problem_page = project.generated_problem_pages.find { |page| page[:dir] == '/eureka/problems/binary-search/' }
-    single_language_problem_page = project.generated_problem_pages.find do |page|
+    problem_page = project.generated_pages.select { |page| page[:page_type] == 'eureka_problem_page' }.find { |page| page[:dir] == '/eureka/problems/binary-search/' }
+    single_language_problem_page = project.generated_pages.select { |page| page[:page_type] == 'eureka_problem_page' }.find do |page|
       page[:dir] == '/eureka/problems/find-if-path-exists-in-graph/'
     end
-    embed_page = project.generated_embed_pages.find { |page| page[:dir] == '/eureka/problems/binary-search/embed/' }
+    embed_page = project.generated_pages.select { |page| page[:page_type] == 'eureka_embed_page' }.find { |page| page[:dir] == '/eureka/problems/binary-search/embed/' }
     single_language_problem = browser.fetch('problems').find do |problem|
       problem.fetch('problem_slug') == 'find-if-path-exists-in-graph'
     end
@@ -71,7 +71,7 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
 
   def test_embed_page_shares_full_implementations
     project = build_context.eureka.projects.fetch('eureka')
-    embed_page = project.generated_embed_pages.find { |page| page[:dir] == '/eureka/problems/binary-search/embed/' }
+    embed_page = project.generated_pages.select { |page| page[:page_type] == 'eureka_embed_page' }.find { |page| page[:dir] == '/eureka/problems/binary-search/embed/' }
     implementations = embed_page.dig(:data, 'problem_record', 'implementations')
 
     assert_operator implementations.size, :>, 1
@@ -94,7 +94,7 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
       [pattern.fetch('target'), *pattern.fetch('variants').map { |variant| variant.fetch('target') }]
     end
 
-    project.generated_problem_pages.each do |page|
+    project.generated_pages.select { |page| page[:page_type] == 'eureka_problem_page' }.each do |page|
       Array(page.dig(:data, 'problem_record', 'template_references')).each do |reference|
         assert_includes guide_targets, reference.fetch('target'), "Unknown template guide target for #{page[:dir]}"
       end
@@ -104,8 +104,8 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
   private
 
   def problem_template_references(project, slug)
-    project.generated_problem_pages
-           .find { |page| page[:dir] == "/eureka/problems/#{slug}/" }
-           .dig(:data, 'problem_record', 'template_references')
+    project.generated_pages.select { |page| page[:page_type] == 'eureka_problem_page' }
+                           .find { |page| page[:dir] == "/eureka/problems/#{slug}/" }
+                           .dig(:data, 'problem_record', 'template_references')
   end
 end

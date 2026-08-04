@@ -26,6 +26,6 @@ export const initializeBackButton = () => {
   button.setAttribute("aria-label", "Back to previous page")
   button.setAttribute("title", "Back to previous page")
   button.addEventListener("click", () => {
-    window.history.back()
+    window.location.assign(referrerUrl.href)
   })
 }

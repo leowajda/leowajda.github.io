@@ -109,9 +109,6 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
-    rubocop-rake (0.7.1)
-      lint_roller (~> 1.1)
-      rubocop (>= 1.72.1)
     ruby-progressbar (1.13.0)
     safe_yaml (1.0.5)
     sass-embedded (1.99.0-x86_64-linux-gnu)
@@ -134,7 +131,6 @@ DEPENDENCIES
   rubocop (~> 1.88)
   rubocop-minitest (~> 0.40)
   rubocop-performance (~> 1.26)
-  rubocop-rake (~> 0.7)
   webrick (~> 1.9)
 
 RUBY VERSION
