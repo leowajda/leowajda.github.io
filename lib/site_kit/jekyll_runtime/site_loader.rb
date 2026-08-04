@@ -21,15 +21,6 @@ module SiteKit
         end
       end
 
-      def process
-        with_destination do |resolved_destination|
-          site = build_site(resolved_destination)
-          site.process
-          yield site if block_given?
-          site
-        end
-      end
-
       private
 
       attr_reader :source, :destination, :quiet, :config

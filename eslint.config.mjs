@@ -6,6 +6,10 @@ const sharedRules = {
   "eqeqeq": ["error", "always"],
   "no-var": "error",
   "prefer-const": "error",
+  "prefer-template": "warn",
+  "object-shorthand": "error",
+  "no-shadow": "error",
+  "no-console": ["error", { "allow": ["warn", "error", "debug", "log"] }],
   "no-unused-vars": ["error", {
     "argsIgnorePattern": "^_",
     "caughtErrorsIgnorePattern": "^_"
@@ -33,7 +37,7 @@ export default [
     rules: sharedRules
   },
   {
-    files: ["script/**/*.mjs", "eslint.config.mjs"],
+    files: ["script/**/*.mjs", "eslint.config.mjs", "playwright.config.mjs"],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",

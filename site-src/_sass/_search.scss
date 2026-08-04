@@ -68,10 +68,18 @@
   color: var(--text-muted);
 }
 
-.search-result {
+a.search-result {
   border-top: thin solid var(--border);
+  color: inherit;
   gap: 0.35rem;
   padding-top: 1rem;
+  text-decoration: none;
+}
+
+a.search-result:focus-visible,
+a.search-result.is-active {
+  outline: thin solid currentColor;
+  outline-offset: 0.2rem;
 }
 
 .search-result__meta {
@@ -83,15 +91,6 @@
 .search-result__title {
   font-size: 1.25rem;
   margin: 0;
-}
-
-.search-result__title a {
-  color: inherit;
-}
-
-.search-result__title a:focus-visible {
-  outline: thin solid currentColor;
-  outline-offset: 0.2rem;
 }
 
 .search-result__summary {

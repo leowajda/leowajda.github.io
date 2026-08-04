@@ -101,8 +101,7 @@ module SiteKit
               source_module: slice(module_record, %w[slug module_slug title url roots]),
               document_url: document.fetch('route_url'),
               source_document: slice(document, %w[route_url title format body]),
-              format: format,
-              structured_data_partial: document_structured_data(format)
+              format: format
             )
           end
         end
@@ -146,14 +145,13 @@ module SiteKit
             'module_slug' => extra[:module_slug],
             'document_url' => extra[:document_url],
             'source_document' => extra[:source_document],
-            'format' => extra[:format],
-            'structured_data_partial' => extra[:structured_data_partial]
+            'format' => extra[:format]
           }.compact
         )
       end
 
       def header(eyebrow, title)
-        { 'eyebrow' => eyebrow, 'title' => title, 'links' => [] }
+        { 'eyebrow' => eyebrow, 'title' => title }
       end
 
       def schema(about, breadcrumbs, code_repository: nil, programming_language: nil)
@@ -171,12 +169,6 @@ module SiteKit
 
       def slice(record, keys)
         keys.to_h { |key| [key, record.fetch(key)] }
-      end
-
-      def document_structured_data(format)
-        return STRUCTURED_DATA_SOURCE_DOCUMENT_CODE_PARTIAL if format == 'code'
-
-        STRUCTURED_DATA_SOURCE_DOCUMENT_PARTIAL
       end
     end
   end

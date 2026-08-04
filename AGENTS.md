@@ -90,13 +90,12 @@ Each code entry is a flat hash for Liquid `code_collection.html`:
 
 | Script | Purpose |
 |--------|---------|
-| `pnpm check:validate` | Syntax-check catalog validation script |
+| `pnpm check:syntax` | Syntax-check catalog validation script |
 | `pnpm validate:catalogs` | Validate source catalogs and generated registries |
 | `pnpm build:site` | Jekyll HTML only |
-| `pnpm build:pagefind-extras` | Hash-target search extras (templates, flowchart nodes) |
 | `pnpm build:pagefind` | Pagefind index from `_site` HTML + extras |
 | `pnpm check:pagefind` | Verify Pagefind runtime assets and record count |
-| `pnpm build:indexed-site` | Jekyll + Pagefind extras + index |
+| `pnpm build:indexed-site` | Jekyll (writes Pagefind extras) + Pagefind index |
 | `pnpm check:seo` | SEO metadata and sitemap/noindex alignment |
 | `pnpm check:links` | Internal links in rendered site |
 | `pnpm check:js` | JS syntax + ESLint |

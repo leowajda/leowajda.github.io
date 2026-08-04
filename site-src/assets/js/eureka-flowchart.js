@@ -1,4 +1,4 @@
-import { getHashValue, onHashChange, onReady, replaceHashValue } from "./dom.js"
+import { closestElement, getHashValue, onHashChange, onReady, replaceHashValue } from "./dom.js"
 import { decorateInspector, renderMathIn } from "./eureka-flowchart-inspector.js"
 import {
   createFlowchartNodeStateRenderer,
@@ -22,9 +22,6 @@ const GRAPH_RENDER_FRAME_LIMIT = 12
 const replaceHash = (nodeId) => {
   replaceHashValue(nodeId)
 }
-
-const closestElement = (target, selector) =>
-  target instanceof Element ? target.closest(selector) : null
 
 const containsRelatedTarget = (element, relatedTarget) =>
   relatedTarget instanceof Node && element.contains(relatedTarget)

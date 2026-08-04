@@ -9,10 +9,11 @@ class SiteKitSourceNotesProjectTest < SiteKitTestCase
     registry = project.registry_record
     scala = registry.fetch('languages').find { |language| language.fetch('language_slug') == 'scala' }
     cats_effect = scala.fetch('modules').find { |module_record| module_record.fetch('module_slug') == 'cats-effect' }
-    home_page = project.generated_home_page
-    language_page = project.generated_language_pages.find { |page| page[:dir] == '/zibaldone/scala/' }
-    module_page = project.generated_module_pages.find { |page| page[:dir] == cats_effect.fetch('url') }
-    document_page = project.generated_document_pages.first
+    pages = project.generated_pages
+    home_page = pages.find { |page| page[:page_type] == 'source_home_page' }
+    language_page = pages.find { |page| page[:dir] == '/zibaldone/scala/' }
+    module_page = pages.find { |page| page[:dir] == cats_effect.fetch('url') }
+    document_page = pages.find { |page| page[:page_type] == 'source_document_page' }
 
     assert_match %r{https://raw\.githubusercontent\.com/.+/scala/cats-effect/cats-effect\.png}, cats_effect.fetch('readme_markdown')
     refute_includes cats_effect.fetch('readme_markdown'), '/sources/zibaldone/'

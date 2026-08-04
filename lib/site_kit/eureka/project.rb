@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'pathname'
+
 module SiteKit
   module Eureka
     class Project
@@ -50,14 +52,6 @@ module SiteKit
         page_factory.problem_pages + page_factory.embed_pages
       end
 
-      def generated_problem_pages
-        page_factory.problem_pages
-      end
-
-      def generated_embed_pages
-        page_factory.embed_pages
-      end
-
       private
 
       attr_reader :manifest, :app_config, :template_library
@@ -75,11 +69,20 @@ module SiteKit
       end
 
       def catalog
-        @catalog ||= SiteKit::Eureka::CatalogLoader.new(
-          manifest: manifest,
-          app_config: app_config,
-          flowchart_data: flowchart_data
-        ).load
+        @catalog ||= begin
+          source_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
+          source_catalog = SiteKit::Eureka::SourceCatalogLoader.new(
+            manifest: manifest,
+            app_config: app_config,
+            flowchart_data: flowchart_data
+          ).load
+          SiteKit::Eureka::ProblemRegistryBuilder.new(
+            manifest: manifest,
+            app_config: app_config,
+            source_catalog: source_catalog,
+            source_root: source_root
+          ).build
+        end
       end
 
       def page_factory

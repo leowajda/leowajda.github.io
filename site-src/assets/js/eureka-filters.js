@@ -1,4 +1,4 @@
-import { onReady } from "./dom.js"
+import { closestElement, onReady } from "./dom.js"
 import { loadPagefindRecords, pagefindFilter } from "./pagefind-client.js"
 import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery, normalizedPath } from "./search-query.js"
 
@@ -28,27 +28,31 @@ const setCheckboxValue = (form, name, value, checked) => {
   }
 }
 
+const parseJsonArray = (value) => {
+  try {
+    const parsed = JSON.parse(value || "[]")
+    return Array.isArray(parsed) ? parsed.map(String) : []
+  } catch {
+    return []
+  }
+}
+
 const readProblemRow = (element) => ({
   element,
-  url: normalizedPath(element.dataset.searchUrl || "")
+  url: normalizedPath(element.dataset.searchUrl || ""),
+  difficulty: element.dataset.difficulty || "",
+  categories: parseJsonArray(element.dataset.categories),
+  languages: parseJsonArray(element.dataset.languages)
 })
 
 const languageSearchValue = (input) =>
   input.dataset.searchFilterValue || input.value
 
-const activeSearch = (state) =>
-  state.queryActive
-  || state.difficulty
-  || state.categories.length > 0
-  || state.languageFilterActive
-
 const anyFilter = (values) =>
   values.length === 1 ? values[0] : { any: values }
 
 const searchFilters = (state) => {
-  const filters = {
-    kind: "Problem"
-  }
+  const filters = { kind: "Problem" }
 
   if (state.difficulty) {
     filters.difficulty = state.difficulty
@@ -63,6 +67,25 @@ const searchFilters = (state) => {
   }
 
   return filters
+}
+
+const matchesDomFilters = (row, state) => {
+  if (state.difficulty && row.difficulty !== state.difficulty) {
+    return false
+  }
+
+  if (state.categories.length > 0 && !state.categories.some((category) => row.categories.includes(category))) {
+    return false
+  }
+
+  if (state.languageFilterActive) {
+    const selectedSlugs = state.selectedLanguages.map((input) => input.value)
+    if (!selectedSlugs.some((slug) => row.languages.includes(slug))) {
+      return false
+    }
+  }
+
+  return true
 }
 
 const searchResultUrls = async (query, filters) => {
@@ -197,10 +220,10 @@ const initializeProblemFilters = () => {
     activeFilterList.hidden = false
   }
 
-  const renderRows = (visibleUrls = null) => {
+  const renderRows = (isVisible) => {
     let visibleCount = 0
     rows.forEach((row) => {
-      const visible = !visibleUrls || visibleUrls.has(row.url)
+      const visible = isVisible(row)
       row.element.hidden = !visible
       if (visible) {
         visibleCount += 1
@@ -231,14 +254,14 @@ const initializeProblemFilters = () => {
 
     const currentSequence = sequence.next()
 
-    if (!activeSearch(state)) {
-      renderRows()
+    if (!state.queryActive) {
+      renderRows((row) => matchesDomFilters(row, state))
       return
     }
 
     let searchUrls
     try {
-      searchUrls = await searchResultUrls(state.queryActive ? state.query : null, searchFilters(state))
+      searchUrls = await searchResultUrls(state.query, searchFilters(state))
     } catch (error) {
       if (sequence.matches(currentSequence)) {
         renderSearchUnavailable()
@@ -251,7 +274,7 @@ const initializeProblemFilters = () => {
       return
     }
 
-    renderRows(searchUrls)
+    renderRows((row) => searchUrls.has(row.url))
   }
 
   const scheduleRender = () => {
@@ -261,7 +284,7 @@ const initializeProblemFilters = () => {
 
   if (activeFilterList) {
     activeFilterList.addEventListener("click", (event) => {
-      const button = event.target.closest("[data-filter-kind]")
+      const button = closestElement(event.target, "[data-filter-kind]")
       if (!(button instanceof HTMLButtonElement)) {
         return
       }

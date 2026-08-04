@@ -12,13 +12,12 @@ module SiteKit
         join
       end
 
-      def catalog(*segments)
+      def path(*segments)
         join(*segments)
       end
 
-      def item(*segments)
-        join(*segments)
-      end
+      alias catalog path
+      alias item path
 
       def embed(*segments)
         join(*segments, 'embed')

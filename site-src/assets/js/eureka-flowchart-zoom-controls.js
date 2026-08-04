@@ -1,6 +1,4 @@
-const closestElement = (target, selector) =>
-  target instanceof Element ? target.closest(selector) : null
-
+import { closestElement } from "./dom.js"
 const zoomPercent = (scale) => Math.round(scale * 100)
 
 export const createZoomControls = (root, {

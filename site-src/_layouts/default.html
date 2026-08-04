@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: 'en' | escape }}" data-appearance="{{ site.theme_config.appearance | default: 'auto' | escape }}">
   {%- include head.html -%}
-  {%- assign body_class = page.body_class | default: '' -%}
   {%- assign search_enabled = true -%}
   {%- if site.theme_config.search == false -%}
     {%- assign search_enabled = false -%}
@@ -17,7 +16,7 @@
     {%- capture pagefind_bundle_url -%}{%- include asset_url.html path='/pagefind/pagefind.js' -%}{%- endcapture -%}
   {%- endif -%}
   <body
-    class="site-body{% if body_class != '' %} {{ body_class }}{% endif %}"
+    class="site-body"
     {% if search_enabled %}data-pagefind-bundle="{{ pagefind_bundle_url | strip | escape }}"{% endif %}
     {% if search_enabled %}data-pagefind-base-url="{{ '/' | relative_url }}"{% endif %}
     {% if search_enabled and page.search_auto_open %}data-search-auto-open{% endif %}

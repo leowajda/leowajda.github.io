@@ -58,7 +58,7 @@ jobs:
           EOF
 
       - name: Syntax-check source validation
-        run: pnpm check:validate
+        run: pnpm check:syntax
 
       - name: Lint Ruby
         run: pnpm lint:ruby
@@ -75,8 +75,8 @@ jobs:
       - name: Build Jekyll site
         run: bundle exec jekyll build --source site-src --destination _site --config site-src/_config.yml,"$RUNNER_TEMP/pages-config.yml"
 
-      - name: Build Pagefind extras and index
-        run: pnpm build:pagefind-extras && pnpm build:pagefind && pnpm check:pagefind
+      - name: Build Pagefind index
+        run: pnpm build:pagefind && pnpm check:pagefind
 
       - name: Check SEO metadata
         run: pnpm check:seo

@@ -7,6 +7,9 @@ export const onReady = (callback) => {
   callback()
 }
 
+export const closestElement = (target, selector) =>
+  target instanceof Element ? target.closest(selector) : null
+
 export const onHashChange = (callback) => {
   window.addEventListener("hashchange", callback)
   return () => window.removeEventListener("hashchange", callback)
@@ -27,3 +30,8 @@ export const replaceHashValue = (value) => {
   nextUrl.hash = value ? encodeURIComponent(value) : ""
   window.history.replaceState({}, "", nextUrl)
 }
+
+export const SEARCH_ROUTE = "/search/"
+
+export const isSearchRoute = (pathname = window.location.pathname) =>
+  pathname === SEARCH_ROUTE || pathname === SEARCH_ROUTE.slice(0, -1)

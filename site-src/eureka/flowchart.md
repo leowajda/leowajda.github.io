@@ -9,7 +9,6 @@ needs_math: true
 shell: wide
 custom_js:
   - eureka-flowchart
-structured_data_partial: structured_data/writing_page.html
 seo:
   type: WebPage
 ---
