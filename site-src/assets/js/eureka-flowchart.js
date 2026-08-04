@@ -4,11 +4,10 @@ import {
   createFlowchartNodeStateRenderer,
   queryFlowchartNodeButton
 } from "./eureka-flowchart-node-state.js"
-import { createFlowchartSelectionController } from "./eureka-flowchart-selection.js"
 import {
+  buildRoute,
   createFlowchartMetadata,
-  createFlowchartState,
-  resolveFlowchartNodeId
+  createFlowchartState
 } from "./eureka-flowchart-state.js"
 import {
   createGraph,
@@ -20,8 +19,18 @@ import { createZoomControls } from "./eureka-flowchart-zoom-controls.js"
 
 const GRAPH_RENDER_FRAME_LIMIT = 12
 
-const supportsHover = () =>
-  typeof window.matchMedia === "function" && window.matchMedia("(hover: hover)").matches
+const replaceHash = (nodeId) => {
+  replaceHashValue(nodeId)
+}
+
+const closestElement = (target, selector) =>
+  target instanceof Element ? target.closest(selector) : null
+
+const containsRelatedTarget = (element, relatedTarget) =>
+  relatedTarget instanceof Node && element.contains(relatedTarget)
+
+const queryTemplate = (root, nodeId) =>
+  root.querySelector(`template[data-flowchart-template="${CSS.escape(nodeId)}"]`)
 
 const nextAnimationFrame = () =>
   new Promise((resolve) => {
@@ -65,12 +74,6 @@ const readGraphData = (root) => {
   }
 }
 
-const showEnhancedFlowchart = (root, zoomControls, viewport) => {
-  root.classList.add("flowchart-workspace--rendered")
-  zoomControls?.setHidden(false)
-  zoomControls?.sync(viewport.state())
-}
-
 const initializeFlowchart = async (root) => {
   const surface = root.querySelector("[data-flowchart-surface]")
   const viewportElement = root.querySelector("[data-flowchart-viewport]")
@@ -83,9 +86,12 @@ const initializeFlowchart = async (root) => {
   }
 
   const metadata = createFlowchartMetadata(graphData)
-  const initialHashNodeId = resolveFlowchartNodeId(metadata, getHashValue())
+  const { aliasMap, choicesBySource, nodeMeta, rootId } = metadata
+  const resolveNodeId = (nodeId) =>
+    nodeMeta.has(nodeId) ? nodeId : aliasMap.get(nodeId) || nodeId
+  const initialHashNodeId = resolveNodeId(getHashValue())
 
-  if (initialHashNodeId && metadata.nodeMeta.has(initialHashNodeId)) {
+  if (initialHashNodeId && nodeMeta.has(initialHashNodeId)) {
     root.classList.remove("flowchart-workspace--empty")
   }
 
@@ -100,7 +106,7 @@ const initializeFlowchart = async (root) => {
     root,
     surface,
     graph,
-    nodeMeta: metadata.nodeMeta,
+    nodeMeta,
     state
   })
   const viewport = createViewportController(graph, surface, graphData, {
@@ -108,35 +114,26 @@ const initializeFlowchart = async (root) => {
       zoomControls?.sync(viewportState)
     }
   })
-  const graphRendered = await waitForGraphRender(root, metadata.rootId)
+  const graphRendered = await waitForGraphRender(root, rootId)
   if (!graphRendered) {
     nodeStateRenderer.disconnect()
     console.error("Flowchart graph did not render visible nodes. Keeping the static fallback visible.")
     return
   }
 
-  const selection = createFlowchartSelectionController({
-    root,
-    inspector,
-    inspectorContent,
-    metadata,
-    state,
-    nodeStateRenderer,
-    viewport,
-    supportsHover: supportsHover()
-  })
-
+  const supportsHover = typeof window.matchMedia === "function" && window.matchMedia("(hover: hover)").matches
+  let focusSequence = 0
   zoomControls = createZoomControls(root, {
     onResetZoom: () => {
-      selection.interruptViewportFocus()
-      viewport.resetAuto({ selectedNodeId: selection.selectedId() })
+      focusSequence += 1
+      viewport.resetAuto({ selectedNodeId: state.selectedId })
     },
     onSetZoom: (scale) => {
-      selection.interruptViewportFocus()
+      focusSequence += 1
       viewport.setZoom(scale, { immediate: true })
     },
     onStepZoom: (direction) => {
-      selection.interruptViewportFocus()
+      focusSequence += 1
       viewport.stepZoom(direction)
     }
   })
@@ -345,17 +342,17 @@ const initializeFlowchart = async (root) => {
 
   viewport.positionStart()
 
-  if (initialHashNodeId && metadata.nodeMeta.has(initialHashNodeId)) {
-    selection.commitSelection(initialHashNodeId, { updateHash: false, focus: false })
+  if (initialHashNodeId && nodeMeta.has(initialHashNodeId)) {
+    commitSelection(initialHashNodeId, { updateHash: false, focus: false })
     viewport.focusNode(initialHashNodeId, { immediate: true })
     nodeStateRenderer.render()
-    showEnhancedFlowchart(root, zoomControls, viewport)
+    showEnhancedFlowchart()
     return
   }
 
-  selection.hideInspector()
+  hideInspector()
   nodeStateRenderer.render()
-  showEnhancedFlowchart(root, zoomControls, viewport)
+  showEnhancedFlowchart()
 }
 
 onReady(() => {
