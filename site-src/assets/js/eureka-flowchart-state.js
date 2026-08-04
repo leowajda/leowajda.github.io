@@ -23,9 +23,6 @@ export const createFlowchartMetadata = (graphData = {}) => {
   }
 }
 
-export const resolveFlowchartNodeId = (metadata, nodeId) =>
-  metadata.nodeMeta.has(nodeId) ? nodeId : metadata.aliasMap.get(nodeId) || nodeId
-
 export const buildRoute = (nodeMeta, nodeId) => {
   const route = []
   const seen = new Set()

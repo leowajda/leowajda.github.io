@@ -45,10 +45,10 @@ class SiteKitSearchIndexBuilderTest < SiteKitTestCase
 
     assert_equal EXPECTED_KINDS.sort, records_by_kind.keys.sort
 
-    SiteKit::Search::Contract::ENTRIES.each do |kind, contract|
+    RECORD_CONTRACTS.each do |kind, contract|
       records_by_kind.fetch(kind).each do |record|
-        assert_equal contract.fetch(:meta_keys), record.meta.keys.sort, "#{kind} meta keys changed for #{record.url}"
-        assert_equal contract.fetch(:filter_keys), record.filters.keys.sort, "#{kind} filter keys changed for #{record.url}"
+        assert_equal contract.fetch(:meta), record.meta.keys.sort, "#{kind} meta keys changed for #{record.url}"
+        assert_equal contract.fetch(:filters), record.filters.keys.sort, "#{kind} filter keys changed for #{record.url}"
       end
     end
   end

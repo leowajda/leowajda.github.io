@@ -6,8 +6,9 @@ module SiteKit
       KIND = 'Template'
       PAGE_URL = '/templates/'
 
-      def initialize(guide:)
+      def initialize(guide:, factory:)
         @guide = guide
+        @factory = factory
       end
 
       def records
@@ -18,23 +19,23 @@ module SiteKit
 
       private
 
-      attr_reader :guide
+      attr_reader :guide, :factory
 
       def pattern_record(pattern)
-        SiteKit::Search::Record.build(
+        factory.build(
           kind: KIND,
           title: pattern.fetch('label'),
           url: "#{PAGE_URL}##{pattern.fetch('target')}",
           project: 'Eureka',
           summary: pattern.fetch('description'),
           content: pattern_content(pattern),
-          filters: { SiteKit::Search::Contract::FILTER_TEMPLATE => pattern.fetch('label') },
+          filters: { 'template' => pattern.fetch('label') },
           meta: {
             'target' => pattern.fetch('target'),
             'pattern' => pattern.fetch('id'),
             'section' => 'Pattern'
           },
-          priority: SiteKit::Search::Contract.priority(KIND)
+          priority: 85
         )
       end
 
@@ -46,14 +47,14 @@ module SiteKit
 
       def variant_record(pattern, variant)
         title = SiteKit::Templates::ReferenceLabel.call(pattern:, variant:)
-        SiteKit::Search::Record.build(
+        factory.build(
           kind: KIND,
           title:,
           url: "#{PAGE_URL}##{variant.fetch('target')}",
           project: 'Eureka',
           summary: variant.fetch('signal', ''),
           content: variant_content(pattern, variant, title),
-          filters: { SiteKit::Search::Contract::FILTER_TEMPLATE => [pattern.fetch('label'), title] },
+          filters: { 'template' => [pattern.fetch('label'), title] },
           meta: {
             'target' => variant.fetch('target'),
             'pattern' => pattern.fetch('id'),

@@ -66,6 +66,7 @@ require_relative 'site_kit/jekyll_runtime/generated_page'
 require_relative 'site_kit/checks/internal_links'
 require_relative 'site_kit/checks/seo_metadata'
 require_relative 'site_kit/checks/site_invariants'
+require_relative 'site_kit/checks/source_catalogs'
 require_relative 'site_kit/checks/vendor_assets'
 
 require_relative 'site_kit/runtime'

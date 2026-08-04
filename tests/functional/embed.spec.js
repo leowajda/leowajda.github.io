@@ -22,21 +22,21 @@ test("problem embed posts resize messages to the parent frame", async ({ page })
 
   const height = await page.evaluate(async () => {
     return await new Promise((resolve, reject) => {
-      const timer = window.setTimeout(() => reject(new Error("resize message timeout")), 5000)
+      const timer = globalThis.setTimeout(() => reject(new Error("resize message timeout")), 5000)
       const onMessage = (event) => {
         if (event.data?.source === "remnote-iframe-plugin" && event.data?.type === "resize") {
-          window.clearTimeout(timer)
-          window.removeEventListener("message", onMessage)
+          globalThis.clearTimeout(timer)
+          globalThis.removeEventListener("message", onMessage)
           resolve(event.data.height)
         }
       }
-      window.addEventListener("message", onMessage)
+      globalThis.addEventListener("message", onMessage)
 
-      const iframe = document.createElement("iframe")
+      const iframe = globalThis.document.createElement("iframe")
       iframe.src = "/eureka/problems/binary-search/embed/"
       iframe.style.width = "100%"
       iframe.style.border = "0"
-      document.body.append(iframe)
+      globalThis.document.body.append(iframe)
     })
   })
 
