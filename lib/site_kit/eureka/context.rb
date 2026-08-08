@@ -22,8 +22,8 @@ module SiteKit
         end
       end
 
-      def browsers
-        @browsers ||= projects.transform_values(&:browser_record)
+      def explorers
+        @explorers ||= projects.transform_values(&:explorer)
       end
 
       def topics

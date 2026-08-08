@@ -12,9 +12,9 @@ class SiteKitPluginGenerationTest < SiteKitTestCase
     refute site.data.key?('source_notes')
     refute site.data.fetch('site').key?('projects')
     assert(home_page.data['home_projects'].any? { |project| project.fetch('slug') == 'eureka' })
-    assert explorer_page.data['browser_record']
-    assert_predicate explorer_page.data['browser_record'].fetch('problems'), :any?
-    assert_predicate explorer_page.data['browser_record'].fetch('filters').fetch('languages'), :any?
+    assert explorer_page.data['explorer']
+    assert_predicate explorer_page.data['explorer'].fetch('problems'), :any?
+    assert_predicate explorer_page.data['explorer'].fetch('filters').fetch('languages'), :any?
     assert(site.pages.any? { |page| page.url == '/eureka/problems/binary-search/' })
     assert(site.pages.any? { |page| page.url == '/eureka/problems/binary-search/embed/' })
     assert(site.pages.any? { |page| page.url == '/zibaldone/' })

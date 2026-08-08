@@ -2,7 +2,6 @@
 
 module SiteKit
   module Extras
-    # Hash-target Pagefind records (template guide targets only).
     module Pagefind # rubocop:disable Metrics/ModuleLength
       module_function
 

@@ -3,14 +3,14 @@
 require_relative '../../lib/site_kit'
 
 module SiteKit
-  class GeneratedPagesGenerator < Jekyll::Generator
+  class SiteBuildGenerator < Jekyll::Generator
     safe true
-    priority :low
+    priority :high
 
     def generate(site)
-      runtime = SiteKit::Runtime.for(site)
-
-      runtime.generated_pages.each do |page|
+      build = SiteKit::Build.for(site)
+      build.attach!(site)
+      build.pages.each do |page|
         site.pages << SiteKit::JekyllRuntime::GeneratedPage.new(
           site: site,
           dir: page.fetch(:dir),
@@ -19,7 +19,6 @@ module SiteKit
           content: page.fetch(:content, '')
         )
       end
-
       SiteKit::Checks::SiteInvariants.new(site: site).validate!
     end
   end

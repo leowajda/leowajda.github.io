@@ -1,6 +1,10 @@
 import { getHashValue, onHashChange, onReady, replaceHashValue } from "./dom.js"
-import { loadPagefindRecords } from "./pagefind-client.js"
-import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery } from "./search-query.js"
+import {
+  createSequenceGuard,
+  loadPagefindRecords,
+  meaningfulSearchQuery,
+  normalizeSearchQuery
+} from "./pagefind.js"
 
 const collectRedirects = (root) =>
   new Map(

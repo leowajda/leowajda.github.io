@@ -10,7 +10,7 @@ module SiteKit
 
       def validate!
         SiteKit::JekyllRuntime::SiteLoader.new(source:, destination:).read do |site|
-          SiteKit::Runtime.for(site).validate!
+          SiteKit::Build.for(site).validate!
         end
       end
 
