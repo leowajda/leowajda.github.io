@@ -3,8 +3,6 @@ layout: embed
 ---
 
 {%- assign entries = page.entries -%}
-{%- assign code_cfg = site.data.site.app.code_collection -%}
-{%- assign browser_cfg = site.data.site.app.eureka.browser | default: empty -%}
 
 {%- if entries == nil or entries.size == 0 -%}
   <p>Code not found.</p>
@@ -14,18 +12,15 @@ layout: embed
       {%- include code_collection.html
         entries=entries
         collection_id='embed-code'
+        kind='problem'
         embed=true
         problem_source_url=page.problem_source_url
-        toolbar_aria=browser_cfg.toolbar_label
-        variant_label=browser_cfg.variant_group_label
-        variant_options=code_cfg.implementation_modes
       -%}
     {%- else -%}
       {%- include code_collection.html
         entries=entries
         collection_id='embed-code'
         embed=true
-        toolbar_aria=code_cfg.default_toolbar_label
       -%}
     {%- endif -%}
   </article>

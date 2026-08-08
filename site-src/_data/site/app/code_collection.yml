@@ -1,9 +1,9 @@
 default_variant_label: Variant
-default_toolbar_label: Code collection
+default_toolbar_label: Code
 variant_icons:
   iterative: iterative
   recursive: recursive
-implementation_modes:
+variants:
   - slug: iterative
     label: Iterative
     icon: iterative

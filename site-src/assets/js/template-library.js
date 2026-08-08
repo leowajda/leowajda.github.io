@@ -1,3 +1,4 @@
+import { selectCodeLanguage } from "./code-collection.js"
 import { getHashValue, onHashChange, onReady, replaceHashValue } from "./dom.js"
 import {
   createSequenceGuard,
@@ -35,14 +36,18 @@ const initializeTemplateLibrary = (root) => {
   const sequence = createSequenceGuard()
 
   const showLanguage = (panel) => {
-    const control = panel.querySelector(`[data-code-collection-language-control][data-code-collection-language="${language}"]`)
-      || panel.querySelector("[data-code-collection-language-control]")
-    if (control) {
-      language = control.dataset.codeCollectionLanguage || language
-      if (control.getAttribute("aria-pressed") !== "true") {
-        control.click()
-      }
+    const collection = panel.querySelector("[data-code-collection]")
+    if (!collection) {
+      return
     }
+    const preferred = collection.querySelector(
+      `[data-code-collection-language-control][data-code-collection-language="${language}"]`
+    ) || collection.querySelector("[data-code-collection-language-control]")
+    if (!preferred) {
+      return
+    }
+    language = preferred.dataset.codeCollectionLanguage || language
+    selectCodeLanguage(collection, language)
   }
 
   const paint = (raw, { hash = true } = {}) => {

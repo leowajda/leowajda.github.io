@@ -15,13 +15,17 @@ const resultMetaLine = (data) =>
   [data.meta?.kind, data.meta?.section].filter(Boolean).join(": ")
 
 const createResultElement = (data, index) => {
-  const item = document.createElement("a")
-  item.className = "search-result"
-  item.id = `site-search-option-${index}`
-  item.href = data.url
-  item.setAttribute("role", "option")
-  item.dataset.searchResultLink = ""
-  item.tabIndex = -1
+  const option = document.createElement("div")
+  option.className = "search-result"
+  option.id = `site-search-option-${index}`
+  option.setAttribute("role", "option")
+  option.setAttribute("aria-selected", "false")
+
+  const link = document.createElement("a")
+  link.className = "search-result__link"
+  link.href = data.url
+  link.dataset.searchResultLink = ""
+  link.tabIndex = -1
 
   const meta = document.createElement("p")
   meta.className = "search-result__meta"
@@ -35,11 +39,12 @@ const createResultElement = (data, index) => {
   summary.className = "search-result__summary"
   summary.textContent = data.meta?.summary || ""
 
-  item.append(meta, title)
+  link.append(meta, title)
   if (summary.textContent) {
-    item.append(summary)
+    link.append(summary)
   }
-  return item
+  option.append(link)
+  return option
 }
 
 const createSearchResultSet = (search) => ({
@@ -99,7 +104,7 @@ const initializeSearchOverlay = () => {
   const clearActiveOption = () => {
     activeIndex = -1
     input.removeAttribute("aria-activedescendant")
-    resultOptions().forEach((option) => option.removeAttribute("aria-selected"))
+    resultOptions().forEach((option) => option.setAttribute("aria-selected", "false"))
   }
 
   const setActiveOption = (index) => {
@@ -110,12 +115,11 @@ const initializeSearchOverlay = () => {
     }
     activeIndex = Math.max(0, Math.min(index, options.length - 1))
     options.forEach((option, optionIndex) => {
-      if (optionIndex === activeIndex) {
-        option.setAttribute("aria-selected", "true")
+      const active = optionIndex === activeIndex
+      option.setAttribute("aria-selected", active ? "true" : "false")
+      if (active) {
         input.setAttribute("aria-activedescendant", option.id)
         option.scrollIntoView({ block: "nearest" })
-      } else {
-        option.removeAttribute("aria-selected")
       }
     })
   }

@@ -1,5 +1,7 @@
 import { getHashValue, onHashChange, replaceHashValue } from "./dom.js"
 
+const controllers = new WeakMap()
+
 const initializeCodeCollection = (root) => {
   const items = [...root.querySelectorAll("[data-code-collection-item]")]
   if (items.length === 0) {
@@ -82,18 +84,26 @@ const initializeCodeCollection = (root) => {
     return fallback
   }
 
+  const selectLanguage = (language) => {
+    const current = items.find((item) => !item.hidden) || fallback
+    show(pick("", language, current.dataset.codeCollectionVariant))
+  }
+
+  const selectVariant = (variant) => {
+    const current = items.find((item) => !item.hidden) || fallback
+    show(pick("", current.dataset.codeCollectionLanguage, variant))
+  }
+
   root.addEventListener("click", (event) => {
     const languageControl = event.target.closest("[data-code-collection-language-control]")
     if (languageControl) {
-      const current = items.find((item) => !item.hidden) || fallback
-      show(pick("", languageControl.dataset.codeCollectionLanguage, current.dataset.codeCollectionVariant))
+      selectLanguage(languageControl.dataset.codeCollectionLanguage)
       return
     }
 
     const variantControl = event.target.closest("[data-code-collection-variant-control]")
     if (variantControl) {
-      const current = items.find((item) => !item.hidden) || fallback
-      show(pick("", current.dataset.codeCollectionLanguage, variantControl.dataset.codeCollectionVariant))
+      selectVariant(variantControl.dataset.codeCollectionVariant)
     }
   })
 
@@ -107,6 +117,12 @@ const initializeCodeCollection = (root) => {
       }
     })
   }
+
+  controllers.set(root, { selectLanguage, selectVariant })
+}
+
+export const selectCodeLanguage = (root, language) => {
+  controllers.get(root)?.selectLanguage(language)
 }
 
 export const initializeCodeCollections = () => {
