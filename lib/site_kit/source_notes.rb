@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/OneClassPerFile, Metrics/ClassLength, Metrics/ParameterLists
+require 'pathname'
+
+# rubocop:disable Metrics/ClassLength, Metrics/ParameterLists
 
 module SiteKit
   module SourceNotes
@@ -89,13 +91,7 @@ module SiteKit
         "/#{shared.join('/')}/"
       end
     end
-  end
-end
 
-require 'pathname'
-
-module SiteKit
-  module SourceNotes
     LanguageDefinition = Data.define(:slug, :title, :path, :modules)
     ModuleDefinition = Data.define(:slug, :title, :path, :source_roots)
     Catalog = Data.define(:source_url_base, :languages)
@@ -182,11 +178,7 @@ module SiteKit
         @catalog_label ||= "#{manifest.title} source-notes catalog"
       end
     end
-  end
-end
 
-module SiteKit
-  module SourceNotes
     class DocumentBuilder
       def initialize(app_config:, source_url_base:, source_root:)
         @app_config = app_config
@@ -252,11 +244,7 @@ module SiteKit
         "~~~#{metadata.fetch('syntax')}\n#{raw_content.rstrip}\n~~~\n"
       end
     end
-  end
-end
 
-module SiteKit
-  module SourceNotes
     class ModuleBuilder
       def initialize(app_config:, manifest:, source_url_base:, repo_root:)
         @app_config = app_config
@@ -401,11 +389,7 @@ module SiteKit
         raise SiteKit::SourceError, "Source entry '#{entry}' escapes the source root '#{root}'"
       end
     end
-  end
-end
 
-module SiteKit
-  module SourceNotes
     class RegistryBuilder
       def initialize(manifest:, app_config:)
         @manifest = manifest
@@ -494,11 +478,7 @@ module SiteKit
         )
       end
     end
-  end
-end
 
-module SiteKit
-  module SourceNotes
     class PageFactory # rubocop:disable Metrics/ClassLength
       def initialize(manifest:, registry_record:)
         @manifest = manifest
@@ -725,74 +705,36 @@ module SiteKit
         keys.to_h { |key| [key, record.fetch(key)] }
       end
     end
-  end
-end
 
-module SiteKit
-  module SourceNotes
-    class Project
-      def initialize(manifest:, app_config:)
-        @manifest = manifest
-        @app_config = app_config
-      end
-
-      def slug
-        manifest.slug
-      end
-
-      def registry_record
-        @registry_record ||= SiteKit::SourceNotes::RegistryBuilder.new(
-          manifest: manifest,
-          app_config: app_config
-        ).record
-      end
-
-      def generated_pages
-        factory = page_factory
-        [factory.home_page] + factory.language_pages + factory.module_pages + factory.document_pages
-      end
-
-      private
-
-      attr_reader :manifest, :app_config
-
-      def page_factory
-        @page_factory ||= SiteKit::SourceNotes::PageFactory.new(
-          manifest: manifest,
-          registry_record: registry_record
-        )
-      end
-    end
-  end
-end
-
-module SiteKit
-  module SourceNotes
     class Context
       def initialize(manifests:, app_config:)
         @manifests = manifests
         @app_config = app_config
       end
 
-      def projects
-        @projects ||= manifests.to_h do |manifest|
-          [manifest.slug, SiteKit::SourceNotes::Project.new(manifest: manifest, app_config: app_config)]
+      def registries
+        @registries ||= manifests.to_h do |manifest|
+          [manifest.slug, registry_for(manifest)]
         end
       end
 
-      def registries
-        @registries ||= projects.transform_values(&:registry_record)
-      end
-
       def generated_pages
-        @generated_pages ||= projects.values.flat_map(&:generated_pages)
+        @generated_pages ||= manifests.flat_map do |manifest|
+          registry = registries.fetch(manifest.slug)
+          factory = PageFactory.new(manifest: manifest, registry_record: registry)
+          [factory.home_page] + factory.language_pages + factory.module_pages + factory.document_pages
+        end
       end
 
       private
 
       attr_reader :manifests, :app_config
+
+      def registry_for(manifest)
+        RegistryBuilder.new(manifest: manifest, app_config: app_config).record
+      end
     end
   end
 end
 
-# rubocop:enable Style/OneClassPerFile, Metrics/ClassLength, Metrics/ParameterLists
+# rubocop:enable Metrics/ClassLength, Metrics/ParameterLists
