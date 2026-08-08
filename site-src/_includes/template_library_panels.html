@@ -2,28 +2,12 @@
 {%- assign template_panels = include.template_panels | default: empty -%}
 {%- assign rendered_target = include.rendered_target | default: '' -%}
 <section class="template-library__code" aria-live="polite">
-  <div class="template-library__anchors" aria-hidden="true">
-    {%- for pattern in patterns -%}
-      <span id="{{ pattern.target }}"></span>
-      {%- for variant in pattern.variants -%}
-        {%- unless variant.has_template -%}
-          <span id="{{ variant.target }}"></span>
-        {%- endunless -%}
-      {%- endfor -%}
-    {%- endfor -%}
-  </div>
-
   {%- for template in template_panels -%}
     {%- assign panel_active = false -%}
     {%- if template.target == rendered_target -%}
       {%- assign panel_active = true -%}
     {%- endif -%}
-    {%- assign code_collection_id = template.target | replace: '/', '-' | append: '-code' -%}
-    {%- include template_panel.html
-      template=template
-      active=panel_active
-      code_collection_id=code_collection_id
-    -%}
+    {%- include template_panel.html template=template active=panel_active -%}
   {%- endfor -%}
   {%- for pattern in patterns -%}
     {%- include template_pattern_panel.html pattern=pattern -%}

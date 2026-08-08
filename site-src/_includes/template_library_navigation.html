@@ -10,7 +10,7 @@
   <nav class="template-library__outline" data-template-outline>
     {%- for pattern in patterns -%}
       {%- assign pattern_active = false -%}
-      {%- if pattern.target == default_target -%}
+      {%- if pattern.target == default_target or pattern.target == rendered_target -%}
         {%- assign pattern_active = true -%}
       {%- else -%}
         {%- for variant in pattern.variants -%}
@@ -24,9 +24,9 @@
         data-guide-branch
         data-guide-pattern="{{ pattern.id }}"
       >
-        <button
-          type="button"
+        <a
           class="side-panel__link template-library__pattern{% if pattern_active %} side-panel__link--active is-active{% endif %}"
+          href="#{{ pattern.target }}"
           data-guide-pattern-control
           data-guide-target="{{ pattern.target }}"
           data-guide-default-target="{{ pattern.default_target }}"
@@ -34,31 +34,32 @@
           aria-expanded="{% if pattern_active %}true{% else %}false{% endif %}"
         >
           {{ pattern.label }}
-        </button>
+        </a>
         <div
           class="template-library__children"
           aria-label="{{ pattern.label }} templates"
           {% unless pattern_active %}hidden{% endunless %}
         >
           {%- for variant in pattern.variants -%}
-            {%- assign variant_active = false -%}
-            {%- if variant.target == rendered_target -%}
-              {%- assign variant_active = true -%}
+            {%- if variant.has_template -%}
+              {%- assign variant_active = false -%}
+              {%- if variant.target == rendered_target -%}
+                {%- assign variant_active = true -%}
+              {%- endif -%}
+              <a
+                class="side-panel__link template-library__variant{% if variant_active %} side-panel__link--active is-active{% endif %}"
+                href="#{{ variant.target }}"
+                data-guide-variant-control
+                data-guide-target="{{ variant.target }}"
+                data-guide-default-target="{{ pattern.default_target }}"
+                data-guide-pattern="{{ pattern.id }}"
+                data-guide-variant="{{ variant.id }}"
+                data-guide-has-template="true"
+                {% if variant_active %}aria-current="true"{% endif %}
+              >
+                {{ variant.label }}
+              </a>
             {%- endif -%}
-            <button
-              type="button"
-              class="side-panel__link template-library__variant{% if variant_active %} side-panel__link--active is-active{% endif %}"
-              data-guide-variant-control
-              data-guide-target="{{ variant.target }}"
-              data-guide-default-target="{{ pattern.default_target }}"
-              data-guide-pattern="{{ pattern.id }}"
-              data-guide-variant="{{ variant.id }}"
-              data-guide-has-template="{{ variant.has_template }}"
-              aria-pressed="{% if variant_active %}true{% else %}false{% endif %}"
-              {% unless variant.has_template %}hidden aria-hidden="true" tabindex="-1"{% endunless %}
-            >
-              {{ variant.label }}
-            </button>
           {%- endfor -%}
         </div>
       </div>

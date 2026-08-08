@@ -2,13 +2,18 @@
 
 <section
   class="template-pattern-panel"
+  id="{{ pattern.target }}"
   data-template-pattern-panel
   data-guide-pattern="{{ pattern.id }}"
+  data-guide-target="{{ pattern.target }}"
   hidden
 >
   <header class="template-pattern-panel__header">
     <p class="section-eyebrow">Choose a template</p>
     <h2>{{ pattern.label }}</h2>
+    {%- if pattern.description and pattern.description != '' -%}
+      <p class="template-pattern-panel__description">{{ pattern.description }}</p>
+    {%- endif -%}
   </header>
 
   <div class="template-pattern-panel__choices" aria-label="{{ pattern.label }} choices">
