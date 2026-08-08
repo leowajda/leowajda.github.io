@@ -20,7 +20,9 @@ sources/ + site-src/_data
 | `eureka.rb` | Problems → explorer + pages |
 | `templates.rb` | Guide + code + embeds |
 | `source_notes.rb` | Zibaldone tree + docs + embeds |
-| `core.rb` | Paths, IO, CodeEntry, errors |
+| `core.rb` | Errors, constants, Helpers, Schema, ResourcePaths, CodeEntry |
+| `templates.rb` | Topics → code files → guide → embed pages (+ ReferenceResolver) |
+| `source_notes.rb` | Scan tree → docs/entries → pages |
 | `catalogs.rb` | Manifests + app config |
 | `jekyll.rb` | SiteLoader, GeneratedPage |
 | `emit.rb` | Page hash helper |
@@ -28,7 +30,7 @@ sources/ + site-src/_data
 | `checks.rb` | SEO / links / vendor / site invariants |
 | `assets.rb` | Cache-bust versions |
 
-Plugins call `Build` only. Attach runs in `site_build_generator`.
+Loaders are single-module files with linear pipelines. Plugins call `Build` only; attach runs in `site_build_generator`.
 
 ## Code box (Liquid)
 
