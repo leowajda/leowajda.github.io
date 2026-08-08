@@ -1,5 +1,5 @@
 {%- assign problem_record = page.problem_record | default: page -%}
-{%- assign implementations = problem_record.implementations | default: empty -%}
+{%- assign entries = problem_record.entries | default: empty -%}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -14,14 +14,14 @@
   "keywords": {{ problem_record.categories | default: empty | jsonify }},
   "isBasedOn": {{ problem_record.problem_source_url | jsonify }},
   "hasPart": [
-    {%- for implementation in implementations -%}
-      {%- assign implementation_name = implementation.language_label | append: ' ' | append: implementation.approach_label -%}
+    {%- for entry in entries -%}
+      {%- assign entry_name = entry.language_label | append: ' ' | append: entry.variant_label -%}
       {
         "@type": "SoftwareSourceCode",
-        "name": {{ implementation_name | jsonify }},
-        "url": {{ implementation.detail_url | absolute_url | jsonify }},
-        "codeRepository": {{ implementation.source_url | jsonify }},
-        "programmingLanguage": {{ implementation.language_label | jsonify }}
+        "name": {{ entry_name | jsonify }},
+        "url": {{ entry.detail_url | absolute_url | jsonify }},
+        "codeRepository": {{ entry.source_url | jsonify }},
+        "programmingLanguage": {{ entry.language_label | jsonify }}
       }{% unless forloop.last %},{% endunless %}
     {%- endfor -%}
   ]

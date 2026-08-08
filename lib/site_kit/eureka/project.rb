@@ -22,7 +22,7 @@ module SiteKit
             'project_slug' => slug,
             'project_title' => manifest.title,
             'project_description' => manifest.description,
-            'browser_url' => SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).catalog('problems'),
+            'browser_url' => SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).path('problems'),
             'filters' => {
               'difficulties' => problem_records.map { |problem| problem.fetch('difficulty') }.uniq,
               'categories' => problem_records.flat_map { |problem| problem.fetch('categories') }.uniq,

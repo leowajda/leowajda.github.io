@@ -32,12 +32,7 @@ module SiteKit
 
               target = variant.fetch('target')
               detail_url = "#{SiteKit::TEMPLATES_URL}##{target}"
-              entries = template.fetch('entries').map do |entry|
-                entry.merge(
-                  'detail_url' => detail_url,
-                  'embed_url' => entry.fetch('embed_url')
-                )
-              end
+              entries = template.fetch('entries').map { |entry| entry.merge('detail_url' => detail_url) }
 
               template.merge(
                 'pattern_id' => pattern.fetch('id'),

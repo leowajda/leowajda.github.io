@@ -1,26 +1,16 @@
-{%- comment -%}
-  Flat entries contract (no Ruby view builders):
-  entry_id, language, language_label, variant, variant_label,
-  code, code_language, source_url?, detail_url?, embed_url?
-{%- endcomment -%}
-{%- assign entries = include.entries | default: empty -%}
-{%- if entries.size > 0 -%}
+{%- assign entries = include.entries -%}
+{%- if entries and entries.size > 0 -%}
   {%- assign collection_id = include.collection_id | default: '' -%}
-  {%- assign entry_dom_prefix = include.entry_dom_prefix | default: '' -%}
   {%- assign default_entry = entries.first -%}
   {%- assign default_entry_id = include.default_entry_id | default: default_entry.entry_id -%}
   {%- assign sync_hash = include.sync_hash | default: false -%}
   {%- assign embed = include.embed | default: false -%}
-  {%- assign toolbar_aria = include.toolbar_aria | default: 'Code collection' -%}
+  {%- assign toolbar_aria = include.toolbar_aria | default: 'Code' -%}
   {%- assign problem_source_url = include.problem_source_url | default: '' -%}
-  {%- assign variant_group_label = include.variant_group_label | default: 'Variant' -%}
-  {%- assign variant_group_visibility = include.variant_group_visibility | default: '' -%}
-  {%- assign variant_presentation = include.variant_presentation | default: 'text' -%}
-  {%- assign variant_icons = include.variant_icons | default: site.data.site.app.code_collection.variant_icons | default: empty -%}
-  {%- assign variant_catalog = include.variant_catalog | default: empty -%}
-
-  {%- assign default_language = default_entry.language | default: 'default' -%}
-  {%- assign default_variant = default_entry.variant | default: default_entry.approach | default: 'default' -%}
+  {%- assign variant_label = include.variant_label | default: 'Variant' -%}
+  {%- assign variant_options = include.variant_options | default: empty -%}
+  {%- assign default_language = default_entry.language -%}
+  {%- assign default_variant = default_entry.variant -%}
 
   <section
     class="code-collection"
@@ -28,20 +18,18 @@
     data-code-collection
     data-code-collection-toolbar-label="{{ toolbar_aria | escape }}"
     data-code-collection-default-entry="{{ default_entry_id | escape }}"
-    {% if sync_hash == true or sync_hash == 'true' %}data-code-collection-sync-hash="true"{% endif %}
+    {% if sync_hash %}data-code-collection-sync-hash="true"{% endif %}
   >
     <article class="code-panel code-collection__panel" data-code-block>
       <header class="code-panel__header code-collection__header">
         <div class="code-collection__toolbar">
-          {%- comment -%} Unique languages {%- endcomment -%}
           {%- assign language_slugs = '' -%}
           {%- capture language_controls -%}
             {%- for entry in entries -%}
-              {%- assign lang = entry.language | default: 'default' -%}
+              {%- assign lang = entry.language -%}
               {%- assign lang_token = '|' | append: lang | append: '|' -%}
               {%- unless language_slugs contains lang_token -%}
                 {%- assign language_slugs = language_slugs | append: lang_token -%}
-                {%- assign lang_label = entry.language_label | default: lang -%}
                 {%- assign lang_active = false -%}
                 {%- if lang == default_language -%}{%- assign lang_active = true -%}{%- endif -%}
                 <button
@@ -50,110 +38,69 @@
                   data-code-collection-language-control
                   data-code-collection-language="{{ lang | escape }}"
                   aria-pressed="{% if lang_active %}true{% else %}false{% endif %}"
-                  aria-label="{{ lang_label | escape }}"
-                  title="{{ lang_label | escape }}"
-                >{{ lang_label | escape }}</button>
+                  aria-label="{{ entry.language_label | escape }}"
+                  title="{{ entry.language_label | escape }}"
+                >{{ entry.language_label | escape }}</button>
               {%- endunless -%}
             {%- endfor -%}
           {%- endcapture -%}
           {%- if language_controls != blank -%}
-            <div
-              class="code-collection__options code-collection__options--languages"
-              role="toolbar"
-              aria-label="Language"
-            >
+            <div class="code-collection__options code-collection__options--languages" role="toolbar" aria-label="Language">
               {{ language_controls }}
             </div>
           {%- endif -%}
 
-          {%- comment -%} Variants: catalog (eureka modes) or unique entry variants {%- endcomment -%}
+          {%- assign variant_count = 0 -%}
           {%- capture variant_controls -%}
-            {%- if variant_catalog.size > 0 -%}
-              {%- for option in variant_catalog -%}
-                {%- assign vslug = option.slug | default: option.id | default: 'default' -%}
-                {%- assign vlabel = option.label | default: option.title | default: 'Default' -%}
-                {%- assign vicon = option.icon | default: '' -%}
+            {%- if variant_options.size > 0 -%}
+              {%- for option in variant_options -%}
+                {%- assign vslug = option.slug | default: option.id -%}
+                {%- assign vlabel = option.label | default: option.title -%}
+                {%- assign variant_count = variant_count | plus: 1 -%}
                 {%- assign vactive = false -%}
                 {%- if vslug == default_variant -%}{%- assign vactive = true -%}{%- endif -%}
-                {%- assign icon_only = false -%}
-                {%- if variant_presentation == 'icons' and vicon != '' -%}{%- assign icon_only = true -%}{%- endif -%}
                 <button
                   type="button"
-                  class="control-button code-collection__option{% if icon_only %} control-button--icon code-collection__option--icon{% endif %}{% if vactive %} is-active{% endif %}"
+                  class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
                   data-code-collection-variant-control
                   data-code-collection-variant="{{ vslug | escape }}"
                   data-code-collection-variant-label="{{ vlabel | escape }}"
                   aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
                   aria-label="{{ vlabel | escape }}"
                   title="{{ vlabel | escape }}"
-                >
-                  {%- if icon_only -%}
-                    {%- include icon.html name=vicon class="code-collection__option-icon" -%}
-                  {%- else -%}
-                    {{ vlabel | escape }}
-                  {%- endif -%}
-                </button>
+                >{{ vlabel | escape }}</button>
               {%- endfor -%}
             {%- else -%}
               {%- assign variant_slugs = '' -%}
               {%- for entry in entries -%}
-                {%- assign vslug = entry.variant | default: entry.approach | default: 'default' -%}
+                {%- assign vslug = entry.variant -%}
                 {%- assign vtoken = '|' | append: vslug | append: '|' -%}
                 {%- unless variant_slugs contains vtoken -%}
                   {%- assign variant_slugs = variant_slugs | append: vtoken -%}
-                  {%- assign vlabel = entry.variant_label | default: entry.approach_label | default: 'Default' -%}
-                  {%- assign vicon = variant_icons[vslug] | default: '' -%}
+                  {%- assign variant_count = variant_count | plus: 1 -%}
                   {%- assign vactive = false -%}
                   {%- if vslug == default_variant -%}{%- assign vactive = true -%}{%- endif -%}
-                  {%- assign icon_only = false -%}
-                  {%- if variant_presentation == 'icons' and vicon != '' -%}{%- assign icon_only = true -%}{%- endif -%}
                   <button
                     type="button"
-                    class="control-button code-collection__option{% if icon_only %} control-button--icon code-collection__option--icon{% endif %}{% if vactive %} is-active{% endif %}"
+                    class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
                     data-code-collection-variant-control
                     data-code-collection-variant="{{ vslug | escape }}"
-                    data-code-collection-variant-label="{{ vlabel | escape }}"
+                    data-code-collection-variant-label="{{ entry.variant_label | escape }}"
                     aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
-                    aria-label="{{ vlabel | escape }}"
-                    title="{{ vlabel | escape }}"
-                  >
-                    {%- if icon_only -%}
-                      {%- include icon.html name=vicon class="code-collection__option-icon" -%}
-                    {%- else -%}
-                      {{ vlabel | escape }}
-                    {%- endif -%}
-                  </button>
+                    aria-label="{{ entry.variant_label | escape }}"
+                    title="{{ entry.variant_label | escape }}"
+                  >{{ entry.variant_label | escape }}</button>
                 {%- endunless -%}
               {%- endfor -%}
             {%- endif -%}
           {%- endcapture -%}
-          {%- assign variant_control_count = 0 -%}
-          {%- if variant_catalog.size > 0 -%}
-            {%- assign variant_control_count = variant_catalog.size -%}
-          {%- else -%}
-            {%- assign seen_v = '' -%}
-            {%- for entry in entries -%}
-              {%- assign vslug = entry.variant | default: entry.approach | default: 'default' -%}
-              {%- assign vtoken = '|' | append: vslug | append: '|' -%}
-              {%- unless seen_v contains vtoken -%}
-                {%- assign seen_v = seen_v | append: vtoken -%}
-                {%- assign variant_control_count = variant_control_count | plus: 1 -%}
-              {%- endunless -%}
-            {%- endfor -%}
-          {%- endif -%}
-          {%- assign show_variants = false -%}
-          {%- if variant_group_visibility == 'always' and variant_control_count > 0 -%}
-            {%- assign show_variants = true -%}
-          {%- elsif variant_control_count > 1 -%}
-            {%- assign show_variants = true -%}
-          {%- endif -%}
-          {%- if show_variants -%}
+          {%- if variant_count > 1 or variant_options.size > 0 -%}
             <div
               class="code-collection__options code-collection__options--variants"
               role="toolbar"
-              aria-label="{{ variant_group_label | escape }}"
+              aria-label="{{ variant_label | escape }}"
               data-code-collection-variant-group
-              {% if variant_group_visibility == 'always' %}data-code-collection-keep-visible="true"{% endif %}
+              {% if variant_options.size > 0 %}data-code-collection-keep-visible="true"{% endif %}
             >
               {{ variant_controls }}
             </div>
@@ -169,14 +116,12 @@
               data-code-collection-actions-for="{{ entry.entry_id | escape }}"
               {% unless entry_active %}hidden{% endunless %}
             >
-              {%- if embed == true or embed == 'true' -%}
+              {%- if embed -%}
                 {%- if entry.detail_url and entry.detail_url != '' -%}
                   {%- include icon_action_link.html href=entry.detail_url icon="open-page" label="Open full page" external=false class="icon-action--compact" -%}
                 {%- endif -%}
-              {%- else -%}
-                {%- if entry.embed_url and entry.embed_url != '' -%}
-                  {%- include icon_action_link.html href=entry.embed_url icon="code" label="Open embed page" external=false class="icon-action--compact" -%}
-                {%- endif -%}
+              {%- elsif entry.embed_url and entry.embed_url != '' -%}
+                {%- include icon_action_link.html href=entry.embed_url icon="code" label="Open embed page" external=false class="icon-action--compact" -%}
               {%- endif -%}
               {%- if entry.source_url and entry.source_url != '' -%}
                 {%- include icon_action_link.html href=entry.source_url icon="github" label="Source on GitHub" external=true class="icon-action--compact" -%}
@@ -194,31 +139,21 @@
         {%- for entry in entries -%}
           {%- assign item_active = false -%}
           {%- if entry.entry_id == default_entry_id -%}{%- assign item_active = true -%}{%- endif -%}
-          {%- assign language_slug = entry.language | default: 'default' -%}
-          {%- assign variant_slug = entry.variant | default: entry.approach | default: 'default' -%}
-          {%- assign item_dom_id = entry.entry_id -%}
-          {%- if entry_dom_prefix != '' -%}
-            {%- assign item_dom_id = entry_dom_prefix | append: '-' | append: entry.entry_id -%}
-          {%- endif -%}
           <div
             class="code-collection__item"
             data-code-collection-item
             data-code-collection-entry-id="{{ entry.entry_id | escape }}"
-            data-code-collection-language="{{ language_slug | escape }}"
-            data-code-collection-variant="{{ variant_slug | escape }}"
-            id="{{ item_dom_id | escape }}"
+            data-code-collection-language="{{ entry.language | escape }}"
+            data-code-collection-variant="{{ entry.variant | escape }}"
+            id="{{ entry.entry_id | escape }}"
             {% unless item_active %}hidden{% endunless %}
           >
-            {%- if entry.code -%}
-              {%- capture code_block -%}
+            {%- capture code_block -%}
 ```{{ entry.code_language }}
 {{ entry.code }}
 ```
-              {%- endcapture -%}
-              {{ code_block | markdownify }}
-            {%- elsif entry.content -%}
-              {{ entry.content | markdownify }}
-            {%- endif -%}
+            {%- endcapture -%}
+            {{ code_block | markdownify }}
           </div>
         {%- endfor -%}
       </div>

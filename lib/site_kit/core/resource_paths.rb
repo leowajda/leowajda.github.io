@@ -2,10 +2,9 @@
 
 module SiteKit
   module Core
-    # Site-wide URL algebra: /{project}/{collection}/{id}/[+embed/][+#fragment]
     class ResourcePaths
       def initialize(route_base:)
-        @route_base = normalize_segment(route_base)
+        @route_base = normalize(route_base)
       end
 
       def root
@@ -16,18 +15,13 @@ module SiteKit
         join(*segments)
       end
 
-      alias catalog path
-      alias item path
-
       def embed(*segments)
         join(*segments, 'embed')
       end
 
       def with_fragment(path, fragment)
         token = fragment.to_s.strip
-        return path if token.empty?
-
-        "#{path}##{token}"
+        token.empty? ? path : "#{path}##{token}"
       end
 
       private
@@ -35,13 +29,13 @@ module SiteKit
       attr_reader :route_base
 
       def join(*segments)
-        parts = [route_base, *segments.map { |segment| normalize_segment(segment) }].compact
+        parts = [route_base, *segments.map { |segment| normalize(segment) }].compact
         return '/' if parts.empty?
 
         "/#{parts.join('/')}/"
       end
 
-      def normalize_segment(value)
+      def normalize(value)
         segment = value.to_s.strip.delete_prefix('/').delete_suffix('/')
         segment.empty? ? nil : segment
       end

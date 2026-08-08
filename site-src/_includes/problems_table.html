@@ -42,12 +42,12 @@
               </ul>
             </td>
             {%- for language in columns -%}
-              {%- assign implementations = problem.implementations | where: "language", language.slug -%}
+              {%- assign language_entries = problem.entries | where: "language", language.slug -%}
               <td data-language-column="{{ language.slug | escape }}">
-                {%- if implementations.size > 0 -%}
+                {%- if language_entries.size > 0 -%}
                   <div class="solution-chip-list" aria-label="{{ language.label | escape }} solutions">
-                    {%- for implementation in implementations -%}
-                      {%- include solution_chip.html implementation=implementation -%}
+                    {%- for entry in language_entries -%}
+                      {%- include solution_chip.html entry=entry -%}
                     {%- endfor -%}
                   </div>
                 {%- else -%}

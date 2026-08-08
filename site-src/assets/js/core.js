@@ -3,7 +3,6 @@ import { initializeCopyButtons } from "./copy-buttons.js"
 import { initializeBackButton } from "./navigation.js"
 import { onReady } from "./dom.js"
 import { initializeSearchLoader } from "./site-search-loader.js"
-import { initializeSourceTree } from "./source-tree.js"
 import { initializeThemeToggle } from "./theme.js"
 
 onReady(() => {
@@ -11,6 +10,5 @@ onReady(() => {
   initializeBackButton()
   initializeCopyButtons()
   initializeCodeCollections()
-  initializeSourceTree()
   initializeSearchLoader()
 })

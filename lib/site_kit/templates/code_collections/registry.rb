@@ -3,7 +3,6 @@
 module SiteKit
   module Templates
     module CodeCollections
-      # Validates and normalizes flat code entries per template (no toolbar/view shaping).
       class Registry
         MAX_CODE_LINES = 180
         DISALLOWED_CODE_PATTERNS = [
@@ -18,12 +17,12 @@ module SiteKit
           @templates = templates
           @entries_by_template = entries_by_template
           @language_catalog = normalize_language_catalog(language_catalog)
+          @paths = SiteKit::Core::ResourcePaths.new(route_base: 'templates')
         end
 
         def record
           @record ||= begin
             validate_known_template_entries!
-
             templates.to_h do |template|
               [template.template_id, entries_for(template)]
             end
@@ -32,27 +31,25 @@ module SiteKit
 
         private
 
-        attr_reader :templates, :entries_by_template, :language_catalog
+        attr_reader :templates, :entries_by_template, :language_catalog, :paths
 
         def validate_known_template_entries!
-          known_template_ids = templates.map(&:template_id)
-          stray_entry_ids = entries_by_template.keys.map(&:to_s) - known_template_ids
-          return if stray_entry_ids.empty?
+          known = templates.map(&:template_id)
+          stray = entries_by_template.keys.map(&:to_s) - known
+          return if stray.empty?
 
-          raise SiteKit::CatalogError,
-                "Template entries reference unknown templates: #{stray_entry_ids.sort.join(', ')}"
+          raise SiteKit::CatalogError, "Template entries reference unknown templates: #{stray.sort.join(', ')}"
         end
 
         def entries_for(template)
-          entries = SiteKit::Core::Helpers.ensure_array(
+          raw_entries = SiteKit::Core::Helpers.ensure_array(
             entries_by_template.fetch(template.template_id) do
               raise SiteKit::CatalogError, "Template '#{template.template_id}' is missing code entries"
             end,
             "Template entries for #{template.template_id}"
-          ).map.with_index do |entry, index|
-            normalize_entry(entry,
-                            "Template entries for #{template.template_id}[#{index}]",
-                            template.template_id)
+          )
+          entries = raw_entries.map.with_index do |entry, index|
+            normalize_entry(entry, "Template entries for #{template.template_id}[#{index}]", template.template_id)
           end
           validate_unique_entry_ids!(template.template_id, entries)
           validate_unique_language_variants!(template.template_id, entries)
@@ -74,7 +71,7 @@ module SiteKit
           end
         end
 
-        def normalize_entry(entry, context, template_id)
+        def normalize_entry(entry, context, template_id) # rubocop:disable Metrics/MethodLength
           record = SiteKit::Core::Helpers.ensure_hash(entry, context)
           entry_id = SiteKit::Core::Helpers.ensure_string(record.fetch('entry_id'), "#{context}.entry_id")
           validate_entry_id_prefix!(template_id, entry_id)
@@ -85,40 +82,43 @@ module SiteKit
           code = SiteKit::Core::Helpers.ensure_string(record.fetch('code'), "#{context}.code")
           validate_code!(code, context)
 
-          {
-            'entry_id' => entry_id,
-            'language' => language,
-            'language_label' => SiteKit::Core::Helpers.ensure_string(
-              record.fetch('language_label', language_record.fetch('label')),
-              "#{context}.language_label"
-            ),
-            'code_language' => SiteKit::Core::Helpers.ensure_string(
-              record.fetch('code_language', language_record.fetch('code_language')),
-              "#{context}.code_language"
-            ),
-            'code' => code,
-            'variant' => 'default',
-            'variant_label' => 'Default',
-            'detail_url' => SiteKit::TEMPLATES_URL,
-            'embed_url' => "#{SiteKit::TEMPLATES_URL}#{template_id}/embed/"
-          }
+          SiteKit::Core::CodeEntry.normalize(
+            {
+              'entry_id' => entry_id,
+              'language' => language,
+              'language_label' => SiteKit::Core::Helpers.ensure_string(
+                record.fetch('language_label', language_record.fetch('label')),
+                "#{context}.language_label"
+              ),
+              'code_language' => SiteKit::Core::Helpers.ensure_string(
+                record.fetch('code_language', language_record.fetch('code_language')),
+                "#{context}.code_language"
+              ),
+              'code' => code,
+              'variant' => 'default',
+              'variant_label' => 'Default',
+              'detail_url' => SiteKit::TEMPLATES_URL,
+              'embed_url' => paths.embed(template_id)
+            },
+            context: context
+          )
         end
 
         def validate_code!(code, context)
-          stripped_code = code.strip
-          raise SiteKit::CatalogError, "#{context}.code must not be empty" if stripped_code.empty?
+          stripped = code.strip
+          raise SiteKit::CatalogError, "#{context}.code must not be empty" if stripped.empty?
 
-          line_count = stripped_code.lines.size
+          line_count = stripped.lines.size
           if line_count > MAX_CODE_LINES
             raise SiteKit::CatalogError,
                   "#{context}.code must stay within #{MAX_CODE_LINES} lines, got #{line_count}"
           end
 
-          disallowed_pattern = DISALLOWED_CODE_PATTERNS.find { |pattern| code.match?(pattern) }
-          return unless disallowed_pattern
+          pattern = DISALLOWED_CODE_PATTERNS.find { |candidate| code.match?(candidate) }
+          return unless pattern
 
           raise SiteKit::CatalogError,
-                "#{context}.code includes non-template boilerplate matching #{disallowed_pattern.inspect}"
+                "#{context}.code includes non-template boilerplate matching #{pattern.inspect}"
         end
 
         def validate_entry_id_prefix!(template_id, entry_id)
@@ -136,25 +136,23 @@ module SiteKit
         end
 
         def validate_unique_language_variants!(template_id, entries)
-          duplicate_language_variants = SiteKit::Core::Helpers.duplicates(
-            entries.map { |entry| [entry.fetch('language'), entry.fetch('variant', 'default')] }
-          )
-          duplicate_pairs = duplicate_language_variants.map { |language, variant| "#{language}/#{variant}" }
-          return if duplicate_pairs.empty?
+          pairs = entries.map { |entry| "#{entry.fetch('language')}/#{entry.fetch('variant')}" }
+          duplicates = SiteKit::Core::Helpers.duplicates(pairs)
+          return if duplicates.empty?
 
           raise SiteKit::CatalogError,
-                "Template '#{template_id}' language and variant pairs must be unique: #{duplicate_pairs.join(', ')}"
+                "Template '#{template_id}' language and variant pairs must be unique: #{duplicates.join(', ')}"
         end
 
         def validate_language_coverage!(template_id, entries)
           languages = entries.map { |entry| entry.fetch('language') }
-          missing_languages = language_catalog.keys - languages
-          extra_languages = languages - language_catalog.keys
-          return if missing_languages.empty? && extra_languages.empty?
+          missing = language_catalog.keys - languages
+          extra = languages - language_catalog.keys
+          return if missing.empty? && extra.empty?
 
           messages = []
-          messages << "missing #{missing_languages.join(', ')}" if missing_languages.any?
-          messages << "unknown #{extra_languages.join(', ')}" if extra_languages.any?
+          messages << "missing #{missing.join(', ')}" if missing.any?
+          messages << "unknown #{extra.join(', ')}" if extra.any?
           raise SiteKit::CatalogError,
                 "Template '#{template_id}' must define every supported language: #{messages.join('; ')}"
         end

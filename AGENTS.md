@@ -68,17 +68,19 @@ Prefer Liquid over Ruby view builders. Explorer filters and problem tables are L
 
 Build entry is `SiteKit::Runtime.for(site)` (cached on the Jekyll site). Generated pages are plain hashes via `SiteKit::Emit.page`. Plugins only attach data and emit pages — no view builders or Definition types.
 
-### Code entry contract (problems + templates)
+### Code entry contract
 
-Each code entry is a flat hash for Liquid `code_collection.html`:
+One flat hash for every code box (`code_collection.html`):
 
 | Field | Required | Notes |
 |-------|----------|--------|
 | `entry_id` | yes | Hash target / DOM id |
 | `language`, `language_label` | yes | Toolbar language |
-| `variant` or `approach`, labels | yes | Toolbar variant/approach |
-| `code`, `code_language` | yes* | `*or `content` markdown |
+| `variant`, `variant_label` | yes | Toolbar variant (source YAML may still say `approach`) |
+| `code`, `code_language` | yes | Body |
 | `source_url`, `detail_url`, `embed_url` | optional | Action links |
+
+Page data always exposes `entries` (never `implementations` / `code_entries` dual names).
 
 ## Setup
 

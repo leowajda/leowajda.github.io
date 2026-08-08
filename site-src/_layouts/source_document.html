@@ -4,19 +4,15 @@ layout: default
 
 {%- assign source_module = page.source_module -%}
 {%- assign source_document = page.source_document -%}
-{%- assign code_cfg = site.data.site.app.code_collection -%}
+{%- assign entries = page.entries | default: source_document.entries -%}
 
 {%- capture source_body -%}
   {%- if source_document.format == "code" -%}
-    {%- assign code_entries = source_document.code_entries | default: empty -%}
     <div class="source-layout__content" id="source-content">
       {%- include code_collection.html
-        entries=code_entries
+        entries=entries
         collection_id='source-code'
-        embed=false
-        toolbar_aria=code_cfg.default_toolbar_label
-        variant_group_label=code_cfg.default_variant_label
-        variant_icons=code_cfg.variant_icons
+        toolbar_aria='Source code'
       -%}
     </div>
   {%- else -%}

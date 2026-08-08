@@ -2,17 +2,17 @@
 layout: default
 ---
 
-{%- assign problem = page.problem_record | default: nil -%}
-{%- assign implementations = problem.implementations | default: empty -%}
+{%- assign problem = page.problem_record -%}
+{%- assign entries = problem.entries -%}
 {%- assign template_references = problem.template_references | default: empty -%}
 {%- capture header_extra -%}
   <div class="problem-summary">
     <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug | escape }}">{{ problem.difficulty | escape }}</span>
-    <span class="problem-summary__item">{{ problem.implementation_count | escape }} implementation{% if problem.implementation_count != 1 %}s{% endif %}</span>
+    <span class="problem-summary__item">{{ problem.entry_count | escape }} implementation{% if problem.entry_count != 1 %}s{% endif %}</span>
   </div>
 {%- endcapture -%}
 
-{%- if problem == nil or implementations.size == 0 -%}
+{%- if problem == nil or entries.size == 0 -%}
   <p>Problem data not found.</p>
 {%- else -%}
   {%- capture pagefind_summary -%}{{ problem.difficulty }}. {{ problem.categories | join: ', ' }}{%- endcapture -%}
@@ -45,6 +45,6 @@ layout: default
     -%}
 
     {%- include problem_taxonomy.html problem=problem -%}
-    {%- include problem_viewer.html problem=problem implementations=implementations embed=false -%}
+    {%- include problem_viewer.html problem=problem embed=false -%}
   </article>
 {%- endif -%}

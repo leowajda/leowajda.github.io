@@ -40,7 +40,7 @@ module SiteKit
 
       def language_records
         @language_records ||= source_catalog.languages.map do |language|
-          language_url = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).item(language.slug)
+          language_url = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).path(language.slug)
           language_context = {
             'project_slug' => manifest.slug,
             'project_title' => manifest.title,
