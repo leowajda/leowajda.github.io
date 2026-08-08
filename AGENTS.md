@@ -1,171 +1,139 @@
 # AGENTS
 
-Jekyll-first personal site: algorithm solutions (Eureka), code templates, source notes (Zibaldone), and writing.
+Jekyll-first personal site: Eureka (problems), algorithmic templates handbook, Zibaldone (source notes), writing.
 
-## Layout
+`README.md` → this file (`pnpm docs:refresh`).
 
-| Path | Role |
-|------|------|
-| `lib/site_kit/` | Build pipe only (see `BUILD.md`): load catalogs, emit pages, checks |
-| `site-src/` | Jekyll source: layouts, includes, Sass, data, progressive JS, plugins |
-| `sources/` | Content catalogs (eureka, templates, zibaldone submodules/files) |
-| `script/` | Thin build/validate entrypoints |
-| `test/` | Ruby unit tests for catalogs and emit contracts |
-| `tests/functional/` | Playwright tests for rendered behavior |
-| `BUILD.md` | Build pipe and code contract |
-| `DESIGN.md` | UI, writing, navigation, and interaction authority |
+## Open by task
 
-## URL algebra
+| If you need… | Go to |
+|--------------|--------|
+| Content catalogs, template snippets, submodules | `sources/` |
+| Layouts, includes, Liquid, Sass, `_data`, PE JS, plugins | `site-src/` |
+| Build loaders, emit, checks, Pagefind extras | `lib/site_kit/` |
+| CLI / pnpm wrappers | `script/`, `package.json` |
+| Ruby contracts | `test/` |
+| Playwright | `tests/functional/` |
+| Opencode slash commands only | `.opencode/command/` (tooling; not product docs) |
 
-Public paths follow one resource model (built via `SiteKit::Core::ResourcePaths`):
+Do not put product architecture in `.opencode/`. Commands there may point here.
 
-| Pattern | Meaning |
-|---------|---------|
-| `/{project}/` | Project home |
-| `/{project}/{collection}/` | Catalog / explorer |
-| `/{project}/{collection}/{id}/` | Canonical resource (full page) |
-| `/{project}/{collection}/{id}/embed/` | Same resource, embed representation |
-| `…#{fragment}` | In-page selection only (language, approach, node) |
+## Stack
 
-Concrete routes:
-
-| Resource | URL |
-|----------|-----|
-| Problem catalog | `/eureka/problems/` |
-| Problem | `/eureka/problems/{slug}/` |
-| Problem embed (all languages, iframe-ready) | `/eureka/problems/{slug}/embed/` |
-| Template embed | `/templates/{template-id}/embed/` |
-| Source code embed | `…/embed/` on code documents |
-| Templates | `/templates/` |
-| Source notes home | `/zibaldone/` |
-| Source language / module / doc | `/zibaldone/{lang}/…` |
-| Writing | `/writing/{slug}/` |
-| Search | `/search/?q=` |
-
-Language is a filter on the problem explorer, not a separate path tree. Embeds use a bare layout (no site nav) and post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts. Every code box (problems, templates, source notes) shares `code_collection` and can expose `embed_url`.
-
-## Philosophy
-
-- Prefer static generation over runtime assembly. Generate structured data, pages, search records, navigation, and metadata at build time unless there is a clear user-facing reason to use JavaScript.
-- JavaScript enhances rendered HTML. Do not move content, navigation, or search indexing into the browser when Jekyll, Liquid, data files, front matter, or build-time Ruby can express it.
-- Search is Pagefind-only. Use Pagefind indexing, metadata, filters, sorting, and Search API — never a parallel search system.
-- Template code bodies live under `sources/templates/<template-id>/`. Do not put editable snippets in YAML string blocks.
-- When changing rendering, routing, content modeling, or plugins, choose the simplest idiomatic Jekyll mechanism.
+| Layer | Tech |
+|-------|------|
+| Site | Jekyll (`site-src/` → `_site/`) |
+| Build | Ruby `SiteKit::Build` + thin generators in `site-src/_plugins/` |
+| UI | Liquid layouts/includes, Sass |
+| JS | Progressive ES modules under `site-src/assets/js/` |
+| Search | Pagefind only (HTML index + template hash extras) |
+| Tests | Minitest contracts, Playwright, RuboCop, ESLint |
+| Package | `bundle` + `pnpm` |
 
 ## Architecture
 
-Keep a clean program algebra: small explicit inputs, predictable outputs, one reason to change.
+```
+sources/ + site-src/_data
+  → SiteKit::Build (load, validate, emit pages, search extras)
+  → generators attach data + add pages
+  → Liquid
+  → HTML
+  → Pagefind
+```
 
-Separate concerns:
+| Path | Role |
+|------|------|
+| `lib/site_kit/build.rb` | `pages`, `search_extras`, `validate!`, domain accessors |
+| `lib/site_kit/eureka.rb` | Problems → explorer + pages |
+| `lib/site_kit/templates.rb` | Guide + code + embeds + reference resolve |
+| `lib/site_kit/source_notes.rb` | Zibaldone tree → docs/pages |
+| `lib/site_kit/core.rb` | Paths, Helpers, CodeEntry, errors |
+| `lib/site_kit/search.rb` | Template hash Pagefind extras |
+| `lib/site_kit/checks.rb` | SEO, links, catalogs, vendor |
+| `site-src/_plugins/` | Thin Jekyll generators / hooks only |
 
-- loading and validating source catalogs
-- modeling domain records
-- adapting data into Jekyll pages (thin generators / page data)
-- Pagefind extras for hash targets only
-- checking rendered output
-- enhancing browser interaction (progressive JS)
+Plugins call `Build` only. Attach runs in `site_build_generator`.
 
-Prefer Liquid over Ruby view builders. Explorer filters and problem tables are Liquid over explorer data. Code switchers are Liquid over flat `implementations` / `entries` (no Ruby toolbar builders). Coordinators stay thin. Prefer typed, domain-specific failures that name the catalog, page, source, or invariant.
+## Public URLs
 
-Build entry is `SiteKit::Build.for(site)` (cached on the Jekyll site). Generated pages are plain hashes via `SiteKit::Emit.page`. Plugins only attach data and emit pages — no view builders or Definition types.
+| Resource | URL |
+|----------|-----|
+| Problems | `/eureka/problems/`, `/eureka/problems/{slug}/`, `…/embed/` |
+| Templates handbook | `/templates/` + `#pattern` or `#pattern/variant` |
+| Template embed | `/templates/{template-id}/embed/` |
+| Zibaldone | `/zibaldone/…` (code docs may have `…/embed/`) |
+| Writing | `/writing/{slug}/` |
+| Search | `/search/?q=` |
 
-### Code entry contract
+Embeds: bare layout; post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts.
 
-One flat hash for every code box (`code_collection.html`):
+Templates are **one handbook page**, not path-per-template. Nav uses hash links; PE shows the matching panel. Pagefind extras exist so search can deep-link `#…` while panels stay mutually exclusive.
 
-| Field | Required | Notes |
-|-------|----------|--------|
-| `entry_id` | yes | Hash target / DOM id |
-| `language`, `language_label` | yes | Toolbar language |
-| `variant`, `variant_label` | yes | Toolbar variant (source YAML may still say `approach`) |
-| `code`, `code_language` | yes | Body |
-| `source_url`, `detail_url`, `embed_url` | optional | Action links |
+## Code box
 
-Page data always exposes `entries` (never `implementations` / `code_entries` dual names).
+One flat `entries[]` on every code surface → `code_collection.html` (`kind='problem'` for fixed Approach variants).
+
+| Field | Required |
+|-------|----------|
+| `entry_id`, `language`, `language_label`, `variant`, `variant_label`, `code`, `code_language` | yes |
+| `source_url`, `detail_url`, `embed_url` | optional |
+
+Source YAML may still say `implementations` / `approach`; public page data is always `entries` / `variant`.
+
+Template snippets: `sources/templates/<id>/<lang>.<ext>` — minimal bodies, no package/import/`Solution` boilerplate. Guide meta: `site-src/_data/eureka/template_guide.yml`, `topics.yml`, `template_languages.yml`.
+
+## Hard rules
+
+- Jekyll owns content; JS only progressive enhancement.
+- Prefer Liquid and build-time data over browser assembly.
+- Pagefind-only search — no parallel index or DOM text search for explorer queries (pass filters to Pagefind).
+- No synthetic `.click()` across JS features; small exported APIs on the owning module.
+- One PE entry file per feature until ~400 LOC of real concerns — no satellite rename wrappers.
+- Simplest idiomatic Jekyll mechanism when changing render/routing/plugins.
+- UI/copy: clarity over cleverness; short sentences; no filler; every control earns its space. Icon-first global nav; monochrome, bordered, monospace identity.
 
 ## Setup
 
-- `bundle install` — Ruby deps
-- `pnpm install` — JS, Pagefind, Playwright when needed
-- `pnpm sync:sources` — refresh content submodules only when catalogs need fresh external content
-- `pnpm docs:refresh` — keep `README.md` → `AGENTS.md` symlink
+```bash
+bundle install && pnpm install
+pnpm sync:sources   # when external catalogs need refresh
+pnpm docs:refresh   # README.md → AGENTS.md
+```
 
 ## Commands
 
 | Script | Purpose |
 |--------|---------|
-| `pnpm check:syntax` | Syntax-check catalog validation script |
-| `pnpm validate:catalogs` | Validate source catalogs and generated registries |
-| `pnpm build:site` | Jekyll HTML only |
-| `pnpm build:pagefind` | Pagefind index from `_site` HTML + extras |
-| `pnpm check:pagefind` | Verify Pagefind runtime assets and record count |
-| `pnpm build:indexed-site` | Jekyll (writes Pagefind extras) + Pagefind index |
-| `pnpm check:seo` | SEO metadata and sitemap/noindex alignment |
-| `pnpm check:links` | Internal links in rendered site |
-| `pnpm check:js` | JS syntax + ESLint |
-| `pnpm lint:ruby` | RuboCop |
-| `pnpm test:ruby` | Ruby unit tests |
-| `pnpm test:functional` | Build + Playwright functional tests |
-| `pnpm test:functional:built` | Playwright against already-built `_site` |
-| `pnpm test:full` | Full local validation |
-| `pnpm preview` | Build indexed site and serve `_site` at `http://127.0.0.1:4173` |
+| `pnpm validate:catalogs` | Source catalogs + registries |
+| `pnpm build:site` | Jekyll HTML |
+| `pnpm build:indexed-site` | Jekyll + Pagefind (+ extras) |
+| `pnpm check:pagefind` / `check:seo` / `check:links` / `check:js` | Checks |
+| `pnpm lint:ruby` / `pnpm test:ruby` | Ruby |
+| `pnpm test:functional` | Build + Playwright |
+| `pnpm test:functional:built` | Playwright on existing `_site` |
+| `pnpm test:full` | Full local gate |
+| `pnpm preview` | Indexed site at `http://127.0.0.1:4173` |
 
-## Preview and debug
-
-- Base URL: `http://127.0.0.1:4173`
-- `pnpm preview` / `make serve` build, index, verify Pagefind, then serve `_site`
-- `pnpm validate:catalogs` does not write site output
-- Debug **rendered** pages, not raw Liquid templates
-
-## Design
-
-Read `DESIGN.md` before any UI, navigation, interaction, or copy change. Writing bar: Feynman clarity, Einstein-level explanation, Hemingway simplicity, Caesar’s concision. If a heading already says it, the body must add new information.
-
-## JavaScript
-
-- Progressive enhancement only: Jekyll owns content; JS selects, zooms, and enhances.
-- Module budget: one entry file per page feature until it exceeds ~400 LOC of distinct concerns. Do not reintroduce satellite modules for state factories, rename wrappers, or thin event glue.
-- Contracts over DOM IPC: no synthetic `.click()` across features; no double-`setTimeout` layout hacks. Prefer small exported APIs on the owning module.
-- Modern ES modules and browser APIs. Shared helpers stay in `dom.js` (or one tiny lib) — not a utils folder.
-- `pnpm check:js` for syntax and lint; do not bypass `eslint.config.mjs` without intentional, documented rule changes.
-- Avoid eager work, global listeners, or extra runtime deps unless the interaction needs them.
-
-## Templates
-
-- Guide metadata: `site-src/_data/eureka/template_guide.yml`, `topics.yml`, `template_languages.yml`
-- Code bodies: `sources/templates/<template-id>/<language>.<extension>`
-- Minimal reusable snippets only — no package declarations, imports, `#include`, `using namespace`, or `class Solution` boilerplate
-- New template or language: update source files and language catalog together
-
-## Search
-
-- Pagefind indexes rendered HTML (`data-pagefind-body` / `data-pagefind-filter` / `data-pagefind-meta` on problem and source pages)
-- Template **hash targets** are the only custom extras (`pnpm build:pagefind-extras`)
-- Rebuild with `pnpm build:indexed-site`; do not hand-edit `_site/pagefind`
-- Problem explorer text search must pass active filters to Pagefind — no DOM text matching
-- Search UI must keep proper dialog/combobox accessibility: focus management, Escape, keyboard navigation
-
-## Playwright
-
-- Live inspection: `playwright-cli` against `pnpm preview` (`http://127.0.0.1:4173`)
-- Config: `.playwright/cli.config.json`
-- Prefer `snapshot`, `screenshot`, `console`, `network`, `click`, `hover`, `eval`
-- Prefer role/name locators; data attributes only for structural invariants
-- Playwright Test for explorer, template guide, search, responsive behavior
-- Ruby tests for pure builders, repositories, validators, and checks only
+Debug **rendered** `_site` pages, not raw Liquid alone.
 
 ## Validation matrix
 
 | Change area | Run |
 |-------------|-----|
-| Ruby, scripts, data registry | `pnpm lint:ruby && pnpm test:ruby && pnpm validate:catalogs` |
-| Layouts, includes, Sass, JS, search, SEO, generated pages | `pnpm check:js && pnpm test:site && pnpm check:links` |
-| Search UI, explorer, template guide, browser UX | `pnpm test:functional` |
-| Handoff after code changes | `pnpm test:full` (or state why it could not run) |
+| Ruby, scripts, catalogs | `pnpm lint:ruby && pnpm test:ruby && pnpm validate:catalogs` |
+| Layouts, includes, Sass, JS, SEO | `pnpm check:js && pnpm test:site && pnpm check:links` |
+| Search, explorer, templates UX | `pnpm test:functional` |
+| Handoff | `pnpm test:full` (or state why not) |
 
-Do not rely on Ruby tests alone for rendered page behavior.
+Do not rely on Ruby tests alone for browser behavior.
 
-## GitHub
+## Playwright
 
-- Use `gh` for GitHub operations
-- Conventional commits: `type(scope): subject`
+- Against preview `http://127.0.0.1:4173` (or built `_site`).
+- Prefer role/name locators; data attributes for structural invariants only.
+- Config: `.playwright/cli.config.json` when using CLI inspection.
+
+## Git
+
+- `gh` for GitHub.
+- Conventional commits: `type(scope): subject`.

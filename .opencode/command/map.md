@@ -6,9 +6,12 @@ subtask: true
 
 Map the codebase for: $ARGUMENTS
 
+Use AGENTS.md "Open by task" first.
+
 Return:
 - key file paths
-- ownership (site_kit domain / Jekyll presentation / progressive JS / catalogs / tests)
+- ownership (site_kit / site-src / sources / tests)
 - important call edges
-- suggested next agent (`build`, `plan`, or `scout`)
+- suggested next step
+
 Do not modify files.
