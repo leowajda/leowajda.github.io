@@ -9,10 +9,10 @@ module SiteKit
         @paths = ResourcePaths.new(route_base: '/eureka')
       end
 
-      def test_catalog_item_and_embed_paths
+      def test_path_and_embed
         assert_equal '/eureka/', @paths.root
-        assert_equal '/eureka/problems/', @paths.catalog('problems')
-        assert_equal '/eureka/problems/two-sum/', @paths.item('problems', 'two-sum')
+        assert_equal '/eureka/problems/', @paths.path('problems')
+        assert_equal '/eureka/problems/two-sum/', @paths.path('problems', 'two-sum')
         assert_equal '/eureka/problems/two-sum/embed/', @paths.embed('problems', 'two-sum')
       end
 

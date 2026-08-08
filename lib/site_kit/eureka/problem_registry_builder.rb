@@ -14,6 +14,7 @@ module SiteKit
         @source_catalog = source_catalog
         @source_root = source_root
         @route_base = manifest.route_base
+        @paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
         @languages_by_slug = SiteKit::Core::Helpers.index_by(source_catalog.languages, &:slug)
       end
 
@@ -30,20 +31,19 @@ module SiteKit
 
       private
 
-      attr_reader :manifest, :app_config, :source_catalog, :source_root, :route_base, :languages_by_slug
+      attr_reader :manifest, :app_config, :source_catalog, :source_root, :route_base, :paths, :languages_by_slug
 
       def build_problem(problem_slug, raw)
         validate_problem_keys!(raw, problem_slug)
         title = str(raw, 'name', problem_slug)
         source_url = str(raw, 'url', problem_slug)
-        implementations = load_implementations(problem_slug, title, source_url, raw.fetch('implementations'))
-        raise SiteKit::CatalogError, "Problem '#{problem_slug}' has no implementations" if implementations.empty?
+        entries = load_entries(problem_slug, title, source_url, raw.fetch('implementations'))
+        raise SiteKit::CatalogError, "Problem '#{problem_slug}' has no entries" if entries.empty?
 
-        paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
         {
           'problem_slug' => problem_slug,
           'title' => title,
-          'url' => paths.item('problems', problem_slug),
+          'url' => paths.path('problems', problem_slug),
           'embed_url' => paths.embed('problems', problem_slug),
           'problem_source_url' => source_url,
           'difficulty' => str(raw, 'difficulty', problem_slug),
@@ -52,32 +52,32 @@ module SiteKit
             raw.fetch('categories'),
             "Problem '#{problem_slug}'.categories"
           ),
-          'languages' => language_records(implementations),
-          'implementations' => implementations,
-          'implementation_count' => implementations.size
+          'languages' => language_records(entries),
+          'entries' => entries,
+          'entry_count' => entries.size
         }
       end
 
-      def language_records(implementations)
-        implementations.group_by { |entry| entry.fetch('language') }.values.map do |entries|
-          first = entries.first
-          { 'slug' => first.fetch('language'), 'label' => first.fetch('language_label'), 'count' => entries.size }
+      def language_records(entries)
+        entries.group_by { |entry| entry.fetch('language') }.values.map do |group|
+          first = group.first
+          { 'slug' => first.fetch('language'), 'label' => first.fetch('language_label'), 'count' => group.size }
         end
       end
 
-      def load_implementations(problem_slug, title, source_url, raw_list)
-        entries = SiteKit::Core::Helpers.ensure_array(raw_list, "Problem '#{problem_slug}'.implementations")
-        implementations = entries.map.with_index do |raw, index|
-          build_implementation(problem_slug, title, source_url, raw, index)
+      def load_entries(problem_slug, title, source_url, raw_list)
+        list = SiteKit::Core::Helpers.ensure_array(raw_list, "Problem '#{problem_slug}'.implementations")
+        entries = list.map.with_index do |raw, index|
+          build_entry(problem_slug, title, source_url, raw, index)
         end
         SiteKit::Core::Helpers.ensure_unique!(
-          implementations.map { |entry| entry.fetch('entry_id') },
-          "Problem '#{problem_slug}' implementation ids must be unique"
+          entries.map { |entry| entry.fetch('entry_id') },
+          "Problem '#{problem_slug}' entry ids must be unique"
         )
-        implementations
+        entries
       end
 
-      def build_implementation(problem_slug, title, source_url, raw, index) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      def build_entry(problem_slug, title, source_url, raw, index) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         raw = SiteKit::Core::Helpers.ensure_hash(raw, "Problem '#{problem_slug}'.implementations[#{index}]")
         unknown = raw.keys - app_config.eureka.fetch('implementation_keys')
         unless unknown.empty?
@@ -93,7 +93,7 @@ module SiteKit
           raise SiteKit::CatalogError,
                 "Problem '#{problem_slug}' implementation #{index} references unknown language '#{language_slug}'"
         end
-        approach = SiteKit::Core::Helpers.ensure_string(
+        variant = SiteKit::Core::Helpers.ensure_string(
           raw.fetch('approach'),
           "Problem '#{problem_slug}'.implementations[#{index}].approach"
         )
@@ -111,32 +111,32 @@ module SiteKit
         code = SiteKit::Core::Helpers.read_text(code_path)
         raise SiteKit::CatalogError, "Eureka implementation source is empty: '#{code_path}'" if code.strip.empty?
 
-        entry_id = SiteKit::Core::Helpers.slugify("#{language.slug}-#{approach}")
-        paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
-        problem_url = paths.item('problems', problem_slug)
-        approach_label = SiteKit::Core::Helpers.human_label(approach)
+        entry_id = SiteKit::Core::Helpers.slugify("#{language.slug}-#{variant}")
+        variant_label = SiteKit::Core::Helpers.human_label(variant)
+        detail_url = paths.with_fragment(paths.path('problems', problem_slug), entry_id)
+        embed_url = paths.embed('problems', problem_slug)
 
-        {
+        SiteKit::Core::CodeEntry.normalize(
+          {
+            'entry_id' => entry_id,
+            'language' => language.slug,
+            'language_label' => language.label,
+            'variant' => variant,
+            'variant_label' => variant_label,
+            'code' => code,
+            'code_language' => language.code_language,
+            'source_url' => "#{source_catalog.source_url_base}/#{file_path}",
+            'detail_url' => detail_url,
+            'embed_url' => embed_url
+          },
+          context: "Problem '#{problem_slug}' entry #{entry_id}"
+        ).merge(
           'problem_slug' => problem_slug,
           'problem_title' => title,
           'problem_source_url' => source_url,
-          'implementation_id' => entry_id,
-          'entry_id' => entry_id,
-          'language' => language.slug,
-          'language_label' => language.label,
-          'approach' => approach,
-          'approach_label' => approach_label,
-          'variant' => approach,
-          'variant_label' => approach_label,
-          'title' => "#{title} · #{language.label} #{approach_label}",
-          'description' => "#{title} solution in #{language.label} using the #{approach_label.downcase} approach.",
-          'source_url' => "#{source_catalog.source_url_base}/#{file_path}",
-          'code' => code,
-          'code_language' => language.code_language,
-          'detail_url' => paths.with_fragment(problem_url, entry_id),
-          # Embed is problem-level (all languages); hash is optional client selection only.
-          'embed_url' => paths.embed('problems', problem_slug)
-        }
+          'title' => "#{title} · #{language.label} #{variant_label}",
+          'description' => "#{title} solution in #{language.label} using the #{variant_label.downcase} approach."
+        )
       end
 
       def validate_problem_keys!(raw, problem_slug)

@@ -19,12 +19,11 @@ module SiteKit
         @template_guide_data = template_guide
         @code_source_root = code_source_root
         @language_catalog = language_catalog
+        @paths = SiteKit::Core::ResourcePaths.new(route_base: 'templates')
       end
 
       def topics
-        @topics ||= SiteKit::Templates::TopicRepository.new(
-          topics: topic_records
-        ).load
+        @topics ||= SiteKit::Templates::TopicRepository.new(topics: topic_records).load
       end
 
       def templates
@@ -64,21 +63,19 @@ module SiteKit
 
       def embed_pages
         @embed_pages ||= templates.map do |template|
-          entries = code_collections.fetch(template.template_id)
           target = guide.fetch('redirects').fetch(template.template_id)
           detail_url = "#{SiteKit::TEMPLATES_URL}##{target}"
-          linked = entries.map do |entry|
+          entries = code_collections.fetch(template.template_id).map do |entry|
             entry.merge('detail_url' => detail_url)
           end
           SiteKit::Emit.page(
-            dir: "#{SiteKit::TEMPLATES_URL}#{template.template_id}/embed/",
+            dir: paths.embed(template.template_id),
             page_type: TEMPLATE_EMBED_PAGE_TYPE,
             project_slug: 'eureka',
             title: "#{template.title} · Embed",
             description: "#{template.title} template embed",
             data: {
-              'template_id' => template.template_id,
-              'entries' => linked,
+              'entries' => entries,
               'detail_url' => detail_url,
               'embed' => true
             }
@@ -95,7 +92,7 @@ module SiteKit
         ).entries_by_template(templates)
       end
 
-      attr_reader :topic_records, :template_guide_data, :code_source_root, :language_catalog
+      attr_reader :topic_records, :template_guide_data, :code_source_root, :language_catalog, :paths
     end
   end
 end

@@ -14,14 +14,15 @@ module SiteKit
         browser_record.fetch('problems').map do |problem|
           problem_slug = problem.fetch('problem_slug')
           SiteKit::Emit.page(
-            dir: paths.item('problems', problem_slug),
+            dir: paths.path('problems', problem_slug),
             page_type: EUREKA_PROBLEM_PAGE_TYPE,
             project_slug: project_slug,
             title: problem.fetch('title'),
             description: "#{problem.fetch('title')} solutions",
             data: {
               'problem_slug' => problem_slug,
-              'problem_record' => problem
+              'problem_record' => problem,
+              'entries' => problem.fetch('entries')
             }.merge(problem_external_link(problem))
           )
         end
@@ -39,6 +40,7 @@ module SiteKit
             data: {
               'problem_slug' => problem_slug,
               'problem_record' => problem,
+              'entries' => problem.fetch('entries'),
               'detail_url' => problem.fetch('url'),
               'embed' => true
             }.merge(problem_external_link(problem))

@@ -2,13 +2,11 @@
 layout: embed
 ---
 
-{%- assign entries = page.entries | default: page.problem_record.implementations | default: page.source_document.code_entries | default: empty -%}
-{%- assign detail_url = page.detail_url | default: page.source_document.route_url | default: '' -%}
-{%- assign problem_source_url = page.problem_record.problem_source_url | default: '' -%}
+{%- assign entries = page.entries -%}
 {%- assign code_cfg = site.data.site.app.code_collection -%}
 {%- assign browser_cfg = site.data.site.app.eureka.browser | default: empty -%}
 
-{%- if entries.size == 0 -%}
+{%- if entries == nil or entries.size == 0 -%}
   <p>Code not found.</p>
 {%- else -%}
   <article class="code-embed" data-code-embed>
@@ -17,13 +15,10 @@ layout: embed
         entries=entries
         collection_id='embed-code'
         embed=true
-        problem_source_url=problem_source_url
+        problem_source_url=page.problem_source_url
         toolbar_aria=browser_cfg.toolbar_label
-        variant_group_label=browser_cfg.variant_group_label
-        variant_group_visibility=browser_cfg.variant_group_visibility
-        variant_presentation=browser_cfg.variant_presentation
-        variant_catalog=code_cfg.implementation_modes
-        variant_icons=code_cfg.variant_icons
+        variant_label=browser_cfg.variant_group_label
+        variant_options=code_cfg.implementation_modes
       -%}
     {%- else -%}
       {%- include code_collection.html
@@ -31,8 +26,6 @@ layout: embed
         collection_id='embed-code'
         embed=true
         toolbar_aria=code_cfg.default_toolbar_label
-        variant_group_label=code_cfg.default_variant_label
-        variant_icons=code_cfg.variant_icons
       -%}
     {%- endif -%}
   </article>

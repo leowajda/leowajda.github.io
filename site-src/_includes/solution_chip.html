@@ -1,16 +1,16 @@
-{%- assign implementation = include.implementation -%}
-{%- assign approach_icon = "code" -%}
-{%- case implementation.approach -%}
+{%- assign entry = include.entry -%}
+{%- assign variant_icon = "code" -%}
+{%- case entry.variant -%}
   {%- when "iterative" -%}
-    {%- assign approach_icon = "iterative" -%}
+    {%- assign variant_icon = "iterative" -%}
   {%- when "recursive" -%}
-    {%- assign approach_icon = "recursive" -%}
+    {%- assign variant_icon = "recursive" -%}
 {%- endcase -%}
 <a
   class="solution-chip"
-  href="{{ implementation.detail_url | relative_url | escape }}"
-  aria-label="{{ implementation.approach_label | escape }}"
-  title="{{ implementation.approach_label | escape }}"
+  href="{{ entry.detail_url | relative_url | escape }}"
+  aria-label="{{ entry.variant_label | escape }}"
+  title="{{ entry.variant_label | escape }}"
 >
-  {%- include icon.html name=approach_icon class="solution-chip__icon" -%}
+  {%- include icon.html name=variant_icon class="solution-chip__icon" -%}
 </a>

@@ -1,152 +1,110 @@
 import { getHashValue, onHashChange, replaceHashValue } from "./dom.js"
 
-const resolveCollectionItem = ({ entryId, language, variant, itemMap, defaultEntryId, items }) => {
-  if (entryId && itemMap.has(entryId)) {
-    return itemMap.get(entryId)
-  }
-
-  if (language && variant) {
-    const exact = items.find((item) =>
-      item.dataset.codeCollectionLanguage === language
-      && item.dataset.codeCollectionVariant === variant
-    )
-    if (exact) {
-      return exact
-    }
-  }
-
-  if (language) {
-    const byLanguage = items.find((item) => item.dataset.codeCollectionLanguage === language)
-    if (byLanguage) {
-      return byLanguage
-    }
-  }
-
-  return itemMap.get(defaultEntryId) || items[0]
-}
-
-const renderCollectionItem = ({
-  item,
-  items,
-  languageControls,
-  variantControls,
-  variantGroup,
-  actionGroups,
-  syncHash
-}) => {
-  if (!item) {
-    return
-  }
-
-  const activeEntryId = item.dataset.codeCollectionEntryId || ""
-  const activeLanguage = item.dataset.codeCollectionLanguage || ""
-  const activeVariant = item.dataset.codeCollectionVariant || ""
-
-  items.forEach((candidate) => {
-    candidate.hidden = candidate !== item
-  })
-
-  actionGroups.forEach((group) => {
-    group.hidden = group.dataset.codeCollectionActionsFor !== activeEntryId
-  })
-
-  languageControls.forEach((control) => {
-    const isActive = control.dataset.codeCollectionLanguage === activeLanguage
-    control.classList.toggle("is-active", isActive)
-    control.setAttribute("aria-pressed", isActive ? "true" : "false")
-  })
-
-  let visibleVariantCount = 0
-  variantControls.forEach((control) => {
-    const variant = control.dataset.codeCollectionVariant || ""
-    const baseLabel = control.dataset.codeCollectionVariantLabel || variant || "Variant"
-    const isAvailable = items.some((candidate) =>
-      candidate.dataset.codeCollectionLanguage === activeLanguage
-      && candidate.dataset.codeCollectionVariant === variant
-    )
-    control.disabled = !isAvailable
-    control.classList.toggle("is-unavailable", !isAvailable)
-    control.setAttribute("aria-disabled", isAvailable ? "false" : "true")
-    control.setAttribute("title", isAvailable ? baseLabel : `${baseLabel} unavailable`)
-    if (isAvailable) {
-      visibleVariantCount += 1
-    }
-    const isActive = isAvailable && variant === activeVariant
-    control.classList.toggle("is-active", isActive)
-    control.setAttribute("aria-pressed", isActive ? "true" : "false")
-  })
-
-  if (variantGroup) {
-    const keepVariantGroupVisible = variantGroup.dataset.codeCollectionKeepVisible === "true"
-    variantGroup.hidden = keepVariantGroupVisible
-      ? variantControls.length === 0
-      : variantControls.length < 2 || visibleVariantCount === 0
-  }
-
-  if (syncHash && activeEntryId) {
-    replaceHashValue(activeEntryId)
-  }
-}
-
-const initializeCodeCollection = (collection) => {
-  const items = Array.from(collection.querySelectorAll("[data-code-collection-item]"))
+const initializeCodeCollection = (root) => {
+  const items = [...root.querySelectorAll("[data-code-collection-item]")]
   if (items.length === 0) {
     return
   }
 
-  const languageControls = Array.from(collection.querySelectorAll("[data-code-collection-language-control]"))
-  const variantControls = Array.from(collection.querySelectorAll("[data-code-collection-variant-control]"))
-  const variantGroup = collection.querySelector("[data-code-collection-variant-group]")
-  const actionGroups = Array.from(collection.querySelectorAll("[data-code-collection-actions-for]"))
-  const itemMap = new Map(items.map((item) => [item.dataset.codeCollectionEntryId || "", item]))
-  const syncHash = collection.dataset.codeCollectionSyncHash === "true"
-  const defaultEntryId = collection.dataset.codeCollectionDefaultEntry || items[0].dataset.codeCollectionEntryId || ""
-  const render = (item) => {
-    renderCollectionItem({
-      item,
-      items,
-      languageControls,
-      variantControls,
-      variantGroup,
-      actionGroups,
-      syncHash
-    })
-  }
-  const resolveItem = (entryId, language, variant) => resolveCollectionItem({
-    entryId,
-    language,
-    variant,
-    itemMap,
-    defaultEntryId,
-    items
-  })
+  const languages = [...root.querySelectorAll("[data-code-collection-language-control]")]
+  const variants = [...root.querySelectorAll("[data-code-collection-variant-control]")]
+  const variantGroup = root.querySelector("[data-code-collection-variant-group]")
+  const actions = [...root.querySelectorAll("[data-code-collection-actions-for]")]
+  const byId = new Map(items.map((item) => [item.dataset.codeCollectionEntryId, item]))
+  const syncHash = root.dataset.codeCollectionSyncHash === "true"
+  const fallback = byId.get(root.dataset.codeCollectionDefaultEntry) || items[0]
 
-  collection.addEventListener("click", (event) => {
+  const show = (item) => {
+    if (!item) {
+      return
+    }
+
+    const language = item.dataset.codeCollectionLanguage
+    const variant = item.dataset.codeCollectionVariant
+    const entryId = item.dataset.codeCollectionEntryId
+
+    items.forEach((candidate) => {
+      candidate.hidden = candidate !== item
+    })
+    actions.forEach((group) => {
+      group.hidden = group.dataset.codeCollectionActionsFor !== entryId
+    })
+    languages.forEach((control) => {
+      const active = control.dataset.codeCollectionLanguage === language
+      control.classList.toggle("is-active", active)
+      control.setAttribute("aria-pressed", active ? "true" : "false")
+    })
+
+    let available = 0
+    variants.forEach((control) => {
+      const value = control.dataset.codeCollectionVariant
+      const ok = items.some((candidate) =>
+        candidate.dataset.codeCollectionLanguage === language
+        && candidate.dataset.codeCollectionVariant === value
+      )
+      control.disabled = !ok
+      control.classList.toggle("is-unavailable", !ok)
+      control.setAttribute("aria-disabled", ok ? "false" : "true")
+      if (ok) {
+        available += 1
+      }
+      const active = ok && value === variant
+      control.classList.toggle("is-active", active)
+      control.setAttribute("aria-pressed", active ? "true" : "false")
+    })
+
+    if (variantGroup) {
+      const keep = variantGroup.dataset.codeCollectionKeepVisible === "true"
+      variantGroup.hidden = keep ? variants.length === 0 : variants.length < 2 || available === 0
+    }
+
+    if (syncHash && entryId) {
+      replaceHashValue(entryId)
+    }
+  }
+
+  const pick = (entryId, language, variant) => {
+    if (entryId && byId.has(entryId)) {
+      return byId.get(entryId)
+    }
+    if (language && variant) {
+      const exact = items.find((item) =>
+        item.dataset.codeCollectionLanguage === language
+        && item.dataset.codeCollectionVariant === variant
+      )
+      if (exact) {
+        return exact
+      }
+    }
+    if (language) {
+      return items.find((item) => item.dataset.codeCollectionLanguage === language) || fallback
+    }
+    return fallback
+  }
+
+  root.addEventListener("click", (event) => {
     const languageControl = event.target.closest("[data-code-collection-language-control]")
     if (languageControl) {
-      const language = languageControl.dataset.codeCollectionLanguage || ""
-      const currentActive = items.find((item) => !item.hidden) || items[0]
-      render(resolveItem("", language, currentActive?.dataset.codeCollectionVariant || ""))
+      const current = items.find((item) => !item.hidden) || fallback
+      show(pick("", languageControl.dataset.codeCollectionLanguage, current.dataset.codeCollectionVariant))
       return
     }
 
     const variantControl = event.target.closest("[data-code-collection-variant-control]")
     if (variantControl) {
-      const variant = variantControl.dataset.codeCollectionVariant || ""
-      const currentActive = items.find((item) => !item.hidden) || items[0]
-      render(resolveItem("", currentActive?.dataset.codeCollectionLanguage || "", variant))
+      const current = items.find((item) => !item.hidden) || fallback
+      show(pick("", current.dataset.codeCollectionLanguage, variantControl.dataset.codeCollectionVariant))
     }
   })
 
-  render(resolveItem(syncHash ? getHashValue() : "", "", ""))
+  show(pick(syncHash ? getHashValue() : "", "", ""))
 
   if (syncHash) {
     onHashChange(() => {
-      const nextHash = getHashValue()
-      if (!nextHash || !itemMap.has(nextHash)) {
-        return
+      const hash = getHashValue()
+      if (hash && byId.has(hash)) {
+        show(byId.get(hash))
       }
-      render(itemMap.get(nextHash))
     })
   }
 }

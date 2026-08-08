@@ -9,7 +9,7 @@
       {%- for root in current_module.roots -%}
         {%- capture root_body -%}
           <ul class="source-tree__list">
-            {%- include source_tree_node.html nodes=root.nodes module_slug=current_module.slug -%}
+            {%- include source_tree_node.html nodes=root.nodes -%}
           </ul>
         {%- endcapture -%}
         {%- include side_panel_section.html title=root.label body=root_body class="source-root" -%}

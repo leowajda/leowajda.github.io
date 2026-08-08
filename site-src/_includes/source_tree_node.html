@@ -1,10 +1,14 @@
 {%- for node in include.nodes -%}
   <li class="source-tree__item source-tree__item--{{ node.kind | escape }}">
     {%- if node.kind == "directory" -%}
-      <details class="source-tree__group">
+      {%- assign is_open = false -%}
+      {%- if node.url_prefix != blank and page.url contains node.url_prefix -%}
+        {%- assign is_open = true -%}
+      {%- endif -%}
+      <details class="source-tree__group"{% if is_open %} open{% endif %}>
         <summary class="source-tree__summary">{{ node.title | escape }}</summary>
         <ul class="source-tree__list">
-          {%- include source_tree_node.html nodes=node.children module_slug=include.module_slug -%}
+          {%- include source_tree_node.html nodes=node.children -%}
         </ul>
       </details>
     {%- else -%}
