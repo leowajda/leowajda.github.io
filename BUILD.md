@@ -11,18 +11,16 @@ sources/ + site-src/_data
   → Pagefind (+ template hash extras)
 ```
 
-## Ruby
+## Ruby (`lib/site_kit/`)
 
 | File | Role |
 |------|------|
 | `build.rb` | `pages`, `search_extras`, `validate!`, domain accessors |
-| `invariants.rb` | Catalog rules checked at validate |
+| `invariants.rb` | Catalog rules at validate |
 | `eureka.rb` | Problems → explorer + pages |
-| `templates.rb` | Guide + code + embeds |
-| `source_notes.rb` | Zibaldone tree + docs + embeds |
-| `core.rb` | Errors, constants, Helpers, Schema, ResourcePaths, CodeEntry |
-| `templates.rb` | Topics → code files → guide → embed pages (+ ReferenceResolver) |
-| `source_notes.rb` | Scan tree → docs/entries → pages |
+| `templates.rb` | Topics → code → guide → embeds (+ ReferenceResolver) |
+| `source_notes.rb` | Tree scan → docs/entries → pages |
+| `core.rb` | Errors, Helpers, Schema, ResourcePaths, CodeEntry |
 | `catalogs.rb` | Manifests + app config |
 | `jekyll.rb` | SiteLoader, GeneratedPage |
 | `emit.rb` | Page hash helper |
@@ -30,22 +28,23 @@ sources/ + site-src/_data
 | `checks.rb` | SEO / links / vendor / site invariants |
 | `assets.rb` | Cache-bust versions |
 
-Loaders are single-module files with linear pipelines. Plugins call `Build` only; attach runs in `site_build_generator`.
+Loaders are single-module files. Plugins call `Build` only; attach runs in `site_build_generator`.
 
-## Code box (Liquid)
+## Code box
 
 ```liquid
 {% include code_collection.html
   entries=entries
   collection_id='…'
-  kind='problem'   # optional; fixed Approach variants
-  embed=true       # optional
-  sync_hash=true   # optional
-  problem_source_url=…  # optional
+  kind='problem'
+  embed=true
+  sync_hash=true
+  problem_source_url=…
 %}
 ```
 
-Defaults come from `site.data.site.app.code_collection` and `eureka.browser`.
+Partials: `code_collection_languages.html`, `code_collection_variants.html`.  
+Defaults: `site.data.site.app.code_collection` + `eureka.browser`.
 
 ## Entries
 
@@ -57,7 +56,7 @@ Defaults come from `site.data.site.app.code_collection` and `eureka.browser`.
 
 ## JS
 
-Progressive: code-collection, copy, embed-resize, pagefind, search (dialog+combobox), eureka-filters, template-library, theme.
+code-collection, copy, embed-resize, pagefind, search, eureka-filters, template-library, theme.
 
 ## Gate
 

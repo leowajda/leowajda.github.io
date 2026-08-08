@@ -64,4 +64,37 @@ class SiteKitBuildContractTest < SiteKitTestCase
     assert page.data['explorer']
     assert_predicate page.data['explorer'].fetch('problems'), :any?
   end
+
+  def test_template_panels_expose_entries
+    panel = build_context.templates.guide.fetch('template_panels').first
+
+    assert panel.fetch('target')
+    assert_predicate panel.fetch('entries'), :any?
+    entry = panel.fetch('entries').first
+
+    assert entry.fetch('entry_id')
+    assert_includes entry.fetch('embed_url'), '/embed/'
+  end
+
+  def test_source_code_pages_expose_entries_and_embeds
+    pages = build_context.pages
+    code_doc = pages.find do |page|
+      page[:page_type] == 'source_document_page' && Array(page.dig(:data, 'entries')).any?
+    end
+
+    assert code_doc, 'expected a source code document page'
+
+    entries = code_doc.fetch(:data).fetch('entries')
+
+    assert_equal 1, entries.size
+    assert entries.first.fetch('code_language')
+
+    embed_dir = code_doc.fetch(:data).fetch('source_document').fetch('embed_url')
+    embed = pages.find { |page| page[:dir] == embed_dir }
+
+    assert embed
+    assert embed.fetch(:data).fetch('embed')
+    assert_equal(entries.map { |e| e.fetch('entry_id') },
+                 embed.fetch(:data).fetch('entries').map { |e| e.fetch('entry_id') })
+  end
 end

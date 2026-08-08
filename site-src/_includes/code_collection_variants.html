@@ -1,0 +1,53 @@
+{%- assign variant_count = 0 -%}
+{%- capture variant_controls -%}
+  {%- if include.keep_variants -%}
+    {%- for option in include.variant_list -%}
+      {%- assign variant_count = variant_count | plus: 1 -%}
+      {%- assign vactive = false -%}
+      {%- if option.slug == include.default_variant -%}{%- assign vactive = true -%}{%- endif -%}
+      <button
+        type="button"
+        class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
+        data-code-collection-variant-control
+        data-code-collection-variant="{{ option.slug | escape }}"
+        data-code-collection-variant-label="{{ option.label | escape }}"
+        aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
+        aria-label="{{ option.label | escape }}"
+        title="{{ option.label | escape }}"
+      >{{ option.label | escape }}</button>
+    {%- endfor -%}
+  {%- else -%}
+    {%- assign variant_slugs = '' -%}
+    {%- for entry in include.entries -%}
+      {%- assign vslug = entry.variant -%}
+      {%- assign vtoken = '|' | append: vslug | append: '|' -%}
+      {%- unless variant_slugs contains vtoken -%}
+        {%- assign variant_slugs = variant_slugs | append: vtoken -%}
+        {%- assign variant_count = variant_count | plus: 1 -%}
+        {%- assign vactive = false -%}
+        {%- if vslug == include.default_variant -%}{%- assign vactive = true -%}{%- endif -%}
+        <button
+          type="button"
+          class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
+          data-code-collection-variant-control
+          data-code-collection-variant="{{ vslug | escape }}"
+          data-code-collection-variant-label="{{ entry.variant_label | escape }}"
+          aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
+          aria-label="{{ entry.variant_label | escape }}"
+          title="{{ entry.variant_label | escape }}"
+        >{{ entry.variant_label | escape }}</button>
+      {%- endunless -%}
+    {%- endfor -%}
+  {%- endif -%}
+{%- endcapture -%}
+{%- if variant_count > 1 or include.keep_variants -%}
+  <div
+    class="code-collection__options code-collection__options--variants"
+    role="toolbar"
+    aria-label="{{ include.variant_label | escape }}"
+    data-code-collection-variant-group
+    {% if include.keep_variants %}data-code-collection-keep-visible="true"{% endif %}
+  >
+    {{ variant_controls }}
+  </div>
+{%- endif -%}
