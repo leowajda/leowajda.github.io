@@ -8,15 +8,15 @@ import {
 } from "./pagefind.js"
 
 const initializeTemplateLibrary = (root) => {
-  const patternControls = [...root.querySelectorAll("[data-guide-pattern-control]")]
-  const variantControls = [...root.querySelectorAll("[data-guide-variant-control]")]
+  const patternLinks = [...root.querySelectorAll("[data-guide-pattern-control]")]
+  const variantLinks = [...root.querySelectorAll("[data-guide-variant-control]")]
   const branches = [...root.querySelectorAll("[data-guide-branch]")]
   const templatePanels = [...root.querySelectorAll("[data-template-panel]")]
   const patternPanels = [...root.querySelectorAll("[data-template-pattern-panel]")]
   const searchInput = root.querySelector("[data-template-search]")
   const searchResults = root.querySelector("[data-template-search-results]")
   const outline = root.querySelector("[data-template-outline]")
-  if (patternControls.length === 0) {
+  if (patternLinks.length === 0) {
     return
   }
 
@@ -27,11 +27,15 @@ const initializeTemplateLibrary = (root) => {
   )
 
   const targets = new Map()
-  patternControls.forEach((el) => targets.set(el.dataset.guideTarget, { kind: "pattern", el }))
-  variantControls.forEach((el) => targets.set(el.dataset.guideTarget, { kind: "variant", el }))
+  patternLinks.forEach((el) => targets.set(el.dataset.guideTarget, { kind: "pattern", el }))
+  variantLinks.forEach((el) => targets.set(el.dataset.guideTarget, { kind: "variant", el }))
 
-  const resolve = (raw) => (targets.has(raw) ? raw : redirects.get(raw) || raw)
-  const defaultTarget = resolve(root.dataset.templateDefault || patternControls[0].dataset.guideTarget)
+  const resolve = (raw) => {
+    const token = decodeURIComponent((raw || "").replace(/\+/g, " "))
+    return targets.has(token) ? token : redirects.get(token) || token
+  }
+
+  const defaultTarget = resolve(root.dataset.templateDefault || patternLinks[0].dataset.guideTarget)
   let language = root.dataset.templateDefaultLanguage || "java"
   const sequence = createSequenceGuard()
 
@@ -50,7 +54,7 @@ const initializeTemplateLibrary = (root) => {
     selectCodeLanguage(collection, language)
   }
 
-  const paint = (raw, { hash = true } = {}) => {
+  const paint = (raw, { syncHash = true } = {}) => {
     const target = resolve(raw)
     const record = targets.get(target) || targets.get(defaultTarget)
     if (!record) {
@@ -64,11 +68,11 @@ const initializeTemplateLibrary = (root) => {
       ? target
       : el.dataset.guideDefaultTarget || target
 
-    patternControls.forEach((control) => {
-      const on = control.dataset.guidePattern === patternId
-      control.classList.toggle("is-active", on)
-      control.classList.toggle("side-panel__link--active", on)
-      control.setAttribute("aria-expanded", on ? "true" : "false")
+    patternLinks.forEach((link) => {
+      const on = link.dataset.guidePattern === patternId
+      link.classList.toggle("is-active", on)
+      link.classList.toggle("side-panel__link--active", on)
+      link.setAttribute("aria-expanded", on ? "true" : "false")
     })
 
     branches.forEach((branch) => {
@@ -77,11 +81,15 @@ const initializeTemplateLibrary = (root) => {
       branch.querySelector(".template-library__children")?.toggleAttribute("hidden", !on)
     })
 
-    variantControls.forEach((control) => {
-      const on = !isPattern && control.dataset.guideTarget === renderTarget
-      control.classList.toggle("is-active", on)
-      control.classList.toggle("side-panel__link--active", on)
-      control.setAttribute("aria-pressed", on ? "true" : "false")
+    variantLinks.forEach((link) => {
+      const on = !isPattern && link.dataset.guideTarget === renderTarget
+      link.classList.toggle("is-active", on)
+      link.classList.toggle("side-panel__link--active", on)
+      if (on) {
+        link.setAttribute("aria-current", "true")
+      } else {
+        link.removeAttribute("aria-current")
+      }
     })
 
     patternPanels.forEach((panel) => {
@@ -105,11 +113,14 @@ const initializeTemplateLibrary = (root) => {
 
     const focus = isPattern
       ? el
-      : variantControls.find((control) => control.dataset.guideTarget === renderTarget) || el
+      : variantLinks.find((link) => link.dataset.guideTarget === renderTarget) || el
     focus.scrollIntoView({ block: "nearest" })
 
-    if (hash || target !== raw) {
-      replaceHashValue(target)
+    if (syncHash) {
+      const nextHash = isPattern ? target : renderTarget
+      if (getHashValue() !== nextHash) {
+        replaceHashValue(nextHash)
+      }
     }
   }
 
@@ -121,10 +132,8 @@ const initializeTemplateLibrary = (root) => {
     }
     branches.forEach((branch) => {
       branch.hidden = false
-      branch.querySelector(".template-library__children")?.toggleAttribute("hidden", !branch.classList.contains("is-active"))
-      branch.querySelectorAll("[data-guide-variant-control]").forEach((control) => {
-        control.hidden = control.dataset.guideHasTemplate !== "true"
-      })
+      branch.querySelector(".template-library__children")
+        ?.toggleAttribute("hidden", !branch.classList.contains("is-active"))
     })
   }
 
@@ -151,10 +160,11 @@ const initializeTemplateLibrary = (root) => {
         return
       }
       searchResults.replaceChildren(...records.map((data) => {
+        const hash = (data.url || "").split("#")[1] || data.meta?.target || ""
         const link = document.createElement("a")
         link.className = "template-library__search-result"
-        link.href = data.url
-        link.dataset.guideChoiceTarget = data.meta?.target || ""
+        link.href = hash ? `#${decodeURIComponent(hash)}` : data.url
+        link.dataset.guideChoiceTarget = data.meta?.target || decodeURIComponent(hash)
         const label = document.createElement("span")
         label.className = "template-library__search-result-label"
         label.textContent = data.meta?.title || data.url
@@ -176,11 +186,13 @@ const initializeTemplateLibrary = (root) => {
   }
 
   root.addEventListener("click", (event) => {
-    const guide = event.target.closest("[data-guide-pattern-control], [data-guide-variant-control]")
-    if (guide) {
-      paint(guide.dataset.guideTarget || "")
+    const nav = event.target.closest("[data-guide-pattern-control], [data-guide-variant-control]")
+    if (nav) {
+      event.preventDefault()
+      paint(nav.dataset.guideTarget || "")
       return
     }
+
     const choice = event.target.closest("[data-guide-choice-target]")
     if (choice) {
       event.preventDefault()
@@ -188,9 +200,10 @@ const initializeTemplateLibrary = (root) => {
         searchInput.value = ""
         search()
       }
-      paint(choice.dataset.guideChoiceTarget || "")
+      paint(choice.dataset.guideChoiceTarget || choice.getAttribute("href")?.replace(/^#/, "") || "")
       return
     }
+
     const lang = event.target.closest("[data-code-collection-language-control]")
     if (lang) {
       language = lang.dataset.codeCollectionLanguage || language
@@ -201,13 +214,14 @@ const initializeTemplateLibrary = (root) => {
   onHashChange(() => {
     const next = getHashValue()
     if (next) {
-      paint(next, { hash: false })
+      paint(next, { syncHash: false })
     }
   })
 
   search()
   const initial = getHashValue()
-  paint(initial || defaultTarget, { hash: !initial })
+  const resolvedInitial = initial ? resolve(initial) : defaultTarget
+  paint(resolvedInitial, { syncHash: !initial || resolvedInitial !== initial })
 }
 
 onReady(() => {

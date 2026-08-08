@@ -54,6 +54,13 @@ Defaults: `site.data.site.app.code_collection` + `eureka.browser`.
 
 `/{base}/…/{id}/` · `…/embed/` · `#fragment`
 
+## Templates handbook
+
+- One page: `/templates/` (Jekyll document).
+- In-page targets: `#pattern` and `#pattern/variant` (unchanged public URLs).
+- Nav is hash links (`href="#…"`); PE shows the matching panel and expands the outline.
+- Pagefind **extras** keep template hash URLs so search can deep-link into mutually exclusive panels.
+
 ## JS
 
 code-collection, copy, embed-resize, pagefind, search, eureka-filters, template-library, theme.
