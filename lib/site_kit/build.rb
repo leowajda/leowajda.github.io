@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 module SiteKit
-  # Single build entry: load catalogs, compile, emit page hashes.
-  class Runtime
-    CACHE_KEY = '__site_kit_runtime'
+  class Build
+    CACHE_KEY = '__site_kit_build'
 
     def self.for(site)
       site.config[CACHE_KEY] ||= new(site)
@@ -17,15 +16,55 @@ module SiteKit
       @site = site
     end
 
-    def app_config
-      @app_config ||= SiteKit::Catalogs::AppConfigRepository.new(site.data.fetch('site').fetch('app')).load
+    def pages
+      @pages ||= begin
+        list = eureka.generated_pages + source_notes.generated_pages + templates.embed_pages
+        SiteKit::Emit.validate_pages!(list)
+        list
+      end
     end
 
-    def site_projects
-      @site_projects ||= SiteKit::Catalogs::SiteProjectPresenter.new(
-        manifests: project_registry.manifests,
-        source_registries: source_notes.registries
-      ).records
+    alias generated_pages pages
+
+    def search_extras
+      @search_extras ||= SiteKit::Extras::Pagefind.records(template_guide: templates.guide)
+    end
+
+    alias search_records search_extras
+
+    def attach!(site)
+      documents = site.pages + site.collections.fetch('posts').docs
+      documents.each { |document| attach_document(document) }
+    end
+
+    def attach_document(document)
+      case document.data['layout']
+      when 'home'
+        document.data['home_projects'] = site_projects
+      when 'problems'
+        document.data['explorer'] = eureka.explorers.fetch(document.data.fetch('project_slug'))
+      when 'template_library'
+        guide = templates.guide
+        document.data['template_guide'] = guide
+        document.data['default_template_target'] = guide.fetch('default_target')
+        slug = document.data.fetch('project_slug')
+        document.data['project_title'] ||= eureka.explorers.fetch(slug).fetch('project_title')
+      end
+    end
+
+    def validate!
+      pages
+      guide = templates.guide
+      eureka.explorers
+      eureka.topics
+      validate_template_reference_rules!(guide)
+      validate_problem_template_keys!
+      source_notes.registries
+      nil
+    end
+
+    def app_config
+      @app_config ||= SiteKit::Catalogs::AppConfigRepository.new(site.data.fetch('site').fetch('app')).load
     end
 
     def eureka
@@ -52,29 +91,11 @@ module SiteKit
       )
     end
 
-    def generated_pages
-      @generated_pages ||= begin
-        pages = eureka.generated_pages + source_notes.generated_pages + templates.embed_pages
-        SiteKit::Emit.validate_pages!(pages)
-        pages
-      end
-    end
-
-    def search_records
-      @search_records ||= SiteKit::Extras::Pagefind.records(
-        template_guide: templates.guide
-      )
-    end
-
-    def validate!
-      generated_pages
-      guide = templates.guide
-      eureka.browsers
-      eureka.topics
-      validate_template_reference_rules!(guide)
-      validate_problem_template_keys!
-      source_notes.registries
-      nil
+    def site_projects
+      @site_projects ||= SiteKit::Catalogs::SiteProjectPresenter.new(
+        manifests: project_registry.manifests,
+        source_registries: source_notes.registries
+      ).records
     end
 
     private
@@ -104,12 +125,12 @@ module SiteKit
     end
 
     def validate_problem_template_keys!
-      eureka.browsers.each_value do |browser|
-        if browser.fetch('filters').key?('patterns')
+      eureka.explorers.each_value do |explorer|
+        if explorer.fetch('filters').key?('patterns')
           raise SiteKit::InvariantError, 'Problem explorer filters must not include template patterns'
         end
 
-        browser.fetch('problems').each do |problem|
+        explorer.fetch('problems').each do |problem|
           DISALLOWED_PROBLEM_TEMPLATE_KEYS.each do |key|
             next unless problem.key?(key)
 

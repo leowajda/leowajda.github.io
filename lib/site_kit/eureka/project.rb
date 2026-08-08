@@ -15,8 +15,8 @@ module SiteKit
         manifest.slug
       end
 
-      def browser_record
-        @browser_record ||= begin
+      def explorer
+        @explorer ||= begin
           languages = catalog.language_page_records.map { |language| language.slice('slug', 'label') }
           {
             'project_slug' => slug,
@@ -84,7 +84,7 @@ module SiteKit
         @page_factory ||= SiteKit::Eureka::PageFactory.new(
           project_slug: slug,
           route_base: manifest.route_base,
-          browser_record: browser_record
+          explorer: explorer
         )
       end
     end

@@ -22,7 +22,7 @@ site = Jekyll::Site.new(
 site.read
 site.generate
 
-records = SiteKit::Runtime.for(site).search_records.map(&:to_h)
+records = SiteKit::Build.for(site).search_records.map(&:to_h)
 FileUtils.mkdir_p(File.dirname(OUTPUT_PATH))
 File.write(OUTPUT_PATH, JSON.pretty_generate(records))
 puts "Wrote #{records.size} Pagefind extras to #{OUTPUT_PATH}."

@@ -2,11 +2,11 @@
 layout: default
 ---
 
-{%- assign browser = page.browser_record -%}
+{%- assign explorer = page.explorer -%}
 
 {%- include page_hero_header.html
   class="problem-browser-header"
-  eyebrow=browser.project_title
+  eyebrow=explorer.project_title
   title=page.title
   description=page.description
   link_group="problem_explorer"
@@ -21,11 +21,11 @@ layout: default
 
 <section class="problem-browser">
   <aside class="problem-browser__filters">
-    {%- include problems_filters.html browser=browser -%}
+    {%- include problems_filters.html explorer=explorer -%}
   </aside>
 
   <div class="problem-browser__results">
     <div class="active-filter-list" data-active-filter-list hidden></div>
-    {%- include problems_table.html browser=browser -%}
+    {%- include problems_table.html explorer=explorer -%}
   </div>
 </section>

@@ -60,4 +60,4 @@ require_relative 'site_kit/checks/site_invariants'
 require_relative 'site_kit/checks/source_catalogs'
 require_relative 'site_kit/checks/vendor_assets'
 
-require_relative 'site_kit/runtime'
+require_relative 'site_kit/build'

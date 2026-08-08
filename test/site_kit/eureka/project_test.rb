@@ -6,7 +6,7 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
   def test_builds_browser_topics_and_generated_pages_with_resolved_page_data
     project = build_context.eureka.projects.fetch('eureka')
 
-    browser = project.browser_record
+    browser = project.explorer
     topics = project.topics_record
     problem_page = project.generated_pages.select { |page| page[:page_type] == 'eureka_problem_page' }.find { |page| page[:dir] == '/eureka/problems/binary-search/' }
     single_language_problem_page = project.generated_pages.select { |page| page[:page_type] == 'eureka_problem_page' }.find do |page|
@@ -50,7 +50,7 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
 
   def test_browser_problem_records_keep_template_references_problem_scoped
     project = build_context.eureka.projects.fetch('eureka')
-    binary_search = project.browser_record.fetch('problems').find do |problem|
+    binary_search = project.explorer.fetch('problems').find do |problem|
       problem.fetch('problem_slug') == 'binary-search'
     end
 

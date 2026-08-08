@@ -3,15 +3,15 @@
 module SiteKit
   module Eureka
     class PageFactory
-      def initialize(project_slug:, route_base:, browser_record:)
+      def initialize(project_slug:, route_base:, explorer:)
         @project_slug = project_slug
         @route_base = route_base
-        @browser_record = browser_record
+        @explorer = explorer
         @paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
       end
 
       def problem_pages
-        browser_record.fetch('problems').map do |problem|
+        explorer.fetch('problems').map do |problem|
           problem_slug = problem.fetch('problem_slug')
           SiteKit::Emit.page(
             dir: paths.path('problems', problem_slug),
@@ -29,7 +29,7 @@ module SiteKit
       end
 
       def embed_pages
-        browser_record.fetch('problems').map do |problem|
+        explorer.fetch('problems').map do |problem|
           problem_slug = problem.fetch('problem_slug')
           SiteKit::Emit.page(
             dir: paths.embed('problems', problem_slug),
@@ -50,7 +50,7 @@ module SiteKit
 
       private
 
-      attr_reader :project_slug, :route_base, :browser_record, :paths
+      attr_reader :project_slug, :route_base, :explorer, :paths
 
       def problem_external_link(record)
         problem_source_url = record.fetch('problem_source_url')

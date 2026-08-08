@@ -5,7 +5,6 @@ require 'json'
 require_relative '../../lib/site_kit'
 
 module SiteKit
-  # Writes Pagefind hash-target extras during the main Jekyll build (one pass).
   class PagefindExtrasGenerator < Jekyll::Generator
     safe true
     priority :lowest
@@ -13,8 +12,7 @@ module SiteKit
     OUTPUT_PATH = File.expand_path('../../tmp/pagefind-extras.json', __dir__)
 
     def generate(site)
-      runtime = SiteKit::Runtime.for(site)
-      records = runtime.search_records.map(&:to_h)
+      records = SiteKit::Build.for(site).search_extras.map(&:to_h)
       FileUtils.mkdir_p(File.dirname(OUTPUT_PATH))
       File.write(OUTPUT_PATH, JSON.pretty_generate(records))
     end

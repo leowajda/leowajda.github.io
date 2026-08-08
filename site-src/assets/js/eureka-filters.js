@@ -1,19 +1,25 @@
 import { closestElement, onReady } from "./dom.js"
-import { loadPagefindRecords, pagefindFilter } from "./pagefind-client.js"
-import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery, normalizedPath } from "./search-query.js"
+import {
+  createSequenceGuard,
+  loadPagefindRecords,
+  meaningfulSearchQuery,
+  normalizeSearchQuery,
+  normalizedPath,
+  pagefindFilter
+} from "./pagefind.js"
 
-const PROBLEM_SEARCH_DEBOUNCE_MS = 160
-const problemSearchCache = new Map()
+const DEBOUNCE_MS = 160
+const cache = new Map()
 
-const queryCheckedRadio = (form, name) =>
+const checkedRadio = (form, name) =>
   form.querySelector(`input[name="${name}"]:checked`)?.value ?? ""
 
-const queryCheckedValues = (form, name) =>
+const checkedValues = (form, name) =>
   Array.from(form.querySelectorAll(`input[name="${name}"]:checked`))
     .map((input) => input.value)
     .filter(Boolean)
 
-const setRadioValue = (form, name, value) => {
+const setRadio = (form, name, value) => {
   const target = form.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`)
     || form.querySelector(`input[name="${name}"][value=""]`)
   if (target) {
@@ -21,89 +27,33 @@ const setRadioValue = (form, name, value) => {
   }
 }
 
-const setCheckboxValue = (form, name, value, checked) => {
+const setCheckbox = (form, name, value, checked) => {
   const target = form.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`)
   if (target) {
     target.checked = checked
   }
 }
 
-const parseJsonArray = (value) => {
-  try {
-    const parsed = JSON.parse(value || "[]")
-    return Array.isArray(parsed) ? parsed.map(String) : []
-  } catch {
-    return []
-  }
-}
-
-const readProblemRow = (element) => ({
-  element,
-  url: normalizedPath(element.dataset.searchUrl || ""),
-  difficulty: element.dataset.difficulty || "",
-  categories: parseJsonArray(element.dataset.categories),
-  languages: parseJsonArray(element.dataset.languages)
-})
-
-const languageSearchValue = (input) =>
-  input.dataset.searchFilterValue || input.value
-
 const anyFilter = (values) =>
   values.length === 1 ? values[0] : { any: values }
 
-const searchFilters = (state) => {
-  const filters = { kind: "Problem" }
+const languageLabel = (input) =>
+  input.dataset.searchFilterValue || input.value
 
-  if (state.difficulty) {
-    filters.difficulty = state.difficulty
-  }
-
-  if (state.categories.length > 0) {
-    filters.category = anyFilter(state.categories)
-  }
-
-  if (state.languageFilterActive) {
-    filters.language = anyFilter(state.selectedLanguageLabels)
-  }
-
-  return filters
-}
-
-const matchesDomFilters = (row, state) => {
-  if (state.difficulty && row.difficulty !== state.difficulty) {
-    return false
-  }
-
-  if (state.categories.length > 0 && !state.categories.some((category) => row.categories.includes(category))) {
-    return false
-  }
-
-  if (state.languageFilterActive) {
-    const selectedSlugs = state.selectedLanguages.map((input) => input.value)
-    if (!selectedSlugs.some((slug) => row.languages.includes(slug))) {
-      return false
-    }
-  }
-
-  return true
-}
-
-const searchResultUrls = async (query, filters) => {
-  const normalizedQuery = query || null
-  const cacheKey = JSON.stringify([normalizedQuery, filters])
-  if (!problemSearchCache.has(cacheKey)) {
-    problemSearchCache.set(
-      cacheKey,
-      loadPagefindRecords(normalizedQuery, { filters: pagefindFilter(filters) })
+const fetchUrls = async (query, filters) => {
+  const key = JSON.stringify([query, filters])
+  if (!cache.has(key)) {
+    cache.set(
+      key,
+      loadPagefindRecords(query, { filters: pagefindFilter(filters) })
         .then((records) => new Set(records.map((record) => normalizedPath(record.url))))
         .catch((error) => {
-          problemSearchCache.delete(cacheKey)
+          cache.delete(key)
           throw error
         })
     )
   }
-
-  return problemSearchCache.get(cacheKey)
+  return cache.get(key)
 }
 
 const initializeProblemFilters = () => {
@@ -113,227 +63,205 @@ const initializeProblemFilters = () => {
     return
   }
 
-  const activeFilterList = document.querySelector("[data-active-filter-list]")
-  const emptyState = document.querySelector("[data-problem-empty]")
+  const chips = document.querySelector("[data-active-filter-list]")
+  const empty = document.querySelector("[data-problem-empty]")
   const searchInput = form.querySelector('input[name="search"]')
   const languageInputs = Array.from(form.querySelectorAll('input[name="language"]'))
   const languageCells = Array.from(table.querySelectorAll("[data-language-column]"))
-  const rows = Array.from(table.querySelectorAll("[data-problem-row]")).map(readProblemRow)
+  const rows = Array.from(table.querySelectorAll("[data-problem-row]")).map((element) => ({
+    element,
+    url: normalizedPath(element.dataset.searchUrl || "")
+  }))
   const sequence = createSequenceGuard()
-  const defaultEmptyMessage = emptyState?.textContent || "No problems match the current search."
-  let renderDebounce
+  const emptyDefault = empty?.textContent || "No problems match the current search."
+  let debounce
 
-  const readSelectedLanguages = () => {
+  const selectedLanguages = () => {
     if (languageInputs.length === 0) {
       return []
     }
-
     const selected = languageInputs.filter((input) => input.checked)
     if (selected.length > 0) {
       return selected
     }
-
     languageInputs.forEach((input) => {
       input.checked = true
     })
     return languageInputs
   }
 
-  const renderLanguageColumns = (selectedLanguages) => {
-    if (languageCells.length === 0) {
-      return
-    }
-
-    const selectedSlugs = selectedLanguages.map((input) => input.value)
-    table.style.setProperty("--visible-language-count", String(Math.max(selectedSlugs.length, 1)))
-    languageCells.forEach((cell) => {
-      const columnLanguage = cell.dataset.languageColumn || ""
-      cell.hidden = selectedSlugs.length > 0 && !selectedSlugs.includes(columnLanguage)
-    })
-  }
-
-  const readState = () => {
-    const selectedLanguages = readSelectedLanguages()
-    const selectedLanguageLabels = selectedLanguages.map(languageSearchValue)
-    const languageFilterActive = languageInputs.length > 0 && selectedLanguages.length < languageInputs.length
+  const state = () => {
+    const languages = selectedLanguages()
     const query = normalizeSearchQuery(searchInput?.value)
-
     return {
       query,
       queryActive: meaningfulSearchQuery(query),
-      difficulty: queryCheckedRadio(form, "difficulty"),
-      categories: queryCheckedValues(form, "category"),
-      selectedLanguages,
-      selectedLanguageLabels,
-      languageFilterActive
+      difficulty: checkedRadio(form, "difficulty"),
+      categories: checkedValues(form, "category"),
+      languages,
+      languageFilterActive: languageInputs.length > 0 && languages.length < languageInputs.length
     }
   }
 
-  const renderActiveFilters = (state) => {
-    if (!activeFilterList) {
+  const paintColumns = (languages) => {
+    if (languageCells.length === 0) {
       return
     }
+    const slugs = languages.map((input) => input.value)
+    table.style.setProperty("--visible-language-count", String(Math.max(slugs.length, 1)))
+    languageCells.forEach((cell) => {
+      const column = cell.dataset.languageColumn || ""
+      cell.hidden = slugs.length > 0 && !slugs.includes(column)
+    })
+  }
 
-    const filters = []
-
-    if (state.queryActive) {
-      filters.push({ kind: "search", value: state.query, label: `Search: ${state.query}` })
+  const paintChips = (current) => {
+    if (!chips) {
+      return
     }
-
-    if (state.difficulty) {
-      filters.push({ kind: "difficulty", value: state.difficulty, label: `Difficulty: ${state.difficulty}` })
+    const items = []
+    if (current.queryActive) {
+      items.push({ kind: "search", value: current.query, label: `Search: ${current.query}` })
     }
-
-    for (const category of state.categories) {
-      filters.push({ kind: "category", value: category, label: `Category: ${category}` })
+    if (current.difficulty) {
+      items.push({ kind: "difficulty", value: current.difficulty, label: `Difficulty: ${current.difficulty}` })
     }
-
-    if (state.languageFilterActive) {
-      state.selectedLanguages.forEach((input) => {
-        filters.push({ kind: "language", value: input.value, label: `Language: ${languageSearchValue(input)}` })
+    current.categories.forEach((category) => {
+      items.push({ kind: "category", value: category, label: `Category: ${category}` })
+    })
+    if (current.languageFilterActive) {
+      current.languages.forEach((input) => {
+        items.push({ kind: "language", value: input.value, label: `Language: ${languageLabel(input)}` })
       })
     }
-
-    activeFilterList.replaceChildren()
-
-    if (filters.length === 0) {
-      activeFilterList.hidden = true
+    chips.replaceChildren()
+    if (items.length === 0) {
+      chips.hidden = true
       return
     }
-
-    filters.forEach((filter) => {
+    items.forEach((item) => {
       const button = document.createElement("button")
       button.type = "button"
       button.className = "active-filter"
-      button.dataset.filterKind = filter.kind
-      button.dataset.filterValue = filter.value
-      button.textContent = filter.label
-      activeFilterList.append(button)
+      button.dataset.filterKind = item.kind
+      button.dataset.filterValue = item.value
+      button.textContent = item.label
+      chips.append(button)
     })
-
-    const clearAllButton = document.createElement("button")
-    clearAllButton.type = "button"
-    clearAllButton.className = "active-filter active-filter--clear"
-    clearAllButton.dataset.filterKind = "clear"
-    clearAllButton.textContent = "Clear all"
-    activeFilterList.append(clearAllButton)
-    activeFilterList.hidden = false
+    const clear = document.createElement("button")
+    clear.type = "button"
+    clear.className = "active-filter active-filter--clear"
+    clear.dataset.filterKind = "clear"
+    clear.textContent = "Clear all"
+    chips.append(clear)
+    chips.hidden = false
   }
 
-  const renderRows = (isVisible) => {
-    let visibleCount = 0
+  const paintRows = (visible) => {
+    let count = 0
     rows.forEach((row) => {
-      const visible = isVisible(row)
-      row.element.hidden = !visible
-      if (visible) {
-        visibleCount += 1
+      const show = visible(row)
+      row.element.hidden = !show
+      if (show) {
+        count += 1
       }
     })
-
-    if (emptyState) {
-      emptyState.textContent = defaultEmptyMessage
-      emptyState.hidden = visibleCount > 0
+    if (empty) {
+      empty.textContent = emptyDefault
+      empty.hidden = count > 0
     }
   }
 
-  const renderSearchUnavailable = () => {
-    if (emptyState) {
-      emptyState.textContent = "Problem search is unavailable."
-      emptyState.hidden = false
+  const filtersFor = (current) => {
+    const filters = { kind: "Problem" }
+    if (current.difficulty) {
+      filters.difficulty = current.difficulty
     }
-
-    rows.forEach((row) => {
-      row.element.hidden = true
-    })
+    if (current.categories.length > 0) {
+      filters.category = anyFilter(current.categories)
+    }
+    if (current.languageFilterActive) {
+      filters.language = anyFilter(current.languages.map(languageLabel))
+    }
+    return filters
   }
+
+  const filtered = (current) =>
+    current.queryActive
+    || Boolean(current.difficulty)
+    || current.categories.length > 0
+    || current.languageFilterActive
 
   const render = async () => {
-    const state = readState()
-    renderLanguageColumns(state.selectedLanguages)
-    renderActiveFilters(state)
+    const current = state()
+    paintColumns(current.languages)
+    paintChips(current)
+    const token = sequence.next()
 
-    const currentSequence = sequence.next()
-
-    if (!state.queryActive) {
-      renderRows((row) => matchesDomFilters(row, state))
+    if (!filtered(current)) {
+      paintRows(() => true)
       return
     }
 
-    let searchUrls
     try {
-      searchUrls = await searchResultUrls(state.query, searchFilters(state))
-    } catch (error) {
-      if (sequence.matches(currentSequence)) {
-        renderSearchUnavailable()
-      }
-      console.error(error)
-      return
-    }
-
-    if (!sequence.matches(currentSequence)) {
-      return
-    }
-
-    renderRows((row) => searchUrls.has(row.url))
-  }
-
-  const scheduleRender = () => {
-    window.clearTimeout(renderDebounce)
-    renderDebounce = window.setTimeout(render, PROBLEM_SEARCH_DEBOUNCE_MS)
-  }
-
-  if (activeFilterList) {
-    activeFilterList.addEventListener("click", (event) => {
-      const button = closestElement(event.target, "[data-filter-kind]")
-      if (!(button instanceof HTMLButtonElement)) {
+      const urls = await fetchUrls(current.queryActive ? current.query : null, filtersFor(current))
+      if (!sequence.matches(token)) {
         return
       }
-
-      const { filterKind, filterValue = "" } = button.dataset
-
-      switch (filterKind) {
-        case "search":
-          if (searchInput) {
-            searchInput.value = ""
-          }
-          break
-        case "difficulty":
-          setRadioValue(form, "difficulty", "")
-          break
-        case "category":
-          setCheckboxValue(form, "category", filterValue, false)
-          break
-        case "language":
-          setCheckboxValue(form, "language", filterValue, false)
-          break
-        case "clear":
-          form.reset()
-          break
-        default:
-          return
+      paintRows((row) => urls.has(row.url))
+    } catch (error) {
+      if (sequence.matches(token) && empty) {
+        empty.textContent = "Problem search is unavailable."
+        empty.hidden = false
       }
-
-      render()
-    })
+      rows.forEach((row) => {
+        row.element.hidden = true
+      })
+      console.error(error)
+    }
   }
+
+  const schedule = () => {
+    window.clearTimeout(debounce)
+    debounce = window.setTimeout(render, DEBOUNCE_MS)
+  }
+
+  chips?.addEventListener("click", (event) => {
+    const button = closestElement(event.target, "[data-filter-kind]")
+    if (!(button instanceof HTMLButtonElement)) {
+      return
+    }
+    const { filterKind, filterValue = "" } = button.dataset
+    if (filterKind === "search" && searchInput) {
+      searchInput.value = ""
+    } else if (filterKind === "difficulty") {
+      setRadio(form, "difficulty", "")
+    } else if (filterKind === "category") {
+      setCheckbox(form, "category", filterValue, false)
+    } else if (filterKind === "language") {
+      setCheckbox(form, "language", filterValue, false)
+    } else if (filterKind === "clear") {
+      form.reset()
+    } else {
+      return
+    }
+    render()
+  })
 
   form.addEventListener("input", (event) => {
     if (event.target === searchInput) {
-      scheduleRender()
+      schedule()
       return
     }
-
     render()
   })
   form.addEventListener("change", (event) => {
-    if (event.target === searchInput) {
-      return
+    if (event.target !== searchInput) {
+      render()
     }
-
-    render()
   })
   form.addEventListener("reset", () => {
-    window.clearTimeout(renderDebounce)
+    window.clearTimeout(debounce)
     window.setTimeout(render, 0)
   })
 

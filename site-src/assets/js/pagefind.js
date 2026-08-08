@@ -1,37 +1,42 @@
 let pagefindPromise
 const resultDataCache = new Map()
 
-const pagefindConfig = () => ({
-  bundle: document.body.dataset.pagefindBundle || "/pagefind/pagefind.js",
-  baseUrl: document.body.dataset.pagefindBaseUrl || "/"
-})
+export const MIN_SEARCH_QUERY_LENGTH = 2
 
-const debugPagefind = () => {
+export const normalizeSearchQuery = (value) => (value || "").trim()
+
+export const meaningfulSearchQuery = (value) =>
+  normalizeSearchQuery(value).length >= MIN_SEARCH_QUERY_LENGTH
+
+export const normalizedPath = (url) => {
   try {
-    return window.localStorage.getItem("pagefind:debug") === "1"
+    return new URL(url, window.location.origin).pathname
   } catch {
-    return false
+    return url
   }
 }
 
-const timed = async (label, operation) => {
-  if (!debugPagefind()) {
-    return operation()
-  }
-
-  const start = window.performance.now()
-  try {
-    return await operation()
-  } finally {
-    const elapsed = Math.round(window.performance.now() - start)
-    console.debug(`[Pagefind] ${label}: ${elapsed}ms`)
+export const createSequenceGuard = () => {
+  let current = 0
+  return {
+    next() {
+      current += 1
+      return current
+    },
+    current() {
+      return current
+    },
+    matches(sequence) {
+      return sequence === current
+    }
   }
 }
 
 export const loadPagefind = async () => {
   if (!pagefindPromise) {
-    pagefindPromise = timed("init", async () => {
-      const { bundle, baseUrl } = pagefindConfig()
+    pagefindPromise = (async () => {
+      const bundle = document.body.dataset.pagefindBundle || "/pagefind/pagefind.js"
+      const baseUrl = document.body.dataset.pagefindBaseUrl || "/"
       const pagefind = await import(bundle)
       await pagefind.options({
         baseUrl,
@@ -50,34 +55,30 @@ export const loadPagefind = async () => {
       })
       await pagefind.init()
       return pagefind
-    })
+    })()
   }
-
   return pagefindPromise
 }
 
 export const preloadPagefind = async (query, options = {}) => {
   const pagefind = await loadPagefind()
-  await timed(`preload "${query}"`, () => pagefind.preload(query, options))
+  await pagefind.preload(query, options)
   return pagefind
 }
 
 export const searchPagefind = async (query, options = {}) => {
   const pagefind = query === null ? await loadPagefind() : await preloadPagefind(query, options)
-  const label = query === null ? "filters" : `"${query}"`
-  return timed(`search ${label}`, () => pagefind.search(query, options))
+  return pagefind.search(query, options)
 }
 
 export const loadPagefindResultData = (result) => {
   const key = result.id || result.url
   if (!key) {
-    return timed("result data", () => result.data())
+    return result.data()
   }
-
   if (!resultDataCache.has(key)) {
-    resultDataCache.set(key, timed(`result data ${key}`, () => result.data()))
+    resultDataCache.set(key, result.data())
   }
-
   return resultDataCache.get(key)
 }
 

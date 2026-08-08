@@ -1,27 +1,73 @@
-import { isSearchRoute } from "./dom.js"
-import { loadPagefind, preloadPagefind, searchPagefind } from "./pagefind-client.js"
-import { createSearchResultSet, renderSearchResults, renderSearchTooShort, SEARCH_PAGE_SIZE } from "./search-results.js"
-import { createSequenceGuard, meaningfulSearchQuery, normalizeSearchQuery } from "./search-query.js"
+import { closestElement, isSearchRoute } from "./dom.js"
+import {
+  createSequenceGuard,
+  loadPagefind,
+  loadPagefindResultData,
+  meaningfulSearchQuery,
+  normalizeSearchQuery,
+  preloadPagefind,
+  searchPagefind
+} from "./pagefind.js"
+
+const SEARCH_PAGE_SIZE = 8
+
+const resultMetaLine = (data) =>
+  [data.meta?.kind, data.meta?.section].filter(Boolean).join(": ")
+
+const createResultElement = (data, index) => {
+  const item = document.createElement("a")
+  item.className = "search-result"
+  item.id = `site-search-option-${index}`
+  item.href = data.url
+  item.setAttribute("role", "option")
+  item.dataset.searchResultLink = ""
+  item.tabIndex = -1
+
+  const meta = document.createElement("p")
+  meta.className = "search-result__meta"
+  meta.textContent = resultMetaLine(data)
+
+  const title = document.createElement("h2")
+  title.className = "search-result__title"
+  title.textContent = data.meta?.title || data.url
+
+  const summary = document.createElement("p")
+  summary.className = "search-result__summary"
+  summary.textContent = data.meta?.summary || ""
+
+  item.append(meta, title)
+  if (summary.textContent) {
+    item.append(summary)
+  }
+  return item
+}
+
+const createSearchResultSet = (search) => ({
+  total: search.results.length,
+  records: [],
+  async loadThrough(count) {
+    const results = search.results.slice(0, count)
+    this.records = await Promise.all(results.map(loadPagefindResultData))
+    return this.records
+  }
+})
+
+const paintResults = ({ records, total = records.length, visibleCount, results, summary, moreButton }) => {
+  if (total === 0) {
+    summary.textContent = "No results."
+    results.replaceChildren()
+    moreButton.hidden = true
+    return
+  }
+  summary.textContent = total === 1 ? "1 result." : `${total} results.`
+  results.replaceChildren(...records.slice(0, visibleCount).map((record, index) => createResultElement(record, index)))
+  moreButton.hidden = visibleCount >= total
+  moreButton.textContent = `Show ${Math.min(SEARCH_PAGE_SIZE, total - visibleCount)} more`
+}
 
 let searchOverlay = null
 
-const warmSearchIndex = () => {
-  loadPagefind().catch(() => {})
-}
-
-const renderPrompt = ({ summary, results, moreButton }) => {
-  summary.textContent = "Type to search."
-  results.replaceChildren()
-  moreButton.hidden = true
-}
-
-const renderUnavailable = ({ summary, results, moreButton }) => {
-  summary.textContent = "Search index is unavailable."
-  results.replaceChildren()
-  moreButton.hidden = true
-}
-
-export const initializeSearchOverlay = () => {
+const initializeSearchOverlay = () => {
   if (searchOverlay) {
     return searchOverlay
   }
@@ -43,11 +89,8 @@ export const initializeSearchOverlay = () => {
   const sequence = createSequenceGuard()
   let debounce
 
-  const resultLinks = () =>
-    Array.from(results.querySelectorAll("[data-search-result-link]"))
-
-  const resultOptions = () =>
-    Array.from(results.querySelectorAll('[role="option"]'))
+  const resultLinks = () => Array.from(results.querySelectorAll("[data-search-result-link]"))
+  const resultOptions = () => Array.from(results.querySelectorAll('[role="option"]'))
 
   const setExpanded = (expanded) => {
     input.setAttribute("aria-expanded", expanded ? "true" : "false")
@@ -56,9 +99,7 @@ export const initializeSearchOverlay = () => {
   const clearActiveOption = () => {
     activeIndex = -1
     input.removeAttribute("aria-activedescendant")
-    resultOptions().forEach((option) => {
-      option.removeAttribute("aria-selected")
-    })
+    resultOptions().forEach((option) => option.removeAttribute("aria-selected"))
   }
 
   const setActiveOption = (index) => {
@@ -67,7 +108,6 @@ export const initializeSearchOverlay = () => {
       clearActiveOption()
       return
     }
-
     activeIndex = Math.max(0, Math.min(index, options.length - 1))
     options.forEach((option, optionIndex) => {
       if (optionIndex === activeIndex) {
@@ -85,12 +125,10 @@ export const initializeSearchOverlay = () => {
     if (options.length === 0) {
       return
     }
-
     if (activeIndex === -1) {
       setActiveOption(offset > 0 ? 0 : options.length - 1)
       return
     }
-
     setActiveOption(activeIndex + offset)
   }
 
@@ -99,7 +137,6 @@ export const initializeSearchOverlay = () => {
     if (links.length === 0) {
       return
     }
-
     const target = activeIndex >= 0 ? links[activeIndex] : links[0]
     if (target) {
       window.location.assign(target.href)
@@ -111,78 +148,73 @@ export const initializeSearchOverlay = () => {
       window.location.assign(document.body.dataset.pagefindBaseUrl || "/")
       return
     }
-
     dialog.close()
   }
 
   const render = async ({ resetVisibleCount = true } = {}) => {
     const query = normalizeSearchQuery(input.value)
     const currentSequence = sequence.next()
-
     if (resetVisibleCount) {
       visibleCount = SEARCH_PAGE_SIZE
     }
-
     clearActiveOption()
 
     if (!query) {
       resultSet = null
-      renderPrompt({ summary, results, moreButton })
+      summary.textContent = "Type to search."
+      results.replaceChildren()
+      moreButton.hidden = true
       return
     }
 
     if (!meaningfulSearchQuery(query)) {
       resultSet = null
-      renderSearchTooShort({ summary, results, moreButton })
+      summary.textContent = "Type at least 2 characters."
+      results.replaceChildren()
+      moreButton.hidden = true
       return
     }
 
     summary.textContent = "Searching."
-
     try {
       const search = await searchPagefind(query)
       if (!sequence.matches(currentSequence)) {
         return
       }
-
       const nextResultSet = createSearchResultSet(search)
       const records = await nextResultSet.loadThrough(visibleCount)
       if (!sequence.matches(currentSequence)) {
         return
       }
-
       resultSet = nextResultSet
-      renderSearchResults({ records, total: resultSet.total, visibleCount, results, summary, moreButton })
+      paintResults({ records, total: resultSet.total, visibleCount, results, summary, moreButton })
     } catch (error) {
-      renderUnavailable({ summary, results, moreButton })
+      summary.textContent = "Search index is unavailable."
+      results.replaceChildren()
+      moreButton.hidden = true
       console.error(error)
     }
   }
 
   const openOverlay = ({ query = input.value } = {}) => {
     opener = document.activeElement
-
     if (query !== input.value) {
       input.value = query
     }
-
     if (!dialog.open) {
       dialog.showModal()
     }
-
     setExpanded(true)
-    warmSearchIndex()
+    loadPagefind().catch(() => {})
     input.focus()
     render()
   }
 
   dialog.querySelector("[data-search-close]")?.addEventListener("click", closeOverlay)
-
   dialog.addEventListener("cancel", (event) => {
     event.preventDefault()
     closeOverlay()
   })
-
   dialog.addEventListener("close", () => {
     setExpanded(false)
     clearActiveOption()
@@ -194,21 +226,21 @@ export const initializeSearchOverlay = () => {
   input.addEventListener("input", () => {
     const query = normalizeSearchQuery(input.value)
     if (query) {
-      preloadPagefind(query)
-        .catch(() => {})
+      preloadPagefind(query).catch(() => {})
     }
     window.clearTimeout(debounce)
     debounce = window.setTimeout(() => {
       render()
     }, 160)
   })
-  input.addEventListener("focus", warmSearchIndex)
+  input.addEventListener("focus", () => {
+    loadPagefind().catch(() => {})
+  })
 
   moreButton.addEventListener("click", async () => {
     if (!resultSet || resultSet.total === 0) {
       return
     }
-
     const currentSequence = sequence.current()
     visibleCount += SEARCH_PAGE_SIZE
     summary.textContent = "Loading."
@@ -217,9 +249,8 @@ export const initializeSearchOverlay = () => {
       if (!sequence.matches(currentSequence)) {
         return
       }
-
       const previousActive = activeIndex
-      renderSearchResults({ records, total: resultSet.total, visibleCount, results, summary, moreButton })
+      paintResults({ records, total: resultSet.total, visibleCount, results, summary, moreButton })
       if (previousActive >= 0) {
         setActiveOption(previousActive)
       }
@@ -237,13 +268,11 @@ export const initializeSearchOverlay = () => {
       closeOverlay()
       return
     }
-
     if (event.key === "ArrowDown") {
       event.preventDefault()
       moveActiveOption(1)
       return
     }
-
     if (event.key === "ArrowUp") {
       event.preventDefault()
       if (activeIndex <= 0) {
@@ -251,11 +280,9 @@ export const initializeSearchOverlay = () => {
         input.focus()
         return
       }
-
       moveActiveOption(-1)
       return
     }
-
     if (event.key === "Enter" && document.activeElement === input) {
       event.preventDefault()
       openActiveResult()
@@ -264,16 +291,62 @@ export const initializeSearchOverlay = () => {
 
   searchOverlay = {
     open: openOverlay,
-    warm: warmSearchIndex
+    warm: () => {
+      loadPagefind().catch(() => {})
+    }
   }
-
   return searchOverlay
 }
 
-export const openSearchOverlay = (options = {}) => {
-  initializeSearchOverlay()?.open(options)
-}
+const isEditableTarget = (target) =>
+  target instanceof HTMLInputElement
+  || target instanceof HTMLTextAreaElement
+  || target instanceof HTMLSelectElement
+  || target?.isContentEditable
 
-export const warmSearchOverlay = () => {
-  initializeSearchOverlay()?.warm()
+export const initializeSearch = () => {
+  const dialog = document.querySelector("[data-search-overlay]")
+  if (!(dialog instanceof HTMLDialogElement)) {
+    return
+  }
+
+  const open = (options = {}) => {
+    initializeSearchOverlay()?.open(options)
+  }
+  const warm = () => {
+    initializeSearchOverlay()?.warm()
+  }
+
+  document.addEventListener("click", (event) => {
+    const control = closestElement(event.target, "[data-search-open]")
+    if (!control) {
+      return
+    }
+    event.preventDefault()
+    open()
+  })
+
+  document.querySelectorAll("[data-search-open]").forEach((control) => {
+    control.addEventListener("pointerenter", warm, { once: true })
+    control.addEventListener("focus", warm, { once: true })
+  })
+
+  document.addEventListener("keydown", (event) => {
+    if (dialog.open || isEditableTarget(event.target)) {
+      return
+    }
+    if (event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      event.preventDefault()
+      open({ query: "" })
+      return
+    }
+    if (event.key.toLowerCase() === "k" && (event.metaKey || event.ctrlKey)) {
+      event.preventDefault()
+      open({ query: "" })
+    }
+  })
+
+  if (document.body.hasAttribute("data-search-auto-open") || isSearchRoute()) {
+    open({ query: new URLSearchParams(window.location.search).get("q") || "" })
+  }
 }

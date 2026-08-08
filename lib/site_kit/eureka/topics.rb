@@ -2,7 +2,6 @@
 
 module SiteKit
   module Eureka
-    # Resolves problem → template guide references and validates category coverage.
     module Topics
       module_function
 
