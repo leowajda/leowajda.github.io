@@ -6,12 +6,13 @@ Jekyll-first personal site: algorithm solutions (Eureka), code templates, source
 
 | Path | Role |
 |------|------|
-| `lib/site_kit/` | Domain library: catalogs, page contexts, search records, checks |
+| `lib/site_kit/` | Build pipe only (see `BUILD.md`): load catalogs, emit pages, checks |
 | `site-src/` | Jekyll source: layouts, includes, Sass, data, progressive JS, plugins |
 | `sources/` | Content catalogs (eureka, templates, zibaldone submodules/files) |
 | `script/` | Thin build/validate entrypoints |
-| `test/` | Ruby unit tests for pure builders and validators |
+| `test/` | Ruby unit tests for catalogs and emit contracts |
 | `tests/functional/` | Playwright tests for rendered behavior |
+| `BUILD.md` | Build pipe and code contract |
 | `DESIGN.md` | UI, writing, navigation, and interaction authority |
 
 ## URL algebra
