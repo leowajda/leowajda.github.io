@@ -33,14 +33,15 @@ Concrete routes:
 | Problem catalog | `/eureka/problems/` |
 | Problem | `/eureka/problems/{slug}/` |
 | Problem embed (all languages, iframe-ready) | `/eureka/problems/{slug}/embed/` |
-| Flowchart | `/eureka/flowchart/` |
+| Template embed | `/templates/{template-id}/embed/` |
+| Source code embed | `…/embed/` on code documents |
 | Templates | `/templates/` |
 | Source notes home | `/zibaldone/` |
 | Source language / module / doc | `/zibaldone/{lang}/…` |
 | Writing | `/writing/{slug}/` |
 | Search | `/search/?q=` |
 
-Language is a filter on the problem explorer, not a separate path tree. Embeds are problem-level (one URL per problem), not per implementation. Embed pages use a bare layout (no site nav) and post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts (e.g. RemNote Iframe Plugin).
+Language is a filter on the problem explorer, not a separate path tree. Embeds use a bare layout (no site nav) and post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts. Every code box (problems, templates, source notes) shares `code_collection` and can expose `embed_url`.
 
 ## Philosophy
 
@@ -120,7 +121,7 @@ Read `DESIGN.md` before any UI, navigation, interaction, or copy change. Writing
 ## JavaScript
 
 - Progressive enhancement only: Jekyll owns content; JS selects, zooms, and enhances.
-- Module budget: one entry file per page feature until it exceeds ~400 LOC of distinct concerns. Flowchart is at most three files (`flowchart.js`, `flowchart-x6.js`, `flowchart-viewport.js`). Do not reintroduce satellite modules for state factories, rename wrappers, or thin event glue.
+- Module budget: one entry file per page feature until it exceeds ~400 LOC of distinct concerns. Do not reintroduce satellite modules for state factories, rename wrappers, or thin event glue.
 - Contracts over DOM IPC: no synthetic `.click()` across features; no double-`setTimeout` layout hacks. Prefer small exported APIs on the owning module.
 - Modern ES modules and browser APIs. Shared helpers stay in `dom.js` (or one tiny lib) — not a utils folder.
 - `pnpm check:js` for syntax and lint; do not bypass `eslint.config.mjs` without intentional, documented rule changes.
@@ -136,7 +137,7 @@ Read `DESIGN.md` before any UI, navigation, interaction, or copy change. Writing
 ## Search
 
 - Pagefind indexes rendered HTML (`data-pagefind-body` / `data-pagefind-filter` / `data-pagefind-meta` on problem and source pages)
-- Template and flowchart **hash targets** are the only custom extras (`pnpm build:pagefind-extras`)
+- Template **hash targets** are the only custom extras (`pnpm build:pagefind-extras`)
 - Rebuild with `pnpm build:indexed-site`; do not hand-edit `_site/pagefind`
 - Problem explorer text search must pass active filters to Pagefind — no DOM text matching
 - Search UI must keep proper dialog/combobox accessibility: focus management, Escape, keyboard navigation
@@ -147,7 +148,7 @@ Read `DESIGN.md` before any UI, navigation, interaction, or copy change. Writing
 - Config: `.playwright/cli.config.json`
 - Prefer `snapshot`, `screenshot`, `console`, `network`, `click`, `hover`, `eval`
 - Prefer role/name locators; data attributes only for structural invariants
-- Playwright Test for explorer, template guide, flowchart, search, responsive behavior
+- Playwright Test for explorer, template guide, search, responsive behavior
 - Ruby tests for pure builders, repositories, validators, and checks only
 
 ## Validation matrix
@@ -156,7 +157,7 @@ Read `DESIGN.md` before any UI, navigation, interaction, or copy change. Writing
 |-------------|-----|
 | Ruby, scripts, data registry | `pnpm lint:ruby && pnpm test:ruby && pnpm validate:catalogs` |
 | Layouts, includes, Sass, JS, search, SEO, generated pages | `pnpm check:js && pnpm test:site && pnpm check:links` |
-| Search UI, explorer, template guide, flowchart, browser UX | `pnpm test:functional` |
+| Search UI, explorer, template guide, browser UX | `pnpm test:functional` |
 | Handoff after code changes | `pnpm test:full` (or state why it could not run) |
 
 Do not rely on Ruby tests alone for rendered page behavior.

@@ -5,18 +5,15 @@ require 'pathname'
 module SiteKit
   module Eureka
     class Project
-      def initialize(manifest:, app_config:, template_library:, flowchart_data:)
+      def initialize(manifest:, app_config:, template_library:)
         @manifest = manifest
         @app_config = app_config
         @template_library = template_library
-        @flowchart_data = flowchart_data
       end
 
       def slug
         manifest.slug
       end
-
-      attr_reader :flowchart_data
 
       def browser_record
         @browser_record ||= begin
@@ -43,7 +40,6 @@ module SiteKit
           topics: template_library.topics,
           templates: template_library.templates,
           template_guide: template_library.guide,
-          flowchart_titles: catalog.flowchart_titles,
           problem_records: catalog.problem_records
         )
       end
@@ -73,8 +69,7 @@ module SiteKit
           source_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
           source_catalog = SiteKit::Eureka::SourceCatalogLoader.new(
             manifest: manifest,
-            app_config: app_config,
-            flowchart_data: flowchart_data
+            app_config: app_config
           ).load
           SiteKit::Eureka::ProblemRegistryBuilder.new(
             manifest: manifest,

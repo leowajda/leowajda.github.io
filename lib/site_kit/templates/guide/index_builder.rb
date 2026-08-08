@@ -16,7 +16,6 @@ module SiteKit
             'template_panels' => template_panels,
             'redirects' => redirects,
             'reference_rules' => reference_rules,
-            'flowchart_nodes' => flowchart_nodes,
             'templates' => templates_by_id
           }
         end
@@ -31,13 +30,25 @@ module SiteKit
               template = variant['template']
               next unless template
 
+              target = variant.fetch('target')
+              detail_url = "#{SiteKit::TEMPLATES_URL}##{target}"
+              entries = template.fetch('entries').map do |entry|
+                entry.merge(
+                  'detail_url' => detail_url,
+                  'embed_url' => entry.fetch('embed_url')
+                )
+              end
+
               template.merge(
                 'pattern_id' => pattern.fetch('id'),
                 'pattern_label' => pattern.fetch('label'),
                 'variant_id' => variant.fetch('id'),
                 'variant_label' => variant.fetch('label'),
                 'signal' => variant.fetch('signal', ''),
-                'target' => variant.fetch('target')
+                'target' => target,
+                'detail_url' => detail_url,
+                'embed_url' => entries.first.fetch('embed_url'),
+                'entries' => entries
               )
             end
           end
@@ -79,22 +90,6 @@ module SiteKit
           end
         end
 
-        def flowchart_nodes
-          entries = Hash.new { |hash, key| hash[key] = [] }
-          patterns.each do |pattern|
-            pattern.fetch('flowchart_nodes', []).each do |node_id|
-              entries[node_id] << entrypoint_record(pattern)
-            end
-
-            pattern.fetch('variants').each do |variant|
-              variant.fetch('flowchart_nodes').each do |node_id|
-                entries[node_id] << entrypoint_record(pattern, variant)
-              end
-            end
-          end
-          entries.transform_values { |records| collapse_entrypoints(records) }
-        end
-
         def templates_by_id
           template_panels.to_h { |template| [template.fetch('id'), template] }
         end
@@ -123,11 +118,6 @@ module SiteKit
             'has_template' => variant.fetch('has_template'),
             'variant_order' => variant.fetch('order')
           )
-        end
-
-        def collapse_entrypoints(records)
-          records.uniq { |record| record.fetch('target') }
-                 .sort_by { |record| [record.fetch('pattern_label'), record.fetch('variant_label', '')] }
         end
       end
     end

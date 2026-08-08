@@ -13,18 +13,13 @@
   width: 100%;
 }
 
-.site-body--embed .problem-embed {
+.site-body--embed .code-embed,
+.site-body--embed .code-collection,
+.site-body--embed .code-panel {
   display: block;
   margin: 0;
   max-width: none;
   min-width: 0;
-  width: 100%;
-}
-
-.site-body--embed .code-collection,
-.site-body--embed .code-panel {
-  margin: 0;
-  max-width: none;
   width: 100%;
 }
 

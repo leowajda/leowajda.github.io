@@ -83,7 +83,25 @@ defaults:
       path: ""
       type: eureka_embed_page
     values:
-      layout: problem_embed
+      layout: code_embed
+      noindex: true
+      sitemap: false
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: template_embed_page
+    values:
+      layout: code_embed
+      noindex: true
+      sitemap: false
+      seo:
+        type: WebPage
+  - scope:
+      path: ""
+      type: source_embed_page
+    values:
+      layout: code_embed
       noindex: true
       sitemap: false
       seo:

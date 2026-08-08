@@ -5,14 +5,15 @@ module SiteKit
   EUREKA_PROJECT_KIND = 'eureka'
   SOURCE_NOTES_PROJECT_KIND = 'source-notes'
   TEMPLATES_URL = '/templates/'
-  FLOWCHART_URL = '/eureka/flowchart/'
 
   EUREKA_PROBLEM_PAGE_TYPE = 'eureka_problem_page'
   EUREKA_EMBED_PAGE_TYPE = 'eureka_embed_page'
+  TEMPLATE_EMBED_PAGE_TYPE = 'template_embed_page'
   SOURCE_LANGUAGE_PAGE_TYPE = 'source_language_page'
   SOURCE_HOME_PAGE_TYPE = 'source_home_page'
   SOURCE_MODULE_PAGE_TYPE = 'source_module_page'
   SOURCE_DOCUMENT_PAGE_TYPE = 'source_document_page'
+  SOURCE_EMBED_PAGE_TYPE = 'source_embed_page'
 
   DISALLOWED_PROBLEM_TEMPLATE_KEYS = %w[
     template_guide_primary

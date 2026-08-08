@@ -2,29 +2,20 @@
 
 module SiteKit
   module Extras
-    # Hash-target Pagefind records (templates + flowchart nodes only).
+    # Hash-target Pagefind records (template guide targets only).
     module Pagefind # rubocop:disable Metrics/ModuleLength
       module_function
 
       LANGUAGE = 'en'
       MAX_CONTENT_LENGTH = 8_000
 
-      def records(template_guide:, flowchart:, flowchart_summaries: {})
-        template_records(template_guide) + flowchart_records(flowchart, flowchart_summaries)
+      def records(template_guide:)
+        template_records(template_guide)
       end
 
       def template_records(guide)
         guide.fetch('patterns').flat_map do |pattern|
           [pattern_record(pattern), *variant_records(pattern)]
-        end
-      end
-
-      def flowchart_records(flowchart, summaries)
-        index = SiteKit::Compile::Flowchart::GraphIndex.new(flowchart: flowchart)
-        nodes_by_title = flowchart.fetch('nodes').group_by { |node| node.fetch('text') }
-
-        index.node_by_id.values.map do |node|
-          flowchart_node_record(node, summaries.fetch(node.fetch('id'), {}), index, nodes_by_title)
         end
       end
 
@@ -79,36 +70,6 @@ module SiteKit
         end
       end
 
-      def flowchart_node_record(node, summary, index, nodes_by_title)
-        title = node.fetch('text')
-        ancestors = ancestor_nodes(node, index)
-        ancestor_labels = ancestors.map { |ancestor| ancestor.fetch('search_title', ancestor.fetch('text')) }
-
-        build_record(
-          kind: 'Flowchart',
-          title: title,
-          url: "#{SiteKit::FLOWCHART_URL}##{node.fetch('id')}",
-          summary: title,
-          content: [
-            node.fetch('id'),
-            node.fetch('aliases', []),
-            node.fetch('kind'),
-            title,
-            node.fetch('canvas_text'),
-            node.fetch('search_title'),
-            ancestor_labels,
-            summary_text(summary),
-            node.fetch('references', []).map { |reference| reference.fetch('title', '') }
-          ],
-          filters: { 'flowchart_kind' => node.fetch('kind') },
-          meta: {
-            'target' => node.fetch('id'),
-            'section' => flowchart_section(node, title, ancestor_labels, nodes_by_title, index)
-          },
-          priority: node.fetch('kind') == 'solution' ? 80 : 60
-        )
-      end
-
       def build_record(kind:, title:, url:, content:, summary: '', filters: {}, meta: {}, priority: 50) # rubocop:disable Metrics/ParameterLists
         SiteKit::Search::Record.new(
           url: normalized_url(url),
@@ -137,12 +98,6 @@ module SiteKit
         Array(value).flatten.join(' ').gsub(/\s+/, ' ').strip
       end
 
-      def summary_text(summary)
-        return '' unless summary.is_a?(Hash)
-
-        clean_text(summary.values)
-      end
-
       def truncate_content(content)
         return content if content.length <= MAX_CONTENT_LENGTH
 
@@ -165,41 +120,6 @@ module SiteKit
         return url if url.start_with?('/', 'https://', 'http://')
 
         "/#{url}"
-      end
-
-      def ancestor_nodes(node, index)
-        ancestors = []
-        current = node
-        while (edge = index.incoming_edges_by_target[current.fetch('id')])
-          current = index.node_by_id.fetch(edge.fetch('from'))
-          ancestors.unshift(current)
-        end
-        ancestors
-      end
-
-      def flowchart_section(node, title, ancestor_labels, nodes_by_title, index)
-        parts = []
-        if nodes_by_title.fetch(title, []).size > 1
-          parts << duplicate_context(node, ancestor_labels, nodes_by_title, index)
-        end
-        parts << node.fetch('kind').capitalize
-        parts.join(' / ')
-      end
-
-      def duplicate_context(node, ancestor_labels, nodes_by_title, index)
-        duplicates = nodes_by_title.fetch(node.fetch('text'))
-        duplicate_ancestor_labels = duplicates.map do |candidate|
-          ancestor_nodes(candidate, index).map { |ancestor| ancestor.fetch('search_title', ancestor.fetch('text')) }
-        end
-
-        (1..ancestor_labels.length).each do |length|
-          suffix = ancestor_labels.last(length)
-          next if suffix.empty?
-
-          return suffix.join(' / ') if duplicate_ancestor_labels.one? { |labels| labels.last(length) == suffix }
-        end
-
-        ancestor_labels.last.to_s
       end
     end
   end

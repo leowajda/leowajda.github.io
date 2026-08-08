@@ -10,23 +10,20 @@ module SiteKit
       :order,
       :description,
       :aliases,
-      :problem_rules,
-      :flowchart_nodes
+      :problem_rules
     )
 
     class LibraryContext
-      def initialize(topics:, template_guide:, flowchart_data:, code_source_root:, language_catalog:)
+      def initialize(topics:, template_guide:, code_source_root:, language_catalog:)
         @topic_records = topics
         @template_guide_data = template_guide
-        @flowchart_data = flowchart_data
         @code_source_root = code_source_root
         @language_catalog = language_catalog
       end
 
       def topics
         @topics ||= SiteKit::Templates::TopicRepository.new(
-          topics: topic_records,
-          flowchart_data: flowchart_data
+          topics: topic_records
         ).load
       end
 
@@ -41,8 +38,7 @@ module SiteKit
               order: topic.order,
               description: topic.description,
               aliases: topic.aliases,
-              problem_rules: topic.problem_rules,
-              flowchart_nodes: topic.flowchart_nodes
+              problem_rules: topic.problem_rules
             )
           end
           SiteKit::Core::Helpers.ensure_unique!(loaded.map(&:template_id), 'Algorithmic template ids must be unique')
@@ -62,9 +58,32 @@ module SiteKit
         @guide ||= SiteKit::Templates::Guide::Repository.new(
           data: template_guide_data,
           templates: templates,
-          code_collections: code_collections,
-          flowchart_data: flowchart_data
+          code_collections: code_collections
         ).build
+      end
+
+      def embed_pages
+        @embed_pages ||= templates.map do |template|
+          entries = code_collections.fetch(template.template_id)
+          target = guide.fetch('redirects').fetch(template.template_id)
+          detail_url = "#{SiteKit::TEMPLATES_URL}##{target}"
+          linked = entries.map do |entry|
+            entry.merge('detail_url' => detail_url)
+          end
+          SiteKit::Emit.page(
+            dir: "#{SiteKit::TEMPLATES_URL}#{template.template_id}/embed/",
+            page_type: TEMPLATE_EMBED_PAGE_TYPE,
+            project_slug: 'eureka',
+            title: "#{template.title} · Embed",
+            description: "#{template.title} template embed",
+            data: {
+              'template_id' => template.template_id,
+              'entries' => linked,
+              'detail_url' => detail_url,
+              'embed' => true
+            }
+          )
+        end
       end
 
       private
@@ -76,7 +95,7 @@ module SiteKit
         ).entries_by_template(templates)
       end
 
-      attr_reader :topic_records, :template_guide_data, :flowchart_data, :code_source_root, :language_catalog
+      attr_reader :topic_records, :template_guide_data, :code_source_root, :language_catalog
     end
   end
 end

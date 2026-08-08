@@ -32,8 +32,6 @@ require_relative 'site_kit/templates/guide/reference_resolver'
 require_relative 'site_kit/templates/guide/repository'
 require_relative 'site_kit/templates/library_context'
 
-require_relative 'site_kit/compile/flowchart'
-
 require_relative 'site_kit/eureka/topics'
 require_relative 'site_kit/eureka/source_catalog_loader'
 require_relative 'site_kit/eureka/problem_registry_builder'

@@ -18,8 +18,9 @@ class SiteKitAssetVersionManifestTest < SiteKitTestCase
     imports = manifest.fetch('import_map').fetch('imports')
 
     assert_match(%r{\A/assets/js/dom\.js\?v=\d+\z}, imports.fetch('/assets/js/dom.js'))
-    assert_match(%r{\A/assets/js/flowchart-x6\.js\?v=\d+\z},
-                 imports.fetch('/assets/js/flowchart-x6.js'))
+    assert_match(%r{\A/assets/js/code-collection\.js\?v=\d+\z},
+                 imports.fetch('/assets/js/code-collection.js'))
+    refute_includes imports.keys, '/assets/js/flowchart-x6.js'
     refute_includes imports.keys, '/assets/css/main.css'
   end
 end
