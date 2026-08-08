@@ -1,14 +1,25 @@
 {%- assign entries = include.entries -%}
 {%- if entries and entries.size > 0 -%}
+  {%- assign cfg = site.data.site.app.code_collection -%}
+  {%- assign eureka_cfg = site.data.site.app.eureka.browser -%}
+  {%- assign kind = include.kind | default: 'code' -%}
   {%- assign collection_id = include.collection_id | default: '' -%}
   {%- assign default_entry = entries.first -%}
   {%- assign default_entry_id = include.default_entry_id | default: default_entry.entry_id -%}
   {%- assign sync_hash = include.sync_hash | default: false -%}
   {%- assign embed = include.embed | default: false -%}
-  {%- assign toolbar_aria = include.toolbar_aria | default: 'Code' -%}
   {%- assign problem_source_url = include.problem_source_url | default: '' -%}
-  {%- assign variant_label = include.variant_label | default: 'Variant' -%}
-  {%- assign variant_options = include.variant_options | default: empty -%}
+  {%- if kind == 'problem' -%}
+    {%- assign toolbar_aria = eureka_cfg.toolbar_label -%}
+    {%- assign variant_label = eureka_cfg.variant_group_label -%}
+    {%- assign variant_list = cfg.variants -%}
+    {%- assign keep_variants = true -%}
+  {%- else -%}
+    {%- assign toolbar_aria = cfg.default_toolbar_label -%}
+    {%- assign variant_label = cfg.default_variant_label -%}
+    {%- assign variant_list = empty -%}
+    {%- assign keep_variants = false -%}
+  {%- endif -%}
   {%- assign default_language = default_entry.language -%}
   {%- assign default_variant = default_entry.variant -%}
 
@@ -52,23 +63,21 @@
 
           {%- assign variant_count = 0 -%}
           {%- capture variant_controls -%}
-            {%- if variant_options.size > 0 -%}
-              {%- for option in variant_options -%}
-                {%- assign vslug = option.slug | default: option.id -%}
-                {%- assign vlabel = option.label | default: option.title -%}
+            {%- if keep_variants -%}
+              {%- for option in variant_list -%}
                 {%- assign variant_count = variant_count | plus: 1 -%}
                 {%- assign vactive = false -%}
-                {%- if vslug == default_variant -%}{%- assign vactive = true -%}{%- endif -%}
+                {%- if option.slug == default_variant -%}{%- assign vactive = true -%}{%- endif -%}
                 <button
                   type="button"
                   class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
                   data-code-collection-variant-control
-                  data-code-collection-variant="{{ vslug | escape }}"
-                  data-code-collection-variant-label="{{ vlabel | escape }}"
+                  data-code-collection-variant="{{ option.slug | escape }}"
+                  data-code-collection-variant-label="{{ option.label | escape }}"
                   aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
-                  aria-label="{{ vlabel | escape }}"
-                  title="{{ vlabel | escape }}"
-                >{{ vlabel | escape }}</button>
+                  aria-label="{{ option.label | escape }}"
+                  title="{{ option.label | escape }}"
+                >{{ option.label | escape }}</button>
               {%- endfor -%}
             {%- else -%}
               {%- assign variant_slugs = '' -%}
@@ -94,13 +103,13 @@
               {%- endfor -%}
             {%- endif -%}
           {%- endcapture -%}
-          {%- if variant_count > 1 or variant_options.size > 0 -%}
+          {%- if variant_count > 1 or keep_variants -%}
             <div
               class="code-collection__options code-collection__options--variants"
               role="toolbar"
               aria-label="{{ variant_label | escape }}"
               data-code-collection-variant-group
-              {% if variant_options.size > 0 %}data-code-collection-keep-visible="true"{% endif %}
+              {% if keep_variants %}data-code-collection-keep-visible="true"{% endif %}
             >
               {{ variant_controls }}
             </div>

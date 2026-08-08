@@ -68,16 +68,26 @@
   color: var(--text-muted);
 }
 
-a.search-result {
+.search-result {
   border-top: thin solid var(--border);
-  color: inherit;
   gap: 0.35rem;
   padding-top: 1rem;
+}
+
+.search-result[aria-selected="true"] {
+  outline: thin solid currentColor;
+  outline-offset: 0.2rem;
+}
+
+.search-result__link {
+  color: inherit;
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
   text-decoration: none;
 }
 
-a.search-result:focus-visible,
-a.search-result.is-active {
+.search-result__link:focus-visible {
   outline: thin solid currentColor;
   outline-offset: 0.2rem;
 }

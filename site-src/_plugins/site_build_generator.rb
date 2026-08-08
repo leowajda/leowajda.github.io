@@ -9,7 +9,7 @@ module SiteKit
 
     def generate(site)
       build = SiteKit::Build.for(site)
-      build.attach!(site)
+      attach(site, build)
       build.pages.each do |page|
         site.pages << SiteKit::JekyllRuntime::GeneratedPage.new(
           site: site,
@@ -20,6 +20,26 @@ module SiteKit
         )
       end
       SiteKit::Checks::SiteInvariants.new(site: site).validate!
+    end
+
+    private
+
+    def attach(site, build)
+      documents = site.pages + site.collections.fetch('posts').docs
+      documents.each do |document|
+        case document.data['layout']
+        when 'home'
+          document.data['home_projects'] = build.home_projects
+        when 'problems'
+          document.data['explorer'] = build.explorer(document.data.fetch('project_slug'))
+        when 'template_library'
+          guide = build.guide
+          document.data['template_guide'] = guide
+          document.data['default_template_target'] = guide.fetch('default_target')
+          slug = document.data.fetch('project_slug')
+          document.data['project_title'] ||= build.explorer(slug).fetch('project_title')
+        end
+      end
     end
   end
 end

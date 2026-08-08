@@ -1,8 +1,5 @@
 {%- assign problem = include.problem -%}
 {%- assign entries = problem.entries -%}
-{%- assign embed = include.embed | default: false -%}
-{%- assign browser_cfg = site.data.site.app.eureka.browser | default: empty -%}
-{%- assign code_cfg = site.data.site.app.code_collection -%}
 
 {%- if entries.size == 0 -%}
   <p>Problem code not found.</p>
@@ -10,11 +7,9 @@
   {%- include code_collection.html
     entries=entries
     collection_id='problem-code'
+    kind='problem'
     sync_hash=true
-    embed=embed
+    embed=include.embed
     problem_source_url=problem.problem_source_url
-    toolbar_aria=browser_cfg.toolbar_label
-    variant_label=browser_cfg.variant_group_label
-    variant_options=code_cfg.implementation_modes
   -%}
 {%- endif -%}

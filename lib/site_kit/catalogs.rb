@@ -59,7 +59,7 @@ module SiteKit
         code_collection.required_string('default_variant_label')
         code_collection.required_string('default_toolbar_label')
         code_collection.required_hash('variant_icons')
-        code_collection.required_array('implementation_modes')
+        code_collection.required_array('variants')
       end
 
       def section(key)

@@ -32,33 +32,28 @@ module SiteKit
 
     alias search_records search_extras
 
-    def attach!(site)
-      documents = site.pages + site.collections.fetch('posts').docs
-      documents.each { |document| attach_document(document) }
+    def explorer(project_slug)
+      eureka.explorers.fetch(project_slug)
     end
 
-    def attach_document(document)
-      case document.data['layout']
-      when 'home'
-        document.data['home_projects'] = site_projects
-      when 'problems'
-        document.data['explorer'] = eureka.explorers.fetch(document.data.fetch('project_slug'))
-      when 'template_library'
-        guide = templates.guide
-        document.data['template_guide'] = guide
-        document.data['default_template_target'] = guide.fetch('default_target')
-        slug = document.data.fetch('project_slug')
-        document.data['project_title'] ||= eureka.explorers.fetch(slug).fetch('project_title')
-      end
+    def guide
+      templates.guide
+    end
+
+    def home_projects
+      @home_projects ||= SiteKit::Catalogs::SiteProjectPresenter.new(
+        manifests: project_registry.manifests,
+        source_registries: source_notes.registries
+      ).records
     end
 
     def validate!
       pages
-      guide = templates.guide
-      eureka.explorers
-      eureka.topics
-      validate_template_reference_rules!(guide)
-      validate_problem_template_keys!
+      SiteKit::Invariants.check!(
+        guide: guide,
+        explorers: eureka.explorers,
+        topics: eureka.topics
+      )
       source_notes.registries
       nil
     end
@@ -91,13 +86,6 @@ module SiteKit
       )
     end
 
-    def site_projects
-      @site_projects ||= SiteKit::Catalogs::SiteProjectPresenter.new(
-        manifests: project_registry.manifests,
-        source_registries: source_notes.registries
-      ).records
-    end
-
     private
 
     attr_reader :site
@@ -111,43 +99,6 @@ module SiteKit
 
     def eureka_data
       @eureka_data ||= site.data.fetch(EUREKA_NAMESPACE, {})
-    end
-
-    def validate_template_reference_rules!(guide)
-      known = eureka.topics.values.flat_map { |registry| registry.fetch('categories').keys }.uniq
-      unknown = guide.fetch('reference_rules').flat_map do |rule|
-        rule.fetch('problem_rule').values.flatten
-      end.uniq - known
-      return if unknown.empty?
-
-      raise SiteKit::InvariantError,
-            "Template guide reference rules use unknown problem categories: #{unknown.sort.join(', ')}"
-    end
-
-    def validate_problem_template_keys!
-      eureka.explorers.each_value do |explorer|
-        if explorer.fetch('filters').key?('patterns')
-          raise SiteKit::InvariantError, 'Problem explorer filters must not include template patterns'
-        end
-
-        explorer.fetch('problems').each do |problem|
-          DISALLOWED_PROBLEM_TEMPLATE_KEYS.each do |key|
-            next unless problem.key?(key)
-
-            raise SiteKit::InvariantError,
-                  "Problem '#{problem.fetch('problem_slug')}' must not include #{key}"
-          end
-
-          problem.fetch('template_references').each do |reference|
-            target = reference.fetch('target')
-            url = reference.fetch('url', '')
-            if url.empty?
-              raise SiteKit::InvariantError,
-                    "Problem '#{problem.fetch('problem_slug')}' template reference '#{target}' is missing a URL"
-            end
-          end
-        end
-      end
     end
   end
 end
