@@ -12,7 +12,6 @@
   template: prefix-sum
   description: Convert range totals into differences between cumulative checkpoints.
   aliases: [Prefix Sum]
-  flowchart_nodes: [subarrays-prefix-sum]
 
 - id: sliding-window-fixed
   label: Sliding Window Fixed Size
@@ -21,7 +20,6 @@
   template: sliding-window-fixed
   description: Move a range of exactly `k` elements while updating the answer incrementally.
   aliases: [Sliding Window]
-  flowchart_nodes: [subarrays-window-fixed]
 
 - id: sliding-window-longest
   label: Sliding Window Flexible Longest
@@ -30,7 +28,6 @@
   template: sliding-window-longest
   description: Grow a valid range and shrink only when the invariant breaks.
   aliases: [Sliding Window]
-  flowchart_nodes: [subarrays-window-longest]
 
 - id: sliding-window-shortest
   label: Sliding Window Flexible Shortest
@@ -39,7 +36,6 @@
   template: sliding-window-shortest
   description: Grow until valid, then shrink while the answer can still improve.
   aliases: [Sliding Window]
-  flowchart_nodes: [subarrays-window-shortest]
 
 - id: two-pointers-opposite
   label: Two Pointers Opposite Direction
@@ -48,7 +44,6 @@
   template: two-pointers-opposite
   description: Start at both ends and discard the side that cannot improve the result.
   aliases: [Two Pointers]
-  flowchart_nodes: [find-indices-two-pointers, constant-memory-two-pointers]
 
 - id: two-pointers-same
   label: Two Pointers Same Direction
@@ -57,7 +52,6 @@
   template: two-pointers-same
   description: Move forward pointers over one sequence while preserving a range invariant.
   aliases: [Two Pointers]
-  flowchart_nodes: [sequence-count-two-pointers]
 
 - id: binary-search
   label: Binary Search
@@ -66,7 +60,6 @@
   template: binary-search
   description: Halve a sorted or monotonic search space until the boundary is found.
   aliases: [Binary Search]
-  flowchart_nodes: [maximum-minimum-binary-search]
 
 - id: binary-search-rotated
   label: Binary Search Rotated Or Peak
@@ -91,7 +84,6 @@
   template: backtracking
   description: Explore candidate states one branch at a time and undo each choice.
   aliases: [Backtracking]
-  flowchart_nodes: [small-constraints-backtracking]
 
 - id: backtracking-aggregation
   label: Backtracking With Aggregation
@@ -102,7 +94,6 @@
   aliases: []
   problem_rules:
     - all: [Backtracking, Memoization]
-  flowchart_nodes: [counting-backtracking]
 
 - id: tree-bfs
   label: BFS On Tree
@@ -126,7 +117,6 @@
     - all: [Depth-First Search, Tree]
     - all: [Depth-First Search, Binary Tree]
     - all: [Depth-First Search, Binary Search Tree]
-  flowchart_nodes: [tree-dfs]
 
 - id: binary-search-tree
   label: Binary Search Tree
@@ -159,7 +149,6 @@
       none: [Tree, Binary Tree, Matrix]
     - all: [Breadth-First Search, Dynamic Programming]
       none: [Tree, Binary Tree, Matrix]
-  flowchart_nodes: [shortest-path-graph-bfs, graph-small-constraints-graph-bfs]
 
 - id: graph-dfs
   label: DFS On Graphs
@@ -170,7 +159,6 @@
   aliases: [Depth-First Search, Graph Theory]
   problem_rules:
     - all: [Depth-First Search, Graph Theory]
-  flowchart_nodes: [graph-small-constraints-dfs]
 
 - id: matrix-bfs
   label: BFS On A Matrix
@@ -181,7 +169,6 @@
   aliases: [Matrix, Breadth-First Search]
   problem_rules:
     - all: [Breadth-First Search, Matrix]
-  flowchart_nodes: [shortest-path-grid-bfs, graph-small-constraints-grid-bfs]
 
 - id: matrix-dfs
   label: DFS On A Matrix
@@ -208,7 +195,6 @@
   template: topological-sort
   description: Order directed graph nodes so each dependency appears first.
   aliases: [Topological Sort]
-  flowchart_nodes: [directed-graph-topo]
 
 - id: union-find
   label: Union Find
@@ -217,7 +203,6 @@
   template: union-find
   description: Track components by representative parent pointers.
   aliases: [Union-Find]
-  flowchart_nodes: [connectivity-dsu]
 
 - id: dijkstra
   label: Dijkstra
@@ -227,7 +212,6 @@
   description: Settle weighted graph distances in increasing cost order.
   aliases: []
   problem_rules: []
-  flowchart_nodes: [shortest-path-dijkstra]
 
 - id: dynamic-programming
   label: Dynamic Programming
@@ -236,7 +220,6 @@
   template: dynamic-programming
   description: Reuse overlapping subproblem results instead of recomputing states.
   aliases: [Dynamic Programming, Memoization]
-  flowchart_nodes: [small-constraints-dp, maximum-minimum-dp, counting-dp, sequence-count-dp]
 
 - id: dp-grid
   label: Dynamic Programming On Grid
@@ -293,7 +276,6 @@
   template: greedy
   description: Make the locally forced choice once an invariant proves it cannot hurt.
   aliases: [Greedy]
-  flowchart_nodes: [maximum-minimum-greedy]
 
 - id: heap-top-k
   label: Heap And Top K
@@ -302,7 +284,6 @@
   template: heap-top-k
   description: Keep only the most relevant candidates in a priority queue.
   aliases: [Heap (Priority Queue), Quickselect]
-  flowchart_nodes: [kth-smallest-top-k-heap]
 
 - id: heap-moving-best
   label: Heap Moving Best
@@ -327,7 +308,6 @@
   template: sorting
   description: Reorder values to expose adjacency, rank, or merge structure.
   aliases: [Sorting, Merge Sort]
-  flowchart_nodes: [kth-smallest-sort-scan]
 
 - id: monotonic-stack
   label: Monotonic Stack
@@ -391,7 +371,6 @@
   template: linked-list
   description: Move through pointer-linked nodes while preserving references that can be lost.
   aliases: [Linked List]
-  flowchart_nodes: [linked-list-two-pointers]
 
 - id: linked-list-rewire
   label: Linked List Reverse Or Rewire
@@ -499,7 +478,6 @@
   template: quickselect
   description: Partition around a pivot until the target rank is fixed.
   aliases: [Quickselect]
-  flowchart_nodes: [kth-smallest-quickselect]
 
 - id: stack
   label: Stack
@@ -508,7 +486,6 @@
   template: stack
   description: Keep unresolved items in last-in-first-out order.
   aliases: [Stack]
-  flowchart_nodes: [parse-symbols-stack]
 
 - id: monotonic-queue
   label: Monotonic Queue

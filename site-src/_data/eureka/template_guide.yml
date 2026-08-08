@@ -150,7 +150,6 @@ patterns:
     label: Dynamic Programming
     order: 7
     description: Reuse overlapping subproblems.
-    flowchart_nodes: [small-constraints-dp, maximum-minimum-dp, counting-dp, sequence-count-dp]
     problem_rules:
       - any: [Dynamic Programming, Memoization]
     variants:
@@ -158,7 +157,6 @@ patterns:
         label: 1D
         template: dynamic-programming
         problem_rules: []
-        flowchart_nodes: []
       - id: grid
         label: Grid
         template: dp-grid

@@ -20,10 +20,7 @@ class SiteKitAlgorithmicTemplateRepositoryTest < SiteKitTestCase
     ]
 
     error = assert_raises(SiteKit::Error) do
-      SiteKit::Templates::TopicRepository.new(
-        topics: topics,
-        flowchart_data: { 'nodes' => [] }
-      ).load
+      SiteKit::Templates::TopicRepository.new(topics: topics).load
     end
 
     assert_match(/Algorithmic topic ids must be unique: binary-search/, error.message)

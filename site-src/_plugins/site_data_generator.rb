@@ -17,8 +17,6 @@ module SiteKit
           document.data['home_projects'] = runtime.site_projects
         when 'problems'
           attach_problems(document, runtime)
-        when 'eureka_flowchart'
-          attach_flowchart(document, site, runtime)
         when 'template_library'
           attach_templates(document, runtime)
         end
@@ -30,19 +28,6 @@ module SiteKit
     def attach_problems(document, runtime)
       browser = runtime.eureka.browsers.fetch(document.data.fetch('project_slug'))
       document.data['browser_record'] = browser
-    end
-
-    def attach_flowchart(document, site, runtime)
-      project_slug = document.data.fetch('project_slug')
-      browser = runtime.eureka.browsers.fetch(project_slug)
-      topics = runtime.eureka.topics.fetch(project_slug)
-      document.data['project_title'] ||= browser.fetch('project_title')
-      document.data['flowchart_canvas'] = SiteKit::Compile::Flowchart.canvas(
-        laid_out: runtime.flowchart_data,
-        summaries: site.data.fetch('eureka').fetch('flowchart_summaries', {}),
-        flowchart_nodes: topics.fetch('flowchart_nodes', {}),
-        templates_url: SiteKit::TEMPLATES_URL
-      )
     end
 
     def attach_templates(document, runtime)

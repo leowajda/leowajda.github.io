@@ -10,12 +10,7 @@ test("global search opens as an overlay from the main navigation", async ({ page
   const gridResult = page.locator('[data-search-result-link][href="/templates/#grid/bfs"]')
   await expect(gridResult).toBeVisible()
   await expect(gridResult.locator(".search-result__meta")).toContainText("Template: Grid")
-  await expect(
-    page.locator(".search-result__meta").filter({ hasText: "Flowchart: Unweighted shortest paths / Solution" })
-  ).toBeVisible()
-  await expect(
-    page.locator(".search-result__meta").filter({ hasText: "Flowchart: Small constraints / Solution" })
-  ).toBeVisible()
+  await expect(page.locator(".search-result__meta").filter({ hasText: "Flowchart:" })).toHaveCount(0)
 })
 
 test("global search waits for meaningful query length", async ({ page }) => {
@@ -29,7 +24,7 @@ test("global search waits for meaningful query length", async ({ page }) => {
 })
 
 test("search route opens the same overlay without faceted panels", async ({ page }) => {
-  await page.goto("/search/?q=binary+sear&kind=Source&kind=Template&kind=Problem&kind=Flowchart&kind=Writing")
+  await page.goto("/search/?q=binary+sear&kind=Source&kind=Template&kind=Problem&kind=Writing")
 
   const overlay = page.getByRole("dialog", { name: "Search" })
 

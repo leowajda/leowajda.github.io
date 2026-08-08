@@ -6,8 +6,8 @@ module SiteKit
     module Topics
       module_function
 
-      def record(project_slug:, topics:, templates:, template_guide:, flowchart_titles:, problem_records:)
-        _ = [project_slug, flowchart_titles]
+      def record(project_slug:, topics:, templates:, template_guide:, problem_records:)
+        _ = project_slug
         validate_templates!(topics, templates)
         categories = category_index(topics)
         validate_problem_categories!(problem_records, categories)
@@ -23,7 +23,6 @@ module SiteKit
 
         {
           'categories' => categories,
-          'flowchart_nodes' => template_guide.fetch('flowchart_nodes'),
           'problems' => problems
         }
       end

@@ -72,39 +72,73 @@ module SiteKit
         end
       end
 
-      def document_pages # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      def document_pages
         each_module.flat_map do |language, module_record|
-          module_record.fetch('documents').map do |document|
-            title = document.fetch('title')
-            format = document.fetch('format')
-            crumbs = [
-              crumb('Home', '/'),
-              crumb(registry_record.fetch('project_title'), paths.root),
-              crumb(language.fetch('language_title'), language.fetch('url')),
-              crumb(module_record.fetch('title'), module_record.fetch('url')),
-              crumb(title, document.fetch('route_url'))
-            ]
-            emit(
-              dir: document.fetch('route_url'),
-              page_type: SOURCE_DOCUMENT_PAGE_TYPE,
-              title: title,
-              language_slug: language.fetch('language_slug'),
-              module_slug: module_record.fetch('module_slug'),
-              header: header(module_record.fetch('title'), title),
-              schema: schema(
-                [registry_record.fetch('project_title'), module_record.fetch('title'),
-                 language.fetch('language_title')],
-                crumbs,
-                code_repository: registry_record.fetch('project_source_url'),
-                programming_language: language.fetch('language_title')
-              ),
-              source_module: slice(module_record, %w[slug module_slug title url roots]),
-              document_url: document.fetch('route_url'),
-              source_document: slice(document, %w[route_url title format body]),
-              format: format
-            )
+          module_record.fetch('documents').flat_map do |document|
+            document_page_set(language, module_record, document)
           end
         end
+      end
+
+      def document_page_set(language, module_record, document) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+        title = document.fetch('title')
+        format = document.fetch('format')
+        crumbs = document_crumbs(language, module_record, document)
+        doc_keys = %w[route_url title format body embed_url]
+        doc_keys << 'code_entries' if document.key?('code_entries')
+        pages = [
+          emit(
+            dir: document.fetch('route_url'),
+            page_type: SOURCE_DOCUMENT_PAGE_TYPE,
+            title: title,
+            language_slug: language.fetch('language_slug'),
+            module_slug: module_record.fetch('module_slug'),
+            header: header(module_record.fetch('title'), title),
+            schema: schema(
+              [registry_record.fetch('project_title'), module_record.fetch('title'),
+               language.fetch('language_title')],
+              crumbs,
+              code_repository: registry_record.fetch('project_source_url'),
+              programming_language: language.fetch('language_title')
+            ),
+            source_module: slice(module_record, %w[slug module_slug title url roots]),
+            document_url: document.fetch('route_url'),
+            source_document: slice(document, doc_keys),
+            format: format
+          )
+        ]
+        return pages unless format == 'code' && document.key?('code_entries')
+
+        pages << emit(
+          dir: document.fetch('embed_url'),
+          page_type: SOURCE_EMBED_PAGE_TYPE,
+          title: "#{title} · Embed",
+          language_slug: language.fetch('language_slug'),
+          module_slug: module_record.fetch('module_slug'),
+          header: header(module_record.fetch('title'), title),
+          schema: schema(
+            [registry_record.fetch('project_title'), module_record.fetch('title'),
+             language.fetch('language_title')],
+            crumbs
+          ),
+          source_module: slice(module_record, %w[slug module_slug title url roots]),
+          document_url: document.fetch('route_url'),
+          source_document: slice(document, doc_keys),
+          format: format,
+          detail_url: document.fetch('route_url'),
+          embed: true
+        )
+        pages
+      end
+
+      def document_crumbs(language, module_record, document)
+        [
+          crumb('Home', '/'),
+          crumb(registry_record.fetch('project_title'), paths.root),
+          crumb(language.fetch('language_title'), language.fetch('url')),
+          crumb(module_record.fetch('title'), module_record.fetch('url')),
+          crumb(document.fetch('title'), document.fetch('route_url'))
+        ]
       end
 
       private
@@ -145,7 +179,9 @@ module SiteKit
             'module_slug' => extra[:module_slug],
             'document_url' => extra[:document_url],
             'source_document' => extra[:source_document],
-            'format' => extra[:format]
+            'format' => extra[:format],
+            'detail_url' => extra[:detail_url],
+            'embed' => extra[:embed]
           }.compact
         )
       end

@@ -3,12 +3,8 @@
 require_relative '../../test_helper'
 
 class SiteKitSearchIndexBuilderTest < SiteKitTestCase
-  EXPECTED_KINDS = %w[Flowchart Template].freeze
+  EXPECTED_KINDS = %w[Template].freeze
   RECORD_CONTRACTS = {
-    'Flowchart' => {
-      meta: %w[kind project section summary target title],
-      filters: %w[flowchart_kind kind project]
-    },
     'Template' => {
       meta: %w[kind pattern project section summary target title],
       filters: %w[kind project template]
@@ -18,15 +14,13 @@ class SiteKitSearchIndexBuilderTest < SiteKitTestCase
   def test_builds_hash_target_extras_only
     records = search_records
     template = record_by_title('Grid BFS')
-    flowchart = records.find { |record| record.meta.fetch('kind') == 'Flowchart' }
 
-    assert_operator records.size, :>, 50
+    assert_operator records.size, :>, 10
     assert_operator records.size, :<, 400
     assert_equal '/templates/#grid/bfs', template.url
     assert_equal 'grid/bfs', template.meta.fetch('target')
     assert_equal 'Grid', template.meta.fetch('section')
-    assert flowchart
-    assert_includes %w[Decision Solution], flowchart.meta.fetch('section')
+    refute(records.any? { |record| record.meta.fetch('kind') == 'Flowchart' })
     refute(records.any? { |record| record.meta.fetch('kind') == 'Problem' })
   end
 
@@ -59,13 +53,6 @@ class SiteKitSearchIndexBuilderTest < SiteKitTestCase
                  .select { |_, records| records.size > 1 }
 
     assert_empty duplicates
-  end
-
-  def test_flowchart_records_use_canonical_node_text_as_result_title
-    record = search_records.find { |entry| entry.url == '/eureka/flowchart/#kth-smallest' }
-
-    assert record
-    assert_includes record.meta.fetch('title').downcase, 'smallest'
   end
 
   def test_extras_do_not_index_embed_pages

@@ -4,8 +4,7 @@ module SiteKit
   module Eureka
     Catalog = Data.define(
       :language_page_records,
-      :problem_records,
-      :flowchart_titles
+      :problem_records
     )
 
     class ProblemRegistryBuilder
@@ -25,8 +24,7 @@ module SiteKit
 
         Catalog.new(
           language_page_records: source_catalog.languages.map { |language| language.page_record(route_base) },
-          problem_records: problems,
-          flowchart_titles: source_catalog.flowchart_titles
+          problem_records: problems
         )
       end
 

@@ -14,6 +14,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
     assert_equal 'graph/bfs', guide.fetch('redirects').fetch('graph-bfs')
     assert_equal 'dynamic-programming/one-dimensional',
                  guide.fetch('patterns').find { |pattern| pattern.fetch('id') == 'dynamic-programming' }.fetch('default_target')
+    refute guide.key?('flowchart_nodes')
   end
 
   def test_problem_matching_returns_template_reference_sets
@@ -86,52 +87,11 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
       SiteKit::Templates::Guide::Repository.new(
         data: data,
         templates: build_context.templates.templates,
-        code_collections: build_context.templates.code_collections,
-        flowchart_data: build_context.flowchart_data
+        code_collections: build_context.templates.code_collections
       ).build
     end
 
     assert_match(/references template 'graph-bfs' more than once/, error.message)
-  end
-
-  def test_rejects_template_flowchart_mismatches
-    data = Marshal.load(Marshal.dump(build_site.data.fetch('eureka').fetch('template_guide')))
-    graph_bfs = data.fetch('patterns')
-                    .find { |pattern| pattern.fetch('id') == 'graph' }
-                    .fetch('variants')
-                    .find { |variant| variant.fetch('id') == 'bfs' }
-    graph_bfs['flowchart_nodes'] = ['graph-small-constraints-graph-bfs']
-
-    error = assert_raises(SiteKit::Error) do
-      SiteKit::Templates::Guide::Repository.new(
-        data: data,
-        templates: build_context.templates.templates,
-        code_collections: build_context.templates.code_collections,
-        flowchart_data: build_context.flowchart_data
-      ).build
-    end
-
-    assert_match(/Template guide must cover every flowchart solution node: shortest-path-graph-bfs/, error.message)
-  end
-
-  def test_rejects_unknown_flowchart_solution_references
-    data = Marshal.load(Marshal.dump(build_site.data.fetch('eureka').fetch('template_guide')))
-    graph_bfs = data.fetch('patterns')
-                    .find { |pattern| pattern.fetch('id') == 'graph' }
-                    .fetch('variants')
-                    .find { |variant| variant.fetch('id') == 'bfs' }
-    graph_bfs['flowchart_nodes'] = graph_bfs.fetch('flowchart_nodes', []) + ['not-a-solution-node']
-
-    error = assert_raises(SiteKit::Error) do
-      SiteKit::Templates::Guide::Repository.new(
-        data: data,
-        templates: build_context.templates.templates,
-        code_collections: build_context.templates.code_collections,
-        flowchart_data: build_context.flowchart_data
-      ).build
-    end
-
-    assert_match(/references unknown flowchart solution nodes: not-a-solution-node/, error.message)
   end
 
   def test_rejects_unknown_default_targets
@@ -142,8 +102,7 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
       SiteKit::Templates::Guide::Repository.new(
         data: data,
         templates: build_context.templates.templates,
-        code_collections: build_context.templates.code_collections,
-        flowchart_data: build_context.flowchart_data
+        code_collections: build_context.templates.code_collections
       ).build
     end
 
@@ -162,22 +121,10 @@ class SiteKitTemplateGuideRepositoryTest < SiteKitTestCase
       SiteKit::Templates::Guide::Repository.new(
         data: data,
         templates: build_context.templates.templates,
-        code_collections: build_context.templates.code_collections,
-        flowchart_data: build_context.flowchart_data
+        code_collections: build_context.templates.code_collections
       ).build
     end
 
     assert_match(%r{Template guide targets must be unique: graph/dfs}, error.message)
-  end
-
-  def test_flowchart_mappings_use_guide_targets
-    guide = build_context.templates.guide
-
-    stack_targets = guide.dig('flowchart_nodes', 'parse-symbols-stack').map { |entry| entry.fetch('target') }
-
-    assert_equal ['stack/parse'], stack_targets
-    assert_equal(['dynamic-programming'], guide.dig('flowchart_nodes', 'counting-dp').map { |entry| entry.fetch('target') })
-    assert_equal(['graph/bfs'], guide.dig('flowchart_nodes', 'shortest-path-graph-bfs').map { |entry| entry.fetch('target') })
-    assert_equal(['grid/bfs'], guide.dig('flowchart_nodes', 'shortest-path-grid-bfs').map { |entry| entry.fetch('target') })
   end
 end

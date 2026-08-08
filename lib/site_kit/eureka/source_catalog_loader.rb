@@ -15,13 +15,12 @@ module SiteKit
       end
     end
 
-    SourceCatalog = Data.define(:source_url_base, :languages, :problems, :flowchart_titles)
+    SourceCatalog = Data.define(:source_url_base, :languages, :problems)
 
     class SourceCatalogLoader
-      def initialize(manifest:, app_config:, flowchart_data:)
+      def initialize(manifest:, app_config:)
         @manifest = manifest
         @app_config = app_config
-        @flowchart_data = flowchart_data
         @source_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
       end
 
@@ -32,14 +31,13 @@ module SiteKit
           source_url_base: SiteKit::Core::Helpers.ensure_string(source.fetch('source_url_base'),
                                                                 'Eureka source.source_url_base'),
           languages: parse_languages(source.fetch('languages')),
-          problems: SiteKit::Core::Helpers.ensure_hash(source.fetch('problems'), 'Eureka source.problems'),
-          flowchart_titles: build_flowchart_titles
+          problems: SiteKit::Core::Helpers.ensure_hash(source.fetch('problems'), 'Eureka source.problems')
         )
       end
 
       private
 
-      attr_reader :manifest, :app_config, :flowchart_data, :source_root
+      attr_reader :manifest, :app_config, :source_root
 
       def raw_catalog
         @raw_catalog ||= begin
@@ -70,17 +68,6 @@ module SiteKit
               "Eureka source.languages.#{language_slug}.code_language"
             )
           )
-        end
-      end
-
-      def build_flowchart_titles
-        SiteKit::Core::Helpers.ensure_array(flowchart_data['nodes'],
-                                            'Flowchart data.nodes').each_with_object({}) do |entry, result|
-          node = SiteKit::Core::Helpers.ensure_hash(entry, 'Flowchart data node')
-          node_id = SiteKit::Core::Helpers.ensure_string(node.fetch('id'), 'Flowchart data node.id')
-          raise SiteKit::CatalogError, "Flowchart node ids must be unique: #{node_id}" if result.key?(node_id)
-
-          result[node_id] = SiteKit::Core::Helpers.ensure_string(node.fetch('text'), 'Flowchart data node.text')
         end
       end
     end

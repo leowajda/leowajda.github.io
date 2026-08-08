@@ -3,11 +3,10 @@
 module SiteKit
   module Eureka
     class Context
-      def initialize(manifests:, app_config:, template_library:, flowchart_data:)
+      def initialize(manifests:, app_config:, template_library:)
         @manifests = manifests
         @app_config = app_config
         @template_library = template_library
-        @flowchart_data = flowchart_data
       end
 
       def projects
@@ -17,8 +16,7 @@ module SiteKit
             SiteKit::Eureka::Project.new(
               manifest: manifest,
               app_config: app_config,
-              template_library: template_library,
-              flowchart_data: flowchart_data
+              template_library: template_library
             )
           ]
         end
@@ -38,7 +36,7 @@ module SiteKit
 
       private
 
-      attr_reader :manifests, :app_config, :template_library, :flowchart_data
+      attr_reader :manifests, :app_config, :template_library
     end
   end
 end

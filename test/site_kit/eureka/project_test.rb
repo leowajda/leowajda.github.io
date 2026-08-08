@@ -32,9 +32,7 @@ class SiteKitEurekaProjectTest < SiteKitTestCase
     refute binary_search.key?('code_collection')
     refute binary_search.key?('implementations_by_id')
     assert_predicate topics.dig('categories', 'Binary Search', 'topic_ids'), :any?
-    tree_targets = topics.dig('flowchart_nodes', 'tree-dfs').map { |entrypoint| entrypoint.fetch('target') }
-
-    assert_equal ['tree/dfs'], tree_targets
+    refute topics.key?('flowchart_nodes')
     assert problem_page
     assert single_language_problem_page
     assert embed_page

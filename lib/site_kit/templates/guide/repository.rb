@@ -4,11 +4,10 @@ module SiteKit
   module Templates
     module Guide
       class Repository
-        def initialize(data:, templates:, code_collections:, flowchart_data:)
+        def initialize(data:, templates:, code_collections:)
           @data = data
           @templates = templates
           @code_collections = code_collections
-          @flowchart_data = flowchart_data
         end
 
         def build
@@ -22,8 +21,7 @@ module SiteKit
 
             SiteKit::Templates::Guide::Validator.new(
               record: record,
-              template_index: template_index,
-              flowchart_data: flowchart_data
+              template_index: template_index
             ).validate!
             record
           end
@@ -31,7 +29,7 @@ module SiteKit
 
         private
 
-        attr_reader :data, :templates, :code_collections, :flowchart_data
+        attr_reader :data, :templates, :code_collections
 
         def build_patterns(template_index)
           guide_schema.required_array('patterns').map.with_index do |entry, index|
@@ -51,7 +49,6 @@ module SiteKit
             'description' => pattern.required_string('description'),
             'order' => pattern.required_integer('order'),
             'target' => pattern_id,
-            'flowchart_nodes' => pattern.optional_array_of_strings('flowchart_nodes'),
             'problem_rules' => SiteKit::Templates::ProblemRules.normalize(
               pattern.optional_array('problem_rules'),
               "Template guide pattern #{pattern_id}.problem_rules"
@@ -88,7 +85,6 @@ module SiteKit
             'has_template' => !template_id.empty?,
             'aliases' => variant_aliases(variant, template, target),
             'problem_rules' => variant_problem_rules(variant, template, target),
-            'flowchart_nodes' => variant_flowchart_nodes(variant, template, target),
             'template' => template ? compact_template(template) : nil
           }.compact
         end
@@ -104,16 +100,6 @@ module SiteKit
 
           SiteKit::Templates::ProblemRules.normalize(variant.fetch('problem_rules'),
                                                      "Template guide #{target}.problem_rules")
-        end
-
-        def variant_flowchart_nodes(variant, template, target)
-          configured = if variant.key?('flowchart_nodes')
-                         variant.fetch('flowchart_nodes')
-                       else
-                         template&.flowchart_nodes || []
-                       end
-
-          SiteKit::Core::Helpers.ensure_array_of_strings(configured, "Template guide #{target}.flowchart_nodes")
         end
 
         def template_for(template_index, pattern_id, variant_id, template_id)

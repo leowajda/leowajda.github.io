@@ -98,7 +98,9 @@ module SiteKit
             ),
             'code' => code,
             'variant' => 'default',
-            'variant_label' => 'Default'
+            'variant_label' => 'Default',
+            'detail_url' => SiteKit::TEMPLATES_URL,
+            'embed_url' => "#{SiteKit::TEMPLATES_URL}#{template_id}/embed/"
           }
         end
 

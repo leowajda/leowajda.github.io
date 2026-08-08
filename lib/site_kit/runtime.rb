@@ -32,8 +32,7 @@ module SiteKit
       @eureka ||= SiteKit::Eureka::Context.new(
         manifests: project_registry.for_kind(EUREKA_PROJECT_KIND),
         app_config: app_config,
-        template_library: templates,
-        flowchart_data: flowchart_data
+        template_library: templates
       )
     end
 
@@ -48,19 +47,14 @@ module SiteKit
       @templates ||= SiteKit::Templates::LibraryContext.new(
         topics: eureka_data.fetch('topics', []),
         template_guide: eureka_data.fetch('template_guide', {}),
-        flowchart_data: flowchart_data,
         code_source_root: File.join(SiteKit::Core::Helpers.repo_root, 'sources', 'templates'),
         language_catalog: eureka_data.fetch('template_languages', {})
       )
     end
 
-    def flowchart_data
-      @flowchart_data ||= SiteKit::Compile::Flowchart.layout(eureka_data.fetch('flowchart', {}))
-    end
-
     def generated_pages
       @generated_pages ||= begin
-        pages = eureka.generated_pages + source_notes.generated_pages
+        pages = eureka.generated_pages + source_notes.generated_pages + templates.embed_pages
         SiteKit::Emit.validate_pages!(pages)
         pages
       end
@@ -68,9 +62,7 @@ module SiteKit
 
     def search_records
       @search_records ||= SiteKit::Extras::Pagefind.records(
-        template_guide: templates.guide,
-        flowchart: flowchart_data,
-        flowchart_summaries: eureka_data.fetch('flowchart_summaries', {})
+        template_guide: templates.guide
       )
     end
 

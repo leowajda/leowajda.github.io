@@ -1,12 +1,4 @@
 assets:
-  - name: x6
-    package: "@antv/x6"
-    version: 3.1.7
-    source: "Vendored UMD browser bundle from @antv/x6."
-    files:
-      - path: site-src/assets/vendor/x6/x6.min.js
-        sha256: fecd8188f50ea9ebfcb5c4cc5abd2e58b11c36c1f1e32286cb3fefa2deb7b58d
-
   - name: katex
     package: katex
     version: 0.16.45
