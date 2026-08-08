@@ -6,138 +6,114 @@ import {
   normalizeSearchQuery
 } from "./pagefind.js"
 
-const collectRedirects = (root) =>
-  new Map(
-    Array.from(root.querySelectorAll("[data-template-redirect]"))
-      .map((entry) => [entry.dataset.templateRedirectSource || "", entry.dataset.templateRedirectTarget || ""])
-      .filter(([source, target]) => source && target)
-  )
-
 const initializeTemplateLibrary = (root) => {
-  const branches = Array.from(root.querySelectorAll("[data-guide-branch]"))
-  const patternControls = Array.from(root.querySelectorAll("[data-guide-pattern-control]"))
-  const variantControls = Array.from(root.querySelectorAll("[data-guide-variant-control]"))
-  const templatePanels = Array.from(root.querySelectorAll("[data-template-panel]"))
-  const patternPanels = Array.from(root.querySelectorAll("[data-template-pattern-panel]"))
+  const patternControls = [...root.querySelectorAll("[data-guide-pattern-control]")]
+  const variantControls = [...root.querySelectorAll("[data-guide-variant-control]")]
+  const branches = [...root.querySelectorAll("[data-guide-branch]")]
+  const templatePanels = [...root.querySelectorAll("[data-template-panel]")]
+  const patternPanels = [...root.querySelectorAll("[data-template-pattern-panel]")]
   const searchInput = root.querySelector("[data-template-search]")
   const searchResults = root.querySelector("[data-template-search-results]")
   const outline = root.querySelector("[data-template-outline]")
-  const redirects = collectRedirects(root)
-  const targetMap = new Map([
-    ...patternControls.map((control) => [control.dataset.guideTarget || "", { type: "pattern", element: control }]),
-    ...variantControls.map((control) => [control.dataset.guideTarget || "", { type: "variant", element: control }])
-  ].filter(([target]) => target))
-  const normalizeTarget = (target) => (targetMap.has(target) ? target : redirects.get(target) || target)
-
   if (patternControls.length === 0) {
     return
   }
 
-  let activeLanguage = root.dataset.templateDefaultLanguage || "java"
-  const searchSequence = createSequenceGuard()
-  const defaultTarget = normalizeTarget(root.dataset.templateDefault || patternControls[0].dataset.guideTarget || "")
+  const redirects = new Map(
+    [...root.querySelectorAll("[data-template-redirect]")]
+      .map((node) => [node.dataset.templateRedirectSource, node.dataset.templateRedirectTarget])
+      .filter(([source, target]) => source && target)
+  )
 
-  const renderLanguage = (panel, nextLanguage) => {
-    const controls = Array.from(panel.querySelectorAll("[data-code-collection-language-control]"))
-    const selectedControl = controls.find((control) => control.dataset.codeCollectionLanguage === nextLanguage) || controls[0]
-    const selectedLanguage = selectedControl?.dataset.codeCollectionLanguage || nextLanguage
+  const targets = new Map()
+  patternControls.forEach((el) => targets.set(el.dataset.guideTarget, { kind: "pattern", el }))
+  variantControls.forEach((el) => targets.set(el.dataset.guideTarget, { kind: "variant", el }))
 
-    activeLanguage = selectedLanguage
+  const resolve = (raw) => (targets.has(raw) ? raw : redirects.get(raw) || raw)
+  const defaultTarget = resolve(root.dataset.templateDefault || patternControls[0].dataset.guideTarget)
+  let language = root.dataset.templateDefaultLanguage || "java"
+  const sequence = createSequenceGuard()
 
-    if (selectedControl && selectedControl.getAttribute("aria-pressed") !== "true") {
-      selectedControl.click()
-    }
-  }
-
-  const setPattern = (patternId) => {
-    patternControls.forEach((control) => {
-      const isActive = control.dataset.guidePattern === patternId
-      control.classList.toggle("is-active", isActive)
-      control.classList.toggle("side-panel__link--active", isActive)
-      control.setAttribute("aria-expanded", isActive ? "true" : "false")
-    })
-
-    branches.forEach((branch) => {
-      const isActive = branch.dataset.guidePattern === patternId
-      branch.classList.toggle("is-active", isActive)
-      branch.querySelector(".template-library__children")?.toggleAttribute("hidden", !isActive)
-    })
-  }
-
-  const setVariant = (target) => {
-    variantControls.forEach((control) => {
-      const isActive = control.dataset.guideTarget === target
-      control.classList.toggle("is-active", isActive)
-      control.classList.toggle("side-panel__link--active", isActive)
-      control.setAttribute("aria-pressed", isActive ? "true" : "false")
-    })
-  }
-
-  const setPatternPanel = (patternId, showPattern) => {
-    patternPanels.forEach((panel) => {
-      const isActive = showPattern && panel.dataset.guidePattern === patternId
-      panel.hidden = !isActive
-      panel.classList.toggle("is-active", isActive)
-    })
-  }
-
-  const setTemplate = (target) => {
-    let activePanel = null
-    templatePanels.forEach((panel) => {
-      const isActive = panel.dataset.guideTarget === target
-      panel.hidden = !isActive
-      panel.classList.toggle("is-active", isActive)
-      if (isActive) {
-        activePanel = panel
+  const showLanguage = (panel) => {
+    const control = panel.querySelector(`[data-code-collection-language-control][data-code-collection-language="${language}"]`)
+      || panel.querySelector("[data-code-collection-language-control]")
+    if (control) {
+      language = control.dataset.codeCollectionLanguage || language
+      if (control.getAttribute("aria-pressed") !== "true") {
+        control.click()
       }
-    })
-
-    if (activePanel) {
-      renderLanguage(activePanel, activeLanguage)
     }
   }
 
-  const renderTarget = (rawTarget, { updateHash = true } = {}) => {
-    const target = normalizeTarget(rawTarget)
-    const targetRecord = targetMap.get(target) || targetMap.get(defaultTarget)
-    if (!targetRecord) {
+  const paint = (raw, { hash = true } = {}) => {
+    const target = resolve(raw)
+    const record = targets.get(target) || targets.get(defaultTarget)
+    if (!record) {
       return
     }
 
-    const control = targetRecord.element
-    const patternId = control.dataset.guidePattern || target
-    const showPattern = targetRecord.type === "pattern"
-    const renderableTarget = targetRecord.type === "variant" && control.dataset.guideHasTemplate === "true"
+    const { kind, el } = record
+    const patternId = el.dataset.guidePattern || target
+    const isPattern = kind === "pattern"
+    const renderTarget = !isPattern && el.dataset.guideHasTemplate === "true"
       ? target
-      : control.dataset.guideDefaultTarget || target
+      : el.dataset.guideDefaultTarget || target
 
-    root.dataset.templateActive = target
-    root.dataset.templateRendered = showPattern ? target : renderableTarget
-    root.dataset.guidePattern = patternId
+    patternControls.forEach((control) => {
+      const on = control.dataset.guidePattern === patternId
+      control.classList.toggle("is-active", on)
+      control.classList.toggle("side-panel__link--active", on)
+      control.setAttribute("aria-expanded", on ? "true" : "false")
+    })
 
-    setPattern(patternId)
-    setVariant(showPattern ? "" : renderableTarget)
-    setPatternPanel(patternId, showPattern)
-    setTemplate(showPattern ? "" : renderableTarget)
-    renderSearch()
+    branches.forEach((branch) => {
+      const on = branch.dataset.guidePattern === patternId
+      branch.classList.toggle("is-active", on)
+      branch.querySelector(".template-library__children")?.toggleAttribute("hidden", !on)
+    })
 
-    const activeControl = showPattern
-      ? control
-      : variantControls.find((variantControl) => variantControl.dataset.guideTarget === renderableTarget) || control
-    activeControl.scrollIntoView({ block: "nearest" })
+    variantControls.forEach((control) => {
+      const on = !isPattern && control.dataset.guideTarget === renderTarget
+      control.classList.toggle("is-active", on)
+      control.classList.toggle("side-panel__link--active", on)
+      control.setAttribute("aria-pressed", on ? "true" : "false")
+    })
 
-    if (updateHash || target !== rawTarget) {
+    patternPanels.forEach((panel) => {
+      const on = isPattern && panel.dataset.guidePattern === patternId
+      panel.hidden = !on
+      panel.classList.toggle("is-active", on)
+    })
+
+    let activePanel = null
+    templatePanels.forEach((panel) => {
+      const on = !isPattern && panel.dataset.guideTarget === renderTarget
+      panel.hidden = !on
+      panel.classList.toggle("is-active", on)
+      if (on) {
+        activePanel = panel
+      }
+    })
+    if (activePanel) {
+      showLanguage(activePanel)
+    }
+
+    const focus = isPattern
+      ? el
+      : variantControls.find((control) => control.dataset.guideTarget === renderTarget) || el
+    focus.scrollIntoView({ block: "nearest" })
+
+    if (hash || target !== raw) {
       replaceHashValue(target)
     }
   }
 
-  const renderDefaultNavigation = () => {
+  const showOutline = () => {
     outline?.toggleAttribute("hidden", false)
     if (searchResults) {
       searchResults.hidden = true
       searchResults.replaceChildren()
     }
-
     branches.forEach((branch) => {
       branch.hidden = false
       branch.querySelector(".template-library__children")?.toggleAttribute("hidden", !branch.classList.contains("is-active"))
@@ -147,107 +123,86 @@ const initializeTemplateLibrary = (root) => {
     })
   }
 
-  const templateResult = (data) => {
-    const link = document.createElement("a")
-    link.className = "template-library__search-result"
-    link.href = data.url
-    link.dataset.guideChoiceTarget = data.meta?.target || ""
-
-    const label = document.createElement("span")
-    label.className = "template-library__search-result-label"
-    label.textContent = data.meta?.title || data.url
-    link.append(label)
-
-    if (data.meta?.summary) {
-      const summary = document.createElement("span")
-      summary.className = "template-library__search-result-summary"
-      summary.textContent = data.meta.summary
-      link.append(summary)
+  const search = async () => {
+    const query = normalizeSearchQuery(searchInput?.value)
+    const token = sequence.next()
+    if (!meaningfulSearchQuery(query)) {
+      showOutline()
+      return
     }
-
-    return link
-  }
-
-  const renderTemplateResults = async (query, currentSequence) => {
     if (!searchResults) {
       return
     }
-
     outline?.toggleAttribute("hidden", true)
     searchResults.hidden = false
     searchResults.textContent = "Searching."
-
-    let records
     try {
-      records = await loadPagefindRecords(query, { filters: { kind: "Template" }, limit: 10 })
-      if (!searchSequence.matches(currentSequence)) {
+      const records = await loadPagefindRecords(query, { filters: { kind: "Template" }, limit: 10 })
+      if (!sequence.matches(token)) {
         return
       }
+      if (records.length === 0) {
+        searchResults.textContent = "No templates match."
+        return
+      }
+      searchResults.replaceChildren(...records.map((data) => {
+        const link = document.createElement("a")
+        link.className = "template-library__search-result"
+        link.href = data.url
+        link.dataset.guideChoiceTarget = data.meta?.target || ""
+        const label = document.createElement("span")
+        label.className = "template-library__search-result-label"
+        label.textContent = data.meta?.title || data.url
+        link.append(label)
+        if (data.meta?.summary) {
+          const summary = document.createElement("span")
+          summary.className = "template-library__search-result-summary"
+          summary.textContent = data.meta.summary
+          link.append(summary)
+        }
+        return link
+      }))
     } catch (error) {
-      if (searchSequence.matches(currentSequence)) {
+      if (sequence.matches(token)) {
         searchResults.textContent = "Template search is unavailable."
       }
       console.error(error)
-      return
     }
-
-    if (records.length === 0) {
-      searchResults.textContent = "No templates match."
-      return
-    }
-
-    searchResults.replaceChildren(...records.map(templateResult))
-  }
-
-  const renderSearch = () => {
-    const query = normalizeSearchQuery(searchInput?.value).toLowerCase()
-    const currentSequence = searchSequence.next()
-
-    if (!query || !meaningfulSearchQuery(query)) {
-      renderDefaultNavigation()
-      return
-    }
-
-    renderTemplateResults(query, currentSequence)
   }
 
   root.addEventListener("click", (event) => {
-    const guideControl = event.target.closest("[data-guide-pattern-control], [data-guide-variant-control]")
-    if (guideControl) {
-      renderTarget(guideControl.dataset.guideTarget || "")
+    const guide = event.target.closest("[data-guide-pattern-control], [data-guide-variant-control]")
+    if (guide) {
+      paint(guide.dataset.guideTarget || "")
       return
     }
-
     const choice = event.target.closest("[data-guide-choice-target]")
     if (choice) {
       event.preventDefault()
       if (searchResults?.contains(choice) && searchInput) {
         searchInput.value = ""
+        search()
       }
-      renderTarget(choice.dataset.guideChoiceTarget || "")
+      paint(choice.dataset.guideChoiceTarget || "")
       return
     }
-
-    const control = event.target.closest("[data-code-collection-language-control]")
-    if (!control) {
-      return
+    const lang = event.target.closest("[data-code-collection-language-control]")
+    if (lang) {
+      language = lang.dataset.codeCollectionLanguage || language
     }
-
-    activeLanguage = control.dataset.codeCollectionLanguage || activeLanguage
   })
 
-  searchInput?.addEventListener("input", renderSearch)
-
+  searchInput?.addEventListener("input", search)
   onHashChange(() => {
-    const nextTarget = getHashValue()
-    if (nextTarget) {
-      renderTarget(nextTarget, { updateHash: false })
+    const next = getHashValue()
+    if (next) {
+      paint(next, { hash: false })
     }
   })
 
-  renderSearch()
-  const hashTarget = getHashValue()
-  renderTarget(hashTarget || defaultTarget, { updateHash: !hashTarget })
+  search()
+  const initial = getHashValue()
+  paint(initial || defaultTarget, { hash: !initial })
 }
 
 onReady(() => {
