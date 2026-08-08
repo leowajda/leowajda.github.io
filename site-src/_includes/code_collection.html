@@ -20,8 +20,6 @@
     {%- assign variant_list = empty -%}
     {%- assign keep_variants = false -%}
   {%- endif -%}
-  {%- assign default_language = default_entry.language -%}
-  {%- assign default_variant = default_entry.variant -%}
 
   <section
     class="code-collection"
@@ -34,86 +32,17 @@
     <article class="code-panel code-collection__panel" data-code-block>
       <header class="code-panel__header code-collection__header">
         <div class="code-collection__toolbar">
-          {%- assign language_slugs = '' -%}
-          {%- capture language_controls -%}
-            {%- for entry in entries -%}
-              {%- assign lang = entry.language -%}
-              {%- assign lang_token = '|' | append: lang | append: '|' -%}
-              {%- unless language_slugs contains lang_token -%}
-                {%- assign language_slugs = language_slugs | append: lang_token -%}
-                {%- assign lang_active = false -%}
-                {%- if lang == default_language -%}{%- assign lang_active = true -%}{%- endif -%}
-                <button
-                  type="button"
-                  class="control-button code-collection__option{% if lang_active %} is-active{% endif %}"
-                  data-code-collection-language-control
-                  data-code-collection-language="{{ lang | escape }}"
-                  aria-pressed="{% if lang_active %}true{% else %}false{% endif %}"
-                  aria-label="{{ entry.language_label | escape }}"
-                  title="{{ entry.language_label | escape }}"
-                >{{ entry.language_label | escape }}</button>
-              {%- endunless -%}
-            {%- endfor -%}
-          {%- endcapture -%}
-          {%- if language_controls != blank -%}
-            <div class="code-collection__options code-collection__options--languages" role="toolbar" aria-label="Language">
-              {{ language_controls }}
-            </div>
-          {%- endif -%}
-
-          {%- assign variant_count = 0 -%}
-          {%- capture variant_controls -%}
-            {%- if keep_variants -%}
-              {%- for option in variant_list -%}
-                {%- assign variant_count = variant_count | plus: 1 -%}
-                {%- assign vactive = false -%}
-                {%- if option.slug == default_variant -%}{%- assign vactive = true -%}{%- endif -%}
-                <button
-                  type="button"
-                  class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
-                  data-code-collection-variant-control
-                  data-code-collection-variant="{{ option.slug | escape }}"
-                  data-code-collection-variant-label="{{ option.label | escape }}"
-                  aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
-                  aria-label="{{ option.label | escape }}"
-                  title="{{ option.label | escape }}"
-                >{{ option.label | escape }}</button>
-              {%- endfor -%}
-            {%- else -%}
-              {%- assign variant_slugs = '' -%}
-              {%- for entry in entries -%}
-                {%- assign vslug = entry.variant -%}
-                {%- assign vtoken = '|' | append: vslug | append: '|' -%}
-                {%- unless variant_slugs contains vtoken -%}
-                  {%- assign variant_slugs = variant_slugs | append: vtoken -%}
-                  {%- assign variant_count = variant_count | plus: 1 -%}
-                  {%- assign vactive = false -%}
-                  {%- if vslug == default_variant -%}{%- assign vactive = true -%}{%- endif -%}
-                  <button
-                    type="button"
-                    class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
-                    data-code-collection-variant-control
-                    data-code-collection-variant="{{ vslug | escape }}"
-                    data-code-collection-variant-label="{{ entry.variant_label | escape }}"
-                    aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
-                    aria-label="{{ entry.variant_label | escape }}"
-                    title="{{ entry.variant_label | escape }}"
-                  >{{ entry.variant_label | escape }}</button>
-                {%- endunless -%}
-              {%- endfor -%}
-            {%- endif -%}
-          {%- endcapture -%}
-          {%- if variant_count > 1 or keep_variants -%}
-            <div
-              class="code-collection__options code-collection__options--variants"
-              role="toolbar"
-              aria-label="{{ variant_label | escape }}"
-              data-code-collection-variant-group
-              {% if keep_variants %}data-code-collection-keep-visible="true"{% endif %}
-            >
-              {{ variant_controls }}
-            </div>
-          {%- endif -%}
+          {%- include code_collection_languages.html
+            entries=entries
+            default_language=default_entry.language
+          -%}
+          {%- include code_collection_variants.html
+            entries=entries
+            default_variant=default_entry.variant
+            variant_label=variant_label
+            variant_list=variant_list
+            keep_variants=keep_variants
+          -%}
         </div>
 
         <div class="code-panel__actions code-collection__actions">

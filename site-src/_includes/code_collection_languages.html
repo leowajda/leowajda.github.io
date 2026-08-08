@@ -1,0 +1,26 @@
+{%- assign language_slugs = '' -%}
+{%- capture language_controls -%}
+  {%- for entry in include.entries -%}
+    {%- assign lang = entry.language -%}
+    {%- assign lang_token = '|' | append: lang | append: '|' -%}
+    {%- unless language_slugs contains lang_token -%}
+      {%- assign language_slugs = language_slugs | append: lang_token -%}
+      {%- assign lang_active = false -%}
+      {%- if lang == include.default_language -%}{%- assign lang_active = true -%}{%- endif -%}
+      <button
+        type="button"
+        class="control-button code-collection__option{% if lang_active %} is-active{% endif %}"
+        data-code-collection-language-control
+        data-code-collection-language="{{ lang | escape }}"
+        aria-pressed="{% if lang_active %}true{% else %}false{% endif %}"
+        aria-label="{{ entry.language_label | escape }}"
+        title="{{ entry.language_label | escape }}"
+      >{{ entry.language_label | escape }}</button>
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- if language_controls != blank -%}
+  <div class="code-collection__options code-collection__options--languages" role="toolbar" aria-label="Language">
+    {{ language_controls }}
+  </div>
+{%- endif -%}

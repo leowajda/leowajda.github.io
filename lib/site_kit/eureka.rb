@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/OneClassPerFile, Metrics/MethodLength, Metrics/AbcSize
+require 'pathname'
+
+# rubocop:disable Metrics/MethodLength, Metrics/AbcSize
 
 module SiteKit
   module Eureka
@@ -13,7 +15,7 @@ module SiteKit
         categories = category_index(topics)
         validate_problem_categories!(problem_records, categories)
 
-        resolver = SiteKit::Templates::Guide::ReferenceResolver.new(guide: template_guide)
+        resolver = SiteKit::Templates::ReferenceResolver.new(guide: template_guide)
         problems = problem_records.to_h do |problem|
           labels = problem.fetch('categories')
           [
@@ -64,13 +66,7 @@ module SiteKit
               "Eureka problem categories are not mapped to local topics: #{unknown.sort.join(', ')}"
       end
     end
-  end
-end
 
-require 'pathname'
-
-module SiteKit
-  module Eureka
     Language = Data.define(:slug, :label, :code_language) do
       def page_record(_route_base = nil)
         {
@@ -138,11 +134,7 @@ module SiteKit
         end
       end
     end
-  end
-end
 
-module SiteKit
-  module Eureka
     Catalog = Data.define(
       :language_page_records,
       :problem_records
@@ -291,81 +283,13 @@ module SiteKit
         SiteKit::Core::Helpers.ensure_string(raw.fetch(key), "Problem '#{problem_slug}'.#{key}")
       end
     end
-  end
-end
 
-module SiteKit
-  module Eureka
-    class PageFactory
-      def initialize(project_slug:, route_base:, explorer:)
-        @project_slug = project_slug
-        @route_base = route_base
-        @explorer = explorer
-        @paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
-      end
-
-      def problem_pages
-        explorer.fetch('problems').map do |problem|
-          problem_slug = problem.fetch('problem_slug')
-          SiteKit::Emit.page(
-            dir: paths.path('problems', problem_slug),
-            page_type: EUREKA_PROBLEM_PAGE_TYPE,
-            project_slug: project_slug,
-            title: problem.fetch('title'),
-            description: "#{problem.fetch('title')} solutions",
-            data: {
-              'problem_slug' => problem_slug,
-              'problem_record' => problem,
-              'entries' => problem.fetch('entries')
-            }.merge(problem_external_link(problem))
-          )
-        end
-      end
-
-      def embed_pages
-        explorer.fetch('problems').map do |problem|
-          problem_slug = problem.fetch('problem_slug')
-          SiteKit::Emit.page(
-            dir: paths.embed('problems', problem_slug),
-            page_type: EUREKA_EMBED_PAGE_TYPE,
-            project_slug: project_slug,
-            title: "#{problem.fetch('title')} · Embed",
-            description: "#{problem.fetch('title')} solutions embed",
-            data: {
-              'problem_slug' => problem_slug,
-              'problem_record' => problem,
-              'entries' => problem.fetch('entries'),
-              'detail_url' => problem.fetch('url'),
-              'embed' => true
-            }.merge(problem_external_link(problem))
-          )
-        end
-      end
-
-      private
-
-      attr_reader :project_slug, :route_base, :explorer, :paths
-
-      def problem_external_link(record)
-        problem_source_url = record.fetch('problem_source_url')
-        {
-          'problem_source_url' => problem_source_url,
-          'nav_external_url' => problem_source_url,
-          'nav_external_icon' => 'leetcode',
-          'nav_external_label' => 'Open LeetCode problem'
-        }
-      end
-    end
-  end
-end
-
-module SiteKit
-  module Eureka
     class Project
       def initialize(manifest:, app_config:, template_library:)
         @manifest = manifest
         @app_config = app_config
         @template_library = template_library
+        @paths = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base)
       end
 
       def slug
@@ -379,7 +303,7 @@ module SiteKit
             'project_slug' => slug,
             'project_title' => manifest.title,
             'project_description' => manifest.description,
-            'browser_url' => SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).path('problems'),
+            'browser_url' => paths.path('problems'),
             'filters' => {
               'difficulties' => problem_records.map { |problem| problem.fetch('difficulty') }.uniq,
               'categories' => problem_records.flat_map { |problem| problem.fetch('categories') }.uniq,
@@ -402,12 +326,12 @@ module SiteKit
       end
 
       def generated_pages
-        page_factory.problem_pages + page_factory.embed_pages
+        explorer.fetch('problems').flat_map { |problem| [problem_page(problem), embed_page(problem)] }
       end
 
       private
 
-      attr_reader :manifest, :app_config, :template_library
+      attr_reader :manifest, :app_config, :template_library, :paths
 
       def problem_records
         @problem_records ||= catalog.problem_records.map do |problem|
@@ -424,11 +348,8 @@ module SiteKit
       def catalog
         @catalog ||= begin
           source_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
-          source_catalog = SiteKit::Eureka::SourceCatalogLoader.new(
-            manifest: manifest,
-            app_config: app_config
-          ).load
-          SiteKit::Eureka::ProblemRegistryBuilder.new(
+          source_catalog = SourceCatalogLoader.new(manifest: manifest, app_config: app_config).load
+          ProblemRegistryBuilder.new(
             manifest: manifest,
             app_config: app_config,
             source_catalog: source_catalog,
@@ -437,37 +358,52 @@ module SiteKit
         end
       end
 
-      def page_factory
-        @page_factory ||= SiteKit::Eureka::PageFactory.new(
-          project_slug: slug,
-          route_base: manifest.route_base,
-          explorer: explorer
+      def problem_page(problem)
+        slug = problem.fetch('problem_slug')
+        SiteKit::Emit.page(
+          dir: paths.path('problems', slug),
+          page_type: EUREKA_PROBLEM_PAGE_TYPE,
+          project_slug: self.slug,
+          title: problem.fetch('title'),
+          description: "#{problem.fetch('title')} solutions",
+          data: problem_page_data(problem).merge('entries' => problem.fetch('entries'))
         )
       end
-    end
-  end
-end
 
-module SiteKit
-  module Eureka
+      def embed_page(problem)
+        slug = problem.fetch('problem_slug')
+        SiteKit::Emit.page(
+          dir: paths.embed('problems', slug),
+          page_type: EUREKA_EMBED_PAGE_TYPE,
+          project_slug: self.slug,
+          title: "#{problem.fetch('title')} · Embed",
+          description: "#{problem.fetch('title')} solutions embed",
+          data: problem_page_data(problem).merge(
+            'entries' => problem.fetch('entries'),
+            'detail_url' => problem.fetch('url'),
+            'embed' => true
+          )
+        )
+      end
+
+      def problem_page_data(problem)
+        source = problem.fetch('problem_source_url')
+        {
+          'problem_slug' => problem.fetch('problem_slug'),
+          'problem_record' => problem,
+          'problem_source_url' => source,
+          'nav_external_url' => source,
+          'nav_external_icon' => 'leetcode',
+          'nav_external_label' => 'Open LeetCode problem'
+        }
+      end
+    end
+
     class Context
       def initialize(manifests:, app_config:, template_library:)
         @manifests = manifests
         @app_config = app_config
         @template_library = template_library
-      end
-
-      def projects
-        @projects ||= manifests.to_h do |manifest|
-          [
-            manifest.slug,
-            SiteKit::Eureka::Project.new(
-              manifest: manifest,
-              app_config: app_config,
-              template_library: template_library
-            )
-          ]
-        end
       end
 
       def explorers
@@ -485,8 +421,17 @@ module SiteKit
       private
 
       attr_reader :manifests, :app_config, :template_library
+
+      def projects
+        @projects ||= manifests.to_h do |manifest|
+          [
+            manifest.slug,
+            Project.new(manifest: manifest, app_config: app_config, template_library: template_library)
+          ]
+        end
+      end
     end
   end
 end
 
-# rubocop:enable Style/OneClassPerFile, Metrics/MethodLength, Metrics/AbcSize
+# rubocop:enable Metrics/MethodLength, Metrics/AbcSize
