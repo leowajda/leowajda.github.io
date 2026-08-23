@@ -105,9 +105,9 @@ GEM
       lint_roller (~> 1.1)
       rubocop (>= 1.75.0, < 2.0)
       rubocop-ast (>= 1.38.0, < 2.0)
-    rubocop-performance (1.26.1)
+    rubocop-performance (1.27.0)
       lint_roller (~> 1.1)
-      rubocop (>= 1.75.0, < 2.0)
+      rubocop (>= 1.89.0, < 2.0)
       rubocop-ast (>= 1.47.1, < 2.0)
     ruby-progressbar (1.13.0)
     safe_yaml (1.0.5)
@@ -130,7 +130,7 @@ DEPENDENCIES
   nokogiri (~> 1.19)
   rubocop (~> 1.89)
   rubocop-minitest (~> 0.40)
-  rubocop-performance (~> 1.26)
+  rubocop-performance (~> 1.27)
   webrick (~> 1.9)
 
 RUBY VERSION

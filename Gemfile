@@ -12,5 +12,5 @@ gem 'minitest', '~> 6.0'
 gem 'nokogiri', '~> 1.19'
 gem 'rubocop', '~> 1.89', require: false
 gem 'rubocop-minitest', '~> 0.40', require: false
-gem 'rubocop-performance', '~> 1.26', require: false
+gem 'rubocop-performance', '~> 1.27', require: false
 gem 'webrick', '~> 1.9'
