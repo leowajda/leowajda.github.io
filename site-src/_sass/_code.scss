@@ -1,6 +1,5 @@
 .code-panel,
 .code-block__content,
-.source-code-block,
 .code-collection,
 .code-collection__toolbar,
 .code-collection__options,
@@ -38,15 +37,6 @@
   padding-left: 0.6rem;
 }
 
-.code-collection__option--icon {
-  min-width: 2.5rem;
-  padding: 0.45rem;
-}
-
-.code-collection__option-icon {
-  font-size: 1.2rem;
-}
-
 .code-collection__actions,
 .code-collection__entry-actions {
   align-items: center;
@@ -75,35 +65,6 @@
   gap: 0.85rem;
   justify-content: space-between;
   padding: 0.75rem 1rem;
-}
-
-.code-panel__header--minimal {
-  justify-content: flex-end;
-}
-
-.code-panel__heading {
-  display: grid;
-  gap: 0.2rem;
-  min-width: 0;
-}
-
-.code-panel__title {
-  font-size: 1.15rem;
-  line-height: 1.3;
-  margin: 0;
-}
-
-.code-panel__meta {
-  align-items: center;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.code-panel__meta span:not(:last-child)::after {
-  content: "•";
-  margin-left: 0.5rem;
-  opacity: 0.45;
 }
 
 .code-panel__actions {

@@ -48,14 +48,6 @@
   font-weight: bold;
 }
 
-.side-panel__links {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  gap: 0.45rem;
-}
-
 .side-panel__search {
   display: grid;
   gap: 0.5rem;
@@ -89,10 +81,6 @@
 .side-panel__link--active {
   border-left-color: currentColor;
   font-weight: bold;
-}
-
-.side-panel__link--inline {
-  padding-left: 0;
 }
 
 @media (min-width: 960px) {

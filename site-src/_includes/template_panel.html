@@ -1,5 +1,4 @@
 {%- assign template = include.template -%}
-{%- assign template_id = template.id | default: template.template_id -%}
 {%- assign code_collection_id = template.target | replace: '/', '-' | append: '-code' -%}
 {%- assign entries = template.entries -%}
 {%- assign panel_active = include.active -%}
@@ -11,9 +10,7 @@
   class="template-panel"
   id="{{ template.target }}"
   data-template-panel
-  data-template-id="{{ template_id }}"
   data-guide-pattern="{{ template.pattern_id }}"
-  data-guide-variant="{{ template.variant_id }}"
   data-guide-target="{{ template.target }}"
   {% unless panel_active %}hidden{% endunless %}
 >

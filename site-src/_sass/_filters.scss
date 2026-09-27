@@ -5,16 +5,9 @@
 .filters .side-panel__body,
 .filters .side-panel__section,
 .filters .side-panel__section-header,
-.filters .side-panel__links,
 .filters .filter-options,
 .filters .filter-option {
   justify-items: start;
-}
-
-.filter-group__meta,
-.filter-note,
-.filter-empty {
-  opacity: var(--muted-opacity);
 }
 
 .filter-search input {
@@ -24,8 +17,7 @@
 }
 
 .filters .filter-search,
-.filters .filter-options,
-.filters .side-panel__links {
+.filters .filter-options {
   justify-content: flex-start;
 }
 
@@ -71,10 +63,6 @@
   min-width: 0;
 }
 
-.filter-option__count {
-  opacity: var(--muted-opacity);
-}
-
 .filter-option input {
   margin: 0.2rem 0 0;
 }
@@ -94,12 +82,6 @@
 
 .filter-option--language input {
   margin: 0;
-}
-
-.filter-scope {
-  display: grid;
-  gap: 0.45rem;
-  justify-items: start;
 }
 
 @media (max-width: 700px) {

@@ -10,7 +10,6 @@
         class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
         data-code-collection-variant-control
         data-code-collection-variant="{{ option.slug | escape }}"
-        data-code-collection-variant-label="{{ option.label | escape }}"
         aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
         aria-label="{{ option.label | escape }}"
         title="{{ option.label | escape }}"
@@ -31,7 +30,6 @@
           class="control-button code-collection__option{% if vactive %} is-active{% endif %}"
           data-code-collection-variant-control
           data-code-collection-variant="{{ vslug | escape }}"
-          data-code-collection-variant-label="{{ entry.variant_label | escape }}"
           aria-pressed="{% if vactive %}true{% else %}false{% endif %}"
           aria-label="{{ entry.variant_label | escape }}"
           title="{{ entry.variant_label | escape }}"

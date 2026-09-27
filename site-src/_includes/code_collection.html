@@ -10,12 +10,10 @@
   {%- assign embed = include.embed | default: false -%}
   {%- assign problem_source_url = include.problem_source_url | default: '' -%}
   {%- if kind == 'problem' -%}
-    {%- assign toolbar_aria = eureka_cfg.toolbar_label -%}
     {%- assign variant_label = eureka_cfg.variant_group_label -%}
     {%- assign variant_list = cfg.variants -%}
     {%- assign keep_variants = true -%}
   {%- else -%}
-    {%- assign toolbar_aria = cfg.default_toolbar_label -%}
     {%- assign variant_label = cfg.default_variant_label -%}
     {%- assign variant_list = empty -%}
     {%- assign keep_variants = false -%}
@@ -25,7 +23,6 @@
     class="code-collection"
     {% if collection_id != '' %}id="{{ collection_id }}"{% endif %}
     data-code-collection
-    data-code-collection-toolbar-label="{{ toolbar_aria | escape }}"
     data-code-collection-default-entry="{{ default_entry_id | escape }}"
     {% if sync_hash %}data-code-collection-sync-hash="true"{% endif %}
   >

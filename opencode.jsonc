@@ -5,9 +5,7 @@
   "default_agent": "build",
   "subagent_depth": 2,
   // AGENTS.md is auto-loaded from the project root.
-  // DESIGN.md is project design authority (UI, copy, interaction).
   // Framework docs: Context7 MCP + git references below (not URL dumps in AGENTS.md).
-  "instructions": ["DESIGN.md"],
   // Permissionless project mode: never prompt; always allow tools/commands.
   "permission": "allow",
   // Authoritative gates remain pnpm scripts in AGENTS.md.
