@@ -55,7 +55,10 @@ export const loadPagefind = async () => {
       })
       await pagefind.init()
       return pagefind
-    })()
+    })().catch((error) => {
+      pagefindPromise = undefined
+      throw error
+    })
   }
   return pagefindPromise
 }
@@ -77,7 +80,11 @@ export const loadPagefindResultData = (result) => {
     return result.data()
   }
   if (!resultDataCache.has(key)) {
-    resultDataCache.set(key, result.data())
+    const pending = result.data().catch((error) => {
+      resultDataCache.delete(key)
+      throw error
+    })
+    resultDataCache.set(key, pending)
   }
   return resultDataCache.get(key)
 }
