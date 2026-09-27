@@ -11,19 +11,23 @@ module SiteKit
       SiteKit::Build.clear(site)
       build = SiteKit::Build.for(site)
       attach(site, build)
-      build.pages.each do |page|
-        site.pages << SiteKit::JekyllRuntime::GeneratedPage.new(
-          site: site,
-          dir: page.fetch(:dir),
-          page_type: page.fetch(:page_type),
-          data: page.fetch(:data),
-          content: page.fetch(:content, '')
-        )
+      build.pages.each do |spec|
+        site.pages << generated_page(site, spec)
       end
       SiteKit::Checks::SiteInvariants.new(site: site).validate!
     end
 
     private
+
+    def generated_page(site, spec)
+      content = spec.fetch(:content, '').to_s
+      dir = spec.fetch(:dir).delete_prefix('/').delete_suffix('/')
+      name = content.strip.empty? ? 'index.html' : 'index.md'
+      page = Jekyll::PageWithoutAFile.new(site, site.source, dir, name)
+      page.content = content
+      page.data.merge!(spec.fetch(:data).transform_keys(&:to_s))
+      page
+    end
 
     def attach(site, build)
       documents = site.pages

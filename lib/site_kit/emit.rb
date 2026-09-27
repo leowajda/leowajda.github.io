@@ -9,12 +9,29 @@ module SiteKit
         dir: dir,
         page_type: page_type,
         content: content.to_s,
-        data: {
-          'project_slug' => project_slug,
-          'title' => title,
-          'description' => description
-        }.compact.merge(data)
+        data: chrome_for(page_type).merge(
+          {
+            'project_slug' => project_slug,
+            'title' => title,
+            'description' => description
+          }.compact
+        ).merge(data)
       }
+    end
+
+    def chrome_for(page_type)
+      case page_type
+      when EUREKA_PROBLEM_PAGE_TYPE
+        { 'layout' => 'problem', 'shell' => 'wide', 'seo' => { 'type' => 'WebPage' } }
+      when EUREKA_EMBED_PAGE_TYPE, TEMPLATE_EMBED_PAGE_TYPE, SOURCE_EMBED_PAGE_TYPE
+        { 'layout' => 'code_embed', 'noindex' => true, 'sitemap' => false, 'seo' => { 'type' => 'WebPage' } }
+      when SOURCE_HOME_PAGE_TYPE, SOURCE_LANGUAGE_PAGE_TYPE
+        { 'layout' => 'source_list', 'shell' => 'wide', 'seo' => { 'type' => 'WebPage' } }
+      when SOURCE_MODULE_PAGE_TYPE, SOURCE_DOCUMENT_PAGE_TYPE
+        { 'layout' => 'source', 'shell' => 'source', 'seo' => { 'type' => 'WebPage' } }
+      else
+        raise SiteKit::InvariantError, "Unknown generated page type '#{page_type}'"
+      end
     end
 
     def validate_pages!(pages)

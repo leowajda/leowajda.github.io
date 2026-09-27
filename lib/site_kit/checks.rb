@@ -358,18 +358,16 @@ module SiteKit
       end
 
       def generated_pages
-        @generated_pages ||= site.pages.grep(SiteKit::JekyllRuntime::GeneratedPage)
+        @generated_pages ||= begin
+          routes = SiteKit::Build.for(site).pages.map { |page| SiteKit::Emit.normalized_route(page[:dir]) }
+          site.pages.select { |page| routes.include?(page.url) }
+        end
       end
 
       def hidden_from_index?(page)
         page.data['noindex'] == true ||
           page.data['layout'] == 'redirect' ||
-          page.data['layout'] == 'code_embed' ||
-          [
-            EUREKA_EMBED_PAGE_TYPE,
-            TEMPLATE_EMBED_PAGE_TYPE,
-            SOURCE_EMBED_PAGE_TYPE
-          ].include?(page.data['page_type'])
+          page.data['layout'] == 'code_embed'
       end
     end
   end
