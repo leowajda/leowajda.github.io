@@ -26,8 +26,6 @@ module SiteKit
       end
     end
 
-    alias generated_pages pages
-
     def search_extras
       @search_extras ||= SiteKit::Extras::Pagefind.records(template_guide: templates.guide)
     end

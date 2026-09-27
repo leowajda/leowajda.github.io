@@ -49,26 +49,3 @@
 .template-reference-link:hover .template-reference-label__parent {
   border-right-color: currentColor;
 }
-
-.template-reference-inline {
-  align-items: baseline;
-  display: inline-flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  padding: 0;
-}
-
-.template-reference-inline .template-reference-label__parent,
-.template-reference-inline .template-reference-label__child {
-  padding: 0;
-}
-
-.template-reference-inline .template-reference-label__parent {
-  border-right: 0;
-  font-weight: 400;
-}
-
-.template-reference-inline .template-reference-label__child {
-  border-left: thin solid var(--border);
-  padding-left: 0.45rem;
-}

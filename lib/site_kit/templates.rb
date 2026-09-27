@@ -33,10 +33,6 @@ module SiteKit
           !none_labels.intersect?(labels)
       end
 
-      def match_any?(rules, labels)
-        rules.any? { |rule| match?(rule, labels) }
-      end
-
       def normalize_labels(value, context)
         SiteKit::Core::Helpers.ensure_array_of_strings(value, context).uniq
       end

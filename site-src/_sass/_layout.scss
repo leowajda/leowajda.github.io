@@ -2,7 +2,6 @@
 .source-layout,
 .content-stack,
 .filters,
-.implementation-list,
 .source-root,
 .source-article,
 .problem-title,
@@ -16,7 +15,6 @@
 .content-stack,
 .problem-page,
 .source-layout,
-.implementation-list,
 .source-article,
 .post-article {
   gap: 1rem;
@@ -81,7 +79,6 @@
     grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
   }
 
-  .source-code-block,
   .source-article--document,
   .source-article {
     min-width: 0;

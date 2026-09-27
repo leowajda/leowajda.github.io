@@ -7,7 +7,7 @@ layout: embed
 {%- if entries == nil or entries.size == 0 -%}
   <p>Code not found.</p>
 {%- else -%}
-  <article class="code-embed" data-code-embed>
+  <article class="code-embed">
     {%- if page.problem_record -%}
       {%- include code_collection.html
         entries=entries

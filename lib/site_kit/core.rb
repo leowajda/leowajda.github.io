@@ -241,11 +241,6 @@ module SiteKit
       end
     end
 
-    IoHelpers = Helpers
-    ValidationHelpers = Helpers
-    PathHelpers = Helpers
-    MarkdownHelpers = Helpers
-    CollectionHelpers = Helpers
     RecordHelpers = Helpers
 
     class Schema
@@ -260,13 +255,6 @@ module SiteKit
       def required_string(key) = Helpers.ensure_string(record.fetch(key), field(key))
       def required_integer(key) = Helpers.ensure_integer(record.fetch(key), field(key))
       def optional_array(key, default: []) = Helpers.ensure_array(record.fetch(key, default), field(key))
-
-      def optional_array_of_strings(key,
-                                    default: [])
-        Helpers.ensure_array_of_strings(record.fetch(key, default),
-                                        field(key))
-      end
-
       def optional_string(key, default: '') = Helpers.ensure_string(record.fetch(key, default), field(key))
       def key?(key) = record.key?(key)
       def fetch(key, *fallback, &) = record.fetch(key, *fallback, &)
@@ -330,10 +318,6 @@ module SiteKit
           entry[key] = value unless value.empty?
         end
         entry
-      end
-
-      def with_urls(entry, detail_url:, embed_url:)
-        entry.merge('detail_url' => detail_url, 'embed_url' => embed_url)
       end
     end
   end

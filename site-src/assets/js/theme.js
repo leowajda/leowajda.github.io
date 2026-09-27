@@ -31,7 +31,7 @@ const applyTheme = (theme) => {
 const updateThemeButton = (button) => {
   const currentTheme = resolveTheme()
   const nextTheme = currentTheme === "dark" ? "light" : "dark"
-  const icon = button.querySelector(".icon-action__icon use, .theme-toggle__icon use")
+  const icon = button.querySelector(".icon-action__icon use")
 
   if (icon) {
     icon.setAttribute("href", `#icon-theme-${nextTheme}`)
