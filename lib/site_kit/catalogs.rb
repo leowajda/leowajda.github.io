@@ -39,10 +39,7 @@ module SiteKit
         eureka.required_integer('catalog_version')
         eureka.required_array_of_strings('metadata_keys')
         eureka.required_array_of_strings('implementation_keys')
-        browser.required_string('toolbar_label')
         browser.required_string('variant_group_label')
-        browser.required_string('variant_group_visibility')
-        browser.required_string('variant_presentation')
       end
 
       def validate_source_notes!(record)
@@ -58,7 +55,6 @@ module SiteKit
 
         code_collection.required_string('default_variant_label')
         code_collection.required_string('default_toolbar_label')
-        code_collection.required_hash('variant_icons')
         code_collection.required_array('variants')
       end
 

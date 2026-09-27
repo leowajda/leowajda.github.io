@@ -1,12 +1,7 @@
 default_variant_label: Variant
 default_toolbar_label: Code
-variant_icons:
-  iterative: iterative
-  recursive: recursive
 variants:
   - slug: iterative
     label: Iterative
-    icon: iterative
   - slug: recursive
     label: Recursive
-    icon: recursive
