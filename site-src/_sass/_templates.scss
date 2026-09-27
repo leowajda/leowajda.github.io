@@ -40,6 +40,36 @@
   gap: 0.35rem;
 }
 
+.template-panel__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  margin: 0.35rem 0 0;
+  padding: 0;
+}
+
+.template-panel__options li {
+  margin: 0;
+}
+
+.template-panel__options a {
+  border: thin solid var(--border);
+  color: inherit;
+  display: inline-flex;
+  padding: 0.15rem 0.5rem;
+  text-decoration: none;
+}
+
+.template-panel__options a[aria-current="true"] {
+  background: var(--accent-surface);
+  color: var(--accent-text);
+}
+
+.section-eyebrow a {
+  color: inherit;
+}
+
 .template-panel__header h2,
 .template-panel__header p,
 .template-pattern-panel__header h2,

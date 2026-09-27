@@ -14,9 +14,26 @@
   {% unless panel_active %}hidden{% endunless %}
 >
   <header class="template-panel__header">
-    <p class="section-eyebrow">{{ pattern.label }}</p>
-    <h2>{{ variant.label }}</h2>
+    <ul class="template-panel__options" aria-label="{{ pattern.label }} templates">
+      {%- for item in pattern.variants -%}
+        {%- if item.has_template -%}
+          <li>
+            <a
+              href="#{{ item.target }}"
+              data-guide-sibling="{{ item.target }}"
+              {% if item.target == variant.target %}aria-current="true"{% endif %}
+            >{{ item.label }}</a>
+          </li>
+        {%- endif -%}
+      {%- endfor -%}
+    </ul>
   </header>
+  <div class="template-panel__code">
+    {%- include code_collection.html
+      entries=entries
+      collection_id=code_collection_id
+    -%}
+  </div>
   {%- assign linked = variant.linked_problems | default: empty -%}
   {%- if linked.size > 0 -%}
     <nav class="template-panel__problems" aria-label="Problems" data-pagefind-ignore>
@@ -28,10 +45,4 @@
       </ul>
     </nav>
   {%- endif -%}
-  <div class="template-panel__code">
-    {%- include code_collection.html
-      entries=entries
-      collection_id=code_collection_id
-    -%}
-  </div>
 </section>

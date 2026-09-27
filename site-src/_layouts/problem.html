@@ -6,10 +6,7 @@ layout: default
 {%- assign entries = problem.entries -%}
 {%- assign template_references = problem.template_references | default: empty -%}
 {%- capture header_extra -%}
-  <div class="problem-summary">
-    <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug | escape }}">{{ problem.difficulty | escape }}</span>
-    <span class="problem-summary__item">{{ problem.entry_count | escape }} implementation{% if problem.entry_count != 1 %}s{% endif %}</span>
-  </div>
+  <span class="difficulty-badge difficulty-badge--{{ problem.difficulty_slug | escape }}">{{ problem.difficulty | escape }}</span>
 {%- endcapture -%}
 
 {%- if problem == nil or entries.size == 0 -%}
@@ -38,9 +35,7 @@ layout: default
 
     {%- include page_hero_header.html
       class="problem-header"
-      eyebrow="Eureka Problem"
       title=problem.title
-      link_group="problem_detail"
       extra=header_extra
     -%}
 

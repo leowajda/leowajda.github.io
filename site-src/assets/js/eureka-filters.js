@@ -1,4 +1,4 @@
-import { closestElement, onReady } from "./dom.js"
+import { onReady } from "./dom.js"
 import {
   createSequenceGuard,
   loadPagefindRecords,
@@ -18,21 +18,6 @@ const checkedValues = (form, name) =>
   Array.from(form.querySelectorAll(`input[name="${name}"]:checked`))
     .map((input) => input.value)
     .filter(Boolean)
-
-const setRadio = (form, name, value) => {
-  const target = form.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`)
-    || form.querySelector(`input[name="${name}"][value=""]`)
-  if (target) {
-    target.checked = true
-  }
-}
-
-const setCheckbox = (form, name, value, checked) => {
-  const target = form.querySelector(`input[name="${name}"][value="${CSS.escape(value)}"]`)
-  if (target) {
-    target.checked = checked
-  }
-}
 
 const anyFilter = (values) =>
   values.length === 1 ? values[0] : { any: values }
@@ -63,7 +48,6 @@ const initializeProblemFilters = () => {
     return
   }
 
-  const chips = document.querySelector("[data-active-filter-list]")
   const empty = document.querySelector("[data-problem-empty]")
   const searchInput = form.querySelector('input[name="search"]')
   const languageInputs = Array.from(form.querySelectorAll('input[name="language"]'))
@@ -115,48 +99,6 @@ const initializeProblemFilters = () => {
     })
   }
 
-  const paintChips = (current) => {
-    if (!chips) {
-      return
-    }
-    const items = []
-    if (current.queryActive) {
-      items.push({ kind: "search", value: current.query, label: `Search: ${current.query}` })
-    }
-    if (current.difficulty) {
-      items.push({ kind: "difficulty", value: current.difficulty, label: `Difficulty: ${current.difficulty}` })
-    }
-    current.categories.forEach((category) => {
-      items.push({ kind: "category", value: category, label: `Category: ${category}` })
-    })
-    if (current.languageFilterActive) {
-      current.languages.forEach((input) => {
-        items.push({ kind: "language", value: input.value, label: `Language: ${languageLabel(input)}` })
-      })
-    }
-    chips.replaceChildren()
-    if (items.length === 0) {
-      chips.hidden = true
-      return
-    }
-    items.forEach((item) => {
-      const button = document.createElement("button")
-      button.type = "button"
-      button.className = "active-filter"
-      button.dataset.filterKind = item.kind
-      button.dataset.filterValue = item.value
-      button.textContent = item.label
-      chips.append(button)
-    })
-    const clear = document.createElement("button")
-    clear.type = "button"
-    clear.className = "active-filter active-filter--clear"
-    clear.dataset.filterKind = "clear"
-    clear.textContent = "Clear all"
-    chips.append(clear)
-    chips.hidden = false
-  }
-
   const paintRows = (visible) => {
     let count = 0
     rows.forEach((row) => {
@@ -195,7 +137,6 @@ const initializeProblemFilters = () => {
   const render = async () => {
     const current = state()
     paintColumns(current.languages)
-    paintChips(current)
     const token = sequence.next()
 
     if (!filtered(current)) {
@@ -225,28 +166,6 @@ const initializeProblemFilters = () => {
     window.clearTimeout(debounce)
     debounce = window.setTimeout(render, DEBOUNCE_MS)
   }
-
-  chips?.addEventListener("click", (event) => {
-    const button = closestElement(event.target, "[data-filter-kind]")
-    if (!(button instanceof HTMLButtonElement)) {
-      return
-    }
-    const { filterKind, filterValue = "" } = button.dataset
-    if (filterKind === "search" && searchInput) {
-      searchInput.value = ""
-    } else if (filterKind === "difficulty") {
-      setRadio(form, "difficulty", "")
-    } else if (filterKind === "category") {
-      setCheckbox(form, "category", filterValue, false)
-    } else if (filterKind === "language") {
-      setCheckbox(form, "language", filterValue, false)
-    } else if (filterKind === "clear") {
-      form.reset()
-    } else {
-      return
-    }
-    render()
-  })
 
   form.addEventListener("input", (event) => {
     if (event.target === searchInput) {

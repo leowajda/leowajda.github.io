@@ -129,12 +129,11 @@ module SiteKit
       if manifest.fetch('kind') == EUREKA_PROJECT_KIND
         return [
           {
-            'language_title' => 'Problems',
-            'modules' => [{ 'title' => 'Problem Explorer', 'url' => manifest.fetch('entry_url') }]
-          },
-          {
-            'language_title' => 'Templates',
-            'modules' => [{ 'title' => 'Algorithmic Templates', 'url' => SiteKit::TEMPLATES_URL }]
+            'language_title' => '',
+            'modules' => [
+              { 'title' => 'Problem Explorer', 'url' => manifest.fetch('entry_url') },
+              { 'title' => 'Algorithmic Templates', 'url' => SiteKit::TEMPLATES_URL }
+            ]
           }
         ]
       end
