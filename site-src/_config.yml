@@ -51,20 +51,11 @@ defaults:
     values:
       image: /assets/social-card.svg
   - scope:
-      path: "index.md"
-    values:
-      structured_data_partial: structured_data/home.html
-  - scope:
-      path: "eureka/problems.md"
-    values:
-      structured_data_partial: structured_data/problems.html
-  - scope:
       path: ""
       type: eureka_problem_page
     values:
       layout: problem
       shell: wide
-      structured_data_partial: structured_data/problem.html
       seo:
         type: WebPage
   - scope:
@@ -98,7 +89,7 @@ defaults:
       path: ""
       type: source_home_page
     values:
-      layout: source_home
+      layout: source_list
       shell: wide
       seo:
         type: WebPage
@@ -106,7 +97,7 @@ defaults:
       path: ""
       type: source_language_page
     values:
-      layout: source_language
+      layout: source_list
       shell: wide
       seo:
         type: WebPage
@@ -114,7 +105,7 @@ defaults:
       path: ""
       type: source_module_page
     values:
-      layout: source_module
+      layout: source
       shell: source
       seo:
         type: WebPage
@@ -122,7 +113,7 @@ defaults:
       path: ""
       type: source_document_page
     values:
-      layout: source_document
+      layout: source
       shell: source
       seo:
         type: WebPage

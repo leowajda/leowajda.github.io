@@ -14,9 +14,13 @@ layout: default
         collection_id='source-code'
       -%}
     </div>
-  {%- else -%}
+  {%- elsif source_document and source_document.body -%}
     <section class="content-card source-article source-article--document source-layout__content" id="source-content">
       {{ source_document.body | markdownify }}
+    </section>
+  {%- elsif source_module.readme_markdown and source_module.readme_markdown != "" -%}
+    <section class="content-card source-article source-layout__content source-module-content">
+      {{ source_module.readme_markdown | markdownify }}
     </section>
   {%- endif -%}
 {%- endcapture -%}

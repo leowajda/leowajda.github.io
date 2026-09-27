@@ -1,8 +1,4 @@
 {%- assign current_module = include.module -%}
-{%- assign panel_title = current_module.title -%}
-{%- if include.hide_title == true or include.hide_title == 'true' -%}
-  {%- assign panel_title = '' -%}
-{%- endif -%}
 {%- capture panel_body -%}
   <nav aria-label="Project source navigation">
     {%- if current_module -%}
@@ -20,6 +16,5 @@
 
 {%- include side_panel.html
   class="source-navigation side-panel--sticky side-panel--scrollable"
-  title=panel_title
   body=panel_body
 -%}

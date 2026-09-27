@@ -19,12 +19,12 @@
     {% if search_enabled and page.search_auto_open %}data-search-auto-open{% endif %}
   >
     {%- include icon-sprite.html -%}
-    <main class="page-content" aria-label="Content">
-      <div class="{{ shell_class }}">
-        {%- include site_nav.html -%}
+    <div class="{{ shell_class }}">
+      {%- include site_nav.html -%}
+      <main class="page-content" aria-label="Content">
         {{ content }}
-      </div>
-    </main>
+      </main>
+    </div>
 
     {%- if search_enabled -%}
       {%- include search_overlay.html -%}
