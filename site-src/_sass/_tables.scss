@@ -2,25 +2,6 @@
   opacity: var(--muted-opacity);
 }
 
-.active-filter-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem 0.9rem;
-}
-
-.active-filter-list[hidden] {
-  display: none;
-}
-
-.active-filter {
-  background: none;
-  border: 0;
-  color: inherit;
-  cursor: pointer;
-  padding: 0;
-  text-decoration: underline;
-}
-
 .problem-table-shell {
   min-width: 0;
   overflow: hidden;

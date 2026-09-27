@@ -5,8 +5,8 @@ test("template guide opens old template hashes through redirects", async ({ page
   await page.goto("/templates/#topological-sort")
 
   await expect(page.getByRole("heading", { name: "Algorithmic Templates" })).toBeVisible()
-  await expect(page.getByRole("link", { name: "Graph", exact: true })).toHaveAttribute("aria-current", "true")
-  await expect(templatePanel(page, "graph/topological-sort").getByRole("heading", { name: "Topological sort" })).toBeVisible()
+  await expect(page.locator(".template-library__nav").getByRole("link", { name: "Graph", exact: true })).toHaveAttribute("aria-current", "true")
+  await expect(templatePanel(page, "graph/topological-sort").getByRole("link", { name: "Topological sort", exact: true })).toHaveAttribute("aria-current", "true")
   await expect(templatePanel(page, "graph/topological-sort")).toBeVisible()
   await expect(page).toHaveURL(/#graph%2Ftopological-sort$/)
 })
@@ -16,7 +16,7 @@ test("broad pattern targets open a compact chooser", async ({ page }) => {
 
   const chooser = page.locator('[data-template-pattern-panel][data-guide-pattern="graph"]')
 
-  await expect(page.getByRole("link", { name: "Graph", exact: true })).toHaveAttribute("aria-current", "true")
+  await expect(page.locator(".template-library__nav").getByRole("link", { name: "Graph", exact: true })).toHaveAttribute("aria-current", "true")
   await expect(page.locator('[data-template-pattern-panel][data-guide-pattern="tree"]')).toBeHidden()
   await expect(chooser).toBeVisible()
   await expect(chooser.getByRole("link", { name: /BFS/ })).toBeVisible()
@@ -30,7 +30,7 @@ test("dynamic programming pattern exposes every concrete variant", async ({ page
 
   const chooser = page.locator('[data-template-pattern-panel][data-guide-pattern="dynamic-programming"]')
 
-  await expect(page.getByRole("link", { name: "Dynamic Programming", exact: true })).toHaveAttribute(
+  await expect(page.locator(".template-library__nav").getByRole("link", { name: "Dynamic Programming", exact: true })).toHaveAttribute(
     "aria-current",
     "true"
   )
@@ -53,7 +53,7 @@ test("pattern chooser opens one concrete code panel", async ({ page }) => {
   await expect(templatePanel(page, "graph/bfs")).toBeVisible()
   await expect(page.locator("[data-template-pattern-panel]:not([hidden])")).toHaveCount(0)
   await expect(page.locator("[data-template-panel]:not([hidden])")).toHaveCount(1)
-  await expect(page.getByRole("link", { name: "Graph", exact: true })).toHaveAttribute("aria-current", "true")
+  await expect(page.locator(".template-library__nav").getByRole("link", { name: "Graph", exact: true })).toHaveAttribute("aria-current", "true")
   await expect(page).toHaveURL(/#graph%2Fbfs$/)
 })
 

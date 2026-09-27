@@ -67,6 +67,15 @@ const initializeTemplateLibrary = (root) => {
       }
     })
 
+    root.querySelectorAll("[data-guide-sibling]").forEach((link) => {
+      const on = !isPattern && link.dataset.guideSibling === renderTarget
+      if (on) {
+        link.setAttribute("aria-current", "true")
+      } else {
+        link.removeAttribute("aria-current")
+      }
+    })
+
     patternPanels.forEach((panel) => {
       const on = isPattern && panel.dataset.guidePattern === patternId
       panel.hidden = !on
@@ -93,10 +102,10 @@ const initializeTemplateLibrary = (root) => {
   }
 
   root.addEventListener("click", (event) => {
-    const nav = event.target.closest("[data-guide-pattern-control], [data-guide-variant-control]")
+    const nav = event.target.closest("[data-guide-pattern-control], [data-guide-variant-control], [data-guide-sibling]")
     if (nav) {
       event.preventDefault()
-      paint(nav.dataset.guideTarget || "")
+      paint(nav.dataset.guideTarget || nav.dataset.guideSibling || "")
       return
     }
 

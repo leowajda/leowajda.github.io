@@ -12,7 +12,9 @@
         <ul class="project-tree" aria-label="{{ project.title | escape }} entries">
           {% for group in source_groups %}
             <li class="project-tree__group">
-              <p class="project-tree__label">{{ group.language_title | escape }}</p>
+              {%- if group.language_title != '' -%}
+                <p class="project-tree__label">{{ group.language_title | escape }}</p>
+              {%- endif -%}
               <ul class="project-tree__children">
                 {% for module in group.modules %}
                   <li class="project-tree__item">

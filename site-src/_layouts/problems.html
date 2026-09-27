@@ -9,7 +9,6 @@ layout: default
   eyebrow=explorer.project_title
   title=page.title
   description=page.description
-  link_group="problem_explorer"
 -%}
 
 {%- assign page_content = content | strip -%}
@@ -25,7 +24,6 @@ layout: default
   </aside>
 
   <div class="problem-browser__results">
-    <div class="active-filter-list" data-active-filter-list hidden></div>
     {%- include problems_table.html explorer=explorer -%}
   </div>
 </section>
