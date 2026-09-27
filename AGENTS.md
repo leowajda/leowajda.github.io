@@ -14,9 +14,6 @@ Jekyll-first personal site: Eureka (problems), algorithmic templates handbook, Z
 | CLI / pnpm wrappers | `script/`, `package.json` |
 | Ruby contracts | `test/` |
 | Playwright | `tests/functional/` |
-| Opencode slash commands only | `.opencode/command/` (tooling; not product docs) |
-
-Do not put product architecture in `.opencode/`. Commands there may point here.
 
 ## Stack
 
@@ -52,7 +49,7 @@ sources/ + site-src/_data
 | `lib/site_kit/checks.rb` | SEO, links, catalogs |
 | `site-src/_plugins/` | Thin Jekyll generators / hooks only |
 
-Plugins call `Build` only. Attach runs in `site_build_generator`.
+Plugins call `Build`. `site_build_generator` attaches page data, adds generated pages, then runs `SiteInvariants`.
 
 ## Public URLs
 
@@ -66,7 +63,9 @@ Plugins call `Build` only. Attach runs in `site_build_generator`.
 
 Embeds: bare layout; post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts.
 
-Templates are **one handbook page**, not path-per-template. Nav uses hash links; PE shows the matching panel. Pagefind extras exist so search can deep-link `#…` while panels stay mutually exclusive.
+Templates are **one handbook page**, not path-per-template. A flat list of pattern names stays visible. `#pattern` opens that pattern's variants. `#pattern/variant` opens one code panel and keeps the sibling chips. Pagefind extras deep-link those hashes. Do not repeat a name that is already on the screen.
+
+Hand-written routes are `index.md` files (`eureka/problems/index.md`, `search/index.md`, `templates/index.md`). Only `404.md` sets `permalink`.
 
 ## Code box
 
@@ -89,7 +88,7 @@ Template snippets: `sources/templates/<id>/<lang>.<ext>` — minimal bodies, no 
 - No synthetic `.click()` across JS features; small exported APIs on the owning module.
 - One PE entry file per feature until ~400 LOC of real concerns — no satellite rename wrappers.
 - Simplest idiomatic Jekyll mechanism when changing render/routing/plugins.
-- UI/copy: clarity over cleverness; short sentences; no filler; every control earns its space. Icon-first global nav; monochrome, bordered, monospace identity.
+- UI/copy: clarity over cleverness; short sentences; no filler; every control earns its space. Do not show the same fact twice on one screen. Icon-first global nav; monochrome, bordered, monospace identity.
 
 ## Setup
 
@@ -130,7 +129,7 @@ Do not rely on Ruby tests alone for browser behavior.
 
 - Against preview `http://127.0.0.1:4173` (or built `_site`).
 - Prefer role/name locators; data attributes for structural invariants only.
-- Config: `.playwright/cli.config.json` when using CLI inspection.
+- Config: `playwright.config.mjs`.
 
 ## Git
 
