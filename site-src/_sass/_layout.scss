@@ -5,7 +5,6 @@
 .source-root,
 .source-article,
 .problem-title,
-.post-article,
 .problem-browser__intro,
 .problem-browser__results,
 .problem-browser {
@@ -15,13 +14,8 @@
 .content-stack,
 .problem-page,
 .source-layout,
-.source-article,
-.post-article {
+.source-article {
   gap: 1rem;
-}
-
-.post-meta {
-  text-align: right;
 }
 
 .filters {

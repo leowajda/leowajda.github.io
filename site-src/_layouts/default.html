@@ -29,22 +29,10 @@
       </div>
     </main>
 
-    {%- if site.goat_counter and jekyll.environment == 'production' -%}
-      {%- include goat_counter.html -%}
-    {%- endif -%}
-
     {%- if search_enabled -%}
       {%- include search_overlay.html -%}
     {%- endif -%}
 
-    {%- if page.needs_math -%}
-      {%- capture katex_js_url -%}{%- include asset_url.html path='/assets/vendor/katex/katex.min.js' -%}{%- endcapture -%}
-      {%- capture katex_render_js_url -%}{%- include asset_url.html path='/assets/vendor/katex/contrib/auto-render.min.js' -%}{%- endcapture -%}
-      {%- capture math_js_url -%}{%- include asset_url.html path='/assets/js/math.js' -%}{%- endcapture -%}
-      <script src="{{ katex_js_url | strip | escape }}"></script>
-      <script src="{{ katex_render_js_url | strip | escape }}"></script>
-      <script type="module" src="{{ math_js_url | strip | escape }}"></script>
-    {%- endif -%}
     {%- capture core_js_url -%}{%- include asset_url.html path='/assets/js/core.js' -%}{%- endcapture -%}
     <script type="module" src="{{ core_js_url | strip | escape }}"></script>
     {%- if page.custom_js -%}
