@@ -16,19 +16,12 @@ const ensureNoErrors = (context, errors = []) => {
 }
 
 const readExtras = async () => {
-  try {
-    const raw = await fs.readFile(extrasPath, "utf8")
-    const records = JSON.parse(raw)
-    if (!Array.isArray(records)) {
-      throw new TypeError(`${extrasPath} must contain an array`)
-    }
-    return records
-  } catch (error) {
-    if (error && error.code === "ENOENT") {
-      return []
-    }
-    throw error
+  const raw = await fs.readFile(extrasPath, "utf8")
+  const records = JSON.parse(raw)
+  if (!Array.isArray(records) || records.length === 0) {
+    throw new Error(`${extrasPath} must contain a non-empty array of Pagefind extras`)
   }
+  return records
 }
 
 const run = async () => {

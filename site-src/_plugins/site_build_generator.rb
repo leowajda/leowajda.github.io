@@ -8,6 +8,7 @@ module SiteKit
     priority :high
 
     def generate(site)
+      SiteKit::Build.clear(site)
       build = SiteKit::Build.for(site)
       attach(site, build)
       build.pages.each do |page|

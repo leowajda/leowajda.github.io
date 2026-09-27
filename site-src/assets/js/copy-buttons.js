@@ -23,9 +23,16 @@ const setCopyButtonState = (button, state, label) => {
   setCopyButtonLabel(button, label)
 }
 
+const resetTimers = new WeakMap()
+
 const resetCopyButton = (button) => {
   const defaultLabel = button.dataset.copyDefaultLabel || "Copy"
   setCopyButtonState(button, null, defaultLabel)
+}
+
+const scheduleReset = (button) => {
+  window.clearTimeout(resetTimers.get(button))
+  resetTimers.set(button, window.setTimeout(() => resetCopyButton(button), 1200))
 }
 
 export const initializeCopyButtons = () => {
@@ -35,18 +42,18 @@ export const initializeCopyButtons = () => {
       const codeText = findCodeText(button)
       if (!codeText || !navigator.clipboard) {
         setCopyButtonState(button, "error", "Copy failed")
-        window.setTimeout(() => resetCopyButton(button), 1200)
+        scheduleReset(button)
         return
       }
 
       void navigator.clipboard.writeText(codeText)
         .then(() => {
           setCopyButtonState(button, "success", "Copied")
-          window.setTimeout(() => resetCopyButton(button), 1200)
+          scheduleReset(button)
         })
         .catch(() => {
           setCopyButtonState(button, "error", "Copy failed")
-          window.setTimeout(() => resetCopyButton(button), 1200)
+          scheduleReset(button)
         })
     })
   }

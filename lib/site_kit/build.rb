@@ -2,14 +2,16 @@
 
 module SiteKit
   class Build
-    CACHE_KEY = '__site_kit_build'
-
     def self.for(site)
-      site.config[CACHE_KEY] ||= new(site)
+      return site.instance_variable_get(:@site_kit_build) if site.instance_variable_defined?(:@site_kit_build)
+
+      site.instance_variable_set(:@site_kit_build, new(site))
     end
 
     def self.clear(site)
-      site.config.delete(CACHE_KEY)
+      return unless site.instance_variable_defined?(:@site_kit_build)
+
+      site.remove_instance_variable(:@site_kit_build)
     end
 
     def initialize(site)
