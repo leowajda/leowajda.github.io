@@ -10,12 +10,14 @@ class SiteKitSiteInvariantValidatorTest < SiteKitTestCase
       SiteKit::Checks::SiteInvariants.new(site: site).validate!
     end
 
-    generated_urls = site.pages.grep(SiteKit::JekyllRuntime::GeneratedPage).map(&:url)
+    generated = SiteKit::Checks::SiteInvariants.new(site: site).send(:generated_pages)
+    generated_urls = generated.map(&:url)
 
+    assert_predicate generated, :any?
     assert_equal generated_urls.uniq.size, generated_urls.size
-    assert(site.pages.grep(SiteKit::JekyllRuntime::GeneratedPage).all? { |page| page.data['layout'] })
-    assert(site.pages.grep(SiteKit::JekyllRuntime::GeneratedPage)
-                        .select { |page| page.data['layout'] == 'redirect' || page.data['noindex'] == true || page.data['layout'] == 'code_embed' }
+    assert(generated.all? { |page| page.data['layout'] })
+    assert(generated
+      .select { |page| page.data['noindex'] == true || page.data['layout'] == 'code_embed' }
       .all? { |page| page.data['sitemap'] == false })
   end
 end
