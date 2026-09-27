@@ -45,6 +45,12 @@ layout: default
     -%}
 
     {%- include problem_taxonomy.html problem=problem -%}
-    {%- include problem_viewer.html problem=problem embed=false -%}
+    {%- include code_collection.html
+      entries=entries
+      collection_id='problem-code'
+      kind='problem'
+      sync_hash=true
+      problem_source_url=problem.problem_source_url
+    -%}
   </article>
 {%- endif -%}
