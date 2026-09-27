@@ -1,34 +1,20 @@
 node_modules/
 .pnpm-store/
-dist/
-.turbo/
 
 vendor/bundle/
 .bundle/
-__pycache__/
 
-/site/
 _site/
-_site-test/
-_site-validation/
-_site-debug/
 .cache/
 .jekyll-cache/
-.ruff_cache/
 .playwright-cli/
 test-results/
 tmp/
 site-src/.jekyll-cache/
-src/dojo/*
-.bsp/
-.metals/
-.scala-build/
 
-# IDE / language servers
-.bsp/
-.metals/
-.scala-build/
-.bloop/
+opencode.jsonc
+.opencode/
+.playwright/
+
 .idea/
-
 .DS_Store

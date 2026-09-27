@@ -4,7 +4,6 @@ layout: default
 
 {%- assign guide = page.template_guide | default: empty -%}
 {%- assign patterns = guide.patterns | default: empty -%}
-{%- assign template_panels = guide.template_panels | default: empty -%}
 {%- assign default_target = page.default_template_target | default: guide.default_target | default: 'binary-search/boundary' -%}
 {%- assign rendered_target = default_target -%}
 {%- for pattern in patterns -%}
@@ -34,8 +33,6 @@ layout: default
     -%}
     {%- include template_library_panels.html
       patterns=patterns
-      template_panels=template_panels
-      default_target=default_target
       rendered_target=rendered_target
     -%}
   </section>

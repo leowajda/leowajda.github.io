@@ -39,10 +39,18 @@ module SiteKit
     end
 
     def home_projects
-      @home_projects ||= SiteKit::Catalogs::SiteProjectPresenter.new(
-        manifests: project_registry.manifests,
-        source_registries: source_notes.registries
-      ).records
+      @home_projects ||= manifests.sort_by { |manifest| manifest.fetch('homepage_order') }.map do |manifest|
+        {
+          'slug' => manifest.fetch('slug'),
+          'kind' => manifest.fetch('kind'),
+          'title' => manifest.fetch('title'),
+          'description' => manifest.fetch('description'),
+          'source_url' => manifest.fetch('source_url'),
+          'homepage_order' => manifest.fetch('homepage_order'),
+          'home_url' => manifest.fetch('entry_url'),
+          'home_groups' => homepage_groups(manifest)
+        }
+      end
     end
 
     def validate!
@@ -57,12 +65,12 @@ module SiteKit
     end
 
     def app_config
-      @app_config ||= SiteKit::Catalogs::AppConfigRepository.new(site.data.fetch('site').fetch('app')).load
+      site.data.fetch('site').fetch('app')
     end
 
     def eureka
       @eureka ||= SiteKit::Eureka::Context.new(
-        manifests: project_registry.for_kind(EUREKA_PROJECT_KIND),
+        manifests: manifests_for(EUREKA_PROJECT_KIND),
         app_config: app_config,
         template_library: templates
       )
@@ -70,7 +78,7 @@ module SiteKit
 
     def source_notes
       @source_notes ||= SiteKit::SourceNotes::Context.new(
-        manifests: project_registry.for_kind(SOURCE_NOTES_PROJECT_KIND),
+        manifests: manifests_for(SOURCE_NOTES_PROJECT_KIND),
         app_config: app_config
       )
     end
@@ -88,11 +96,28 @@ module SiteKit
 
     attr_reader :site
 
-    def project_registry
-      @project_registry ||= SiteKit::Catalogs::ProjectRegistry.new(
-        records: site.data['projects'],
-        repo_root: SiteKit::Core::Helpers.repo_root
-      ).record
+    def manifests
+      @manifests ||= SiteKit::Projects.load(site.data['projects'], SiteKit::Core::Helpers.repo_root)
+    end
+
+    def manifests_for(kind)
+      manifests.select { |manifest| manifest.fetch('kind') == kind }
+    end
+
+    def homepage_groups(manifest)
+      return [] unless manifest.fetch('kind') == SOURCE_NOTES_PROJECT_KIND
+
+      registry = source_notes.registries[manifest.fetch('slug')]
+      return [] unless registry
+
+      registry.fetch('languages', []).map do |language|
+        {
+          'language_title' => language.fetch('language_title'),
+          'modules' => language.fetch('modules').map do |module_record|
+            { 'title' => module_record.fetch('title'), 'url' => module_record.fetch('url') }
+          end
+        }
+      end
     end
 
     def eureka_data

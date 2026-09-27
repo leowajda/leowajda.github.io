@@ -17,14 +17,6 @@ module SiteKit
   EUREKA_PROJECT_KIND = 'eureka'
   SOURCE_NOTES_PROJECT_KIND = 'source-notes'
   TEMPLATES_URL = '/templates/'
-  EUREKA_PROBLEM_PAGE_TYPE = 'eureka_problem_page'
-  EUREKA_EMBED_PAGE_TYPE = 'eureka_embed_page'
-  TEMPLATE_EMBED_PAGE_TYPE = 'template_embed_page'
-  SOURCE_LANGUAGE_PAGE_TYPE = 'source_language_page'
-  SOURCE_HOME_PAGE_TYPE = 'source_home_page'
-  SOURCE_MODULE_PAGE_TYPE = 'source_module_page'
-  SOURCE_DOCUMENT_PAGE_TYPE = 'source_document_page'
-  SOURCE_EMBED_PAGE_TYPE = 'source_embed_page'
   DISALLOWED_PROBLEM_TEMPLATE_KEYS = %w[
     template_guide_primary
     template_guide_url
@@ -343,10 +335,12 @@ module SiteKit
     module EmbedPage
       module_function
 
-      def emit(dir:, page_type:, title:, description:, entries:, detail_url:, project_slug: nil, data: {}) # rubocop:disable Metrics/ParameterLists
+      def emit(dir:, title:, description:, entries:, detail_url:, project_slug: nil, data: {}) # rubocop:disable Metrics/ParameterLists
         SiteKit::Emit.page(
           dir: dir,
-          page_type: page_type,
+          layout: 'code_embed',
+          noindex: true,
+          sitemap: false,
           project_slug: project_slug,
           title: "#{title} · Embed",
           description: description,

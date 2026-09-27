@@ -1,24 +1,23 @@
-{%- assign template = include.template -%}
-{%- assign code_collection_id = template.target | replace: '/', '-' | append: '-code' -%}
+{%- assign pattern = include.pattern -%}
+{%- assign variant = include.variant -%}
+{%- assign template = variant.template -%}
+{%- assign code_collection_id = variant.target | replace: '/', '-' | append: '-code' -%}
 {%- assign entries = template.entries -%}
 {%- assign panel_active = include.active -%}
-{%- if panel_active == nil -%}
-  {%- assign panel_active = template.active -%}
-{%- endif -%}
 
 <section
   class="template-panel"
-  id="{{ template.target }}"
+  id="{{ variant.target }}"
   data-template-panel
-  data-guide-pattern="{{ template.pattern_id }}"
-  data-guide-target="{{ template.target }}"
+  data-guide-pattern="{{ variant.pattern_id }}"
+  data-guide-target="{{ variant.target }}"
   {% unless panel_active %}hidden{% endunless %}
 >
   <header class="template-panel__header">
-    <p class="section-eyebrow">{{ template.pattern_label }}</p>
-    <h2>{{ template.variant_label }}</h2>
-    {%- if template.signal and template.signal != '' -%}
-      <p class="template-panel__signal">{{ template.signal }}</p>
+    <p class="section-eyebrow">{{ pattern.label }}</p>
+    <h2>{{ variant.label }}</h2>
+    {%- if variant.signal and variant.signal != '' -%}
+      <p class="template-panel__signal">{{ variant.signal }}</p>
     {%- endif -%}
   </header>
   <div class="template-panel__code">

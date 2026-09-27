@@ -84,7 +84,7 @@ module SiteKit
       def initialize(manifest:, app_config:)
         @manifest = manifest
         @app_config = app_config
-        @source_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
+        @source_root = Pathname(SiteKit::Projects.source_root(manifest))
       end
 
       def load
@@ -109,7 +109,7 @@ module SiteKit
             SiteKit::Core::Helpers.parse_yaml(raw, 'Unable to decode Eureka problem table'), 'Eureka source'
           )
           version = source['version']
-          expected_version = app_config.eureka.fetch('catalog_version')
+          expected_version = app_config.fetch('eureka').fetch('catalog_version')
           unless version == expected_version
             raise SiteKit::CatalogError, "Eureka source.version must be #{expected_version}"
           end
@@ -146,7 +146,7 @@ module SiteKit
         @app_config = app_config
         @source_catalog = source_catalog
         @source_root = source_root
-        @route_base = manifest.route_base
+        @route_base = manifest.fetch('route_base')
         @paths = SiteKit::Core::ResourcePaths.new(route_base: route_base)
         @languages_by_slug = SiteKit::Core::Helpers.index_by(source_catalog.languages, &:slug)
       end
@@ -212,7 +212,7 @@ module SiteKit
 
       def build_entry(problem_slug, raw, index) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         raw = SiteKit::Core::Helpers.ensure_hash(raw, "Problem '#{problem_slug}'.implementations[#{index}]")
-        unknown = raw.keys - app_config.eureka.fetch('implementation_keys')
+        unknown = raw.keys - app_config.fetch('eureka').fetch('implementation_keys')
         unless unknown.empty?
           raise SiteKit::CatalogError,
                 "Problem '#{problem_slug}' implementation #{index} references unsupported keys: #{unknown.join(', ')}"
@@ -265,7 +265,7 @@ module SiteKit
       end
 
       def validate_problem_keys!(raw, problem_slug)
-        unknown = raw.keys - (app_config.eureka.fetch('metadata_keys') + ['implementations'])
+        unknown = raw.keys - (app_config.fetch('eureka').fetch('metadata_keys') + ['implementations'])
         return if unknown.empty?
 
         raise SiteKit::CatalogError, "Problem '#{problem_slug}' references unsupported keys: #{unknown.join(', ')}"
@@ -281,11 +281,11 @@ module SiteKit
         @manifest = manifest
         @app_config = app_config
         @template_library = template_library
-        @paths = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base)
+        @paths = SiteKit::Core::ResourcePaths.new(route_base: manifest.fetch('route_base'))
       end
 
       def slug
-        manifest.slug
+        manifest.fetch('slug')
       end
 
       def explorer
@@ -293,8 +293,8 @@ module SiteKit
           languages = catalog.language_page_records.map { |language| language.slice('slug', 'label') }
           {
             'project_slug' => slug,
-            'project_title' => manifest.title,
-            'project_description' => manifest.description,
+            'project_title' => manifest.fetch('title'),
+            'project_description' => manifest.fetch('description'),
             'browser_url' => paths.path('problems'),
             'filters' => {
               'difficulties' => problem_records.map { |problem| problem.fetch('difficulty') }.uniq,
@@ -339,7 +339,7 @@ module SiteKit
 
       def catalog
         @catalog ||= begin
-          source_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
+          source_root = Pathname(SiteKit::Projects.source_root(manifest))
           source_catalog = SourceCatalogLoader.new(manifest: manifest, app_config: app_config).load
           ProblemRegistryBuilder.new(
             manifest: manifest,
@@ -354,7 +354,8 @@ module SiteKit
         slug = problem.fetch('problem_slug')
         SiteKit::Emit.page(
           dir: paths.path('problems', slug),
-          page_type: EUREKA_PROBLEM_PAGE_TYPE,
+          layout: 'problem',
+          shell: 'wide',
           project_slug: self.slug,
           title: problem.fetch('title'),
           description: "#{problem.fetch('title')} solutions",
@@ -366,7 +367,6 @@ module SiteKit
         slug = problem.fetch('problem_slug')
         SiteKit::Core::EmbedPage.emit(
           dir: paths.embed('problems', slug),
-          page_type: EUREKA_EMBED_PAGE_TYPE,
           project_slug: self.slug,
           title: problem.fetch('title'),
           description: "#{problem.fetch('title')} solutions embed",
@@ -415,7 +415,7 @@ module SiteKit
       def projects
         @projects ||= manifests.to_h do |manifest|
           [
-            manifest.slug,
+            manifest.fetch('slug'),
             Project.new(manifest: manifest, app_config: app_config, template_library: template_library)
           ]
         end

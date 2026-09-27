@@ -133,7 +133,6 @@ DEPENDENCIES
   rubocop (~> 1.91)
   rubocop-minitest (~> 0.40)
   rubocop-performance (~> 1.27)
-  webrick (~> 1.9)
 
 RUBY VERSION
    ruby 3.2.3p157

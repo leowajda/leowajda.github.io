@@ -420,40 +420,12 @@ module SiteKit
       attr_reader :data, :templates, :code_collections
 
       def assemble_guide(patterns, default_target)
-        panels = template_panels(patterns)
-        redirects = guide_redirects(patterns)
         {
           'default_target' => default_target,
           'patterns' => patterns,
-          'template_panels' => panels,
-          'redirects' => redirects,
-          'reference_rules' => guide_reference_rules(patterns),
-          'templates' => panels.to_h { |template| [template.fetch('id'), template] }
+          'redirects' => guide_redirects(patterns),
+          'reference_rules' => guide_reference_rules(patterns)
         }
-      end
-
-      def template_panels(patterns)
-        patterns.flat_map do |pattern|
-          pattern.fetch('variants').filter_map do |variant|
-            template = variant['template']
-            next unless template
-
-            target = variant.fetch('target')
-            detail_url = "#{SiteKit::TEMPLATES_URL}##{target}"
-            entries = template.fetch('entries').map { |entry| entry.merge('detail_url' => detail_url) }
-            template.merge(
-              'pattern_id' => pattern.fetch('id'),
-              'pattern_label' => pattern.fetch('label'),
-              'variant_id' => variant.fetch('id'),
-              'variant_label' => variant.fetch('label'),
-              'signal' => variant.fetch('signal', ''),
-              'target' => target,
-              'detail_url' => detail_url,
-              'embed_url' => entries.first.fetch('embed_url'),
-              'entries' => entries
-            )
-          end
-        end
       end
 
       def guide_redirects(patterns)
@@ -868,7 +840,6 @@ module SiteKit
           end
           SiteKit::Core::EmbedPage.emit(
             dir: paths.embed(template.template_id),
-            page_type: TEMPLATE_EMBED_PAGE_TYPE,
             project_slug: 'eureka',
             title: template.title,
             description: "#{template.title} template embed",

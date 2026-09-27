@@ -13,4 +13,3 @@ gem 'rubocop', '~> 1.91', require: false
 gem 'rubocop-minitest', '~> 0.40', require: false
 gem 'rubocop-performance', '~> 1.27', require: false
 gem 'bundler-audit', '~> 0.9', require: false
-gem 'webrick', '~> 1.9'
