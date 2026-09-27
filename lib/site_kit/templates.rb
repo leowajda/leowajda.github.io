@@ -2,8 +2,6 @@
 
 require 'pathname'
 
-# rubocop:disable Metrics/MethodLength
-
 module SiteKit
   module Templates
     module ProblemRules
@@ -315,7 +313,7 @@ module SiteKit
         end
       end
 
-      def normalize_entry(entry, context, template_id) # rubocop:disable Metrics/MethodLength
+      def normalize_entry(entry, context, template_id)
         record = SiteKit::Core::Helpers.ensure_hash(entry, context)
         entry_id = SiteKit::Core::Helpers.ensure_string(record.fetch('entry_id'), "#{context}.entry_id")
         validate_entry_id_prefix!(template_id, entry_id)
@@ -326,25 +324,23 @@ module SiteKit
         code = SiteKit::Core::Helpers.ensure_string(record.fetch('code'), "#{context}.code")
         validate_code!(code, context)
 
-        SiteKit::Core::CodeEntry.normalize(
-          {
-            'entry_id' => entry_id,
-            'language' => language,
-            'language_label' => SiteKit::Core::Helpers.ensure_string(
-              record.fetch('language_label', language_record.fetch('label')),
-              "#{context}.language_label"
-            ),
-            'code_language' => SiteKit::Core::Helpers.ensure_string(
-              record.fetch('code_language', language_record.fetch('code_language')),
-              "#{context}.code_language"
-            ),
-            'code' => code,
-            'variant' => 'default',
-            'variant_label' => 'Default',
-            'detail_url' => SiteKit::TEMPLATES_URL,
-            'embed_url' => paths.embed(template_id)
-          },
-          context: context
+        SiteKit::Core::CodeEntry.build(
+          context: context,
+          entry_id: entry_id,
+          language: language,
+          language_label: SiteKit::Core::Helpers.ensure_string(
+            record.fetch('language_label', language_record.fetch('label')),
+            "#{context}.language_label"
+          ),
+          code_language: SiteKit::Core::Helpers.ensure_string(
+            record.fetch('code_language', language_record.fetch('code_language')),
+            "#{context}.code_language"
+          ),
+          code: code,
+          variant: 'default',
+          variant_label: 'Default',
+          detail_url: SiteKit::TEMPLATES_URL,
+          embed_url: paths.embed(template_id)
         )
       end
 
@@ -870,17 +866,14 @@ module SiteKit
           entries = code_collections.fetch(template.template_id).map do |entry|
             entry.merge('detail_url' => detail_url)
           end
-          SiteKit::Emit.page(
+          SiteKit::Core::EmbedPage.emit(
             dir: paths.embed(template.template_id),
             page_type: TEMPLATE_EMBED_PAGE_TYPE,
             project_slug: 'eureka',
-            title: "#{template.title} · Embed",
+            title: template.title,
             description: "#{template.title} template embed",
-            data: {
-              'entries' => entries,
-              'detail_url' => detail_url,
-              'embed' => true
-            }
+            entries: entries,
+            detail_url: detail_url
           )
         end
       end
@@ -898,5 +891,3 @@ module SiteKit
     end
   end
 end
-
-# rubocop:enable Metrics/MethodLength

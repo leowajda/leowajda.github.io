@@ -219,19 +219,17 @@ module SiteKit
       end
 
       def code_entry(raw_content, metadata, language_context, paths)
-        SiteKit::Core::CodeEntry.normalize(
-          {
-            'entry_id' => 'source',
-            'language' => language_context.fetch('language_slug'),
-            'language_label' => language_context.fetch('language_title'),
-            'variant' => 'default',
-            'variant_label' => 'Default',
-            'code' => raw_content.rstrip,
-            'code_language' => metadata.fetch('syntax'),
-            'detail_url' => paths.path,
-            'embed_url' => paths.embed
-          },
-          context: "Source document #{paths.path}"
+        SiteKit::Core::CodeEntry.build(
+          context: "Source document #{paths.path}",
+          entry_id: 'source',
+          language: language_context.fetch('language_slug'),
+          language_label: language_context.fetch('language_title'),
+          variant: 'default',
+          variant_label: 'Default',
+          code: raw_content.rstrip,
+          code_language: metadata.fetch('syntax'),
+          detail_url: paths.path,
+          embed_url: paths.embed
         )
       end
 
@@ -610,25 +608,28 @@ module SiteKit
       def document_embed_page(language, module_record, document, source_document, entries)
         title = document.fetch('title')
         crumbs = document_crumbs(language, module_record, document)
-        emit(
+        SiteKit::Core::EmbedPage.emit(
           dir: document.fetch('embed_url'),
           page_type: SOURCE_EMBED_PAGE_TYPE,
-          title: "#{title} · Embed",
-          language_slug: language.fetch('language_slug'),
-          module_slug: module_record.fetch('module_slug'),
-          header: header(module_record.fetch('title'), title),
-          schema: schema(
-            [registry_record.fetch('project_title'), module_record.fetch('title'),
-             language.fetch('language_title')],
-            crumbs
-          ),
-          source_module: slice(module_record, %w[slug module_slug title url roots]),
-          document_url: document.fetch('route_url'),
-          source_document: source_document,
-          format: document.fetch('format'),
+          project_slug: manifest.slug,
+          title: title,
+          description: "#{title} · Embed notes",
+          entries: entries,
           detail_url: document.fetch('route_url'),
-          embed: true,
-          entries: entries
+          data: {
+            'language_slug' => language.fetch('language_slug'),
+            'source_header' => header(module_record.fetch('title'), title),
+            'source_schema' => schema(
+              [registry_record.fetch('project_title'), module_record.fetch('title'),
+               language.fetch('language_title')],
+              crumbs
+            ),
+            'source_module' => slice(module_record, %w[slug module_slug title url roots]),
+            'module_slug' => module_record.fetch('module_slug'),
+            'document_url' => document.fetch('route_url'),
+            'source_document' => source_document,
+            'format' => document.fetch('format')
+          }
         )
       end
 

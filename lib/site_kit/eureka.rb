@@ -249,20 +249,18 @@ module SiteKit
         detail_url = paths.with_fragment(paths.path('problems', problem_slug), entry_id)
         embed_url = paths.embed('problems', problem_slug)
 
-        SiteKit::Core::CodeEntry.normalize(
-          {
-            'entry_id' => entry_id,
-            'language' => language.slug,
-            'language_label' => language.label,
-            'variant' => variant,
-            'variant_label' => variant_label,
-            'code' => code,
-            'code_language' => language.code_language,
-            'source_url' => "#{source_catalog.source_url_base}/#{file_path}",
-            'detail_url' => detail_url,
-            'embed_url' => embed_url
-          },
-          context: "Problem '#{problem_slug}' entry #{entry_id}"
+        SiteKit::Core::CodeEntry.build(
+          context: "Problem '#{problem_slug}' entry #{entry_id}",
+          entry_id: entry_id,
+          language: language.slug,
+          language_label: language.label,
+          variant: variant,
+          variant_label: variant_label,
+          code: code,
+          code_language: language.code_language,
+          source_url: "#{source_catalog.source_url_base}/#{file_path}",
+          detail_url: detail_url,
+          embed_url: embed_url
         ).merge(
           'problem_slug' => problem_slug,
           'problem_title' => title,
@@ -372,17 +370,15 @@ module SiteKit
 
       def embed_page(problem)
         slug = problem.fetch('problem_slug')
-        SiteKit::Emit.page(
+        SiteKit::Core::EmbedPage.emit(
           dir: paths.embed('problems', slug),
           page_type: EUREKA_EMBED_PAGE_TYPE,
           project_slug: self.slug,
-          title: "#{problem.fetch('title')} · Embed",
+          title: problem.fetch('title'),
           description: "#{problem.fetch('title')} solutions embed",
-          data: problem_page_data(problem).merge(
-            'entries' => problem.fetch('entries'),
-            'detail_url' => problem.fetch('url'),
-            'embed' => true
-          )
+          entries: problem.fetch('entries'),
+          detail_url: problem.fetch('url'),
+          data: problem_page_data(problem)
         )
       end
 
