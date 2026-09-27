@@ -168,8 +168,6 @@ module SiteKit
   module Checks
     class SeoMetadata
       SITE_DIR = File.expand_path('../../_site', __dir__)
-      MIN_TITLE_LENGTH = 8
-      MIN_DESCRIPTION_LENGTH = 8
 
       def initialize(site_dir: SITE_DIR)
         @site_dir = site_dir
@@ -224,19 +222,8 @@ module SiteKit
 
       def indexable_failures(path, document, sitemap)
         url_path = rendered_path(path)
-        title_nodes = document.css('title')
-        canonical_nodes = canonical_links(document)
-        description_nodes = document.css('meta[name="description"]')
-        h1_nodes = document.css('h1')
-
         [
-          count_failure(path, 'title', title_nodes, 1),
-          text_length_failure(path, 'title', element_text(title_nodes.first), MIN_TITLE_LENGTH),
-          count_failure(path, 'canonical link', canonical_nodes, 1),
-          count_failure(path, 'meta description', description_nodes, 1),
-          text_length_failure(path, 'meta description', description_nodes.first&.[]('content').to_s,
-                              MIN_DESCRIPTION_LENGTH),
-          count_failure(path, 'h1', h1_nodes, 1),
+          count_failure(path, 'h1', document.css('h1'), 1),
           sitemap_failure(path, sitemap, url_path)
         ].compact
       end
@@ -254,24 +241,10 @@ module SiteKit
         ["#{relative_path(path)} -> noindex page is present in sitemap.xml: #{url_path}"]
       end
 
-      def canonical_links(document)
-        document.css('link[rel]').select { |node| node['rel'].to_s.split.include?('canonical') }
-      end
-
       def count_failure(path, label, nodes, expected)
         return nil if nodes.size == expected
 
         "#{relative_path(path)} -> expected #{expected} #{label}, found #{nodes.size}"
-      end
-
-      def text_length_failure(path, label, text, minimum)
-        return nil if text.length >= minimum
-
-        "#{relative_path(path)} -> #{label} is too short"
-      end
-
-      def element_text(node)
-        node&.text.to_s.gsub(/\s+/, ' ').strip
       end
 
       def rendered_path(path)

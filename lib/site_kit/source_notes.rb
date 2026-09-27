@@ -100,7 +100,7 @@ module SiteKit
       def initialize(manifest:, app_config:)
         @manifest = manifest
         @app_config = app_config
-        @repo_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
+        @repo_root = Pathname(SiteKit::Projects.source_root(manifest))
       end
 
       def load
@@ -125,16 +125,16 @@ module SiteKit
             catalog_label
           )
           version = source['version']
-          expected_version = app_config.source_notes.fetch('catalog_version')
+          expected_version = app_config.fetch('source_notes').fetch('catalog_version')
           unless version == expected_version
             raise SiteKit::CatalogError, "#{catalog_label}.version must be #{expected_version}"
           end
 
           project = SiteKit::Core::Helpers.ensure_hash(source.fetch('project'), "#{catalog_label}.project")
           project_slug = SiteKit::Core::Helpers.ensure_string(project.fetch('slug'), "#{catalog_label}.project.slug")
-          unless project_slug == manifest.slug
+          unless project_slug == manifest.fetch('slug')
             raise SiteKit::CatalogError,
-                  "#{catalog_label}.project.slug must match '#{manifest.slug}'"
+                  "#{catalog_label}.project.slug must match '#{manifest.fetch('slug')}'"
           end
 
           source
@@ -175,7 +175,7 @@ module SiteKit
       end
 
       def catalog_label
-        @catalog_label ||= "#{manifest.title} source-notes catalog"
+        @catalog_label ||= "#{manifest.fetch('title')} source-notes catalog"
       end
     end
 
@@ -189,7 +189,7 @@ module SiteKit
       def build(module_definition:, absolute_root:, language_context:, root_label:, file_path:)
         relative_to_root = SiteKit::Core::Helpers.relative_path(absolute_root, file_path)
         route_path = SiteKit::Core::Helpers.build_route_path(relative_to_root)
-        metadata = app_config.source_notes.fetch('text_file_metadata').fetch(file_path.extname.downcase)
+        metadata = app_config.fetch('source_notes').fetch('text_file_metadata').fetch(file_path.extname.downcase)
         raw_content = SiteKit::Core::Helpers.read_text(file_path)
         paths = document_paths(language_context, module_definition.slug, route_path)
         base = {
@@ -291,7 +291,7 @@ module SiteKit
 
       def tree_source_url(relative_path)
         tree_url_base = source_url_base.sub(%r{/blob/([^/]+)\z}, '/tree/\1')
-        base = tree_url_base == source_url_base ? manifest.source_url : tree_url_base
+        base = tree_url_base == source_url_base ? manifest.fetch('source_url') : tree_url_base
 
         relative_path.empty? ? base : "#{base}/#{relative_path}"
       end
@@ -331,7 +331,7 @@ module SiteKit
             next [] if ignored_directory?(entry.basename.to_s)
 
             walk_text_files(entry, traversal_root)
-          elsif app_config.source_notes.fetch('text_file_metadata').key?(entry.extname.downcase)
+          elsif app_config.fetch('source_notes').fetch('text_file_metadata').key?(entry.extname.downcase)
             [entry]
           else
             []
@@ -340,7 +340,7 @@ module SiteKit
       end
 
       def ignored_directory?(name)
-        name.start_with?('.') || app_config.source_notes.fetch('ignored_directories').include?(name)
+        name.start_with?('.') || app_config.fetch('source_notes').fetch('ignored_directories').include?(name)
       end
 
       def build_roots(module_definition, documents)
@@ -392,24 +392,19 @@ module SiteKit
       def initialize(manifest:, app_config:)
         @manifest = manifest
         @app_config = app_config
-        @repo_root = Pathname(manifest.source_root(SiteKit::Core::Helpers.repo_root))
+        @repo_root = Pathname(SiteKit::Projects.source_root(manifest))
       end
 
       def record
         languages = language_records
 
         {
-          'project_slug' => manifest.slug,
-          'project_title' => manifest.title,
-          'project_description' => manifest.description,
+          'project_slug' => manifest.fetch('slug'),
+          'project_title' => manifest.fetch('title'),
+          'project_description' => manifest.fetch('description'),
           'project_url' => project_home_url,
           'project_home_url' => project_home_url,
-          'project_source_url' => manifest.source_url,
-          'modules' => languages.flat_map do |language|
-            language.fetch('modules').map do |module_record|
-              homepage_module_record(language, module_record)
-            end
-          end,
+          'project_source_url' => manifest.fetch('source_url'),
           'languages' => languages
         }
       end
@@ -424,22 +419,22 @@ module SiteKit
 
       def language_records
         @language_records ||= source_catalog.languages.map do |language|
-          language_url = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).path(language.slug)
+          language_url = SiteKit::Core::ResourcePaths.new(route_base: manifest.fetch('route_base')).path(language.slug)
           language_context = {
-            'project_slug' => manifest.slug,
-            'project_title' => manifest.title,
+            'project_slug' => manifest.fetch('slug'),
+            'project_title' => manifest.fetch('title'),
             'project_url' => project_home_url,
-            'project_source_url' => manifest.source_url,
+            'project_source_url' => manifest.fetch('source_url'),
             'language_slug' => language.slug,
             'language_title' => language.title,
             'language_url' => language_url
           }
 
           {
-            'project_slug' => manifest.slug,
-            'project_title' => manifest.title,
+            'project_slug' => manifest.fetch('slug'),
+            'project_title' => manifest.fetch('title'),
             'project_url' => project_home_url,
-            'project_source_url' => manifest.source_url,
+            'project_source_url' => manifest.fetch('source_url'),
             'language_slug' => language.slug,
             'language_title' => language.title,
             'url' => language_url,
@@ -451,20 +446,11 @@ module SiteKit
         end
       end
 
-      def homepage_module_record(language, module_record)
-        {
-          'language_slug' => language.fetch('language_slug'),
-          'language_title' => language.fetch('language_title'),
-          'module_slug' => module_record.fetch('module_slug'),
-          'title' => module_record.fetch('title'),
-          'url' => module_record.fetch('url')
-        }
-      end
-
       def project_home_url
-        return manifest.entry_url unless manifest.entry_url.empty?
+        entry_url = manifest.fetch('entry_url')
+        return entry_url unless entry_url.empty?
 
-        SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base).root
+        SiteKit::Core::ResourcePaths.new(route_base: manifest.fetch('route_base')).root
       end
 
       def module_builder
@@ -481,14 +467,15 @@ module SiteKit
       def initialize(manifest:, registry_record:)
         @manifest = manifest
         @registry_record = registry_record
-        @paths = SiteKit::Core::ResourcePaths.new(route_base: manifest.route_base)
+        @paths = SiteKit::Core::ResourcePaths.new(route_base: manifest.fetch('route_base'))
       end
 
       def home_page
         SiteKit::Emit.page(
-          project_slug: manifest.slug,
+          project_slug: manifest.fetch('slug'),
           dir: paths.root,
-          page_type: SOURCE_HOME_PAGE_TYPE,
+          layout: 'source_list',
+          shell: 'wide',
           title: registry_record.fetch('project_title'),
           description: registry_record.fetch('project_description'),
           data: {
@@ -506,9 +493,10 @@ module SiteKit
         languages.map do |language|
           title = language.fetch('language_title')
           SiteKit::Emit.page(
-            project_slug: manifest.slug,
+            project_slug: manifest.fetch('slug'),
             dir: language.fetch('url'),
-            page_type: SOURCE_LANGUAGE_PAGE_TYPE,
+            layout: 'source_list',
+            shell: 'wide',
             title: title,
             description: "Source notes for #{title}.",
             data: {
@@ -525,23 +513,14 @@ module SiteKit
       def module_pages
         each_module.map do |language, module_record|
           title = module_record.fetch('title')
-          crumbs = [
-            crumb('Home', '/'),
-            crumb(registry_record.fetch('project_title'), paths.root),
-            crumb(language.fetch('language_title'), language.fetch('url')),
-            crumb(title, module_record.fetch('url'))
-          ]
           emit(
             dir: module_record.fetch('url'),
-            page_type: SOURCE_MODULE_PAGE_TYPE,
+            layout: 'source',
+            shell: 'source',
             title: title,
             language_slug: language.fetch('language_slug'),
             module_slug: module_record.fetch('module_slug'),
             header: header(language.fetch('language_title'), title),
-            schema: schema(
-              [registry_record.fetch('project_title'), language.fetch('language_title'), title],
-              crumbs
-            ),
             source_module: slice(module_record, %w[slug module_slug title url readme_markdown roots])
           )
         end
@@ -582,21 +561,14 @@ module SiteKit
 
       def document_page(language, module_record, document, source_document, entries)
         title = document.fetch('title')
-        crumbs = document_crumbs(language, module_record, document)
         emit(
           dir: document.fetch('route_url'),
-          page_type: SOURCE_DOCUMENT_PAGE_TYPE,
+          layout: 'source',
+          shell: 'source',
           title: title,
           language_slug: language.fetch('language_slug'),
           module_slug: module_record.fetch('module_slug'),
           header: header(module_record.fetch('title'), title),
-          schema: schema(
-            [registry_record.fetch('project_title'), module_record.fetch('title'),
-             language.fetch('language_title')],
-            crumbs,
-            code_repository: registry_record.fetch('project_source_url'),
-            programming_language: language.fetch('language_title')
-          ),
           source_module: slice(module_record, %w[slug module_slug title url roots]),
           document_url: document.fetch('route_url'),
           source_document: source_document,
@@ -607,11 +579,9 @@ module SiteKit
 
       def document_embed_page(language, module_record, document, source_document, entries)
         title = document.fetch('title')
-        crumbs = document_crumbs(language, module_record, document)
         SiteKit::Core::EmbedPage.emit(
           dir: document.fetch('embed_url'),
-          page_type: SOURCE_EMBED_PAGE_TYPE,
-          project_slug: manifest.slug,
+          project_slug: manifest.fetch('slug'),
           title: title,
           description: "#{title} · Embed notes",
           entries: entries,
@@ -619,11 +589,6 @@ module SiteKit
           data: {
             'language_slug' => language.fetch('language_slug'),
             'source_header' => header(module_record.fetch('title'), title),
-            'source_schema' => schema(
-              [registry_record.fetch('project_title'), module_record.fetch('title'),
-               language.fetch('language_title')],
-              crumbs
-            ),
             'source_module' => slice(module_record, %w[slug module_slug title url roots]),
             'module_slug' => module_record.fetch('module_slug'),
             'document_url' => document.fetch('route_url'),
@@ -631,16 +596,6 @@ module SiteKit
             'format' => document.fetch('format')
           }
         )
-      end
-
-      def document_crumbs(language, module_record, document)
-        [
-          crumb('Home', '/'),
-          crumb(registry_record.fetch('project_title'), paths.root),
-          crumb(language.fetch('language_title'), language.fetch('url')),
-          crumb(module_record.fetch('title'), module_record.fetch('url')),
-          crumb(document.fetch('title'), document.fetch('route_url'))
-        ]
       end
 
       def languages
@@ -662,17 +617,17 @@ module SiteKit
         }
       end
 
-      def emit(dir:, page_type:, title:, language_slug:, header:, schema:, source_module:, **extra) # rubocop:disable Metrics/ParameterLists
+      def emit(dir:, layout:, title:, language_slug:, header:, source_module:, shell: nil, **extra) # rubocop:disable Metrics/ParameterLists
         SiteKit::Emit.page(
-          project_slug: manifest.slug,
+          project_slug: manifest.fetch('slug'),
           dir: dir,
-          page_type: page_type,
+          layout: layout,
+          shell: shell,
           title: title,
           description: "#{title} notes",
           data: {
             'language_slug' => language_slug,
             'source_header' => header,
-            'source_schema' => schema,
             'source_module' => source_module,
             'module_slug' => extra[:module_slug],
             'document_url' => extra[:document_url],
@@ -689,19 +644,6 @@ module SiteKit
         { 'eyebrow' => eyebrow, 'title' => title }
       end
 
-      def schema(about, breadcrumbs, code_repository: nil, programming_language: nil)
-        {
-          'about' => about,
-          'breadcrumbs' => breadcrumbs,
-          'code_repository' => code_repository,
-          'programming_language' => programming_language
-        }.compact
-      end
-
-      def crumb(name, item)
-        { 'name' => name, 'item' => item }
-      end
-
       def slice(record, keys)
         keys.to_h { |key| [key, record.fetch(key)] }
       end
@@ -715,13 +657,13 @@ module SiteKit
 
       def registries
         @registries ||= manifests.to_h do |manifest|
-          [manifest.slug, registry_for(manifest)]
+          [manifest.fetch('slug'), registry_for(manifest)]
         end
       end
 
       def generated_pages
         @generated_pages ||= manifests.flat_map do |manifest|
-          registry = registries.fetch(manifest.slug)
+          registry = registries.fetch(manifest.fetch('slug'))
           factory = PageFactory.new(manifest: manifest, registry_record: registry)
           [factory.home_page] + factory.language_pages + factory.module_pages + factory.document_pages
         end

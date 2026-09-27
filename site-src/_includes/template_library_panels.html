@@ -1,13 +1,16 @@
 {%- assign patterns = include.patterns | default: empty -%}
-{%- assign template_panels = include.template_panels | default: empty -%}
 {%- assign rendered_target = include.rendered_target | default: '' -%}
 <section class="template-library__code" aria-live="polite">
-  {%- for template in template_panels -%}
-    {%- assign panel_active = false -%}
-    {%- if template.target == rendered_target -%}
-      {%- assign panel_active = true -%}
-    {%- endif -%}
-    {%- include template_panel.html template=template active=panel_active -%}
+  {%- for pattern in patterns -%}
+    {%- for variant in pattern.variants -%}
+      {%- if variant.has_template -%}
+        {%- assign panel_active = false -%}
+        {%- if variant.target == rendered_target -%}
+          {%- assign panel_active = true -%}
+        {%- endif -%}
+        {%- include template_panel.html pattern=pattern variant=variant active=panel_active -%}
+      {%- endif -%}
+    {%- endfor -%}
   {%- endfor -%}
   {%- for pattern in patterns -%}
     {%- include template_pattern_panel.html pattern=pattern -%}
