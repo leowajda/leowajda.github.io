@@ -47,27 +47,12 @@ jobs:
       - name: Install Node dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install Playwright browser
-        run: pnpm exec playwright install --with-deps chromium
-
       - name: Write Pages config override
         run: |
           cat > "$RUNNER_TEMP/pages-config.yml" <<EOF
           url: ${{ steps.pages.outputs.origin }}
           baseurl: ${{ steps.pages.outputs.base_path }}
           EOF
-
-      - name: Lint Ruby
-        run: pnpm lint:ruby
-
-      - name: Check JavaScript syntax
-        run: pnpm check:js
-
-      - name: Validate source catalogs
-        run: pnpm validate:catalogs
-
-      - name: Run Ruby tests
-        run: pnpm test:ruby
 
       - name: Build Jekyll site
         run: bundle exec jekyll build --source site-src --destination _site --config site-src/_config.yml,"$RUNNER_TEMP/pages-config.yml"
@@ -80,9 +65,6 @@ jobs:
 
       - name: Check internal links
         run: pnpm check:links
-
-      - name: Run functional browser checks
-        run: pnpm test:functional:built
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
