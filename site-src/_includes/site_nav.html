@@ -1,7 +1,4 @@
 <nav class="site-nav" aria-label="Main navigation">
-  {%- assign nav_external_url = page.nav_external_url | default: '' -%}
-  {%- assign nav_external_icon = page.nav_external_icon | default: 'open-page' -%}
-  {%- assign nav_external_label = page.nav_external_label | default: 'Open external page' -%}
   {%- assign home_url = '/' | relative_url -%}
 
   <div class="site-nav__links">
@@ -20,10 +17,6 @@
     {%- for profile in profiles -%}
       {%- include icon_action_link.html href=profile.url icon=profile.icon label=profile.label class="icon-action--nav" rel=profile.rel external=true -%}
     {%- endfor -%}
-
-    {%- if nav_external_url != '' -%}
-      {%- include icon_action_link.html href=nav_external_url icon=nav_external_icon label=nav_external_label class="icon-action--nav" -%}
-    {%- endif -%}
 
     {%- include icon_action_button.html icon="theme-dark" label="Switch theme" class="icon-action--nav" attributes='data-theme-toggle' -%}
   </div>

@@ -5,8 +5,8 @@
       {%- if node.url_prefix != blank and page.url contains node.url_prefix -%}
         {%- assign is_open = true -%}
       {%- endif -%}
-      <details class="source-tree__group"{% if is_open %} open{% endif %}>
-        <summary class="source-tree__summary">{{ node.title | escape }}</summary>
+      <details class="source-tree__group" data-tree-path="{{ node.tree_path | escape }}"{% if is_open %} open{% endif %}>
+        <summary class="source-tree__summary" title="{{ node.title | escape }}">{{ node.title | escape }}</summary>
         <ul class="source-tree__list">
           {%- include source_tree_node.html nodes=node.children -%}
         </ul>
@@ -15,6 +15,7 @@
       <a
         class="side-panel__link source-tree__link{% if page.url == node.url %} side-panel__link--active{% endif %}"
         href="{{ node.url | relative_url | escape }}#source-content"
+        title="{{ node.title | escape }}"
         {% if page.url == node.url %}aria-current="page"{% endif %}
       >
         {{ node.title | escape }}

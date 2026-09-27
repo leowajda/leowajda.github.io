@@ -33,9 +33,9 @@ layout: default
   {%- assign language = page.source_language -%}
   {%- include page_hero_header.html
     class="source-language-header"
-    eyebrow="Source notes"
+    eyebrow=page.source_header.eyebrow
+    eyebrow_url=page.source_header.eyebrow_url
     title=language.title
-    links=page.source_header.links
   -%}
 
   <section class="content-card source-language">

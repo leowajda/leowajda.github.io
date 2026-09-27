@@ -2,6 +2,10 @@
 layout: default
 ---
 
+<script>
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual"
+  if (!location.hash) window.scrollTo(0, 0)
+</script>
 {%- assign source_module = page.source_module -%}
 {%- assign source_document = page.source_document -%}
 {%- assign entries = page.entries | default: source_document.entries -%}
@@ -30,3 +34,4 @@ layout: default
   module=source_module
   body=source_body
 -%}
+<script type="module" src="{{ '/assets/js/source-tree.js' | relative_url }}"></script>

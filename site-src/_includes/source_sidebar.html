@@ -1,20 +1,55 @@
 {%- assign current_module = include.module -%}
+{%- capture tree_controls -%}
+  {%- include icon_action_button.html icon="expand" label="Expand all" class="source-tree__control" attributes='data-source-tree-expand' -%}
+  {%- include icon_action_button.html icon="collapse" label="Collapse all" class="source-tree__control" attributes='data-source-tree-collapse' -%}
+{%- endcapture -%}
 {%- capture panel_body -%}
   <nav aria-label="Project source navigation">
+    <div class="source-tree__search">
+      <input
+        id="source-tree-search"
+        type="search"
+        placeholder="Search files"
+        aria-label="Search files"
+        autocomplete="off"
+        data-source-tree-search
+      >
+      <div class="source-tree__controls">{{ tree_controls }}</div>
+    </div>
+    <p class="source-tree__status" data-source-tree-status role="status" hidden></p>
     {%- if current_module -%}
       {%- for root in current_module.roots -%}
-        {%- capture root_body -%}
-          <ul class="source-tree__list">
-            {%- include source_tree_node.html nodes=root.nodes -%}
-          </ul>
-        {%- endcapture -%}
-        {%- include side_panel_section.html title=root.label body=root_body class="source-root" -%}
+        <ul class="source-tree__list">
+          {%- include source_tree_node.html nodes=root.nodes -%}
+        </ul>
       {%- endfor -%}
     {%- endif -%}
   </nav>
 {%- endcapture -%}
 
+{%- capture panel_attributes -%}
+  data-source-tree="{{ current_module.module_slug | escape }}"
+{%- endcapture -%}
+<noscript><style>.source-tree--pending{content-visibility:visible}</style></noscript>
 {%- include side_panel.html
-  class="source-navigation side-panel--sticky side-panel--scrollable"
+  class="source-navigation source-tree--pending side-panel--sticky"
+  attributes=panel_attributes
   body=panel_body
 -%}
+<script>
+  (() => {
+    const root = document.currentScript.previousElementSibling
+    if (!root) return
+    try {
+      const id = root.dataset.sourceTree || "tree"
+      const state = JSON.parse(window.sessionStorage.getItem(`leowajda.github.io-source-tree:${id}`)) || {}
+      root.querySelectorAll("details[data-tree-path]").forEach((group) => {
+        if (state[group.dataset.treePath] === true) group.open = true
+      })
+    } catch {
+      root.classList.remove("source-tree--pending")
+      return
+    }
+    root.classList.remove("source-tree--pending")
+  })()
+</script>

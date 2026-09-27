@@ -18,10 +18,24 @@
   </div>
 
   {%- assign source_header = include.header -%}
+  {%- capture source_actions -%}
+    {%- if page.previous_document -%}
+      {%- assign previous_href = page.previous_document.url | relative_url -%}
+      {%- assign previous_label = 'Previous ' | append: page.previous_document.title -%}
+      {%- include icon_action_link.html href=previous_href icon="back" label=previous_label external=false class="icon-action--compact" -%}
+    {%- endif -%}
+    {%- if page.next_document -%}
+      {%- assign next_href = page.next_document.url | relative_url -%}
+      {%- assign next_label = 'Next ' | append: page.next_document.title -%}
+      {%- include icon_action_link.html href=next_href icon="next" label=next_label external=false class="icon-action--compact" -%}
+    {%- endif -%}
+  {%- endcapture -%}
   {%- include page_hero_header.html
     class="source-page-header"
     eyebrow=source_header.eyebrow
+    eyebrow_url=source_header.eyebrow_url
     title=source_header.title
+    actions=source_actions
   -%}
 
   <div class="source-layout__body with-panel">

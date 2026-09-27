@@ -143,8 +143,7 @@ module SiteKit
           kind: SiteKit::Core::Helpers.ensure_string(topic['kind'], "Algorithmic topic #{topic_id}.kind"),
           order: order,
           priority: priority,
-          description: SiteKit::Core::Helpers.ensure_string(topic['description'],
-                                                            "Algorithmic topic #{topic_id}.description"),
+          description: topic['description'].to_s,
           template_id: template_id,
           aliases: aliases,
           problem_rules: SiteKit::Templates::ProblemRules.normalize_with_default(
@@ -485,7 +484,7 @@ module SiteKit
       def validate_guide!(record, template_index) # rubocop:disable Metrics/AbcSize,Metrics/CyclomaticComplexity,Metrics/PerceivedComplexity
         labels = record.fetch('patterns').flat_map do |pattern|
           [pattern.fetch('label'), *pattern.fetch('variants').flat_map do |v|
-            [v.fetch('label'), v.fetch('signal', '')]
+            [v.fetch('label')]
           end]
         end
         bad = labels.select { |label| label.include?(' / ') }
@@ -526,7 +525,6 @@ module SiteKit
         {
           'id' => pattern_id,
           'label' => pattern.required_string('label'),
-          'description' => pattern.required_string('description'),
           'order' => pattern.required_integer('order'),
           'target' => pattern_id,
           'problem_rules' => SiteKit::Templates::ProblemRules.normalize(
@@ -556,8 +554,6 @@ module SiteKit
         {
           'id' => variant_id,
           'label' => variant.required_string('label'),
-          'description' => variant.optional_string('description'),
-          'signal' => chooser_signal(variant, template),
           'order' => order,
           'pattern_id' => pattern_id,
           'target' => target,
@@ -596,16 +592,8 @@ module SiteKit
           'id' => template.template_id,
           'topic_id' => template.topic_id,
           'title' => template.title,
-          'description' => template.description,
           'entries' => code_collections.fetch(template.template_id)
         }
-      end
-
-      def chooser_signal(variant, template)
-        configured = variant.optional_string('signal')
-        return configured unless configured.empty?
-
-        template&.description.to_s
       end
 
       def default_target(patterns)

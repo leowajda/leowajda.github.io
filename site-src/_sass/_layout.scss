@@ -85,6 +85,20 @@
     align-self: start;
   }
 
+  .source-layout__body.with-panel {
+    grid-template-columns: var(--source-panel-width) minmax(0, 1fr);
+  }
+
+  .source-navigation.side-panel--sticky {
+    max-height: none;
+  }
+
+  .source-navigation.side-panel--scrollable .side-panel__body {
+    overflow: visible;
+    padding-right: 0;
+    scrollbar-gutter: auto;
+  }
+
   .source-article--document,
   .source-article {
     min-width: 0;

@@ -7,7 +7,7 @@
     {% if source_groups.size > 0 %}
       {% assign project_url = '' %}
     {% endif %}
-    {% if project.kind == "source-notes" and source_groups.size > 0 %}
+    {% if source_groups.size > 0 %}
       {% capture project_body %}
         <ul class="project-tree" aria-label="{{ project.title | escape }} entries">
           {% for group in source_groups %}

@@ -38,6 +38,27 @@ module SiteKit
       templates.guide
     end
 
+    def template_page_guide(project_slug)
+      copy = Marshal.load(Marshal.dump(guide))
+      by_target = Hash.new { |problems, target| problems[target] = [] }
+      explorer(project_slug).fetch('problems').each do |problem|
+        link = { 'title' => problem.fetch('title'), 'url' => problem.fetch('url') }
+        Array(problem['template_references']).each do |reference|
+          target = reference['target'].to_s
+          next if target.empty?
+
+          by_target[target] << link
+        end
+      end
+      copy.fetch('patterns').each do |pattern|
+        pattern['linked_problems'] = by_target[pattern.fetch('target')]
+        pattern.fetch('variants').each do |variant|
+          variant['linked_problems'] = by_target[variant.fetch('target')]
+        end
+      end
+      copy
+    end
+
     def home_projects
       @home_projects ||= manifests.sort_by { |manifest| manifest.fetch('homepage_order') }.map do |manifest|
         {
@@ -105,6 +126,19 @@ module SiteKit
     end
 
     def homepage_groups(manifest)
+      if manifest.fetch('kind') == EUREKA_PROJECT_KIND
+        return [
+          {
+            'language_title' => 'Problems',
+            'modules' => [{ 'title' => 'Problem Explorer', 'url' => manifest.fetch('entry_url') }]
+          },
+          {
+            'language_title' => 'Templates',
+            'modules' => [{ 'title' => 'Algorithmic Templates', 'url' => SiteKit::TEMPLATES_URL }]
+          }
+        ]
+      end
+
       return [] unless manifest.fetch('kind') == SOURCE_NOTES_PROJECT_KIND
 
       registry = source_notes.registries[manifest.fetch('slug')]
