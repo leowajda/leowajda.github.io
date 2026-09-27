@@ -26,7 +26,7 @@ module SiteKit
     private
 
     def attach(site, build)
-      documents = site.pages + site.collections.fetch('posts').docs
+      documents = site.pages
       documents.each do |document|
         case document.data['layout']
         when 'home'

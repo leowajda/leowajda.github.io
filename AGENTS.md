@@ -1,6 +1,6 @@
 # AGENTS
 
-Jekyll-first personal site: Eureka (problems), algorithmic templates handbook, Zibaldone (source notes), writing.
+Jekyll-first personal site: Eureka (problems), algorithmic templates handbook, Zibaldone (source notes).
 
 `README.md` → this file (`pnpm docs:refresh`).
 
@@ -49,7 +49,7 @@ sources/ + site-src/_data
 | `lib/site_kit/source_notes.rb` | Zibaldone tree → docs/pages |
 | `lib/site_kit/core.rb` | Paths, Helpers, CodeEntry, errors |
 | `lib/site_kit/search.rb` | Template hash Pagefind extras |
-| `lib/site_kit/checks.rb` | SEO, links, catalogs, vendor |
+| `lib/site_kit/checks.rb` | SEO, links, catalogs |
 | `site-src/_plugins/` | Thin Jekyll generators / hooks only |
 
 Plugins call `Build` only. Attach runs in `site_build_generator`.
@@ -62,7 +62,6 @@ Plugins call `Build` only. Attach runs in `site_build_generator`.
 | Templates handbook | `/templates/` + `#pattern` or `#pattern/variant` |
 | Template embed | `/templates/{template-id}/embed/` |
 | Zibaldone | `/zibaldone/…` (code docs may have `…/embed/`) |
-| Writing | `/writing/{slug}/` |
 | Search | `/search/?q=` |
 
 Embeds: bare layout; post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts.

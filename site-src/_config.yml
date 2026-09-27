@@ -16,13 +16,11 @@ sass:
   style: compressed
 
 plugins:
-  - jekyll-feed
   - jekyll-seo-tag
   - jekyll-sitemap
 
 theme_config:
   appearance: "auto"
-  date_format: "%Y-%m-%d"
   show_description: true
   search: true
 
@@ -60,16 +58,6 @@ defaults:
       path: "eureka/problems.md"
     values:
       structured_data_partial: structured_data/problems.html
-  - scope:
-      path: ""
-      type: posts
-    values:
-      layout: post
-      shell: wide
-      permalink: /writing/:slug/
-      structured_data_partial: structured_data/post.html
-      seo:
-        type: Article
   - scope:
       path: ""
       type: eureka_problem_page
