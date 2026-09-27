@@ -2,7 +2,7 @@
 
 module SiteKit
   module Extras
-    module Pagefind # rubocop:disable Metrics/ModuleLength
+    module Pagefind
       module_function
 
       LANGUAGE = 'en'
@@ -23,10 +23,9 @@ module SiteKit
           kind: 'Template',
           title: pattern.fetch('label'),
           url: "#{SiteKit::TEMPLATES_URL}##{pattern.fetch('target')}",
-          summary: pattern.fetch('description'),
+          summary: pattern.fetch('label'),
           content: [
             pattern.fetch('label'),
-            pattern.fetch('description'),
             pattern.fetch('variants').map { |variant| variant.fetch('label') },
             pattern.fetch('variants').flat_map { |variant| variant.fetch('aliases', []) }
           ],
@@ -47,16 +46,12 @@ module SiteKit
             kind: 'Template',
             title: title,
             url: "#{SiteKit::TEMPLATES_URL}##{variant.fetch('target')}",
-            summary: variant.fetch('signal', ''),
+            summary: title,
             content: [
               title,
-              pattern.fetch('description'),
-              variant.fetch('description', ''),
-              variant.fetch('signal', ''),
               variant.fetch('aliases', []),
               variant.fetch('target'),
-              variant.dig('template', 'title'),
-              variant.dig('template', 'description')
+              variant.dig('template', 'title')
             ],
             filters: { 'template' => [pattern.fetch('label'), title] },
             meta: {

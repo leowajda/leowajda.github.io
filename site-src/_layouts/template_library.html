@@ -21,16 +21,16 @@ layout: default
   {%- include page_hero_header.html
     class="template-library__header"
     title=page.title
-    description=page.description
     link_group="algorithmic_templates"
   -%}
 
-  <section class="template-library__content with-panel">
-    {%- include template_library_navigation.html
-      patterns=patterns
-      default_target=default_target
-      rendered_target=rendered_target
-    -%}
+  {%- include template_library_navigation.html
+    patterns=patterns
+    default_target=default_target
+    rendered_target=rendered_target
+  -%}
+
+  <section class="template-library__content">
     {%- include template_library_panels.html
       patterns=patterns
       rendered_target=rendered_target

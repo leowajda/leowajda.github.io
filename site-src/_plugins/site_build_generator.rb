@@ -38,7 +38,7 @@ module SiteKit
         when 'problems'
           document.data['explorer'] = build.explorer(document.data.fetch('project_slug'))
         when 'template_library'
-          guide = build.guide
+          guide = build.template_page_guide(document.data.fetch('project_slug'))
           document.data['template_guide'] = guide
           document.data['default_template_target'] = guide.fetch('default_target')
           slug = document.data.fetch('project_slug')

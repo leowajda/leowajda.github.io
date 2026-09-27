@@ -504,7 +504,7 @@ module SiteKit
               'source_language' => language_summary(language).merge(
                 'source_url' => language.fetch('source_url')
               ),
-              'source_header' => header(registry_record.fetch('project_title'), title)
+              'source_header' => header(registry_record.fetch('project_title'), title, paths.root)
             }
           )
         end
@@ -520,7 +520,7 @@ module SiteKit
             title: title,
             language_slug: language.fetch('language_slug'),
             module_slug: module_record.fetch('module_slug'),
-            header: header(language.fetch('language_title'), title),
+            header: header(language.fetch('language_title'), title, language.fetch('url')),
             source_module: slice(module_record, %w[slug module_slug title url readme_markdown roots])
           )
         end
@@ -561,6 +561,7 @@ module SiteKit
 
       def document_page(language, module_record, document, source_document, entries)
         title = document.fetch('title')
+        previous_document, next_document = adjacent_files(module_record, document)
         emit(
           dir: document.fetch('route_url'),
           layout: 'source',
@@ -568,12 +569,14 @@ module SiteKit
           title: title,
           language_slug: language.fetch('language_slug'),
           module_slug: module_record.fetch('module_slug'),
-          header: header(module_record.fetch('title'), title),
+          header: header(module_record.fetch('title'), title, module_record.fetch('url')),
           source_module: slice(module_record, %w[slug module_slug title url roots]),
           document_url: document.fetch('route_url'),
           source_document: source_document,
           format: document.fetch('format'),
-          entries: entries
+          entries: entries,
+          previous_document: previous_document,
+          next_document: next_document
         )
       end
 
@@ -635,13 +638,35 @@ module SiteKit
             'format' => extra[:format],
             'detail_url' => extra[:detail_url],
             'embed' => extra[:embed],
-            'entries' => extra[:entries]
+            'entries' => extra[:entries],
+            'previous_document' => extra[:previous_document],
+            'next_document' => extra[:next_document]
           }.compact
         )
       end
 
-      def header(eyebrow, title)
-        { 'eyebrow' => eyebrow, 'title' => title }
+      def header(eyebrow, title, eyebrow_url = nil)
+        { 'eyebrow' => eyebrow, 'title' => title, 'eyebrow_url' => eyebrow_url }.compact
+      end
+
+      def adjacent_files(module_record, document)
+        files = module_record.fetch('roots').flat_map { |root| file_nodes(root.fetch('nodes')) }
+        index = files.index { |node| node.fetch('url') == document.fetch('route_url') }
+        return [nil, nil] unless index
+
+        [neighbor(index.positive? ? files[index - 1] : nil), neighbor(files[index + 1])]
+      end
+
+      def file_nodes(nodes)
+        nodes.flat_map do |node|
+          node.fetch('kind') == 'directory' ? file_nodes(node.fetch('children')) : [node]
+        end
+      end
+
+      def neighbor(node)
+        return nil unless node
+
+        { 'title' => node.fetch('title'), 'url' => node.fetch('url') }
       end
 
       def slice(record, keys)

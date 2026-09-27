@@ -16,10 +16,18 @@
   <header class="template-panel__header">
     <p class="section-eyebrow">{{ pattern.label }}</p>
     <h2>{{ variant.label }}</h2>
-    {%- if variant.signal and variant.signal != '' -%}
-      <p class="template-panel__signal">{{ variant.signal }}</p>
-    {%- endif -%}
   </header>
+  {%- assign linked = variant.linked_problems | default: empty -%}
+  {%- if linked.size > 0 -%}
+    <nav class="template-panel__problems" aria-label="Problems" data-pagefind-ignore>
+      <p class="section-eyebrow">Problems</p>
+      <ul class="tag-list">
+        {%- for problem in linked -%}
+          <li><a class="tag tag--link" href="{{ problem.url | relative_url }}">{{ problem.title | escape }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </nav>
+  {%- endif -%}
   <div class="template-panel__code">
     {%- include code_collection.html
       entries=entries

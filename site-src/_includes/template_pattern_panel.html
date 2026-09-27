@@ -9,11 +9,7 @@
   hidden
 >
   <header class="template-pattern-panel__header">
-    <p class="section-eyebrow">Choose a template</p>
     <h2>{{ pattern.label }}</h2>
-    {%- if pattern.description and pattern.description != '' -%}
-      <p class="template-pattern-panel__description">{{ pattern.description }}</p>
-    {%- endif -%}
   </header>
 
   <div class="template-pattern-panel__choices" aria-label="{{ pattern.label }} choices">
@@ -22,15 +18,26 @@
         <a
           class="template-pattern-panel__choice"
           href="#{{ variant.target }}"
-          data-guide-choice-target="{{ variant.target }}"
+          data-guide-variant-control
+          data-guide-target="{{ variant.target }}"
+          data-guide-default-target="{{ pattern.default_target }}"
           data-guide-pattern="{{ pattern.id }}"
+          data-guide-has-template="true"
         >
           <span class="template-pattern-panel__choice-label">{{ variant.label }}</span>
-          {%- if variant.signal != '' -%}
-            <span class="template-pattern-panel__choice-signal">{{ variant.signal }}</span>
-          {%- endif -%}
         </a>
       {%- endif -%}
     {%- endfor -%}
-  </div>
-</section>
+    </div>
+    {%- assign linked = pattern.linked_problems | default: empty -%}
+    {%- if linked.size > 0 -%}
+      <nav class="template-panel__problems" aria-label="Problems" data-pagefind-ignore>
+        <p class="section-eyebrow">Problems</p>
+        <ul class="tag-list">
+          {%- for problem in linked -%}
+            <li><a class="tag tag--link" href="{{ problem.url | relative_url }}">{{ problem.title | escape }}</a></li>
+          {%- endfor -%}
+        </ul>
+      </nav>
+    {%- endif -%}
+  </section>

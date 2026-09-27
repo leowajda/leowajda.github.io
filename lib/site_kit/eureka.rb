@@ -381,10 +381,7 @@ module SiteKit
         {
           'problem_slug' => problem.fetch('problem_slug'),
           'problem_record' => problem,
-          'problem_source_url' => source,
-          'nav_external_url' => source,
-          'nav_external_icon' => 'leetcode',
-          'nav_external_label' => 'Open LeetCode problem'
+          'problem_source_url' => source
         }
       end
     end

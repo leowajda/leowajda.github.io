@@ -1,9 +1,23 @@
 <header class="page-header page-header--hero{% if include.class %} {{ include.class | escape }}{% endif %}">
   {%- if include.eyebrow and include.eyebrow != '' -%}
-    <p class="page-eyebrow">{{ include.eyebrow | escape }}</p>
+    <p class="page-eyebrow">
+      {%- if include.eyebrow_url and include.eyebrow_url != '' -%}
+        <a href="{{ include.eyebrow_url | relative_url }}">{{ include.eyebrow | escape }}</a>
+      {%- else -%}
+        {{ include.eyebrow | escape }}
+      {%- endif -%}
+    </p>
   {%- endif -%}
 
-  <h1>{{ include.title | escape }}</h1>
+  {%- assign header_actions = include.actions | default: '' | strip -%}
+  {%- if header_actions != '' -%}
+    <div class="page-header__title-row">
+      <h1>{{ include.title | escape }}</h1>
+      <div class="page-header__actions">{{ include.actions }}</div>
+    </div>
+  {%- else -%}
+    <h1>{{ include.title | escape }}</h1>
+  {%- endif -%}
 
   {%- if include.description and include.description != '' -%}
     <p class="page-header__description">{{ include.description | escape }}</p>

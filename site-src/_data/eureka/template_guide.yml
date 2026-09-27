@@ -3,7 +3,6 @@ patterns:
   - id: binary-search
     label: Binary Search
     order: 1
-    description: Find a boundary in sorted or monotonic state.
     problem_rules:
       - any: [Binary Search]
     variants:
@@ -22,7 +21,6 @@ patterns:
   - id: array-sequence
     label: Sequence
     order: 2
-    description: Move across ordered values while preserving range or cursor state.
     variants:
       - id: two-pointers-inward
         label: Two pointers inward
@@ -58,7 +56,6 @@ patterns:
   - id: tree
     label: Tree
     order: 3
-    description: Work through parent-child structure without losing subtree context.
     problem_rules:
       - any: [Tree, Binary Tree, Binary Search Tree]
     variants:
@@ -80,7 +77,6 @@ patterns:
   - id: graph
     label: Graph
     order: 4
-    description: Traverse, order, or connect arbitrary nodes and edges.
     problem_rules:
       - any: [Graph Theory, Topological Sort, Union-Find]
     variants:
@@ -116,7 +112,6 @@ patterns:
   - id: grid
     label: Grid
     order: 5
-    description: Treat coordinates as state with explicit neighbor movement.
     problem_rules:
       - any: [Matrix]
     variants:
@@ -135,7 +130,6 @@ patterns:
   - id: backtracking
     label: Backtracking
     order: 6
-    description: Choose, recurse, undo.
     problem_rules:
       - any: [Backtracking]
     variants:
@@ -149,7 +143,6 @@ patterns:
   - id: dynamic-programming
     label: Dynamic Programming
     order: 7
-    description: Reuse overlapping subproblems.
     problem_rules:
       - any: [Dynamic Programming, Memoization]
     variants:
@@ -185,7 +178,6 @@ patterns:
   - id: heap
     label: Heap
     order: 8
-    description: Keep the next best candidate cheap to retrieve.
     problem_rules:
       - any: [Heap (Priority Queue)]
     variants:
@@ -207,7 +199,6 @@ patterns:
   - id: stack
     label: Stack
     order: 9
-    description: Hold unresolved state in last-in-first-out order.
     problem_rules:
       - any: [Stack]
     variants:
@@ -228,7 +219,6 @@ patterns:
   - id: hashing
     label: Hashing
     order: 10
-    description: Store facts by key.
     problem_rules:
       - any: [Hash Table, Counting]
     variants:
@@ -246,7 +236,6 @@ patterns:
   - id: sorting-selection
     label: Sorting and Selection
     order: 11
-    description: Reorder values or isolate a rank.
     problem_rules:
       - any: [Sorting, Merge Sort, Quickselect]
     variants:
@@ -261,7 +250,6 @@ patterns:
   - id: intervals
     label: Intervals
     order: 12
-    description: Compare ranges by endpoints.
     variants:
       - id: merge
         label: Merge
@@ -276,7 +264,6 @@ patterns:
   - id: line-sweep
     label: Line Sweep
     order: 13
-    description: Turn starts and ends into ordered events.
     variants:
       - id: events
         label: Events
@@ -288,7 +275,6 @@ patterns:
   - id: range-queries
     label: Range Queries
     order: 14
-    description: Answer or update ranges without scanning them.
     variants:
       - id: segment-tree
         label: Segment tree
@@ -300,7 +286,6 @@ patterns:
   - id: trie
     label: Trie
     order: 15
-    description: Share prefixes explicitly.
     problem_rules:
       - any: [Trie]
     variants:
@@ -311,7 +296,6 @@ patterns:
   - id: linked-list
     label: Linked List
     order: 16
-    description: Preserve references while moving through nodes.
     problem_rules:
       - any: [Linked List]
     variants:
@@ -331,7 +315,6 @@ patterns:
   - id: string-matching
     label: String Matching
     order: 17
-    description: Compare text by explicit match state.
     problem_rules:
       - any: [String Matching, Hash Function]
     variants:
@@ -348,7 +331,6 @@ patterns:
   - id: greedy
     label: Greedy
     order: 18
-    description: Commit to a locally forced choice.
     problem_rules:
       - any: [Greedy]
     variants:
@@ -365,7 +347,6 @@ patterns:
   - id: math-bits
     label: Math and Bits
     order: 19
-    description: Use arithmetic structure directly.
     problem_rules:
       - any: [Math, Bit Manipulation, Combinatorics, Geometry, Game Theory]
     variants:
