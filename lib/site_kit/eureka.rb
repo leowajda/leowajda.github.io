@@ -170,7 +170,7 @@ module SiteKit
         validate_problem_keys!(raw, problem_slug)
         title = str(raw, 'name', problem_slug)
         source_url = str(raw, 'url', problem_slug)
-        entries = load_entries(problem_slug, title, source_url, raw.fetch('implementations'))
+        entries = load_entries(problem_slug, raw.fetch('implementations'))
         raise SiteKit::CatalogError, "Problem '#{problem_slug}' has no entries" if entries.empty?
 
         {
@@ -198,10 +198,10 @@ module SiteKit
         end
       end
 
-      def load_entries(problem_slug, title, source_url, raw_list)
+      def load_entries(problem_slug, raw_list)
         list = SiteKit::Core::Helpers.ensure_array(raw_list, "Problem '#{problem_slug}'.implementations")
         entries = list.map.with_index do |raw, index|
-          build_entry(problem_slug, title, source_url, raw, index)
+          build_entry(problem_slug, raw, index)
         end
         SiteKit::Core::Helpers.ensure_unique!(
           entries.map { |entry| entry.fetch('entry_id') },
@@ -210,7 +210,7 @@ module SiteKit
         entries
       end
 
-      def build_entry(problem_slug, title, source_url, raw, index) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
+      def build_entry(problem_slug, raw, index) # rubocop:disable Metrics/AbcSize,Metrics/MethodLength
         raw = SiteKit::Core::Helpers.ensure_hash(raw, "Problem '#{problem_slug}'.implementations[#{index}]")
         unknown = raw.keys - app_config.eureka.fetch('implementation_keys')
         unless unknown.empty?
@@ -261,12 +261,6 @@ module SiteKit
           source_url: "#{source_catalog.source_url_base}/#{file_path}",
           detail_url: detail_url,
           embed_url: embed_url
-        ).merge(
-          'problem_slug' => problem_slug,
-          'problem_title' => title,
-          'problem_source_url' => source_url,
-          'title' => "#{title} · #{language.label} #{variant_label}",
-          'description' => "#{title} solution in #{language.label} using the #{variant_label.downcase} approach."
         )
       end
 
