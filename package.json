@@ -9,7 +9,6 @@
     "validate:catalogs": "ruby script/validate_catalogs.rb",
     "preview": "pnpm build:indexed-site && python3 -m http.server 4173 --bind 127.0.0.1 --directory _site",
     "build:site": "bundle exec jekyll build --source site-src --destination _site",
-    "build:pagefind-extras": "ruby script/build_pagefind_extras.rb",
     "build:pagefind": "node script/build_pagefind_index.mjs",
     "check:pagefind": "node script/check_pagefind_index.mjs",
     "build:indexed-site": "pnpm build:site && pnpm build:pagefind && pnpm check:pagefind",
@@ -24,9 +23,7 @@
     "test:functional": "pnpm build:indexed-site && pnpm test:functional:built",
     "test:functional:built": "playwright test --config=playwright.config.mjs",
     "test:ci": "pnpm test:full",
-    "test:full": "pnpm check:syntax && pnpm lint:ruby && pnpm check:js && pnpm validate:catalogs && pnpm test:ruby && pnpm build:indexed-site && pnpm check:seo && pnpm check:links && pnpm test:functional:built",
-    "check:syntax": "ruby -c script/validate_catalogs.rb",
-    "check:validate": "pnpm validate:catalogs"
+    "test:full": "pnpm lint:ruby && pnpm check:js && pnpm validate:catalogs && pnpm test:ruby && pnpm build:indexed-site && pnpm check:seo && pnpm check:links && pnpm test:functional:built"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
