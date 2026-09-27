@@ -9,11 +9,9 @@
     <meta name="robots" content="noindex, nofollow" />
   {%- endif -%}
 
-  {%- capture favicon_url -%}{%- include asset_url.html path='/assets/favicon.svg' -%}{%- endcapture -%}
-  {%- capture manifest_url -%}{%- include asset_url.html path='/site.webmanifest' -%}{%- endcapture -%}
-  <link rel="icon" href="{{ favicon_url | strip | escape }}" type="image/svg+xml" />
+  <link rel="icon" href="{{ '/assets/favicon.svg' | relative_url }}" type="image/svg+xml" />
   {%- unless page.noindex -%}
-    <link rel="manifest" href="{{ manifest_url | strip | escape }}" />
+    <link rel="manifest" href="{{ '/site.webmanifest' | relative_url }}" />
   {%- endunless -%}
 
   {%- seo -%}
@@ -64,8 +62,5 @@
     })()
   </script>
 
-  {%- include asset_import_map.html -%}
-
-  {%- capture stylesheet_url -%}{%- include asset_url.html path='/assets/css/main.css' -%}{%- endcapture -%}
-  <link rel="stylesheet" href="{{ stylesheet_url | strip | escape }}" />
+  <link rel="stylesheet" href="{{ '/assets/css/main.css' | relative_url }}" />
 </head>

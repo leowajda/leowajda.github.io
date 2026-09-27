@@ -12,12 +12,9 @@
     {%- when 'wide' -%}
       {%- assign shell_class = shell_class | append: ' w--wide' -%}
   {%- endcase -%}
-  {%- if search_enabled -%}
-    {%- capture pagefind_bundle_url -%}{%- include asset_url.html path='/pagefind/pagefind.js' -%}{%- endcapture -%}
-  {%- endif -%}
   <body
     class="site-body"
-    {% if search_enabled %}data-pagefind-bundle="{{ pagefind_bundle_url | strip | escape }}"{% endif %}
+    {% if search_enabled %}data-pagefind-bundle="{{ '/pagefind/pagefind.js' | relative_url }}"{% endif %}
     {% if search_enabled %}data-pagefind-base-url="{{ '/' | relative_url }}"{% endif %}
     {% if search_enabled and page.search_auto_open %}data-search-auto-open{% endif %}
   >
@@ -33,13 +30,11 @@
       {%- include search_overlay.html -%}
     {%- endif -%}
 
-    {%- capture core_js_url -%}{%- include asset_url.html path='/assets/js/core.js' -%}{%- endcapture -%}
-    <script type="module" src="{{ core_js_url | strip | escape }}"></script>
+    <script type="module" src="{{ '/assets/js/core.js' | relative_url }}"></script>
     {%- if page.custom_js -%}
       {%- for js_file in page.custom_js -%}
         {%- assign custom_js_path = '/assets/js/' | append: js_file | append: '.js' -%}
-        {%- capture custom_js_url -%}{%- include asset_url.html path=custom_js_path -%}{%- endcapture -%}
-        <script type="module" src="{{ custom_js_url | strip | escape }}"></script>
+        <script type="module" src="{{ custom_js_path | relative_url }}"></script>
       {%- endfor -%}
     {%- endif -%}
   </body>

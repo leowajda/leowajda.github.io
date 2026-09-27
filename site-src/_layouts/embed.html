@@ -6,7 +6,6 @@
     <main class="embed-root" aria-label="Embedded content">
       {{ content }}
     </main>
-    {%- capture embed_js_url -%}{%- include asset_url.html path='/assets/js/embed.js' -%}{%- endcapture -%}
-    <script type="module" src="{{ embed_js_url | strip | escape }}"></script>
+    <script type="module" src="{{ '/assets/js/embed.js' | relative_url }}"></script>
   </body>
 </html>
