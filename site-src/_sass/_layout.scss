@@ -14,8 +14,20 @@
 .content-stack,
 .problem-page,
 .source-layout,
-.source-article {
+.source-article,
+.card-pair {
   gap: 1rem;
+}
+
+.card-pair {
+  display: grid;
+}
+
+@media (min-width: 700px) {
+  .card-pair {
+    align-items: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 .filters {
@@ -55,22 +67,22 @@
   scroll-margin-top: 1rem;
 }
 
+.with-panel {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
 @media (min-width: 960px) {
-  .problem-browser {
+  .with-panel {
     align-items: start;
     gap: 1.5rem;
-    grid-template-columns: minmax(16rem, 18rem) minmax(0, 1fr);
+    grid-template-columns: var(--panel-width) minmax(0, 1fr);
   }
 
   .problem-browser__filters,
   .source-layout__sidebar {
     align-self: start;
-  }
-
-  .source-layout__body {
-    align-items: start;
-    gap: 1.5rem;
-    grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
   }
 
   .source-article--document,

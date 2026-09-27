@@ -43,7 +43,8 @@ module SiteKit
         'homepage_order' => SiteKit::Core::Helpers.ensure_integer_or_nil(
           value['homepage_order'],
           "Project manifest #{label}.homepage_order"
-        ) || 999
+        ) || 999,
+        'source_optional' => value['source_optional'] == true
       }
     end
 

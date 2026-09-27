@@ -10,15 +10,19 @@
   {%- endif -%}
 
   {%- if include.link_group and include.link_group != '' -%}
-    {%- assign group_keys = site.data.site.page_links[include.link_group] | default: empty -%}
-    {%- assign header_links = '' | split: '' -%}
-    {%- for page_key in group_keys -%}
-      {%- assign link_page = site.data.site.pages[page_key] -%}
-      {%- if link_page -%}
-        {%- assign header_links = header_links | push: link_page -%}
-      {%- endif -%}
-    {%- endfor -%}
-    {%- include context_links.html links=header_links class="page-header__links" label="Related pages" -%}
+    <nav class="context-links page-header__links" aria-label="Related pages">
+      <ul class="context-links__items">
+        {%- case include.link_group -%}
+        {%- when 'problem_explorer' -%}
+          <li class="context-links__item"><a class="context-links__link" href="{% link templates/index.md %}">Algorithmic Templates</a></li>
+        {%- when 'problem_detail' -%}
+          <li class="context-links__item"><a class="context-links__link" href="{% link eureka/problems/index.md %}">Problem Explorer</a></li>
+          <li class="context-links__item"><a class="context-links__link" href="{% link templates/index.md %}">Algorithmic Templates</a></li>
+        {%- when 'algorithmic_templates' -%}
+          <li class="context-links__item"><a class="context-links__link" href="{% link eureka/problems/index.md %}">Problem Explorer</a></li>
+        {%- endcase -%}
+      </ul>
+    </nav>
   {%- else -%}
     {%- assign header_links = include.links | default: empty -%}
     {%- if header_links and header_links.size > 0 -%}

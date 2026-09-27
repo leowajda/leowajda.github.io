@@ -22,10 +22,18 @@ const resolveTheme = () => {
     : "light"
 }
 
+const themeColorFor = (theme) => (theme === "dark" ? "#111111" : "#ffffff")
+
+const applyResolvedTheme = (theme) => {
+  const root = getThemeRoot()
+  root.style.colorScheme = theme
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", themeColorFor(theme))
+}
+
 const applyTheme = (theme) => {
   const root = getThemeRoot()
   root.setAttribute("data-appearance", theme)
-  root.style.colorScheme = theme
+  applyResolvedTheme(theme)
 }
 
 const updateThemeButton = (button) => {
@@ -46,10 +54,22 @@ export const initializeThemeToggle = () => {
   if (storedTheme) {
     applyTheme(storedTheme)
   } else {
-    getThemeRoot().style.colorScheme = resolveTheme()
+    getThemeRoot().setAttribute("data-appearance", "auto")
+    applyResolvedTheme(resolveTheme())
   }
 
   const button = document.querySelector("[data-theme-toggle]")
+  const scheme = window.matchMedia("(prefers-color-scheme: dark)")
+  scheme.addEventListener("change", () => {
+    if (getStoredTheme()) {
+      return
+    }
+    getThemeRoot().setAttribute("data-appearance", "auto")
+    applyResolvedTheme(resolveTheme())
+    if (button) {
+      updateThemeButton(button)
+    }
+  })
   if (!button) {
     return
   }
