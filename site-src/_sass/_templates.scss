@@ -74,7 +74,7 @@
 }
 
 .template-library__variant.is-active {
-  font-weight: bold;
+  border-left-color: currentColor;
 }
 
 .template-library__branch.is-active > .template-library__children {
@@ -146,8 +146,3 @@
   display: none;
 }
 
-@media (min-width: 960px) {
-  .template-library__content {
-    grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
-  }
-}

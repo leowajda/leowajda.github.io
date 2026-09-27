@@ -102,6 +102,7 @@
 }
 
 .highlight pre {
+  box-sizing: border-box;
   margin: 0;
   max-width: 100%;
   overflow-x: auto;

@@ -270,7 +270,6 @@ module SiteKit
       end
 
       def validate!
-        validate_page_links!
         validate_rendered_routes!
         validate_generated_page_defaults!
         validate_sitemap_visibility!
@@ -279,25 +278,6 @@ module SiteKit
       private
 
       attr_reader :site
-
-      def validate_page_links!
-        site_pages = SiteKit::Core::Helpers.ensure_hash(site.data.fetch('site').fetch('pages'), 'site.pages')
-        page_links = SiteKit::Core::Helpers.ensure_hash(site.data.fetch('site').fetch('page_links'), 'site.page_links')
-
-        site_pages.each do |key, record|
-          page = SiteKit::Core::Helpers.ensure_hash(record, "site.pages.#{key}")
-          SiteKit::Core::Helpers.ensure_string(page.fetch('label'), "site.pages.#{key}.label")
-          SiteKit::Core::Helpers.ensure_string(page.fetch('url'), "site.pages.#{key}.url")
-        end
-
-        page_links.each do |group_key, page_keys|
-          SiteKit::Core::Helpers.ensure_array_of_strings(page_keys, "site.page_links.#{group_key}").each do |page_key|
-            next if site_pages.key?(page_key)
-
-            raise SiteKit::InvariantError, "site.page_links.#{group_key} references unknown page '#{page_key}'"
-          end
-        end
-      end
 
       def validate_rendered_routes!
         SiteKit::Core::Helpers.ensure_unique!(renderable_pages.map(&:url), 'Rendered page URLs must be unique')

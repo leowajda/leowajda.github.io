@@ -47,6 +47,10 @@
         : theme
 
       root.style.colorScheme = resolvedTheme
+      const themeColor = document.querySelector('meta[name="theme-color"]')
+      if (themeColor) {
+        themeColor.setAttribute("content", resolvedTheme === "dark" ? "#111111" : "#ffffff")
+      }
     })()
   </script>
 

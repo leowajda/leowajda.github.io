@@ -114,7 +114,7 @@ const initializeTemplateLibrary = (root) => {
     const focus = isPattern
       ? el
       : variantLinks.find((link) => link.dataset.guideTarget === renderTarget) || el
-    focus.scrollIntoView({ block: "nearest" })
+    focus.scrollIntoView({ block: "nearest", inline: "nearest" })
 
     if (syncHash) {
       const nextHash = isPattern ? target : renderTarget

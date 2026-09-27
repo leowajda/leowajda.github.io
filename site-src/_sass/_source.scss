@@ -42,6 +42,10 @@
   white-space: normal;
 }
 
+.source-article > * {
+  min-width: 0;
+}
+
 .source-article > :first-child {
   margin-top: 0;
 }
