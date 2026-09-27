@@ -302,6 +302,25 @@ module SiteKit
 
       OPTIONAL = %w[source_url detail_url embed_url].freeze
 
+      def build(context:, entry_id:, language:, language_label:, variant:, variant_label:, code:, code_language:, # rubocop:disable Metrics/ParameterLists
+                source_url: nil, detail_url: nil, embed_url: nil)
+        normalize(
+          {
+            'entry_id' => entry_id,
+            'language' => language,
+            'language_label' => language_label,
+            'variant' => variant,
+            'variant_label' => variant_label,
+            'code' => code,
+            'code_language' => code_language,
+            'source_url' => source_url,
+            'detail_url' => detail_url,
+            'embed_url' => embed_url
+          },
+          context: context
+        )
+      end
+
       def normalize(raw, context:)
         record = Helpers.ensure_hash(raw, context)
         entry = {
@@ -318,6 +337,25 @@ module SiteKit
           entry[key] = value unless value.empty?
         end
         entry
+      end
+    end
+
+    module EmbedPage
+      module_function
+
+      def emit(dir:, page_type:, title:, description:, entries:, detail_url:, project_slug: nil, data: {}) # rubocop:disable Metrics/ParameterLists
+        SiteKit::Emit.page(
+          dir: dir,
+          page_type: page_type,
+          project_slug: project_slug,
+          title: "#{title} · Embed",
+          description: description,
+          data: data.merge(
+            'entries' => entries,
+            'detail_url' => detail_url,
+            'embed' => true
+          ).compact
+        )
       end
     end
   end
