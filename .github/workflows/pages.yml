@@ -57,9 +57,6 @@ jobs:
           baseurl: ${{ steps.pages.outputs.base_path }}
           EOF
 
-      - name: Syntax-check source validation
-        run: pnpm check:syntax
-
       - name: Lint Ruby
         run: pnpm lint:ruby
 

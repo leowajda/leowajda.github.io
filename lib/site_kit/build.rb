@@ -30,8 +30,6 @@ module SiteKit
       @search_extras ||= SiteKit::Extras::Pagefind.records(template_guide: templates.guide)
     end
 
-    alias search_records search_extras
-
     def explorer(project_slug)
       eureka.explorers.fetch(project_slug)
     end
