@@ -61,7 +61,7 @@ Plugins call `Build`. `site_build_generator` attaches page data, adds generated 
 | Zibaldone | `/zibaldone/…` (code docs may have `…/embed/`) |
 | Search | `/search/?q=` |
 
-Embeds: bare layout; post `{ source: "remnote-iframe-plugin", type: "resize", height }` for iframe hosts.
+Embeds use a bare layout without site navigation.
 
 Templates are **one handbook page**, not path-per-template. A flat list of pattern names stays visible. `#pattern` opens that pattern's variants. `#pattern/variant` opens one code panel and keeps the sibling chips. Pagefind extras deep-link those hashes. Do not repeat a name that is already on the screen.
 

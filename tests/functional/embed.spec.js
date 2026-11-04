@@ -33,29 +33,3 @@ test("source note code page links to a chrome-free embed", async ({ page }) => {
   await expect(page.locator("[data-embed-page]")).toBeVisible()
   await expect(page.getByRole("toolbar", { name: "Language" })).toBeVisible()
 })
-
-test("problem embed posts resize messages to the parent frame", async ({ page }) => {
-  await page.goto("/eureka/problems/")
-
-  const height = await page.evaluate(async () => {
-    return await new Promise((resolve, reject) => {
-      const timer = globalThis.setTimeout(() => reject(new Error("resize message timeout")), 5000)
-      const onMessage = (event) => {
-        if (event.data?.source === "remnote-iframe-plugin" && event.data?.type === "resize") {
-          globalThis.clearTimeout(timer)
-          globalThis.removeEventListener("message", onMessage)
-          resolve(event.data.height)
-        }
-      }
-      globalThis.addEventListener("message", onMessage)
-
-      const iframe = globalThis.document.createElement("iframe")
-      iframe.src = "/eureka/problems/binary-search/embed/"
-      iframe.style.width = "100%"
-      iframe.style.border = "0"
-      globalThis.document.body.append(iframe)
-    })
-  })
-
-  expect(height).toBeGreaterThan(100)
-})
