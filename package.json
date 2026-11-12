@@ -30,6 +30,6 @@
     "@playwright/test": "^1.65.0",
     "eslint": "^10.14.0",
     "globals": "^17.13.0",
-    "pagefind": "1.5.2"
+    "pagefind": "1.6.0"
   }
 }
